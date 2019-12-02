@@ -1,5 +1,7 @@
 
 class PV:
-    pass
+
+    def __init__(self, *args, **kwargs):
+        pass
 
 

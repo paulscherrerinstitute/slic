@@ -1,10 +1,4 @@
-#from epics import PV
-
-
-class PV:
-
-    def __init__(self, *args, **kwargs):
-        pass
+from epics import PV
 
 
 def within(val, vmin, vmax):
