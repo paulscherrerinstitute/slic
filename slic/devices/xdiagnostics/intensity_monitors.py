@@ -1,5 +1,5 @@
 from ..general.motors import MotorRecord
-from ..general.eco_epics.utilities_epics import EnumWrapper
+from slic.controls.eco_epics.utilities_epics import EnumWrapper
 from ..general.detectors import FeDigitizer
 
 class GasDetector:

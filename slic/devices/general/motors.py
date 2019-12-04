@@ -1,4 +1,4 @@
-from .eco_epics.motor import Motor as _Motor
+from slic.controls.eco_epics.motor import Motor as _Motor
 import subprocess
 from threading import Thread
 from epics import PV
