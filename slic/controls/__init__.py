@@ -1,4 +1,4 @@
 
-from .epics import PV
+from .pv import PV
 
 
