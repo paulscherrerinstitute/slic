@@ -3,8 +3,8 @@ from time import sleep
 
 
 def within(val, vmin, vmax):
-    left  = True if vmin is None else (val > vmin)
-    right = True if vmax is None else (val < vmax)
+    left  = True if vmin is None else (val > vmin) #TODO: equal?
+    right = True if vmax is None else (val < vmax) #TODO: equal?
     return (left and right)
 
 
