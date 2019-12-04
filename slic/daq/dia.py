@@ -1,5 +1,8 @@
+import os
 import datetime
+from time import sleep
 from detector_integration_api import DetectorIntegrationClient
+from .utilities import Acquisition
 
 
 class DIA:
@@ -8,7 +11,7 @@ class DIA:
         self.client = DetectorIntegrationClient(api_address)
         print("\nDetector Integration API on %s" % api_address)
         # No pgroup by default
-        self.pgroup = 0
+        self.pgroup = pgroup
         self.n_frames = 100
         self.jf_name = jf_name
         self.jf_Ids = []
@@ -25,7 +28,7 @@ class DIA:
 
     def update_config(self, ):
         self.writer_config = {
-            "output_file": "/sf/%s/data/p%d/raw/test_data.h5" % (self.instrument, self.pgroup), 
+            "output_file": "/sf/%s/data/%s/raw/test_data.h5" % (self.instrument, self.pgroup), 
             "user_id": self.pgroup, 
             "n_frames": self.n_frames,
             "general/user": str(self.pgroup),
@@ -77,7 +80,7 @@ class DIA:
         #    '/sf/alvra/config/com/channel_lists/default_channel_list')
 
         self.bsread_config = {
-            'output_file': '/sf/%s/data/p%d/raw/test_bsread.h5' % (self.instrument, self.pgroup), 
+            'output_file': '/sf/%s/data/%s/raw/test_bsread.h5' % (self.instrument, self.pgroup), 
             'user_id': self.pgroup, 
             "general/user": str(self.pgroup),
             "general/process": __name__,
@@ -180,7 +183,7 @@ class DIA:
         JF_factor?
         bsread_padding?
         """
-        file_rootdir = '/sf/%s/data/p%d/raw/' % (self.instrument, self.pgroup)
+        file_rootdir = '/sf/%s/data/%s/raw/' % (self.instrument, self.pgroup)
         
         if file_name is None:
             # FIXME /dev/null crashes the data taking (h5py can't close /dev/null and crashes)

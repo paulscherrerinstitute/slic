@@ -63,9 +63,9 @@ class BS:
 
         
     def h5(self,fina=None,channel_list=None,N_pulses=None,default_path=True,queue_size=100):
-        if default_path:
-            fina = self._default_file_path%fina
-        
+#        if default_path:
+#            fina = self._default_file_path%fina
+#        
         if os.path.isfile(fina):
             print('!!! File %s already exists, would you like to delete it?'%fina)
             if input('(y/n)')=='y':

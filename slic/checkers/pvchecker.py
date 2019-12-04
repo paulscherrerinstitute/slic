@@ -1,4 +1,5 @@
 from epics import PV
+from time import sleep
 
 
 def within(val, vmin, vmax):
@@ -17,8 +18,14 @@ class PVChecker:
         self.wait_time = wait_time
 
     def check(self):
-        val = self.pv.get()
+        val = self.current()
         return within(val, self.vmin, self.vmax)
+
+    def current(self):
+        return self.pv.get()
+
+    def sleep(self):
+        sleep(self.wait_time)
 
 
 

@@ -4,7 +4,7 @@ import numpy as np
 from time import sleep
 import traceback
 
-class ScannerSimple:
+class ScanSimple:
     def __init__(self,adjustables,values,counterCallers,fina,Npulses=100,basepath='',scan_info_dir='',checker=None,scan_directories=False):
         self.Nsteps = len(values)
         self.pulses_per_step = Npulses
@@ -47,9 +47,9 @@ class ScannerSimple:
 
     def doNextStep(self,step_info=None,verbose=True):
         if self.checker:
-            while not self.checker['checker_call'](*self.checker['args'],**self.checker['kwargs']):
+            while not self.checker.check():
                 print('Condition checker is not happy, waiting for OK conditions.')
-                sleep(self.checker['wait_time'])
+                self.checker.sleep()
 
         if not len(self.values_todo)>0:
             return False
@@ -78,7 +78,7 @@ class ScannerSimple:
         if verbose:
             print('Done with acquisition')
         if self.checker:
-            if not self.checker['checker_call'](*self.checker['args'],**self.checker['kwargs']):
+            if not self.checker.check():
                 return True
         if callable(step_info):
             tstepinfo = step_info()
