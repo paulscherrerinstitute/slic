@@ -40,6 +40,12 @@ class MotorRecord:
         self._currentChange = None
 
 
+    @property
+    def alias(self):
+        print("fake alias for", self.Id)
+        return self.name
+
+
     # Conventional methods and properties for all Adjustable objects
     def changeTo(self, value, hold=False, check=True):
         """ Adjustable convention"""
