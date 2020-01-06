@@ -10,7 +10,7 @@ from pathlib import Path
 from .utilities import Acquisition
 
 
-class Epicstools:
+class Epics:
     def __init__(
         self,
         default_channel_list={"listname": []},
