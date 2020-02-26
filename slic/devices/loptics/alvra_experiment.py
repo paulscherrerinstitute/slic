@@ -122,17 +122,23 @@ class Laser_Exp:
 
 
     def get_adjustable_positions_str(self):
-        ostr = '*****Laser motor positions*****\n'
+        ostr = 'Laser motor positions\n'
 
-        for tkey,item in self.__dict__.items():
+        res = {}
+        for key, item in self.__dict__.items():
             if hasattr(item,'get_current_value'):
                 pos = item.get_current_value()
-                ostr += '  ' + tkey.ljust(10) + ' : % 14g\n'%pos
             elif hasattr(item,'get'):
-               pos = item.get()
-               ostr += '  ' + tkey.ljust(10) + ' : % 14g\n'%pos
+                pos = item.get()
+            else:
+                continue
+            res[key] = pos
+
+        length = max(len(k) for k in res) + 1
+        lines = sorted("{}:{}{}".format(k, " "*(length-len(k)), v) for k, v in res.items())
+        ostr += "\n".join(lines)
         return ostr
-                
+
 
 
     #def pos(self):

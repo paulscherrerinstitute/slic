@@ -1,6 +1,7 @@
 import sys
 sys.path.append("..")
 from ..general.motors import MotorRecord
+from ..general.smaract import SmarActRecord
 from epics import PV
 
 class Huber:
@@ -63,15 +64,17 @@ class Table:
             % (self.x,self.y,self.z,self.pitch,self.yaw,self.modeSP.get(as_string=True),self.status.get())
 
 class Microscope:
-    def __init__(self, Id, alias_namespace=None, z_undulator=None, description=None):
+    def __init__(self, Id, gonio=None, rotat=None, alias_namespace=None, z_undulator=None, description=None):
         self.Id = Id
-		
+
         ### Microscope motors ###
         self.focus = MotorRecord(Id+':FOCUS')
         self.zoom = MotorRecord(Id+':ZOOM')
-        self._smaractaxes = {
-            'gonio': '_xmic_gon',   # will become self.gonio
-            'rot':   '_xmic_rot'}   # """ self.rot
+#        self._smaractaxes = {
+#            'gonio': '_xmic_gon',   # will become self.gonio
+#            'rot':   '_xmic_rot'}   # """ self.rot
+        self.gonio = SmarActRecord(gonio) #TODO: can this be None?
+        self.rot = SmarActRecord(rotat) #TODO: can this be None?
 
     def __str__(self):
         return "Microscope positions\nfocus: %s\nzoom:  %s\ngonio: %s\nrot:   %s"\

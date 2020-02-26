@@ -8,13 +8,6 @@ class AttenuatorAramis:
         self._pv_status_int = PV(self.Id+':IDX_RB')
         pass
 
-
-    def __call__(self):
-        pass
-    def __str__(self):
-        pass
-    def __status__(self):
-        pass
     def updateE(self,energy = None):
         if energy == None:
             energy = PV("SARUN03-UIND030:FELPHOTENE").value
@@ -57,9 +50,10 @@ class AttenuatorAramis:
         s += '%s'%self.get_status()[0]
         return s
 
+    __str__ = __repr__
+
     def __call__(self,*args,**kwargs):
         self.set_transmission(*args,**kwargs)
-        
 
 
 

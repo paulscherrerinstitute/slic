@@ -182,6 +182,8 @@ class SmarActRecord:
 	def get_current_value(self):
 		return self._rbv.get()
 
+	wm = get_current_value
+
 #     def set_current_value(self,value):
 #         return self._drive.put(value)
 
@@ -278,7 +280,9 @@ class SmarActStage:
     def __init__(self, axes, name=None, z_undulator=None, description=None):
         self._keys = axes.keys()
         for axis in self._keys:
-            self.__dict__[axis] = axes[axis]
+            ax = axes[axis]
+            ax = SmarActRecord(ax)
+            self.__dict__[axis] = ax
         self.name = name
         
     def __str__(self):
