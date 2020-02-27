@@ -1,0 +1,7 @@
+
+
+class BaseDevice:
+    pass
+
+
+
