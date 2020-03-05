@@ -1,7 +1,14 @@
+import epics
 
-class PV:
 
-    def __init__(self, *args, **kwargs):
-        pass
+class PV(epics.PV):
+
+    units = b"km"
+
+    def __repr__(self):
+        val = self.get()
+        units = self.units.decode()
+        return "PV at {} {}".format(val, units)
+
 
 
