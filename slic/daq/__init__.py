@@ -1,5 +1,5 @@
 
-from .bs import BS
-from .dia import DIA
+from .bs import BSCounter
+from .dia import DIACounter
 
 

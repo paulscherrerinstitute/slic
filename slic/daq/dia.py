@@ -3,11 +3,13 @@ import datetime
 from time import sleep
 from detector_integration_api import DetectorIntegrationClient
 from .utilities import Acquisition
+from .basecounter import BaseCounter
 
 
-class DIA:
+class DIACounter(BaseCounter):
+
     def __init__(self, instrument=None, api_address = "http://sf-daq-alvra:10000", jf_name=None, pgroup=None):
-        self._api_address = api_address 
+        self._api_address = api_address
         self.client = DetectorIntegrationClient(api_address)
         print("\nDetector Integration API on %s" % api_address)
         # No pgroup by default
@@ -28,8 +30,8 @@ class DIA:
 
     def update_config(self, ):
         self.writer_config = {
-            "output_file": "/sf/%s/data/%s/raw/test_data.h5" % (self.instrument, self.pgroup), 
-            "user_id": self.pgroup, 
+            "output_file": "/sf/%s/data/%s/raw/test_data.h5" % (self.instrument, self.pgroup),
+            "user_id": self.pgroup,
             "n_frames": self.n_frames,
             "general/user": str(self.pgroup),
             "general/process": __name__,
@@ -39,21 +41,21 @@ class DIA:
         }
 
         self.backend_config = {
-            "n_frames": self.n_frames, 
-            "bit_depth": 16, 
-            "gain_corrections_filename": self.gain_file,  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
-            #"gain_corrections_dataset": "gains", 
-            #"pede_corrections_filename": "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup, 
-            #"pede_corrections_dataset": "gains", 
-            #"pede_mask_dataset": "pixel_mask", 
+            "n_frames": self.n_frames,
+            "bit_depth": 16,
+            "gain_corrections_filename": self.gain_file,  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5",
+            #"gain_corrections_dataset": "gains",
+            #"pede_corrections_filename": "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup,
+            #"pede_corrections_dataset": "gains",
+            #"pede_mask_dataset": "pixel_mask",
             #"activate_corrections_preview": True,
             "is_HG0": self.isHG0
         }
 
         if self.pede_file != "":
-            self.backend_config["gain_corrections_filename"] = self.gain_file  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
+            self.backend_config["gain_corrections_filename"] = self.gain_file  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5",
             self.backend_config["gain_corrections_dataset"] = "gains"
-            self.backend_config["pede_corrections_filename"] = self.pede_file  # "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup, 
+            self.backend_config["pede_corrections_filename"] = self.pede_file  # "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup,
             self.backend_config["pede_corrections_dataset"] = "gains"
             self.backend_config["pede_mask_dataset"] = "pixel_mask"
             self.backend_config["activate_corrections_preview"] = True
@@ -68,20 +70,20 @@ class DIA:
             "timing": "trigger",
 
             # FIXME: HARDCODED: For Alvra JF4.5 it's 0.000005, Bernina is using 0.00001
-            "exptime": 0.000005, 
+            "exptime": 0.000005,
             "cycles": self.n_frames,
             #"delay"  : 0.001992,
             "frames" : 1,
             "dr": 16,
         }
-        
+
         # Not needed anymore?
         #default_channels_list = parseChannelListFile(
         #    '/sf/alvra/config/com/channel_lists/default_channel_list')
 
         self.bsread_config = {
-            'output_file': '/sf/%s/data/%s/raw/test_bsread.h5' % (self.instrument, self.pgroup), 
-            'user_id': self.pgroup, 
+            'output_file': '/sf/%s/data/%s/raw/test_bsread.h5' % (self.instrument, self.pgroup),
+            'user_id': self.pgroup,
             "general/user": str(self.pgroup),
             "general/process": __name__,
             "general/created": str(datetime.datetime.now()),
@@ -124,7 +126,7 @@ class DIA:
         #self.reset()
         #print('Just resetted in set_config')
         self.client.set_config({"writer": self.writer_config, "backend": self.backend_config, "detector": self.detector_config, "bsread": self.bsread_config})
-        
+
     def check_still_running(self, time_interval=.5):
         cfg = self.get_config()
         running = True
@@ -137,14 +139,14 @@ class DIA:
 #                break
             else:
                 sleep(time_interval)
-    
+
     def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True, period=0.04):
         from jungfrau_utils.scripts.jungfrau_run_pedestals import run as jungfrau_utils_run
         directory = '/sf/%s/data/p%d/raw/JF_pedestals/' % (self.instrument, self.pgroup)
         if not os.path.exists(directory):
             print("Directory %s not existing, AND I CAN NOT CREATE IT, CALL DIMA" % directory)
             #os.makedirs(directory)
-        
+
         res_dir = directory.replace("/raw/", "/res/")
         if not os.path.exists(res_dir):
             print("Directory %s not existing, creating it" % res_dir)
@@ -158,7 +160,7 @@ class DIA:
             self.pede_file = (directory + filename).replace("raw/", "res/").replace(".h5", ".res.h5")
             print("Pedestal file updated to %s" % self.pede_file)
         return self.pede_file
-        
+
     def start(self):
         self.client.start()
         print("start acquisition")
@@ -166,7 +168,7 @@ class DIA:
 
     def stop(self):
         self.client.stop()
-        print("stop acquisition") 
+        print("stop acquisition")
         pass
 
     def config_and_start_test(self):
@@ -184,12 +186,12 @@ class DIA:
         bsread_padding?
         """
         file_rootdir = '/sf/%s/data/%s/raw/' % (self.instrument, self.pgroup)
-        
+
         if file_name is None:
             # FIXME /dev/null crashes the data taking (h5py can't close /dev/null and crashes)
             print("Not saving any data, as file_name is not set")
-            file_name_JF = file_rootdir + "DelMe" 
-            file_name_bsread = file_rootdir + "DelMe" 
+            file_name_JF = file_rootdir + "DelMe"
+            file_name_bsread = file_rootdir + "DelMe"
         else:
             # FIXME hardcoded
             file_name_JF = file_rootdir + file_name
@@ -218,7 +220,7 @@ class DIA:
                 'output_file':file_name_bsread,
             #    'Npulses': Npulses + bsread_padding
                 })
-            
+
             if reset_before:
 #                print('Starting reset in acquire')
                 self.reset()

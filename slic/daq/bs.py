@@ -1,37 +1,26 @@
-from bsread import Source
+import datetime
+import os
+import zmq
+
+import data_api as dapi
 from bsread.h5 import receive
 from bsread.avail import dispatcher
-import zmq
-import os
-import data_api as api
-import datetime
-from threading import Thread
 
 from .utilities import Acquisition
-from time import sleep
+from .basecounter import BaseCounter
 
-## for a hack called DIA
-#try:
-#    import sys, os
-#    tpath = os.path.dirname(__file__)
-#    sys.path.insert(0,os.path.join(tpath,'../../detector_integration_api'))
-#    #ask Leo(2018.03.14):
-#    #sys.path.insert(0,os.path.join(tpath,'../../jungfrau_utils')) 
-#    from detector_integration_api import DetectorIntegrationClient
-#except:
-#    print('NB: detector integration could not be imported!')
 
-class BS:
+class BSCounter(BaseCounter):
+
     def __init__(self,
             default_channel_list={'listname':[]},
-            default_file_path='%s',
-            elog=None):
+            default_file_path='%s'
+        ):
         self._default_file_path = default_file_path
         self._default_channel_list = default_channel_list
-        self._elog = elog
 
-    def avail(self,*args,**kwargs):
-        return dispatcher.get_current_channels(*args,**kwargs)
+    def avail(self, *args, **kwargs):
+        return dispatcher.get_current_channels(*args, **kwargs)
 
     def check_channel_list(self, printResult=True, printOnlineChannels=False):
         all_available = set([i['name'] for i in self.avail()])
@@ -45,13 +34,13 @@ class BS:
             for listname in status.keys():
                 if printOnlineChannels:
                     print('#### Online Channels in {} ####'.format(listname))
-                    print('\n'.join(status[listname]['online'])) 
+                    print('\n'.join(status[listname]['online']))
                     print('\n')
                 print('#### Offline Channels in {} ####'.format(listname))
                 print('\n'.join(status[listname]['offline']))
         else:
             return status
- 
+
     def cleanup_channel_list(self,listname):
         status = self.check_channel_list(printResult=False)
         self._default_channel_list[listname] = \
@@ -61,11 +50,11 @@ class BS:
         print('NB: The channels will be back after restart if they originate from a config file.')
 
 
-        
+
     def h5(self,fina=None,channel_list=None,N_pulses=None,default_path=True,queue_size=100):
 #        if default_path:
 #            fina = self._default_file_path%fina
-#        
+
         if os.path.isfile(fina):
             print('!!! File %s already exists, would you like to delete it?'%fina)
             if input('(y/n)')=='y':
@@ -76,7 +65,7 @@ class BS:
         if not channel_list:
             print('No channels specified, using default list \'%s\' instead.'%list(self._default_channel_list.keys())[0])
             channel_list = self._default_channel_list[list(self._default_channel_list.keys())[0]]
-            
+
         source = dispatcher.request_stream(channel_list)
         mode = zmq.SUB
         receive(source, fina, queue_size=queue_size, mode=mode, n_messages=N_pulses)
@@ -88,13 +77,13 @@ class BS:
         now = datetime.datetime.now()
         end = now-datetime.timedelta(**end_time_delta)
         start = end-datetime.timedelta(**start_time_delta)
-        return api.get_data(channels=channel_list, start=start, end=end) 
+        return dapi.get_data(channels=channel_list, start=start, end=end)
 
     def h5_db(self,fina,channel_list=None,start_time_delta=dict(),end_time_delta=dict(),default_path=True):
-        data = self.db(channel_list=None,start_time_delta=start_time_delta,end_time_delta=end_time_delta,default_path=True)    
+        data = self.db(channel_list=None,start_time_delta=start_time_delta,end_time_delta=end_time_delta,default_path=True)
         if default_path:
             fina = self._default_file_path%fina
-        
+
         if os.path.isfile(fina):
             print('!!! File %s already exists, would you like to delete it?'%fina)
             if input('(y/n)')=='y':
@@ -102,7 +91,7 @@ class BS:
                 os.remove(fina)
             else:
                 return
-        
+
         data.to_hdf(fina,"/data")
 
 
@@ -110,7 +99,7 @@ class BS:
         file_name += '.h5'
         def acquire():
             self.h5(fina=file_name,N_pulses=Npulses)
-        return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name], 'Npulses':Npulses},hold=False)
+        return Acquisition(acquire=acquire, hold=False)
 
     def wait_done(self):
         self.check_running()
