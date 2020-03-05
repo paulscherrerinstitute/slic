@@ -1,3 +1,4 @@
+from ..basedevice import BaseDevice
 from ..general.motors import MotorRecord
 from epics import PV
 from ..general.utilities import Changer
@@ -127,9 +128,12 @@ class EcolEnergy:
 
 
 
-class Double_Crystal_Mono:
+class Double_Crystal_Mono(BaseDevice):
     def __init__(self, Id, z_undulator=None, description=None):
         self.Id = Id
+        self.z_undulator = z_undulator
+        self.description = description
+
         self.theta = MotorRecord(Id+':RX12')
         self.x = MotorRecord(Id+':TX12')
         self.gap = MotorRecord(Id+':T2')

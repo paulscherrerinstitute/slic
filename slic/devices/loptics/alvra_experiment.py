@@ -1,9 +1,28 @@
-from epics import PV
+from slic.controls.pv import PV
 
 from ..basedevice import BaseDevice
 from ..general.motors import MotorRecord
 from ..general.delay_stage import DelayStage
 from ..timing.alvralasertiming import eTiming
+
+
+
+def maxlen(seq):
+    return max(len(i) for i in seq)
+
+def printable_dict(d):
+    length = maxlen(d) + 1
+    lines = sorted("{}:{}{}".format(k, " "*(length-len(k)), v) for k, v in d.items())
+    return "\n".join(lines)
+
+def format_header(msg):
+    msg += ":"
+    line = "-" * len(msg)
+    msg += "\n" + line
+    return msg
+
+
+
 
 
 class LaserExp(BaseDevice):
@@ -22,25 +41,16 @@ class LaserExp(BaseDevice):
         self.wpHarmonics = MotorRecord(Id + "-M432:MOT")
 
         # Delay stages
-        self.pumpTopas_delay = MotorRecord(Id + "-M451:MOTOR_1")
-        self.pumpTopas_delayTime = DelayStage(self.pumpTopas_delay)
-
-        self.pumpHarmonics_delay = MotorRecord(Id + "-M453:MOTOR_1")
-        self.pumpHarmonics_delayTime = DelayStage(self.pumpHarmonics_delay)
-
-        self.globalglobi_delay = MotorRecord(Id + "-M452:MOTOR_1")
-        self.globalglobi_delayTime = DelayStage(self.globalglobi_delay)
+        self.pumpTopas_delay = DelayStage(Id + "-M451:MOTOR_1")
+        self.pumpHarmonics_delay = DelayStage(Id + "-M453:MOTOR_1")
+        self.globalglobi_delay = DelayStage(Id + "-M452:MOTOR_1")
 
         # PALM delay stages
-        self.palm_delay = MotorRecord(Id + "-M423:MOT")
-        self.palm_delayTime = DelayStage(self.palm_delay)
-
-        self.palmEO_delay = MotorRecord(Id + "-M422:MOT")
-        self.palmEO_delayTime = DelayStage(self.palmEO_delay)
+        self.palm_delay = DelayStage(Id + "-M423:MOT")
+        self.palmEO_delay = DelayStage(Id + "-M422:MOT")
 
         # PSEN delay stage
-        self.psen_delay = MotorRecord(Id + "-M424:MOT")
-        self.psen_delayTime = DelayStage(self.psen_delay)
+        self.psen_delay = DelayStage(Id + "-M424:MOT")
 
         # Experimental compressor delay stage
         self.compressorExp_delay = MotorRecord(Id + "-M431:MOT")
@@ -49,12 +59,10 @@ class LaserExp(BaseDevice):
         self.compressorDiag_delay = MotorRecord(Id + "-M421:MOT")
 
         # Pump A/C delay stage
-        self.pump_autocorr_delay = MotorRecord(Id + "-M444:MOT")
-        self.psen_autocorr_delayTime = DelayStage(self.pump_autocorr_delay) #TODO: looks like a typo
+        self.pump_autocorr_delay = DelayStage(Id + "-M444:MOT")
 
         # Experiment-FEL timing delay stage
-        self.pump_toFEL_delay = MotorRecord(Id + "-M441:MOT")
-        self.pump_toFEL_delayTime = DelayStage(self.pump_toFEL_delay)
+        self.pump_toFEL_delay = DelayStage(Id + "-M441:MOT")
 
         # Experiment focussing lens position
         self.pump_lens_focus = MotorRecord(Id + "-M443:MOT")
@@ -64,22 +72,16 @@ class LaserExp(BaseDevice):
 
 
     def __repr__(self):
-        ostr = "Laser motor positions\n"
+        head = "Laser motor positions"
+        head = format_header(head)
 
-        res = {}
+        to_print = {}
         for key, item in self.__dict__.items():
-            if hasattr(item,"get_current_value"):
-                pos = item.get_current_value()
-            elif hasattr(item,"get"):
-                pos = item.get()
-            else:
-                continue
-            res[key] = pos
+            if type(item) in [MotorRecord, DelayStage, PV, eTiming]:
+                to_print[key] = item
 
-        length = max(len(k) for k in res) + 1
-        lines = sorted("{}:{}{}".format(k, " "*(length-len(k)), v) for k, v in res.items())
-        ostr += "\n".join(lines)
-        return ostr
+        to_print = printable_dict(to_print)
+        return head + "\n" + to_print
 
 
 

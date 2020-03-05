@@ -12,9 +12,9 @@ def timeToStr(value,n=12):
     value = fmt%value
     #print(value)
     idx_point = value.find(".")
-    ret_str = value[:idx_point] + " ." 
+    ret_str = value[:idx_point] + " ."
     ngroups = (len(value)-idx_point)//3
-    for n in range(ngroups): 
+    for n in range(ngroups):
       ret_str += " %s" % value[idx_point+1+3*n:idx_point+1+3*(n+1)]
       #print(idx_point+1+3*n,idx_point+1*3*(n-1),ret_str)
     return ret_str
@@ -23,24 +23,24 @@ def niceTimeToStr(delay,fmt="%+.0f"):
   a_delay = abs(delay)
   if a_delay >= 1:
     ret = fmt % delay + "s"
-  elif 1e-3 <= a_delay < 1: 
+  elif 1e-3 <= a_delay < 1:
     ret = fmt % (delay*1e3) + "ms"
-  elif 1e-6 <= a_delay < 1e-3: 
+  elif 1e-6 <= a_delay < 1e-3:
     ret = fmt % (delay*1e6) + "us"
-  elif 1e-9 <= a_delay < 1e-6: 
+  elif 1e-9 <= a_delay < 1e-6:
     ret = fmt % (delay*1e9) + "ns"
-  elif 1e-12 <= a_delay < 1e-9: 
+  elif 1e-12 <= a_delay < 1e-9:
     ret = fmt % (delay*1e12) + "ps"
-  elif 1e-15 <= a_delay < 1e-12: 
+  elif 1e-15 <= a_delay < 1e-12:
     ret = fmt % (delay*1e12) + "fs"
-  elif 1e-18 <= a_delay < 1e-15: 
+  elif 1e-18 <= a_delay < 1e-15:
     ret = fmt % (delay*1e12) + "as"
-  elif a_delay < 1e-18: 
+  elif a_delay < 1e-18:
     ret = "0s"
   else:
     ret = str(delay) +"s"
   return ret
-    
+
 
 class Storage(object):
     def __init__(self,pvname):
@@ -76,20 +76,20 @@ class Storage(object):
         with open(self._filename,"w") as f:
             f.write("# %s\n"%time.asctime())
             f.write("%.15f"%value)
-        
+
 
 class Pockels_trigger(PV):
     """ this class is needed to store the offset in files and read in s """
     def __init__(self,pv_basename):
         pvname = pv_basename + "-RB"
         PV.__init__(self,pvname)
-        self._pv_setvalue = PV(pv_basename + "-SP") 
+        self._pv_setvalue = PV(pv_basename + "-SP")
         self._filename = os.path.join(_basefolder,pvname)
         self._storage  = Storage(pvname)
 
     @property
     def offset(self): return self._storage.value
-    
+
     def get_dial(self):
         return np.round(super().get()*1e-6,9)
 
@@ -99,7 +99,7 @@ class Pockels_trigger(PV):
 
     def store(self,value=None):
         if value == None: value = self.get_dial()
-        self._storage.store( value ) 
+        self._storage.store( value )
 
     def move(self,value):
         dial = value + self.offset
@@ -119,43 +119,43 @@ class Pockels_trigger(PV):
 _OSCILLATOR_PERIOD = 1/71.368704e6
 
 class Phase_shifter(PV):
-    """ this class is needed to store the offset in files and read in ps """ 
-    def __init__(self,pv_basename="SLAAR01-TSPL-EPL",dial_max=14.0056e-9,precision=100e-15): 
-        pvname = pv_basename+":CURR_DELTA_T" 
-        PV.__init__(self,pvname) 
-        self._filename = os.path.join(_basefolder,pvname) 
-        self._pv_setvalue = PV(pv_basename + ":NEW_DELTA_T") 
-        self._pv_execute  = PV(pv_basename + ":SET_NEW_PHASE.PROC") 
+    """ this class is needed to store the offset in files and read in ps """
+    def __init__(self,pv_basename="SLAAR01-TSPL-EPL",dial_max=14.0056e-9,precision=100e-15):
+        pvname = pv_basename+":CURR_DELTA_T"
+        PV.__init__(self,pvname)
+        self._filename = os.path.join(_basefolder,pvname)
+        self._pv_setvalue = PV(pv_basename + ":NEW_DELTA_T")
+        self._pv_execute  = PV(pv_basename + ":SET_NEW_PHASE.PROC")
         self._storage  = Storage(pvname)
         self.dial_max  = dial_max
         self.retry = precision
 
     @property
     def offset(self): return self._storage.value
- 
-     
-    def get_dial(self): 
-        return super().get()*1e-12 
- 
-    def get(self): 
-        """ convert time to sec """ 
-        return self.get_dial()-self.offset 
- 
+
+
+    def get_dial(self):
+        return super().get()*1e-12
+
+    def get(self):
+        """ convert time to sec """
+        return self.get_dial()-self.offset
+
     def store(self,value=None):
         if value == None: value = self.get_dial()
-        self._storage.store( value ) 
- 
-    def move(self,value,accuracy=None): 
+        self._storage.store( value )
+
+    def move(self,value,accuracy=None):
         if accuracy is None: accuracy = self.retry
         dial = value + self.offset
         dial = np.mod(dial,_OSCILLATOR_PERIOD)
         if dial > self.dial_max: dial = self.dial_max
-        dial_ps = dial*1e12 
-        self._pv_setvalue.put(dial_ps) 
-        time.sleep(0.1) 
+        dial_ps = dial*1e12
+        self._pv_setvalue.put(dial_ps)
+        time.sleep(0.1)
         self._pv_execute.put(1)
         #print(accuracy)
-        while( np.abs(self.get_dial()-dial) > accuracy ): 
+        while( np.abs(self.get_dial()-dial) > accuracy ):
             #print(np.abs(self.get_dial()-dial))
             time.sleep(0.2)
 
@@ -206,9 +206,9 @@ class Lxt(object):
 
         idx_pulse = (sdg1_delay+phase_shifter)/_OSCILLATOR_PERIOD
 
-        delay = int(idx_pulse)*_OSCILLATOR_PERIOD - phase_shifter 
+        delay = int(idx_pulse)*_OSCILLATOR_PERIOD - phase_shifter
         return -delay
-    
+
     def changeTo(self, value, hold=False):
         """ Adjustable convention"""
 
@@ -235,48 +235,50 @@ class Lxt(object):
 #lxt = Lxt()
 
 class eTiming:
-	def __init__(self,Id):
-		self.Id = Id
-		self.name = 'Globi laser electronic timing (us)'
-		self._eTimeSet = PV('SLAAR01-LTIM-PDLY:DELAY')	# current laser timing number from Edwin's timing PV
-		self._eTimeRBK = PV('SLAAR-LGEN:DLY_OFFS1')		# readback on Edwin's timing PV
-		self._moving = PV('SLAAR01-LTIM-PDLY:WAITING')
-		
-	def get_current_value(self):
-		return self._eTimeRBK.get()*1e6		# convert from us to ps
-		
-	def wait_for_valid_value(self):
-		tval = np.nan
-		while not np.isfinite(tval):
-			tval = self.get_current_value()
-		return(tval)
+    def __init__(self,Id):
+        self.Id = Id
+        self.name = 'Globi laser electronic timing (us)'
+        self._eTimeSet = PV('SLAAR01-LTIM-PDLY:DELAY')    # current laser timing number from Edwin's timing PV
+        self._eTimeRBK = PV('SLAAR-LGEN:DLY_OFFS1')        # readback on Edwin's timing PV
+        self._moving = PV('SLAAR01-LTIM-PDLY:WAITING')
 
-	def move_and_wait(self,value,checktime=.01):
-		self._eTimeSet.put(value)
-		time.sleep(0.2)
-		while self._moving.get()==0.0:
-			time.sleep(checktime)
+    def get_current_value(self):
+        return self._eTimeRBK.get()*1e6        # convert from us to ps
 
-	def set_current_value(self,value):
-		self._eTimeSet.put(value)
-	
-	def __repr__(self):
-		return self.__str__()
-		
-	def changeTo(self,value,hold=False):
-		changer = lambda value: self.move_and_wait(value)
-		return Changer(
-				target=value,
-				parent=self,
-				changer=changer,
-				hold=hold,
-				stopper=None)
+    def wait_for_valid_value(self):
+        tval = np.nan
+        while not np.isfinite(tval):
+            tval = self.get_current_value()
+        return(tval)
 
-	def __str__(self):
-		eTimingRBKStr = str(self.get_current_value())
-		eTimingSetStr = self._eTimeSet.get(as_string=True)
-		s = '**Globi Laser electronic timing**\n\n'
-		s += 'electronic timing readback (ps): %s\n'%eTimingRBKStr
-		s += 'electronic timing set point (ps): %s\n'%eTimingSetStr
-		return s
-		
+    def move_and_wait(self,value,checktime=.01):
+        self._eTimeSet.put(value)
+        time.sleep(0.2)
+        while self._moving.get()==0.0:
+            time.sleep(checktime)
+
+    def set_current_value(self,value):
+        self._eTimeSet.put(value)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def changeTo(self,value,hold=False):
+        changer = lambda value: self.move_and_wait(value)
+        return Changer(
+                target=value,
+                parent=self,
+                changer=changer,
+                hold=hold,
+                stopper=None)
+
+    def __str__(self):
+        eTimingRBKStr = str(self.get_current_value())
+        eTimingSetStr = self._eTimeSet.get(as_string=True)
+        s = 'Globi laser electronic timing\n'
+        s += '- electronic timing readback (ps): {}\n'.format(eTimingRBKStr)
+        s += '- electronic timing setpoint (ps): {}'.format(eTimingSetStr)
+        return s
+
+
+

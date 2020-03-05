@@ -20,7 +20,7 @@ _status_messages = {
            -4 : 'move-with-wait finished, soft limit violation seen',
            -3 : 'move-with-wait finished, hard limit violation seen',
             0 : 'move-with-wait finish OK.',
-            0 : 'move-without-wait executed, not comfirmed',
+            0 : 'move-without-wait executed, not confirmed',
             1 : 'move-without-wait executed, move confirmed' ,
             3 : 'move-without-wait finished, hard limit violation seen',
             4 : 'move-without-wait finished, soft limit violation seen',
@@ -177,7 +177,7 @@ class MotorRecord:
 
     # return string with motor value as variable representation
     def __str__(self):
-        return "Motor is at %s"%self.wm()
+        return "Motor at %s mm" % self.wm()
     
     def __repr__(self):
         return self.__str__()
