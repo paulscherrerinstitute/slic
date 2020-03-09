@@ -2,7 +2,7 @@ import os
 import datetime
 from time import sleep
 from detector_integration_api import DetectorIntegrationClient
-from .utilities import Acquisition
+from .acquisition import Acquisition
 from .basecounter import BaseCounter
 
 

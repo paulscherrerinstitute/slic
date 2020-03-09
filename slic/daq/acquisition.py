@@ -30,7 +30,7 @@ class Acquisition:
                 return "done"
 
     def __repr__(self):
-        return "Acquisition {}".format(self.status)
+        return "Acquisition: {}".format(self.status)
 
 
 

@@ -1,6 +1,6 @@
 from time import sleep
 from datetime import datetime
-from .utilities import Acquisition
+from .acquisition import Acquisition
 from detector_integration_api import DetectorIntegrationClient
 import os
 from pathlib import Path

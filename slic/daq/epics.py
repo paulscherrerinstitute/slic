@@ -7,7 +7,7 @@ import datetime
 from threading import Thread
 from time import sleep
 from pathlib import Path
-from .utilities import Acquisition
+from .acquisition import Acquisition
 
 
 class Epics:

@@ -25,9 +25,11 @@ def parseChannelListFile(fname):
     return sorted(out)
 
 
-class Channels(dict):
+class Channels(list):
 
     def __init__(self, fname):
-        self["alvra_channel_list"] = parseChannelListFile(fname)
+        chs = parseChannelListFile(fname)
+        self.extend(chs)
+
 
 
