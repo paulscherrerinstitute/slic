@@ -8,41 +8,7 @@ from bsread.avail import dispatcher
 
 from .acquisition import Acquisition
 from .basecounter import BaseCounter
-from .ask_yes_no import ask_yes_No
-
-
-
-def format_header(msg):
-    msg += ":"
-    line = "-" * len(msg)
-    msg += "\n" + line
-    return msg
-
-
-
-def can_create_file(filename):
-    if not os.path.isfile(filename):
-        return True
-
-    delete = ask_yes_No("File \"{}\" exists already. Would you like to delete it".format(filename))
-    if delete:
-        print("Deleting \"{}\".".format(filename))
-        os.remove(filename)
-        return True
-
-    return False
-
-
-
-def fix_filename(filename):
-    if filename:
-        if not filename.endswith(".h5"):
-            filename += ".h5"
-    else:
-        filename = "/dev/null"
-    return filename
-
-
+from .utils import can_create_file, fix_hdf5_filename
 
 
 
@@ -51,56 +17,6 @@ class BSCounter(BaseCounter):
     def __init__(self, default_channels=None, default_path="."):
         self.default_channels = default_channels
         self.default_path = default_path
-
-
-    def cleanupdefault_channels(self):
-        status = self.channels_status()
-        online = status["online"]
-        offline = status["offline"]
-
-        if offline:
-            self.default_channels = online
-            print("Removed offline channels from default channel list:")
-            print("\n".join(offline))
-            print("(Note: The channels have not been deleted from the respective config file.)")
-
-
-    def check_channels(self, channels=None, print_online=False, print_offline=True):
-        status = self.channels_status(channels)
-
-        if print_online:
-            online = status["online"]
-            print(format_header("Online Channels"))
-            print("\n".join(online))
-            print()
-
-        if print_offline:
-            offline = status["offline"]
-            print(format_header("Offline Channels"))
-            print("\n".join(offline))
-            print()
-
-
-    def channels_status(self, channels=None):
-        channels = self.default_channels if channels is None else channels
-        channels = set(channels)
-
-        available = self.avail()
-
-        online  = channels.intersection(available)
-        offline = channels.difference(available)
-
-        online  = sorted(online)
-        offline = sorted(offline)
-
-        status = dict(online=online, offline=offline)
-        return status
-
-
-    def avail(self):
-        available_channels = dispatcher.get_current_channels()
-        available_channels_names = set(i['name'] for i in available_channels)
-        return available_channels_names
 
 
     def acquire(self, filename=None, n_pulses=100, **kwargs):
@@ -112,7 +28,7 @@ class BSCounter(BaseCounter):
         if filename and use_default_path:
             filename = os.path.join(self.default_path, filename)
 
-        filename = fix_filename(filename)
+        filename = fix_hdf5_filename(filename)
 
         if not can_create_file(filename):
             return
@@ -129,7 +45,7 @@ class BSCounter(BaseCounter):
         if filename and use_default_path:
             filename = os.path.join(self.default_path, filename)
 
-        filename = fix_filename(filename)
+        filename = fix_hdf5_filename(filename)
 
         if not can_create_file(filename):
             return

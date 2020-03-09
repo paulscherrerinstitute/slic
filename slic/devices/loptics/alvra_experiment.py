@@ -1,27 +1,10 @@
 from slic.controls.pv import PV
+from slic.utils.printing import format_header, printable_dict
 
 from ..basedevice import BaseDevice
 from ..general.motors import MotorRecord
 from ..general.delay_stage import DelayStage
 from ..timing.alvralasertiming import eTiming
-
-
-
-def maxlen(seq):
-    return max(len(i) for i in seq)
-
-def printable_dict(d):
-    length = maxlen(d) + 1
-    lines = sorted("{}:{}{}".format(k, " "*(length-len(k)), v) for k, v in d.items())
-    return "\n".join(lines)
-
-def format_header(msg):
-    msg += ":"
-    line = "-" * len(msg)
-    msg += "\n" + line
-    return msg
-
-
 
 
 
