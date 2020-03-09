@@ -2,8 +2,7 @@ from datetime import datetime, timedelta
 import os
 import zmq
 
-from bsread.h5 import receive
-from bsread.avail import dispatcher
+import data_api as dapi
 
 from .acquisition import Acquisition
 from .basecounter import BaseCounter
@@ -11,13 +10,27 @@ from .utils import can_create_file, fix_hdf5_filename
 
 
 
-def bsread_to_h5(filename, channels, n_pulses=100, queue_size=100, mode=zmq.SUB):
-    source = dispatcher.request_stream(channels)
-    receive(source, filename, queue_size=queue_size, mode=mode, n_messages=n_pulses)
+def dapi_to_h5(filename, channels, **kwargs):
+    data = dapi_get(channels, **kwargs)
+    data.to_hdf(filename, "/data")
+
+
+def dapi_get(channels, start_time_delta=None, end_time_delta=None):
+    start_time_delta = start_time_delta if start_time_delta is not None else dict(seconds=0)
+    end_time_delta   = end_time_delta   if end_time_delta   is not None else dict(seconds=1)
+
+    start_time_delta = timedelta(**start_time_delta)
+    end_time_delta   = timedelta(**end_time_delta)
+
+    now   = datetime.now()
+    end   = now - end_time_delta
+    start = end - start_time_delta
+
+    return dapi.get_data(channels=channels, start=start, end=end)
 
 
 
-class BSCounter(BaseCounter):
+class DBCounter(BaseCounter):
 
     def __init__(self, default_channels=None, default_path="."):
         self.default_channels = default_channels
@@ -37,7 +50,7 @@ class BSCounter(BaseCounter):
             print("No channels specified, using default channel list.")
             channels = self.default_channels
 
-        acq = lambda: bsread_to_h5(filename, channels, **kwargs)
+        acq = lambda: dapi_to_h5(filename, channels, **kwargs)
         return Acquisition(acq, hold=False)
 
 
