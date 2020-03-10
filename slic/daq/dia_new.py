@@ -8,8 +8,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class DIA:
+
     def __init__(
         self,
         name=None,
@@ -53,6 +53,7 @@ class DIA:
         self.update_config()
         self.active_clients = list(self.get_active_clients()["clients_enabled"].keys())
         self.jf_channels = list(x for x in self.active_clients if x != "bsread")
+
 
     def update_config(self,):
         # try:
@@ -107,6 +108,7 @@ class DIA:
                 "dr": 16,
             }
         )
+
 
         self.bsread_config.update(
             {
@@ -349,3 +351,6 @@ class DIA:
     def wait_done(self):
         self.check_running()
         self.check_still_running()
+
+
+
