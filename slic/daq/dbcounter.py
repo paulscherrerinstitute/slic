@@ -1,12 +1,8 @@
 from datetime import datetime, timedelta
-import os
-import zmq
 
 import data_api as dapi
 
-from .acquisition import Acquisition
-from .basecounter import BaseCounter
-from .utils import can_create_file, fix_hdf5_filename
+from .counter import Counter
 
 
 
@@ -30,28 +26,10 @@ def dapi_get(channels, start_time_delta=None, end_time_delta=None):
 
 
 
-class DBCounter(BaseCounter):
+class DBCounter(Counter):
 
-    def __init__(self, default_channels=None, default_path="."):
-        self.default_channels = default_channels
-        self.default_path = default_path
-
-
-    def acquire(self, filename=None, channels=None, use_default_path=True, **kwargs):
-        if filename and use_default_path:
-            filename = os.path.join(self.default_path, filename)
-
-        filename = fix_hdf5_filename(filename)
-
-        if not can_create_file(filename):
-            return
-
-        if not channels:
-            print("No channels specified, using default channel list.")
-            channels = self.default_channels
-
-        acq = lambda: dapi_to_h5(filename, channels, **kwargs)
-        return Acquisition(acq, hold=False)
+    def _acquire(self, *args, **kwargs):
+        dapi_to_h5(*args, **kwargs)
 
 
 

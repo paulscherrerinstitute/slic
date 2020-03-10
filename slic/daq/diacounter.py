@@ -68,7 +68,6 @@ class DIACounter(BaseCounter):
 
         self.detector_config = {
             "timing": "trigger",
-
             # FIXME: HARDCODED: For Alvra JF4.5 it's 0.000005, Bernina is using 0.00001
             "exptime": 0.000005,
             "cycles": self.n_frames,
