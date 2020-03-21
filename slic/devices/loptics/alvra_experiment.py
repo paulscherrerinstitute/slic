@@ -1,5 +1,5 @@
 from slic.controls.pv import PV
-from slic.utils.printing import format_header, printable_dict
+from slic.utils.printing import printable_dict
 
 from ..basedevice import BaseDevice
 from ..general.motors import MotorRecord
@@ -55,16 +55,13 @@ class LaserExp(BaseDevice):
 
 
     def __repr__(self):
-        head = "Laser motor positions"
-        head = format_header(head)
-
         to_print = {}
         for key, item in self.__dict__.items():
-            if type(item) in [MotorRecord, DelayStage, PV, eTiming]:
+            if type(item) in (MotorRecord, DelayStage, PV, eTiming):
                 to_print[key] = item
 
-        to_print = printable_dict(to_print)
-        return head + "\n" + to_print
+        head = "Laser motor positions"
+        return printable_dict(to_print, head)
 
 
 
