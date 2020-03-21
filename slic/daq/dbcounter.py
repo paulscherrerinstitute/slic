@@ -8,7 +8,8 @@ from .counter import Counter
 
 def dapi_to_h5(filename, channels, **kwargs):
     data = dapi_get(channels, **kwargs)
-    data.to_hdf(filename, "/data")
+    if filename != "/dev/null":
+        data.to_hdf(filename, "/data")
 
 
 def dapi_get(channels, start=None, end=None):
