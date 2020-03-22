@@ -21,15 +21,9 @@ EXPTIME = {
 
 class DIACounter(BaseCounter):
 
-    def __init__(self, instrument, pgroup, api_address=None, default_channels=None, default_path=None):
+    def __init__(self, instrument, pgroup, default_channels=None, default_path=None, api_address=None):
         self.instrument = instrument
         self.pgroup = pgroup
-
-        if not api_address:
-            api_address = "http://sf-daq-{}:10000".format(instrument)
-
-        self.api_address = api_address
-        self.client = DetectorIntegrationClient(api_address)
 
         self.config = DIAConfig(instrument, pgroup)
         self.paths = SwissFELPaths(instrument, pgroup)
@@ -43,6 +37,12 @@ class DIACounter(BaseCounter):
 
         self.default_channels = default_channels
         self.default_path = default_path
+
+        if not api_address:
+            api_address = "http://sf-daq-{}:10000".format(instrument)
+
+        self.api_address = api_address
+        self.client = DetectorIntegrationClient(api_address)
 
 
     def acquire(self, filename=None, channels=None, n_pulses=100, use_default_path=True, is_HG0=False, **kwargs):
