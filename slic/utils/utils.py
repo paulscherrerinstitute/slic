@@ -1,12 +1,7 @@
 from IPython import get_ipython
 
+from .printing import printable_dict
 from ..devices.basedevice import BaseDevice
-
-
-def printable_table(d):
-    length = max(len(k) for k in d) + 1
-    lines = ("{} {}".format((k+":").ljust(length), v) for k, v in d.items())
-    return "\n".join(sorted(lines))
 
 
 def singleton(cls):
@@ -34,7 +29,7 @@ class devices:
                     doc = v.__doc__
                 res[k] = doc
 
-        return printable_table(res)
+        return printable_dict(res)
 
 
 
