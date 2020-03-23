@@ -8,7 +8,7 @@ from ..utils.printing import printable_dict_of_dicts
 from .acquisition import Acquisition
 from .basecounter import BaseCounter
 from .utils import can_create_file, SwissFELPaths
-from .pedestals import find_last_pedestal
+from .pedestals import find_last_pedestal, take_pedestal
 
 
 
@@ -121,6 +121,15 @@ class DIACounter(BaseCounter):
 
     def get_last_pedestal(self):
         return find_last_pedestal(self.active_clients, self.paths.pede)
+
+    def take_pedestal(self, analyze=True, n_pulses=1000, n_bad_modules=0, freq=25, user=None):
+        instrument = self.instrument
+        pgroup = self.pgroup
+        api_address = self.api_address
+        raw_dir = self.paths.raw
+        res_dir = self.paths.res
+        exptime = EXPTIME[instrument]
+        return take_pedestal(instrument, pgroup, api_address, raw_dir, res_dir, analyze, n_pulses, n_bad_modules, freq, exptime, user)
 
     def __repr__(self):
         clients = self.active_clients
