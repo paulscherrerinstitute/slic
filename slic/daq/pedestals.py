@@ -86,7 +86,7 @@ def make_missing_dir(d):
     msg = "Directory \"{}\" does not exist, creating it...".format(d)
     print(msg)
 
-    os.makedirs(d)
+    os.makedirs(d, exist_ok=True)
     os.chmod(d, 0o775)
 
 
