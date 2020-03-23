@@ -1,6 +1,6 @@
 import os
 
-from .ask_yes_no import ask_yes_No
+from ..utils.ask_yes_no import ask_yes_No
 
 
 def can_create_file(filename):
