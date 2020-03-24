@@ -6,6 +6,13 @@ from .counter import Counter
 
 
 
+class DBCounter(Counter):
+
+    def _acquire(self, *args, **kwargs):
+        dapi_to_h5(*args, **kwargs)
+
+
+
 def dapi_to_h5(filename, channels, **kwargs):
     data = dapi_get(channels, **kwargs)
     if filename != "/dev/null":
@@ -24,13 +31,6 @@ def dapi_get(channels, start=None, end=None):
     end   = start + end_time_delta
 
     return dapi.get_data(channels=channels, start=start, end=end)
-
-
-
-class DBCounter(Counter):
-
-    def _acquire(self, *args, **kwargs):
-        dapi_to_h5(*args, **kwargs)
 
 
 
