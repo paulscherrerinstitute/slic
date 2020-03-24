@@ -20,6 +20,9 @@ class Counter(BaseCounter):
         if not default_path:
             default_path = paths.raw
 
+        self.default_channels = default_channels
+        self.default_path = default_path
+
 
     def acquire(self, filename=None, channels=None, use_default_path=True, **kwargs):
         if filename and use_default_path:
