@@ -8,12 +8,30 @@ from .counter import Counter
 
 class PVCounter(Counter):
 
-    def _acquire(self, *args, **kwargs):
-        epics_to_h5(*args, **kwargs)
+    def _acquire(self, *args, polling=False, **kwargs):
+        if polling:
+            epics_to_h5_polling(*args, **kwargs)
+        else:
+            epics_to_h5_triggered(*args, **kwargs)
 
 
 
-def epics_to_h5(filename, channels, n_pulses=100, wait_time=0.5):
+def epics_to_h5_polling(filename, channels, n_pulses=100, wait_time=0.5):
+    pvs = [PV(ch) for ch in channels]
+
+    arrays = make_arrays(pvs, n_pulses)
+
+    for ivalue in range(n_pulses):
+        #TODO: What is the overhead here? Minimal wait_time? Run read out in thread(s)?
+        for ichannel, pv in enumerate(pvs):
+            arrays[ichannel][ivalue] = pv.value
+        sleep(wait_time)
+
+    write_to_h5(filename, channels, arrays)
+
+
+
+def epics_to_h5_triggered(filename, channels, n_pulses=100, wait_time=0.5):
     pvs = [PV(ch) for ch in channels]
 
     n_channels = len(channels)
