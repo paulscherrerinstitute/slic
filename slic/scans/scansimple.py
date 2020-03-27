@@ -1,11 +1,12 @@
 import os
 import json
 import traceback
+import colorama
 
 
 class ScanSimple:
 
-    def __init__(self, adjustables, values, counterCallers, fina, Npulses=100, basepath="", scan_info_dir="", checker=None, scan_directories=False):
+    def __init__(self, adjustables, values, counterCallers, fina, Npulses=100, basepath="", scan_info_dir="", checker=None, scan_directories=False, callbackStartStep=None, checker_sleep_time=0.2):
         self.Nsteps = len(values)
         self.pulses_per_step = Npulses
         self.adjustables = adjustables
@@ -20,7 +21,7 @@ class ScanSimple:
         self.scan_info = {
             "scan_parameters": {
                 "name": [ta.name for ta in adjustables],
-                "Id": [ta.Id for ta in adjustables]
+                "Id": [ta.Id if hasattr(ta, "Id") else "noId" for ta in adjustables]
             },
             "scan_values_all": values,
             "scan_values": [],
@@ -29,27 +30,37 @@ class ScanSimple:
             "scan_step_info": []
         }
         self.scan_info_filename = os.path.join(self.scan_info_dir, fina)
-        self.scan_info_filename += "_scan_info.json"
+#        self.scan_info_filename += "_scan_info.json"
         self._scan_directories = scan_directories
         self.checker = checker
         self.initial_values = []
+        self._checker_sleep_time = checker_sleep_time
+        print(f"Scan info in file {self.scan_info_filename}.")
         for adj in self.adjustables:
             tv = adj.get_current_value()
             self.initial_values.append(adj.get_current_value())
             print("Initial value of %s : %g" % (adj.name, tv))
 
     def get_filename(self, stepNo, Ndigits=4):
-        fina = os.path.join(self.basepath, self.fina)
+        fina = os.path.join(self.basepath, Path(self.fina).stem)
         if self._scan_directories:
             fina = os.path.join(fina, self.fina)
         fina += "_step%04d" % stepNo
         return fina
 
     def doNextStep(self, step_info=None, verbose=True):
+        # for call in self.callbacks_start_step:
+        # call()
         if self.checker:
-            while not self.checker.check():
-                print("Condition checker is not happy, waiting for OK conditions.")
-                self.checker.sleep()
+            first_check = time()
+            checker_unhappy = False
+            while not self.checker.check_now():
+                print(colorama.Fore.RED + f"Condition checker is not happy, waiting for OK conditions since {time()-first_check:5.1f} seconds." + colorama.Fore.RESET, end="\r")
+                sleep(self._checker_sleep_time)
+                checker_unhappy = True
+            if checker_unhappy:
+                print(colorama.Fore.RED + f"Condition checker was not happy and waiting for {time()-first_check:5.1f} seconds." + colorama.Fore.RESET)
+            self.checker.clear_and_start_counting()
 
         if not len(self.values_todo) > 0:
             return False
@@ -59,7 +70,7 @@ class ScanSimple:
         ms = []
         fina = self.get_filename(self.nextStep)
         for adj, tv in zip(self.adjustables, values_step):
-            ms.append(adj.changeTo(tv))
+            ms.append(adj.set_target_value(tv))
         for tm in ms:
             tm.wait()
         readbacks_step = []
@@ -79,7 +90,7 @@ class ScanSimple:
             print("Done with acquisition")
 
         if self.checker:
-            if not self.checker.check():
+            if not self.checker.stop_and_analyze():
                 return True
         if callable(step_info):
             tstepinfo = step_info()
@@ -113,11 +124,13 @@ class ScanSimple:
             tb = "Ended all steps without interruption."
         finally:
             print(tb)
+            if input("Move back to initial values? (y/n)")[0] == "y":
+                self.changeToInitialValues()
 
     def changeToInitialValues(self):
         c = []
         for adj, iv in zip(self.adjustables, self.initial_values):
-            c.append(adj.changeTo(iv))
+            c.append(adj.set_target_value(iv))
         return c
 
 
