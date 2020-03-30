@@ -38,8 +38,9 @@ class ScanSimple:
         print(f"Scan info in file {self.scan_info_filename}.")
         for adj in self.adjustables:
             tv = adj.get_current_value()
-            self.initial_values.append(adj.get_current_value())
+            self.initial_values.append(tv)
             print("Initial value of %s : %g" % (adj.name, tv))
+
 
     def get_filename(self, stepNo, Ndigits=4):
         fina = os.path.join(self.basepath, Path(self.fina).stem)
@@ -47,6 +48,8 @@ class ScanSimple:
             fina = os.path.join(fina, self.fina)
         fina += "_step%04d" % stepNo
         return fina
+
+
 
     def doNextStep(self, step_info=None, verbose=True):
         # for call in self.callbacks_start_step:
@@ -64,44 +67,61 @@ class ScanSimple:
 
         if not len(self.values_todo) > 0:
             return False
+
         values_step = self.values_todo[0]
+
         if verbose:
             print("Starting scan step %d of %d" % (self.nextStep + 1, len(self.values_todo) + len(self.values_done)))
+
         ms = []
         fina = self.get_filename(self.nextStep)
         for adj, tv in zip(self.adjustables, values_step):
-            ms.append(adj.set_target_value(tv))
+            tm = adj.set_target_value(tv)
+            ms.append(tm)
+
         for tm in ms:
             tm.wait()
+
         readbacks_step = []
         for adj in self.adjustables:
-            readbacks_step.append(adj.get_current_value())
+            tv = adj.get_current_value()
+            readbacks_step.append(tv)
+
         if verbose:
             print("Moved variables, now starting acquisition")
+
         filenames = []
         acs = []
         for ctr in self.counterCallers:
             acq = ctr.acquire(file_name=fina, Npulses=self.pulses_per_step)
             filenames.extend(acq.file_names)
             acs.append(acq)
+
         for ta in acs:
             ta.wait()
+
         if verbose:
             print("Done with acquisition")
 
         if self.checker:
             if not self.checker.stop_and_analyze():
                 return True
+
         if callable(step_info):
             tstepinfo = step_info()
         else:
             tstepinfo = step_info
-        self.values_done.append(self.values_todo.pop(0))
+
+        vals = self.values_todo.pop(0)
+        self.values_done.append(vals)
+
         self.readbacks.append(readbacks_step)
         self.appendScanInfo(values_step, readbacks_step, step_files=filenames, step_info=tstepinfo)
         self.writeScanInfo()
         self.nextStep += 1
         return True
+
+
 
     def appendScanInfo(self, values_step, readbacks_step, step_files=None, step_info=None):
         self.scan_info["scan_values"].append(values_step)
@@ -109,29 +129,23 @@ class ScanSimple:
         self.scan_info["scan_files"].append(step_files)
         self.scan_info["scan_step_info"].append(step_info)
 
+
     def writeScanInfo(self):
         with open(self.scan_info_filename, "w") as f:
             json.dump(self.scan_info, f, indent=4, sort_keys=True)
 
+
     def scanAll(self, step_info=None):
-        done = False
-        try:
-            while not done:
-                done = not self.doNextStep(step_info=step_info)
-        except:
-            tb = traceback.format_exc()
-        else:
-            tb = "Ended all steps without interruption."
-        finally:
-            print(tb)
-            if input("Move back to initial values? (y/n)")[0] == "y":
-                self.changeToInitialValues()
+        while self.doNextStep(step_info=step_info):
+            pass
+        print("Ended all steps without interruption.")
+        if input("Move back to initial values? (y/n)")[0] == "y":
+            self.changeToInitialValues()
+
 
     def changeToInitialValues(self):
-        c = []
         for adj, iv in zip(self.adjustables, self.initial_values):
-            c.append(adj.set_target_value(iv))
-        return c
+            adj.set_target_value(iv)
 
 
 
