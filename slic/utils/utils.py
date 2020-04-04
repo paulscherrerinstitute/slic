@@ -3,6 +3,13 @@ from IPython import get_ipython
 from .printing import printable_dict
 from ..devices.basedevice import BaseDevice
 
+import json
+
+
+def json_dump(what, filename):
+    with open(filename, "w") as f:
+        json.dump(what, f, indent=4, sort_keys=True)
+
 
 def singleton(cls):
     return cls()
