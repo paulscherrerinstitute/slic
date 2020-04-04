@@ -195,6 +195,33 @@ def update_changes(Adj):
 # wrappers for adjustables <<<<<<<<<<<
 
 
+@spec_convenience
+class DummyAdjustable:
+    def __init__(self, name="no_adjustable"):
+        self.name = name
+        self.current_value = 0
+
+    def get_current_value(self):
+        return self.current_value
+
+    def set_target_value(self, value, hold=False):
+        def changer(value):
+            self.current_value = value
+
+        return Changer(
+            target=value, parent=self, changer=changer, hold=hold, stopper=None
+        )
+
+    def __repr__(self):
+        name = self.name
+        cv = self.get_current_value()
+        s = f"{name} at value: {cv}" + "\n"
+        return s
+
+
+
+
+
 def _keywordChecker(kw_key_list_tups):
     for tkw, tkey, tlist in kw_key_list_tups:
         assert tkey in tlist, "Keyword %s should be one of %s" % (tkw, tlist)
