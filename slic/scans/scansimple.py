@@ -1,151 +1,185 @@
 import os
-import json
-import traceback
 import colorama
+
+from ..utils import json_dump
+from ..utils.printing import printable_dict
+from ..utils.ask_yes_no import ask_Yes_no
+
 
 
 class ScanSimple:
 
-    def __init__(self, adjustables, values, counterCallers, fina, Npulses=100, basepath="", scan_info_dir="", checker=None, scan_directories=False, callbackStartStep=None, checker_sleep_time=0.2):
-        self.Nsteps = len(values)
-        self.pulses_per_step = Npulses
+    def __init__(self, adjustables, values, counters, filename, n_pulses=100, basepath="", scan_info_dir="", make_scan_sub_dir=False, checker=None, checker_sleep_time=0.2):
         self.adjustables = adjustables
-        self.values_todo = values
-        self.values_done = []
-        self.readbacks = []
-        self.counterCallers = counterCallers
-        self.fina = fina
-        self.nextStep = 0
+        self.values = values
+        self.counters = counters
+        self.filename = filename
+        self.n_pulses_per_step = n_pulses #TODO: to rename or not to rename?
         self.basepath = basepath
-        self.scan_info_dir = scan_info_dir
-        self.scan_info = {
-            "scan_parameters": {
-                "name": [ta.name for ta in adjustables],
-                "Id": [ta.Id if hasattr(ta, "Id") else "noId" for ta in adjustables]
-            },
-            "scan_values_all": values,
-            "scan_values": [],
-            "scan_readbacks": [],
-            "scan_files": [],
-            "scan_step_info": []
-        }
-        self.scan_info_filename = os.path.join(self.scan_info_dir, fina)
-#        self.scan_info_filename += "_scan_info.json"
-        self._scan_directories = scan_directories
+
+        self.scan_info = ScanInfo(filename, scan_info_dir, adjustables, values)
+
+        self.make_scan_sub_dir = make_scan_sub_dir
         self.checker = checker
-        self.initial_values = []
-        self._checker_sleep_time = checker_sleep_time
-        print(f"Scan info in file {self.scan_info_filename}.")
-        for adj in self.adjustables:
-            tv = adj.get_current_value()
-            self.initial_values.append(tv)
-            print("Initial value of %s : %g" % (adj.name, tv))
+        self.checker_sleep_time = checker_sleep_time
+
+        self.store_initial_values()
 
 
-    def get_filename(self, stepNo, Ndigits=4):
-        fina = os.path.join(self.basepath, Path(self.fina).stem)
-        if self._scan_directories:
-            fina = os.path.join(fina, self.fina)
-        fina += "_step%04d" % stepNo
-        return fina
+    def scan(self, step_info=None):
+        self.store_initial_values()
+
+        values = self.values
+        ntotal = len(values)
+        for n, val in enumerate(values):
+            print("Scan step {} of {}".format(n, ntotal))
+            self.do_step(n, val, step_info=step_info)
+
+        print("All steps done")
+
+        if ask_Yes_no("Move back to initial values"): #TODO: should this be asked or a parameter?
+            self.change_to_initial_values()
 
 
 
-    def doNextStep(self, step_info=None, verbose=True):
-        # for call in self.callbacks_start_step:
-        # call()
-        if self.checker:
-            first_check = time()
-            checker_unhappy = False
-            while not self.checker.check_now():
-                print(colorama.Fore.RED + f"Condition checker is not happy, waiting for OK conditions since {time()-first_check:5.1f} seconds." + colorama.Fore.RESET, end="\r")
-                sleep(self._checker_sleep_time)
-                checker_unhappy = True
-            if checker_unhappy:
-                print(colorama.Fore.RED + f"Condition checker was not happy and waiting for {time()-first_check:5.1f} seconds." + colorama.Fore.RESET)
-            self.checker.clear_and_start_counting()
 
-        if not len(self.values_todo) > 0:
-            return False
 
-        values_step = self.values_todo[0]
+    def do_step(self, n_step, step_values, step_info=None):
 
-        if verbose:
-            print("Starting scan step %d of %d" % (self.nextStep + 1, len(self.values_todo) + len(self.values_done)))
+#        if self.checker:
+#            first_check = time()
+#            checker_unhappy = False
+#            while not self.checker.check_now():
+#                print(colorama.Fore.RED + f"Condition checker is not happy, waiting for OK conditions since {time()-first_check:5.1f} seconds." + colorama.Fore.RESET, end="\r")
+#                sleep(self.checker_sleep_time)
+#                checker_unhappy = True
+#            if checker_unhappy:
+#                print(colorama.Fore.RED + f"Condition checker was not happy and waiting for {time()-first_check:5.1f} seconds." + colorama.Fore.RESET)
+#            self.checker.clear_and_start_counting()
 
-        ms = []
-        fina = self.get_filename(self.nextStep)
-        for adj, tv in zip(self.adjustables, values_step):
-            tm = adj.set_target_value(tv)
-            ms.append(tm)
+        set_all_target_values_and_wait(self.adjustables, step_values)
+        step_readbacks = get_all_current_values(self.adjustables)
+        print("Moved adjustables, starting acquisition")
 
-        for tm in ms:
-            tm.wait()
+        fn = self.get_filename(n_step)
+        step_filenames = self.acquire_all_counters(fn)
+        print("Acquisition done")
 
-        readbacks_step = []
-        for adj in self.adjustables:
-            tv = adj.get_current_value()
-            readbacks_step.append(tv)
+        self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
 
-        if verbose:
-            print("Moved variables, now starting acquisition")
+#        if self.checker:
+#            if not self.checker.stop_and_analyze():
+#                return True
 
+
+
+
+
+    def get_filename(self, istep):
+        filename = os.path.join(self.basepath, self.filename)
+
+        if self.make_scan_sub_dir:
+            filebase = os.path.basename(self.filename)
+            filename = os.path.join(filename, filebase)
+
+        filename += "_step{:04d}".format(istep)
+        return filename
+
+
+    def acquire_all_counters(self, filename):
+        acqs = []
         filenames = []
-        acs = []
-        for ctr in self.counterCallers:
-            acq = ctr.acquire(file_name=fina, Npulses=self.pulses_per_step)
-            filenames.extend(acq.file_names)
-            acs.append(acq)
+        for ctr in self.counters:
+            acq = ctr.acquire(filename=filename, n_pulses=self.n_pulses_per_step)
+            acqs.append(acq)
+            filenames.extend(acq.filenames)
 
-        for ta in acs:
-            ta.wait()
+        wait_for_all(acqs)
+        return filenames #TODO: returning this is weird
 
-        if verbose:
-            print("Done with acquisition")
 
-        if self.checker:
-            if not self.checker.stop_and_analyze():
-                return True
+    def print_current_values(self):
+        print_all_current_values(self.adjustables)
 
-        if callable(step_info):
-            tstepinfo = step_info()
-        else:
-            tstepinfo = step_info
+    def store_initial_values(self):
+        self.initial_values = get_all_current_values(self.adjustables)
 
-        vals = self.values_todo.pop(0)
-        self.values_done.append(vals)
-
-        self.readbacks.append(readbacks_step)
-        self.appendScanInfo(values_step, readbacks_step, step_files=filenames, step_info=tstepinfo)
-        self.writeScanInfo()
-        self.nextStep += 1
-        return True
+    def change_to_initial_values(self):
+        set_all_target_values_and_wait(self.adjustables, self.initial_values)
 
 
 
-    def appendScanInfo(self, values_step, readbacks_step, step_files=None, step_info=None):
-        self.scan_info["scan_values"].append(values_step)
-        self.scan_info["scan_readbacks"].append(readbacks_step)
-        self.scan_info["scan_files"].append(step_files)
-        self.scan_info["scan_step_info"].append(step_info)
+def print_all_current_values(adjustables):
+    res = {}
+    for adj in adjustables:
+        key = adj.Id
+        val = adj.get_current_value()
+        res[key] = val
+    res = printable_dict(res, "Current values")
+    print(res)
+
+def get_all_current_values(adjustables):
+    return [adj.get_current_value() for adj in adjustables]
+
+def set_all_target_values_and_wait(adjustables, values):
+    changers = set_all_target_values(adjustables, values)
+    wait_for_all(changers)
+
+def set_all_target_values(adjustables, values):
+    return [adj.set_target_value(val) for adj, val in zip(adjustables, values)]
+
+def wait_for_all(runners):
+    for r in runners:
+        r.wait()
 
 
-    def writeScanInfo(self):
-        with open(self.scan_info_filename, "w") as f:
-            json.dump(self.scan_info, f, indent=4, sort_keys=True)
+
+class ScanInfo:
+
+    def __init__(self, filename_base, path, adjustables, values):
+        self.filename = os.path.join(path, filename_base)
+        self.filename += "_scan_info.json"
+
+        names = [ta.name if hasattr(ta, "name") else "noName" for ta in adjustables] #TODO else None?
+        ids =   [ta.Id   if hasattr(ta, "Id")   else "noId"   for ta in adjustables]
+        self.parameters = {"name": names, "Id": ids}
+
+        self.values_all = values
+
+        self.values = []
+        self.readbacks = []
+        self.files = []
+        self.info = []
 
 
-    def scanAll(self, step_info=None):
-        while self.doNextStep(step_info=step_info):
-            pass
-        print("Ended all steps without interruption.")
-        if input("Move back to initial values? (y/n)")[0] == "y":
-            self.changeToInitialValues()
+    def update(self, *args):
+        self.append(*args)
+        self.write()
 
+    def append(self, values, readbacks, files, info):
+        if callable(info):
+            info = info()
+        self.values.append(values)
+        self.readbacks.append(readbacks)
+        self.files.append(files)
+        self.info.append(info)
 
-    def changeToInitialValues(self):
-        for adj, iv in zip(self.adjustables, self.initial_values):
-            adj.set_target_value(iv)
+    def write(self):
+        json_dump(self.to_dict(), self.filename)
+
+    def to_dict(self):
+        scan_info_dict = {
+            "scan_parameters": self.parameters,
+            "scan_values_all": self.values_all,
+            "scan_values":     self.values,
+            "scan_readbacks":  self.readbacks,
+            "scan_files":      self.files,
+            "scan_info":       self.info
+        }
+        return scan_info_dict
+
+    def __str__(self):
+        return "Scan info in {}".format(self.filename)
 
 
 

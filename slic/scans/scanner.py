@@ -48,9 +48,11 @@ class Scanner:
 
     def make_scan(self, adjustables, positions, n_pulses, filename, counters=[], start_immediately=True, step_info=None):
 
+        #TODO
         print(adjustables)#, adjustables.shape, adjustables.dtype)
         print(list(positions))#, positions.shape, positions.dtype)
         return
+        #TODO
 
         filename = self.filename_generator.get_nextrun_filename(filename)
 
@@ -60,7 +62,7 @@ class Scanner:
         s = ScanSimple(adjustables, positions, counters, filename, Npulses=n_pulses, basepath=self.data_base_dir, scan_info_dir=self.scan_info_dir, checker=self.checker, scan_directories=self.scan_directories)
 
         if start_immediately:
-            s.scanAll(step_info=step_info)
+            s.scan(step_info=step_info)
 
         return s
 
