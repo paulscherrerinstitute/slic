@@ -29,11 +29,13 @@ class ScanSimple:
     def scan(self, step_info=None):
         self.store_initial_values()
 
+        do_step = self.do_checked_step if self.checker else self.do_step
+
         values = self.values
         ntotal = len(values)
         for n, val in enumerate(values):
             print("Scan step {} of {}".format(n, ntotal))
-            self.do_step(n, val, step_info=step_info)
+            do_step(n, val, step_info=step_info)
 
         print("All steps done")
 
@@ -44,19 +46,28 @@ class ScanSimple:
 
 
 
+    def do_checked_step(self, *args, **kwargs):
+        while True: #TODO: this needs to move to checker
+            first_check = time()
+            checker_unhappy = False
+            while not self.checker.check_now():
+                print(colorama.Fore.RED + f"Condition checker is not happy, waiting for OK conditions since {time()-first_check:5.1f} seconds." + colorama.Fore.RESET, end="\r")
+                sleep(self.checker_sleep_time)
+                checker_unhappy = True
+            if checker_unhappy:
+                print(colorama.Fore.RED + f"Condition checker was not happy and waiting for {time()-first_check:5.1f} seconds." + colorama.Fore.RESET)
+            self.checker.clear_and_start_counting()
+
+            self.do_step(*args, **kwargs)
+
+            if self.checker.stop_and_analyze():
+                break
+
+
+
+
+
     def do_step(self, n_step, step_values, step_info=None):
-
-#        if self.checker:
-#            first_check = time()
-#            checker_unhappy = False
-#            while not self.checker.check_now():
-#                print(colorama.Fore.RED + f"Condition checker is not happy, waiting for OK conditions since {time()-first_check:5.1f} seconds." + colorama.Fore.RESET, end="\r")
-#                sleep(self.checker_sleep_time)
-#                checker_unhappy = True
-#            if checker_unhappy:
-#                print(colorama.Fore.RED + f"Condition checker was not happy and waiting for {time()-first_check:5.1f} seconds." + colorama.Fore.RESET)
-#            self.checker.clear_and_start_counting()
-
         set_all_target_values_and_wait(self.adjustables, step_values)
         step_readbacks = get_all_current_values(self.adjustables)
         print("Moved adjustables, starting acquisition")
@@ -66,13 +77,6 @@ class ScanSimple:
         print("Acquisition done")
 
         self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
-
-#        if self.checker:
-#            if not self.checker.stop_and_analyze():
-#                return True
-
-
-
 
 
     def get_filename(self, istep):
