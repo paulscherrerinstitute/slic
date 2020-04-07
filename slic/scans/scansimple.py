@@ -43,28 +43,12 @@ class ScanSimple:
             self.change_to_initial_values()
 
 
-
-
-
     def do_checked_step(self, *args, **kwargs):
-        while True: #TODO: this needs to move to checker
-            first_check = time()
-            checker_unhappy = False
-            while not self.checker.check_now():
-                print(colorama.Fore.RED + f"Condition checker is not happy, waiting for OK conditions since {time()-first_check:5.1f} seconds." + colorama.Fore.RESET, end="\r")
-                sleep(self.checker_sleep_time)
-                checker_unhappy = True
-            if checker_unhappy:
-                print(colorama.Fore.RED + f"Condition checker was not happy and waiting for {time()-first_check:5.1f} seconds." + colorama.Fore.RESET)
-            self.checker.clear_and_start_counting()
-
+        while True:
+            self.checker.get_ready()
             self.do_step(*args, **kwargs)
-
-            if self.checker.stop_and_analyze():
+            if self.checker.is_happy():
                 break
-
-
-
 
 
     def do_step(self, n_step, step_values, step_info=None):
