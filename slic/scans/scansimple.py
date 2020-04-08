@@ -37,7 +37,7 @@ class ScanSimple:
             print("Scan step {} of {}".format(n, ntotal))
             do_step(n, val, step_info=step_info)
 
-        print("All steps done")
+        print("All scan steps done")
 
         if ask_Yes_no("Move back to initial values"): #TODO: should this be asked or a parameter?
             self.change_to_initial_values()
