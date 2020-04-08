@@ -7,7 +7,7 @@ from ..utils.ask_yes_no import ask_Yes_no
 
 
 
-class ScanSimple:
+class ScanBackend:
 
     def __init__(self, adjustables, values, counters, filename, n_pulses=100, basepath="", scan_info_dir="", make_scan_sub_dir=False, checker=None, checker_sleep_time=0.2):
         self.adjustables = adjustables

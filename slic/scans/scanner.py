@@ -1,7 +1,7 @@
 from pathlib import Path
 import numpy as np
 
-from .scansimple import ScanSimple
+from .scanbackend import ScanBackend
 from .runname import RunFilenameGenerator
 from ..devices.general.adjustable import DummyAdjustable
 
