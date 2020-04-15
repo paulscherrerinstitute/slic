@@ -54,7 +54,7 @@ class Scanner:
         return
         #TODO
 
-        filename = self.filename_generator.get_nextrun_filename(filename)
+        filename = self.filename_generator.get_next_run_filename(filename)
 
         if not counters:
             counters = self.default_counters
