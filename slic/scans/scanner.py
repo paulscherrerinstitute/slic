@@ -1,4 +1,3 @@
-from pathlib import Path
 import numpy as np
 
 from .scanbackend import ScanBackend
@@ -6,60 +5,30 @@ from .runname import RunFilenameGenerator
 from ..devices.general.adjustable import DummyAdjustable
 
 
-
-def make_dir(p):
-    p = Path(p)
-    if p.exists():
-        return
-    printable = p.absolute().as_posix()
-    print(f"Path \"{printable}\" does not exist, will try to create it...")
-#TODO:
-#    p.mkdir(parents=True)
-#    p.chmod(0o775)
-
-
-
 def make_positions(start, end, n):
     return np.linspace(start, end, n + 1)
 
 
 
-
-
 class Scanner:
 
-    def __init__(self, data_base_dir="", scan_info_dir="", default_counters=[], checker=None, scan_directories=False):
+    def __init__(self, data_base_dir="", scan_info_dir="", default_counters=[], checker=None, make_scan_sub_dir=True):
         self.data_base_dir = data_base_dir
         self.scan_info_dir = scan_info_dir
         self.default_counters = default_counters
         self.checker = checker
-        self.scan_directories = scan_directories
+        self.make_scan_sub_dir = make_scan_sub_dir
 
-        make_dir(scan_info_dir)
         self.filename_generator = RunFilenameGenerator(scan_info_dir)
-
-        for counter in default_counters:
-            default_path = counter.default_path
-            if default_path is None:
-                continue
-            data_dir = default_path + data_base_dir
-            make_dir(data_dir)
 
 
     def make_scan(self, adjustables, positions, n_pulses, filename, counters=[], start_immediately=True, step_info=None):
-
-        #TODO
-        print(adjustables)#, adjustables.shape, adjustables.dtype)
-        print(list(positions))#, positions.shape, positions.dtype)
-        return
-        #TODO
-
         filename = self.filename_generator.get_next_run_filename(filename)
 
         if not counters:
             counters = self.default_counters
 
-        s = ScanSimple(adjustables, positions, counters, filename, Npulses=n_pulses, basepath=self.data_base_dir, scan_info_dir=self.scan_info_dir, checker=self.checker, scan_directories=self.scan_directories)
+        s = ScanBackend(adjustables, positions, counters, filename, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, checker=self.checker)
 
         if start_immediately:
             s.scan(step_info=step_info)

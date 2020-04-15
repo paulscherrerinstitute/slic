@@ -1,7 +1,7 @@
 import os
 import colorama
 
-from ..utils import json_dump
+from ..utils import json_dump, make_dir
 from ..utils.printing import printable_dict
 from ..utils.ask_yes_no import ask_Yes_no
 
@@ -9,13 +9,13 @@ from ..utils.ask_yes_no import ask_Yes_no
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, counters, filename, n_pulses=100, basepath="", scan_info_dir="", make_scan_sub_dir=False, checker=None, checker_sleep_time=0.2):
+    def __init__(self, adjustables, values, counters, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, checker, checker_sleep_time=0.2):
         self.adjustables = adjustables
         self.values = values
         self.counters = counters
         self.filename = filename
         self.n_pulses_per_step = n_pulses #TODO: to rename or not to rename?
-        self.basepath = basepath
+        self.data_base_dir = data_base_dir
 
         self.scan_info = ScanInfo(filename, scan_info_dir, adjustables, values)
 
@@ -30,6 +30,8 @@ class ScanBackend:
         self.store_initial_values()
 
         do_step = self.do_checked_step if self.checker else self.do_step
+
+        self.create_output_dirs()
 
         values = self.values
         ntotal = len(values)
@@ -63,8 +65,19 @@ class ScanBackend:
         self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
 
 
+    def create_output_dirs(self):
+        make_dir(self.scan_info.path)
+
+        for counter in self.counters:
+            default_path = counter.default_path
+            if default_path is None:
+                continue
+            data_dir = default_path + self.data_base_dir
+            make_dir(data_dir)
+
+
     def get_filename(self, istep):
-        filename = os.path.join(self.basepath, self.filename)
+        filename = os.path.join(self.data_base_dir, self.filename)
 
         if self.make_scan_sub_dir:
             filebase = os.path.basename(self.filename)
@@ -125,6 +138,7 @@ def wait_for_all(runners):
 class ScanInfo:
 
     def __init__(self, filename_base, path, adjustables, values):
+        self.path = path
         self.filename = os.path.join(path, filename_base)
         self.filename += "_scan_info.json"
 
