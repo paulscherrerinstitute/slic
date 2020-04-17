@@ -40,7 +40,7 @@ def find_last_pedestal(clients, directory="."):
 
 
 def extract_timestamp(fn):
-    fn = strip_folder(fn)
+    fn = strip_dir(fn)
     base = fn.split(".")[0]
     prefix = "pedestal_"
     assert base.startswith(prefix), "\"{}\" does not start with \"{}\"".format(base, prefix)
@@ -49,12 +49,11 @@ def extract_timestamp(fn):
     return timestamp
 
 def extract_detector(fn):
-    fn = strip_folder(fn)
+    fn = strip_dir(fn)
     detector = fn.split(".")[1]
     return detector
 
-def strip_folder(fn):
-    return os.path.split(fn)[-1]
+strip_dir = os.path.basename
 
 
 

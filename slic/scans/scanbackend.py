@@ -66,13 +66,13 @@ class ScanBackend:
 
 
     def create_output_dirs(self):
-        make_dir(self.scan_info.path)
+        make_dir(self.scan_info.base_dir)
 
         for counter in self.counters:
-            default_path = counter.default_path
-            if default_path is None:
+            default_dir = counter.default_dir
+            if default_dir is None:
                 continue
-            data_dir = default_path + self.data_base_dir
+            data_dir = default_dir + self.data_base_dir
             make_dir(data_dir)
 
 
@@ -137,9 +137,9 @@ def wait_for_all(runners):
 
 class ScanInfo:
 
-    def __init__(self, filename_base, path, adjustables, values):
-        self.path = path
-        self.filename = os.path.join(path, filename_base)
+    def __init__(self, filename_base, base_dir, adjustables, values):
+        self.base_dir = base_dir
+        self.filename = os.path.join(base_dir, filename_base)
         self.filename += "_scan_info.json"
 
         names = [ta.name if hasattr(ta, "name") else "noName" for ta in adjustables] #TODO else None?

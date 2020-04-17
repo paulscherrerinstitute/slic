@@ -21,7 +21,7 @@ EXPTIME = {
 
 class DIACounter(BaseCounter):
 
-    def __init__(self, instrument, pgroup, default_channels=None, default_path=None, api_address=None):
+    def __init__(self, instrument, pgroup, default_channels=None, default_dir=None, api_address=None):
         self.instrument = instrument
         self.pgroup = pgroup
 
@@ -32,11 +32,11 @@ class DIACounter(BaseCounter):
             default_channel_list = self.paths.default_channel_list
             default_channels = Channels(default_channel_list)
 
-        if not default_path:
-            default_path = self.paths.raw
+        if not default_dir:
+            default_dir = self.paths.raw
 
         self.default_channels = default_channels
-        self.default_path = default_path
+        self.default_dir = default_dir
 
         if not api_address:
             api_address = "http://sf-daq-{}:10000".format(instrument)
@@ -45,10 +45,10 @@ class DIACounter(BaseCounter):
         self.client = DetectorIntegrationClient(api_address)
 
 
-    def acquire(self, filename=None, channels=None, n_pulses=100, use_default_path=True, is_HG0=False, **kwargs):
+    def acquire(self, filename=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False, **kwargs):
         if filename:
-            if use_default_path:
-                filename = os.path.join(self.default_path, filename)
+            if use_default_dir:
+                filename = os.path.join(self.default_dir, filename)
             if not self.can_create_all_files(filename):
                 return
         else:
