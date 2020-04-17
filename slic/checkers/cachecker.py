@@ -54,23 +54,3 @@ class CAChecker:
 
 
 
-# checker_obj = Checker_obj(checkerPV)
-
-
-# checker_ready = {}
-# checker_ready["checker_call"] = checker_function
-# checker_ready["args"] = [[60, 700]]
-# checker_ready["kwargs"] = {}
-# checker_ready["wait_time"] = 3
-
-# checker_init = {}
-# checker_init["checker_call"] = checker_obj.clear_and_start_counting
-# checker_init["args"] = []
-# checker_init["kwargs"] = {}
-# checker_init["wait_time"] = None
-
-# checker_end = {}
-# checker_end["checker_call"] = checker_obj.stop_and_analyze
-# checker_end["args"] = [[60, 700], .7]
-# checker_end["kwargs"] = {}
-# checker_end["wait_time"] = None
