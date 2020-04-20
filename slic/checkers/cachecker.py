@@ -1,5 +1,5 @@
 from epics import PV
-import numpy as np
+from time import sleep
 
 from .utils import within, within_fraction, fraction_to_percentage
 
