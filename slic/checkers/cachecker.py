@@ -69,23 +69,29 @@ class CAChecker:
 
     def get_ready(self):
         time_start = time()
-        checker_unhappy = False
+        checker_ever_unhappy = False
 
-        while not self.check():
-            checker_unhappy = True
+        while not self.long_check():
+            checker_ever_unhappy = True
             delta_t = time() - time_start
-            print(f"Checker is not happy, waiting for OK conditions since {delta_t:5.1f} seconds.")
-            self.sleep()
+            print(f"Checker is unhappy, waiting for OK conditions since {delta_t:5.1f} seconds.")
 
-        if checker_unhappy:
+        if checker_ever_unhappy:
             delta_t = time() - time_start
-            print(f"Checker was not happy and waiting for {delta_t:5.1f} seconds.")
+            print(f"Checker was unhappy, waited for {delta_t:5.1f} seconds.")
 
         self.clear_and_start_counting()
 
 
     def is_happy(self):
         return self.stop_counting_and_analyze()
+
+
+    def long_check(self):
+        self.clear_and_start_counting()
+        self.sleep()
+        state = self.stop_counting_and_analyze()
+        return state
 
 
 
