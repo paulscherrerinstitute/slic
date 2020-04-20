@@ -4,7 +4,7 @@ from time import sleep
 from .utils import within, within_fraction, fraction_to_percentage
 
 
-class CAChecker:
+class PVChecker:
 
     def __init__(self, channel, vmin, vmax, wait_time, required_fraction):
         self.channel = channel
