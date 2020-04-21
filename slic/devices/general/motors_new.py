@@ -1,7 +1,6 @@
 from slic.controls.eco_epics.motor import Motor as _Motor
 from slic.controls.eco_epics.utilities_epics import EpicsString
 import subprocess
-from threading import Thread
 from epics import PV
 from .utilities import Changer
 from slic.utils.eco_components.aliases import Alias
@@ -201,29 +200,4 @@ class MotorRecord:
         self._currentChange = self.set_target_value(value)
 
 
-class ChangerOld:
-    def __init__(self, target=None, parent=None, mover=None, hold=True, stopper=None):
-        self.target = target
-        self._mover = mover
-        self._stopper = stopper
-        self._thread = Thread(target=self._mover, args=(target,))
-        if not hold:
-            self._thread.start()
 
-    def wait(self):
-        self._thread.join()
-
-    def start(self):
-        self._thread.start()
-
-    def status(self):
-        if self._thread.ident is None:
-            return "waiting"
-        else:
-            if self._thread.isAlive:
-                return "changing"
-            else:
-                return "done"
-
-    def stop(self):
-        self._stopper()

@@ -9,7 +9,6 @@ from bsread import source, SUB
 import subprocess
 import h5py
 from time import sleep
-from threading import Thread
 from datetime import datetime
 
 from ..acquisition.utilities import Acquisition
@@ -20,10 +19,7 @@ from bsread.avail import dispatcher
 import zmq
 import os
 import data_api as api
-#import datetime
-#from threading import Thread
-#import datetime
-#from .utilities import Acquisition
+
 
 try:
     import sys, os

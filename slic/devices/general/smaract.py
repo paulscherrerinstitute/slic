@@ -1,5 +1,4 @@
 # import subprocess
-# from threading import Thread
 from epics import PV
 from time import sleep
 from .utilities import Changer
@@ -290,34 +289,6 @@ class SmarActStage:
         
     def __repr__(self):
         return str({key:self.__dict__[key].wm() for key in self._keys})
-
-# class Changer:
-#     def __init__(self, target=None, parent=None, mover=None, hold=True, stopper=None):
-#         self.target = target
-#         self._mover = mover
-#         self._stopper = stopper
-#         self._thread = Thread(target=self._mover,args=(target,))
-#         if not hold:
-#             self._thread.start()
-# 
-#     def wait(self):
-#         self._thread.join()
-# 
-#     def start(self):
-#         self._thread.start()
-# 
-#     def status(self):
-#         if self._thread.ident is None:
-#             return 'waiting'
-#         else:
-#             if self._isAlive:
-#                 return 'changing'
-#             else:
-#                 return 'done'
-#     def stop(self):
-#         self._stopper()
-
-
 
 
 

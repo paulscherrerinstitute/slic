@@ -9,7 +9,6 @@ from bsread import source, SUB
 import subprocess
 import h5py
 from time import sleep
-from threading import Thread
 from datetime import datetime
 
 from slic.runners.acquisition import Acquisition

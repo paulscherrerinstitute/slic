@@ -2,7 +2,7 @@ from epics import PV
 import os
 import numpy as np
 import time
-from threading import Thread
+from .utilities import Changer
 
 _basefolder = "/sf/alvra/config/lasertiming"
 _posTypes = ['user','dial','raw']
@@ -181,32 +181,11 @@ class PhaseShifterAramis:
         if posType == 'user':
             return self._motor.set(value)
 
-class Changer:
-    def __init__(self, target=None, parent=None, mover=None, hold=True, stopper=None):
-        self.target = target
-        self._mover = mover
-        self._stopper = stopper
-        self._thread = Thread(target=self._mover,args=(target,))
-        if not hold:
-            self._thread.start()
 
-    def wait(self):
-        self._thread.join()
-
-    def start(self):
-        self._thread.start()
-
-    def status(self):
-        if self._thread.ident is None:
-            return 'waiting'
-        else:
-            if self._isAlive:
-                return 'changing'
-            else:
-                return 'done'
-    def stop(self):
-        self._stopper()
 
 def _keywordChecker(kw_key_list_tups):
     for tkw,tkey,tlist in kw_key_list_tups:
         assert tkey in tlist, "Keyword %s should be one of %s"%(tkw,tlist)
+
+
+

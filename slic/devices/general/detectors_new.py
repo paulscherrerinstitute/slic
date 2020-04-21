@@ -9,7 +9,6 @@ from slic.controls.eco_epics.utilities_epics import EnumWrapper
 import subprocess
 import h5py
 from time import sleep,time
-from threading import Thread
 from datetime import datetime
 
 from slic.daq.utilities import Acquisition

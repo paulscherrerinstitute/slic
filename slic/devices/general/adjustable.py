@@ -1,5 +1,3 @@
-import subprocess
-from threading import Thread
 from epics import PV
 from .utilities import Changer
 from slic.utils.eco_components.aliases import Alias
