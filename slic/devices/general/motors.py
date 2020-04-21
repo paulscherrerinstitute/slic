@@ -1,7 +1,7 @@
 from slic.controls.eco_epics.motor import Motor as _Motor
 import subprocess
 from epics import PV
-from .utilities import Changer
+from slic.runners import Changer
 
 _MotorRocordStandardProperties = \
         {}

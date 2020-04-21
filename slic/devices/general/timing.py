@@ -2,7 +2,7 @@ from epics import PV
 import os
 import numpy as np
 import time
-from .utilities import Changer
+from slic.runners import Changer
 
 _basefolder = "/sf/bernina/config/com/data/src/lasertiming"
 _posTypes = ["user", "dial", "raw"]

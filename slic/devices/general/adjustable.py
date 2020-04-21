@@ -1,5 +1,5 @@
 from epics import PV
-from .utilities import Changer
+from slic.runners import Changer
 from slic.utils.eco_components.aliases import Alias
 from enum import IntEnum, auto
 import colorama

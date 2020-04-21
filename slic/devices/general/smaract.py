@@ -1,7 +1,7 @@
 # import subprocess
 from epics import PV
 from time import sleep
-from .utilities import Changer
+from slic.runners import Changer
 
 # from ..eco_epics import device
 # from ..eco_epics.device import Device
