@@ -5,7 +5,7 @@ from detector_integration_api import DetectorIntegrationClient
 
 from ..utils.channels import Channels
 from ..utils.printing import printable_dict_of_dicts
-from .acquisition import Acquisition
+from ..runners.acquisition import Acquisition
 from .basecounter import BaseCounter
 from .utils import can_create_file, SwissFELPaths
 from .pedestals import find_last_pedestal, take_pedestal

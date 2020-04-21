@@ -12,7 +12,7 @@ from time import sleep
 from threading import Thread
 from datetime import datetime
 
-from slic.daq.acquisition import Acquisition
+from slic.runners.acquisition import Acquisition
 
 try:
     import sys, os

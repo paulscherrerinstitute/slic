@@ -2,7 +2,7 @@ import os
 from abc import abstractmethod
 
 from ..utils.channels import Channels
-from .acquisition import Acquisition
+from ..runners.acquisition import Acquisition
 from .basecounter import BaseCounter
 from .utils import can_create_file, fix_hdf5_filename, SwissFELPaths
 
