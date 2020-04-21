@@ -4,27 +4,27 @@ from threading import Thread
 class Acquisition:
 
     def __init__(self, acquire, stopper=None, hold=True):
-        self._stopper = stopper
-        self._thread = Thread(target=acquire)
+        self.stopper = stopper
+        self.thread = Thread(target=acquire)
         if not hold:
             self.start()
 
     def start(self):
-        self._thread.start()
+        self.thread.start()
 
     def stop(self):
-        if self._stopper is not None:
-            self._stopper()
+        if self.stopper is not None:
+            self.stopper()
 
     def wait(self):
-        self._thread.join()
+        self.thread.join()
 
     @property
     def status(self):
-        if self._thread.ident is None:
-            return "waiting"
+        if self.thread.ident is None:
+            return "ready"
         else:
-            if self._thread.isAlive():
+            if self.thread.isAlive():
                 return "acquiring"
             else:
                 return "done"
