@@ -11,7 +11,7 @@ import h5py
 from time import sleep
 from datetime import datetime
 
-from ..acquisition.utilities import Acquisition
+from slic.runners import Acquisition
 
 from bsread import Source
 from bsread.h5 import receive

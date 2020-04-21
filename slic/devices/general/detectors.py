@@ -11,7 +11,7 @@ import h5py
 from time import sleep
 from datetime import datetime
 
-from slic.runners.acquisition import Acquisition
+from slic.runners import Acquisition
 
 try:
     import sys, os
