@@ -25,12 +25,13 @@ class Acquisition:
             return "ready"
         else:
             if self.thread.isAlive():
-                return "acquiring"
+                return "running"
             else:
                 return "done"
 
     def __repr__(self):
-        return "Acquisition: {}".format(self.status)
+        name = type(self).__name__
+        return "{}: {}".format(name, self.status)
 
 
 

@@ -27,12 +27,13 @@ class Changer:
             return "ready"
         else:
             if self.thread.isAlive():
-                return "changing"
+                return "running"
             else:
                 return "done"
 
     def __repr__(self):
-        return "Changer: {}".format(self.status)
+        name = type(self).__name__
+        return "{}: {}".format(name, self.status)
 
 
 
