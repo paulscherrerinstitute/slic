@@ -1,8 +1,10 @@
 from threading import Thread
 from time import sleep, time
 
+from .runner import Runner
 
-class LoopRunner:
+
+class LoopRunner(Runner):
 
     def __init__(self, func, hold=True):
         self.func = func
@@ -22,23 +24,6 @@ class LoopRunner:
     def stop(self):
         self.running = False
         self.thread.join()
-
-    def wait(self):
-        self.thread.join()
-
-    @property
-    def status(self):
-        if self.thread.ident is None:
-            return "ready"
-        else:
-            if self.thread.isAlive():
-                return "running"
-            else:
-                return "done"
-
-    def __repr__(self):
-        name = type(self).__name__
-        return "{}: {}".format(name, self.status)
 
 
 
