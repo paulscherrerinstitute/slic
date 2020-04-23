@@ -1,13 +1,14 @@
 from threading import Thread
 from time import sleep, time
 
-from .runner import Runner
+from runner import Runner
 
 
 class LoopRunner(Runner):
 
-    def __init__(self, func, hold=True):
+    def __init__(self, func, wait_time=0, hold=True):
         self.func = func
+        self.wait_time = wait_time
         self.thread = Thread(target=self.loop)
         self.running = False
         if not hold:
@@ -16,6 +17,10 @@ class LoopRunner(Runner):
     def loop(self):
         while self.running:
             self.func()
+            self.sleep()
+
+    def sleep(self):
+        sleep(self.wait_time)
 
     def start(self):
         self.running = True
@@ -30,27 +35,25 @@ class LoopRunner(Runner):
 class TimedLoopRunner(LoopRunner):
 
     def __init__(self, func, max_time, wait_time=0, hold=True):
-        self.timer = Timer(max_time, wait_time)
-        super().__init__(func, hold)
+        self.timer = Timer(max_time)
+        super().__init__(func, wait_time, hold)
 
     def loop(self):
         while self.running and self.timer:
             self.func()
+            self.sleep()
 
 
 
 class Timer:
 
-    def __init__(self, max_time, wait_time=0):
+    def __init__(self, max_time):
         self.max_time = max_time
-        self.wait_time = wait_time
         self.start_time = None
 
     def __bool__(self):
         if self.start_time is None:
             self.start_time = time()
-        else:
-            sleep(self.wait_time)
         return self.check()
 
     def check(self):
@@ -65,22 +68,30 @@ class Timer:
 
 
 if __name__ == "__main__":
-    timer = Timer(2, 0.2)
+    timer = Timer(2)
     sleep(1)
     while timer:
         print("a")
+        sleep(0.2)
 
 
     def f():
         print("f")
 
-    lr = LoopRunner(f)
+    lr = LoopRunner(f, 0.1)
     lr.start()
     sleep(0.5)
     lr.stop()
 
-    tlr = TimedLoopRunner(f, 3, 0.3)
+
+    def g():
+        print("g")
+
+    tlr = TimedLoopRunner(g, 3, 0.3)
     tlr.start()
+
+    sleep(3.1)
+    print("done")
 
 
 
