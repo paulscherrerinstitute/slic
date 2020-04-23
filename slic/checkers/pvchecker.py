@@ -13,6 +13,7 @@ class PVChecker:
         self.vmax = vmax
         self.wait_time = wait_time
         self.required_fraction = required_fraction
+
         self.data = []
 
 
@@ -39,6 +40,7 @@ class PVChecker:
         def on_value_change(value=None, **kwargs):
             self.data.append(value)
 
+        #TODO: don't add callback twice!?
         self.pv.add_callback(callback=on_value_change)
 
 
