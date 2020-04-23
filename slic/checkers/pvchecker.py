@@ -13,6 +13,7 @@ class PVChecker:
         self.vmax = vmax
         self.wait_time = wait_time
         self.required_fraction = required_fraction
+        self.data = []
 
 
     def check(self):
@@ -31,7 +32,7 @@ class PVChecker:
         self.start_counting()
 
     def clear(self):
-        self.data = []
+        self.data.clear()
 
 
     def start_counting(self):
