@@ -37,11 +37,11 @@ class PVChecker:
 
 
     def start_counting(self):
-        def on_value_change(value=None, **kwargs):
+        def collect(value=None, **kwargs):
             self.data.append(value)
 
-        #TODO: don't add callback twice!?
-        self.pv.add_callback(callback=on_value_change)
+        self.pv.clear_callbacks() # add callback only once
+        self.pv.add_callback(callback=collect)
 
 
     def stop_counting_and_analyze(self):
