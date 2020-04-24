@@ -4,14 +4,9 @@ from slic.runners import LoopRunner
 
 class ValueChecker(Checker):
 
-    def __init__(self, get_value, vmin, vmax, wait_time, required_fraction):
+    def __init__(self, get_value, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.get_value = get_value
-        self.vmin = vmin
-        self.vmax = vmax
-        self.wait_time = wait_time
-        self.required_fraction = required_fraction
-
-        self.data = []
         self.runner = None
 
 

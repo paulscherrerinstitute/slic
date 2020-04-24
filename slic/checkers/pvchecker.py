@@ -5,15 +5,10 @@ from .checker import Checker
 
 class PVChecker(Checker):
 
-    def __init__(self, channel, vmin, vmax, wait_time, required_fraction):
+    def __init__(self, channel, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.channel = channel
         self.pv = PV(channel)
-        self.vmin = vmin
-        self.vmax = vmax
-        self.wait_time = wait_time
-        self.required_fraction = required_fraction
-
-        self.data = []
 
 
     def current(self):
