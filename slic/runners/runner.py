@@ -1,7 +1,9 @@
 from threading import Thread
 
+from .baserunner import BaseRunner
 
-class Runner:
+
+class Runner(BaseRunner):
 
     def __init__(self, func, stopper=None, hold=True):
         self.func = func
