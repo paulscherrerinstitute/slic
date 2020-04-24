@@ -1,7 +1,7 @@
 from threading import Thread
 from time import sleep, time
 
-from runner import Runner
+from .runner import Runner
 
 
 class LoopRunner(Runner):
