@@ -1,6 +1,7 @@
 from threading import Thread
 
 from .baserunner import BaseRunner
+from slic.utils import typename
 
 
 class Runner(BaseRunner):
@@ -34,7 +35,7 @@ class Runner(BaseRunner):
                 return "done"
 
     def __repr__(self):
-        name = type(self).__name__
+        name = typename(self)
         return "{}: {}".format(name, self.status)
 
 
