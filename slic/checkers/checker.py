@@ -3,6 +3,7 @@ from time import sleep
 
 from .basechecker import BaseChecker
 from .utils import within, within_fraction, fraction_to_percentage
+from slic.utils import typename
 
 
 class Checker(BaseChecker):
@@ -94,6 +95,12 @@ class Checker(BaseChecker):
         self.sleep()
         state = self.stop_counting_and_analyze()
         return state
+
+
+    def __repr__(self):
+        name = typename(self)
+        status = "happy" if self.check else "unhappy"
+        return "{}: {}".format(name, status) #TODO
 
 
 

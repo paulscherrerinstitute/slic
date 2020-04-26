@@ -3,6 +3,7 @@ import numpy as np
 from .scanbackend import ScanBackend
 from .runname import RunFilenameGenerator
 from ..devices.general.adjustable import DummyAdjustable
+from slic.utils import typename
 
 
 def make_positions(start, end, n):
@@ -94,6 +95,10 @@ class Scanner:
         positions = zip(positions)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
+
+
+    def __repr__(self):
+        return typename(self) #TODO
 
 
 

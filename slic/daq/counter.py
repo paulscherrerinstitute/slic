@@ -5,7 +5,7 @@ from ..utils.channels import Channels
 from slic.runners import Acquisition
 from .basecounter import BaseCounter
 from .utils import can_create_file, fix_hdf5_filename, SwissFELPaths
-
+from slic.utils import typename
 
 
 class Counter(BaseCounter):
@@ -44,6 +44,11 @@ class Counter(BaseCounter):
     @abstractmethod
     def _acquire(self):
         raise NotImplementedError
+
+
+    def __repr__(self):
+        name = typename(self)
+        return "{}: {}/{}".format(name, self.instrument, self.pgroup) #TODO
 
 
 
