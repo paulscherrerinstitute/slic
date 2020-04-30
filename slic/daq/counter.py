@@ -11,14 +11,17 @@ from slic.utils import typename
 class Counter(BaseCounter):
 
     def __init__(self, instrument, pgroup, default_channels=None, default_dir=None):
-        paths = SwissFELPaths(instrument, pgroup)
+        self.instrument = instrument
+        self.pgroup = pgroup
+
+        self.paths = SwissFELPaths(instrument, pgroup)
 
         if not default_channels:
-            default_channel_list = paths.default_channel_list
+            default_channel_list = self.paths.default_channel_list
             default_channels = Channels(default_channel_list)
 
         if not default_dir:
-            default_dir = paths.raw
+            default_dir = self.paths.raw
 
         self.default_channels = default_channels
         self.default_dir = default_dir
