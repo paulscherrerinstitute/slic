@@ -2,7 +2,7 @@ import os
 from abc import abstractmethod
 
 from ..utils.channels import Channels
-from slic.runners import Acquisition
+from slic.task import Acquisition
 from .basecounter import BaseCounter
 from .utils import can_create_file, fix_hdf5_filename, SwissFELPaths
 from slic.utils import typename

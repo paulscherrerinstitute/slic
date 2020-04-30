@@ -2,7 +2,7 @@ from epics import PV
 import os
 import numpy as np
 import time
-from slic.runners import Changer
+from slic.task import Changer
 
 
 _basefolder = "/sf/bernina/config/eco/offsets"

@@ -3,7 +3,7 @@ from epics import PV, ca
 import time
 from ..eco_epics import device
 from ..eco_epics.device import Device
-from slic.runners import Changer
+from slic.task import Changer
 
 
 _guiTypes = ['xdm']

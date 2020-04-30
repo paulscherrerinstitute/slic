@@ -129,9 +129,9 @@ def set_all_target_values_and_wait(adjustables, values):
 def set_all_target_values(adjustables, values):
     return [adj.set_target_value(val) for adj, val in zip(adjustables, values)]
 
-def wait_for_all(runners):
-    for r in runners:
-        r.wait()
+def wait_for_all(tasks):
+    for t in tasks:
+        t.wait()
 
 
 

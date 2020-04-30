@@ -11,7 +11,7 @@ import h5py
 from time import sleep,time
 from datetime import datetime
 
-from slic.runners import Acquisition
+from slic.task import Acquisition
 from slic.utils.eco_components.aliases import Alias
 
 

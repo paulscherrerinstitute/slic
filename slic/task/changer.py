@@ -1,7 +1,7 @@
-from .runner import Runner
+from .task import Task
 
 
-class Changer(Runner):
+class Changer(Task):
 
     def __init__(self, target, changer, *args, **kwargs):
         self.target = target

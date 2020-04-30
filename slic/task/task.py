@@ -1,10 +1,10 @@
 from threading import Thread
 
-from .baserunner import BaseRunner
+from .basetask import BaseTask
 from slic.utils import typename
 
 
-class Runner(BaseRunner):
+class Task(BaseTask):
 
     def __init__(self, func, stopper=None, hold=True):
         self.func = func

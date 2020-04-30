@@ -1,10 +1,10 @@
 from threading import Thread
 from time import sleep, time
 
-from .runner import Runner
+from .task import Task
 
 
-class LoopRunner(Runner):
+class Loop(Task):
 
     def __init__(self, func, wait_time=0, hold=True):
         self.func = func
@@ -32,7 +32,7 @@ class LoopRunner(Runner):
 
 
 
-class TimedLoopRunner(LoopRunner):
+class TimedLoop(Loop):
 
     def __init__(self, func, max_time, wait_time=0, hold=True):
         self.timer = Timer(max_time)
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     def f():
         print("f")
 
-    lr = LoopRunner(f, 0.1)
+    lr = Loop(f, 0.1)
     lr.start()
     sleep(0.5)
     lr.stop()
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     def g():
         print("g")
 
-    tlr = TimedLoopRunner(g, 3, 0.3)
+    tlr = TimedLoop(g, 3, 0.3)
     tlr.start()
 
     sleep(3.1)
