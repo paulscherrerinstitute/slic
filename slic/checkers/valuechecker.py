@@ -4,9 +4,10 @@ from slic.task import Loop
 
 class ValueChecker(Checker):
 
-    def __init__(self, get_value, *args, **kwargs):
+    def __init__(self, get_value, *args, check_time, **kwargs):
         super().__init__(*args, **kwargs)
         self.get_value = get_value
+        self.check_time = check_time
         self.task = None
 
 
@@ -22,7 +23,7 @@ class ValueChecker(Checker):
             value = self.current()
             self.data.append(value)
 
-        self.task = Loop(collect, self.wait_time)
+        self.task = Loop(collect, self.check_time, hold=False)
 
 
     def stop_counting(self):
