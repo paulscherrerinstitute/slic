@@ -9,7 +9,7 @@ from ..utils.ask_yes_no import ask_Yes_no
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, counters, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, checker, checker_sleep_time=0.2):
+    def __init__(self, adjustables, values, counters, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, checker):
         self.adjustables = adjustables
         self.values = values
         self.counters = counters
@@ -21,7 +21,6 @@ class ScanBackend:
 
         self.make_scan_sub_dir = make_scan_sub_dir
         self.checker = checker
-        self.checker_sleep_time = checker_sleep_time
 
         self.store_initial_values()
 
