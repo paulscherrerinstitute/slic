@@ -1,5 +1,5 @@
 from epics import PV
-from slic.task import Changer
+from slic.task import Task
 from slic.utils.eco_components.aliases import Alias
 from enum import IntEnum, auto
 import colorama
@@ -203,12 +203,9 @@ class DummyAdjustable:
         return self.current_value
 
     def set_target_value(self, value, hold=False):
-        def changer(value):
+        def changer():
             self.current_value = value
-
-        return Changer(
-            target=value, parent=self, changer=changer, hold=hold, stopper=None
-        )
+        return Task(changer, hold=hold)
 
     def __repr__(self):
         name = self.name
@@ -279,11 +276,8 @@ class PvRecord:
 
     def set_target_value(self, value, hold=False):
         """ Adjustable convention"""
-
-        changer = lambda value: self.move(value)
-        return Changer(
-            target=value, parent=self, changer=changer, hold=hold, stopper=None
-        )
+        changer = lambda: self.move(value)
+        return Task(changer, hold=hold)
 
     # spec-inspired convenience methods
     def mv(self, value):
@@ -336,11 +330,8 @@ class PvEnum:
     def set_target_value(self, value, hold=False):
         """ Adjustable convention"""
         value = self.validate(value)
-
-        changer = lambda value: self._pv.put(value, wait=True)
-        return Changer(
-            target=value, parent=self, changer=changer, hold=hold, stopper=None
-        )
+        changer = lambda: self._pv.put(value, wait=True)
+        return Task(changer, hold=hold)
 
     def __repr__(self):
         if not self.name:
@@ -395,7 +386,7 @@ class AdjustableVirtual:
         if not hasattr(vals, "__iter__"):
             vals = (vals,)
 
-        def changer(value):
+        def changer():
             self._active_changers = [
                 adj.set_target_value(val, hold=False)
                 for val, adj in zip(vals, self._adjustables)
@@ -407,9 +398,7 @@ class AdjustableVirtual:
             for tc in self._active_changers:
                 tc.stop()
 
-        self._currentChange = Changer(
-            target=value, parent=self, changer=changer, hold=hold, stopper=stopper
-        )
+        self._currentChange = Task(changer, hold=hold, stopper=stopper)
         return self._currentChange
 
     def get_current_value(self):

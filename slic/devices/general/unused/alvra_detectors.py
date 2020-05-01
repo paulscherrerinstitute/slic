@@ -11,7 +11,7 @@ import h5py
 from time import sleep
 from datetime import datetime
 
-from slic.task import Acquisition
+from slic.task import Task
 
 from bsread import Source
 from bsread.h5 import receive
@@ -374,9 +374,8 @@ class DIAClient:
                 sleep(.1)
         outputfilenames = [f'{file_name_JF}.{tcli.upper()}.h5' for tcli in self.active_clients]
 
-        return Acquisition(acquire=acquire, acquisition_kwargs={'file_names': outputfilenames, 'Npulses': Npulses},hold=False)
+        return Task(acquire, hold=False)
 
-#        return Acquisition(acquire=acquire, acquisition_kwargs={'file_names': [file_name_bsread, file_name_JF], 'Npulses': Npulses},hold=False)
 
     def wait_done(self):
 #        self.check_running()

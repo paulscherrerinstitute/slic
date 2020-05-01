@@ -2,7 +2,7 @@ from epics import PV
 import os
 import numpy as np
 import time
-from slic.task import Changer
+from slic.task import Task
 
 _basefolder = "/sf/alvra/config/lasertiming"
 _posTypes = ['user','dial','raw']
@@ -152,15 +152,8 @@ class PhaseShifterAramis:
     
     def changeTo(self, value, hold=False, check=True):
         """ Adjustable convention"""
-
-        mover = lambda value: self._pshifter.move(\
-                value)
-        return Changer(
-                target=value,
-                parent=self,
-                mover=mover,
-                hold=hold,
-                stopper=None)
+        mover = lambda: self._pshifter.move(value)
+        return Task(mover, hold=hold)
 
     def stop(self):
         """ Adjustable convention"""

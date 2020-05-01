@@ -3,7 +3,7 @@ from epics import PV, ca
 import time
 from ..eco_epics import device
 from ..eco_epics.device import Device
-from slic.task import Changer
+from slic.task import Task
 
 
 _guiTypes = ['xdm']
@@ -67,16 +67,8 @@ class SmarActRecord:
     # Conventional methods and properties for all Adjustable objects
     def changeTo(self, value, hold=False, check=True):
         """ Adjustable convention"""
-
-        mover = lambda value: self.move(\
-                value, ignore_limits=(not check),
-                wait=True)
-        return Changer(
-                target=value,
-                parent=self,
-                mover=mover,
-                hold=hold,
-                stopper=self._stop.put('PROC', 1))
+        mover = lambda: self.move(value, ignore_limits=(not check), wait=True)
+        return Task(mover, hold=hold, stopper=self._stop.put('PROC', 1))
 
     def stop(self):
         """ Adjustable convention"""

@@ -2,7 +2,7 @@ from slic.controls.eco_epics.motor import Motor as _Motor
 from slic.controls.eco_epics.utilities_epics import EpicsString
 import subprocess
 from epics import PV
-from slic.task import Changer
+from slic.task import Task
 from slic.utils.eco_components.aliases import Alias
 from .adjustable import spec_convenience, ValueInRange, update_changes, AdjustableError
 import colorama
@@ -60,7 +60,7 @@ class MotorRecord:
     def set_target_value(self, value, hold=False, check=True):
         """ Adjustable convention"""
 
-        def changer(value):
+        def changer():
             self._status = self._motor.move(value, ignore_limits=(not check), wait=True)
             self._status_message = _status_messages[self._status]
             if self._status < 0:
@@ -72,13 +72,7 @@ class MotorRecord:
         #        changer = lambda value: self._motor.move(\
         #                value, ignore_limits=(not check),
         #                wait=True)
-        return Changer(
-            target=value,
-            parent=self,
-            changer=changer,
-            hold=hold,
-            stopper=self._motor.stop,
-        )
+        return Task(changer, hold=hold, stopper=self._motor.stop)
 
     def stop(self):
         """ Adjustable convention"""

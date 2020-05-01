@@ -11,7 +11,7 @@ import h5py
 from time import sleep,time
 from datetime import datetime
 
-from slic.task import Acquisition
+from slic.task import Task
 from slic.utils.eco_components.aliases import Alias
 
 
@@ -55,8 +55,9 @@ class PvDataStream:
         return self.data_collected
 
 
-    def acquire(self,hold=False,**kwargs):
-        return Acquisition(acquire=lambda:self.collect(**kwargs), hold=hold, stopper=None, get_result=lambda:self.data_collected)
+    def acquire(self, hold=False, **kwargs):
+	    _acquire = lambda: self.collect(**kwargs)
+        return Task(_acquire, hold=hold)
 
     def accumulate(self, n_buffer):
         if not hasattr(self,'_accumulate'):

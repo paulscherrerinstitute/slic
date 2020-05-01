@@ -2,7 +2,7 @@ from epics import PV
 import os
 import numpy as np
 import time
-from slic.task import Changer
+from slic.task import Task
 from ..aliases import Alias
 from time import sleep
 
@@ -70,11 +70,8 @@ class PvRecord:
 
     def set_target_value(self, value, hold=False):
         """ Adjustable convention"""
-
-        changer = lambda value: self.move(value)
-        return Changer(
-            target=value, parent=self, changer=changer, hold=hold, stopper=None
-        )
+        changer = lambda: self.move(value)
+        return Task(changer, hold=hold)
 
     # spec-inspired convenience methods
     def mv(self, value):

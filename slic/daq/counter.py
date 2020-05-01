@@ -2,7 +2,7 @@ import os
 from abc import abstractmethod
 
 from ..utils.channels import Channels
-from slic.task import Acquisition
+from slic.task import Task
 from .basecounter import BaseCounter
 from .utils import can_create_file, fix_hdf5_filename, SwissFELPaths
 from slic.utils import typename
@@ -41,7 +41,7 @@ class Counter(BaseCounter):
             channels = self.default_channels
 
         acq = lambda: self._acquire(filename, channels, **kwargs)
-        return Acquisition(acq, hold=False)
+        return Task(acq, hold=False)
 
 
     @abstractmethod

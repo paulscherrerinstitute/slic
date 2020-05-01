@@ -1,7 +1,7 @@
 from ..devices_general.motors import MotorRecord
 from epics import PV
 from ..eco_epics.utilities_epics import EnumWrapper
-from slic.task import Changer
+from slic.task import Task
 from time import sleep
 import numpy as np
 
@@ -62,14 +62,9 @@ class Double_Crystal_Mono_AramisMacro:
         #    sleep(checktime)
 
     def changeTo(self,value,hold=False):
-        changer = lambda value: self.move_and_wait(value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=self.stop)
-      
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold, stopper=self.stop)
+
     def stop(self):
         self._stop.put(1) 	
 
@@ -146,15 +141,10 @@ class EcolEnergy:
         while not self.dmov.get():
             #print(self.dmov.get())
             sleep(checktime)
-    
+
     def changeTo(self,value,hold=False):
-        changer = lambda value: self.move_and_wait(value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=None)
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold)
 
 class Double_Crystal_Mono:
     def __init__(self,Id,timeAdjustable=None,timeReferenceEnergy=None,timeReference=None):	
@@ -213,13 +203,8 @@ class Double_Crystal_Mono:
             time_mover.wait()
 
     def changeTo(self,value,hold=False):
-        changer = lambda value: self.move_and_wait(value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=self.stop)
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold, stopper=self.stop)
       
     def stop(self):
         self._stop.put(1) 	
@@ -299,13 +284,8 @@ class EcolEnergy:
             sleep(checktime)
     
     def changeTo(self,value,hold=False):
-        changer = lambda value: self.move_and_wait(value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=None)
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold)
 
 
 class MonoEcolEnergy:
@@ -328,13 +308,8 @@ class MonoEcolEnergy:
             tc.wait()
 
     def changeTo(self,value,hold=False):
-        changer = lambda value: self.move_and_wait(value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=self.dcm.stop)
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold, stopper=self.dcm.stop)
 
     def alignOffsets(self):
         mrb = self.dcm.get_current_value()
@@ -411,16 +386,11 @@ class AlvraDCM_FEL:
 			sleep(checktime)
 
 	def changeTo(self,value,hold=False):
-		changer = lambda value: self.move_and_wait(value)
-		return Changer(
-				target=value,
-				parent=self,
-				changer=changer,
-				hold=hold,
-				stopper=None)
-				
+		changer = lambda: self.move_and_wait(value)
+		return Task(changer, hold=hold)
+
 	def __repr__(self):
-		return self.__str__()       
-		
+		return self.__str__()
+
 
 

@@ -1,6 +1,5 @@
 
-from .acquisition import Acquisition
-from .changer import Changer
+from .task import Task
 from .loop import Loop, TimedLoop
 
 

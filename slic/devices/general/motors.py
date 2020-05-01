@@ -1,7 +1,7 @@
 from slic.controls.eco_epics.motor import Motor as _Motor
 import subprocess
 from epics import PV
-from slic.task import Changer
+from slic.task import Task
 
 _MotorRocordStandardProperties = \
         {}
@@ -49,7 +49,7 @@ class MotorRecord:
     def changeTo(self, value, hold=False, check=True):
         """ Adjustable convention"""
 
-        def changer(value):
+        def changer():
             self._status = self._motor.move(\
                 value, ignore_limits=(not check),
                 wait=True)
@@ -60,12 +60,9 @@ class MotorRecord:
 #        changer = lambda value: self._motor.move(\
 #                value, ignore_limits=(not check),
 #                wait=True)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=self._motor.stop)
+        return Task(changer, hold=hold, stopper=self._motor.stop)
+
+
     def stop(self):
         """ Adjustable convention"""
         try:

@@ -2,7 +2,7 @@ from epics import PV
 import os
 import numpy as np
 import time
-from slic.task import Changer
+from slic.task import Task
 
 
 _basefolder = "/sf/bernina/config/eco/offsets"
@@ -242,11 +242,8 @@ class Lxt(object):
 
     def set_target_value(self, value, hold=False):
         """ Adjustable convention"""
-
-        changer = lambda value: self.move(value)
-        return Changer(
-            target=value, parent=self, changer=changer, hold=hold, stopper=None
-        )
+        changer = lambda: self.move(value)
+        return Task(changer, hold=hold)
 
     def get_current_value(self):
         return self.get()

@@ -1,7 +1,7 @@
 from ..general.motors_new import MotorRecord
 from epics import PV
 from time import sleep
-from slic.task import Changer
+from slic.task import Task
 from slic.utils.eco_components.aliases import Alias
 from ..general.adjustable import PvEnum
 
@@ -70,12 +70,12 @@ class AttenuatorAramis:
         return self.get_transmission(*args,verbose=False,**kwargs)[0]
 
     def set_target_value(self,value,sleeptime=10,hold=False):
-        def changer(value):
+        def changer():
             self.set_transmission(value)
             sleep(sleeptime)
             if self.pulse_picker:
                 self.pulse_picker.open()
-        return Changer(target=value, parent=self, changer=changer, hold=hold)
+        return Task(changer, hold=hold)
 
 
     def get_status(self):

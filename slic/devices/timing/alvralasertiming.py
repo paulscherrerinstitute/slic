@@ -2,7 +2,7 @@ from epics import PV
 import os
 import numpy as np
 import time
-from slic.task import Changer
+from slic.task import Task
 
 
 _basefolder = "/sf/alvra/config/lasertiming"
@@ -211,15 +211,8 @@ class Lxt(object):
 
     def changeTo(self, value, hold=False):
         """ Adjustable convention"""
-
-        changer = lambda value: self.move(\
-                value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=None)
+        changer = lambda: self.move(value)
+        return Task(changer, hold=hold)
 
 
     def get_current_value(self):
@@ -264,13 +257,8 @@ class eTiming:
         return self.__str__()
 
     def changeTo(self,value,hold=False):
-        changer = lambda value: self.move_and_wait(value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=None)
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold)
 
     def __str__(self):
         eTimingRBKStr = str(self.get_current_value())

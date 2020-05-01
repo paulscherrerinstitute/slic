@@ -11,7 +11,7 @@ import h5py
 from time import sleep
 from datetime import datetime
 
-from slic.task import Acquisition
+from slic.task import Task
 
 try:
     import sys, os
@@ -345,7 +345,7 @@ class DIAClient:
                     done = True
                 sleep(.1)
 
-        return Acquisition(acquire=acquire, acquisition_kwargs={'file_names': [file_name_bsread, file_name_JF], 'Npulses': Npulses},hold=False)
+        return Task(acquire, hold=False)
 
     def wait_done(self):
         self.check_running()

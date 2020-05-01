@@ -1,7 +1,7 @@
 # import subprocess
 from epics import PV
 from time import sleep
-from slic.task import Changer
+from slic.task import Task
 
 # from ..eco_epics import device
 # from ..eco_epics.device import Device
@@ -65,14 +65,9 @@ class SmarActRecord:
 # 		self.units = self._drive.get('EGU')
 
     # Conventional methods and properties for all Adjustable objects
-	def changeTo(self,value,hold=False):
-		changer = lambda value: self.move_and_wait(value)
-		return Changer(
-				target=value,
-				parent=self,
-				changer=changer,
-				hold=hold,
-				stopper=self._stop.put(1))
+	def changeTo(self, value, hold=False):
+		changer = lambda: self.move_and_wait(value)
+		return Task(changer, hold=hold, stopper=self._stop.put(1))
 
 	def stop(self):
 		""" Adjustable convention"""

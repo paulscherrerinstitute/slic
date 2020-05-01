@@ -5,7 +5,7 @@ from detector_integration_api import DetectorIntegrationClient
 
 from ..utils.channels import Channels
 from ..utils.printing import printable_dict_of_dicts
-from slic.task import Acquisition
+from slic.task import Task
 from .basecounter import BaseCounter
 from .utils import can_create_file, SwissFELPaths
 from .pedestals import find_last_pedestal, take_pedestal
@@ -72,7 +72,7 @@ class DIACounter(BaseCounter):
             self.wait_until_finished()
             self.client.reset()
 
-        return Acquisition(acquire=_acquire, stopper=self.client.stop, hold=False)
+        return Task(acquire=_acquire, stopper=self.client.stop, hold=False)
 
 
     def can_create_all_files(self, base):
