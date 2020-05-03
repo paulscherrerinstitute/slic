@@ -13,11 +13,11 @@ def make_positions(start, end, n):
 
 class Scanner:
 
-    def __init__(self, data_base_dir="", scan_info_dir="", default_counters=[], checker=None, make_scan_sub_dir=True):
+    def __init__(self, data_base_dir="", scan_info_dir="", default_counters=[], condition=None, make_scan_sub_dir=True):
         self.data_base_dir = data_base_dir
         self.scan_info_dir = scan_info_dir
         self.default_counters = default_counters
-        self.checker = checker
+        self.condition = condition
         self.make_scan_sub_dir = make_scan_sub_dir
 
         self.filename_generator = RunFilenameGenerator(scan_info_dir)
@@ -29,7 +29,7 @@ class Scanner:
         if not counters:
             counters = self.default_counters
 
-        s = ScanBackend(adjustables, positions, counters, filename, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, checker=self.checker)
+        s = ScanBackend(adjustables, positions, counters, filename, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition)
 
         if start_immediately:
             s.scan(step_info=step_info)

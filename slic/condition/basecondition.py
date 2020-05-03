@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class BaseChecker(ABC):
+class BaseCondition(ABC):
 
     @abstractmethod
     def get_ready(self):

@@ -9,7 +9,7 @@ from ..utils.ask_yes_no import ask_Yes_no
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, counters, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, checker):
+    def __init__(self, adjustables, values, counters, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
         self.adjustables = adjustables
         self.values = values
         self.counters = counters
@@ -20,7 +20,7 @@ class ScanBackend:
         self.scan_info = ScanInfo(filename, scan_info_dir, adjustables, values)
 
         self.make_scan_sub_dir = make_scan_sub_dir
-        self.checker = checker
+        self.condition = condition
 
         self.store_initial_values()
 
@@ -28,7 +28,7 @@ class ScanBackend:
     def scan(self, step_info=None):
         self.store_initial_values()
 
-        do_step = self.do_checked_step if self.checker else self.do_step
+        do_step = self.do_checked_step if self.condition else self.do_step
 
         self.create_output_dirs()
 
@@ -46,9 +46,9 @@ class ScanBackend:
 
     def do_checked_step(self, *args, **kwargs):
         while True:
-            self.checker.get_ready()
+            self.condition.get_ready()
             self.do_step(*args, **kwargs)
-            if self.checker.is_happy():
+            if self.condition.is_happy():
                 break
 
 

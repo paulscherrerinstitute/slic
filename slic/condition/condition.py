@@ -1,12 +1,12 @@
 from abc import abstractmethod
 from time import sleep
 
-from .basechecker import BaseChecker
+from .basecondition import BaseCondition
 from .utils import within, within_fraction, fraction_to_percentage
 from slic.utils import typename
 
 
-class Checker(BaseChecker):
+class Condition(BaseCondition):
 
     @abstractmethod
     def __init__(self, vmin, vmax, wait_time, required_fraction):
@@ -64,7 +64,7 @@ class Checker(BaseChecker):
         percentage = fraction_to_percentage(fraction)
         required_percentage = fraction_to_percentage(required_fraction)
 
-        msg = "Checker {}: {}% within limits [{}, {}), required was {}%.".format(status, percentage, vmin, vmax, required_percentage)
+        msg = "Condition {}: {}% within limits [{}, {}), required was {}%.".format(status, percentage, vmin, vmax, required_percentage)
         print(msg)
 
         return result
@@ -72,16 +72,16 @@ class Checker(BaseChecker):
 
     def get_ready(self):
         time_start = time()
-        checker_ever_unhappy = False
+        was_ever_unhappy = False
 
         while not self.long_check():
-            checker_ever_unhappy = True
+            was_ever_unhappy = True
             delta_t = time() - time_start
-            print(f"Checker is unhappy, waiting for OK conditions since {delta_t:5.1f} seconds.")
+            print(f"Condition is unhappy, waiting for OK conditions since {delta_t:5.1f} seconds.")
 
-        if checker_ever_unhappy:
+        if was_ever_unhappy:
             delta_t = time() - time_start
-            print(f"Checker was unhappy, waited for {delta_t:5.1f} seconds.")
+            print(f"Condition was unhappy, waited for {delta_t:5.1f} seconds.")
 
         self.clear_and_start_counting()
 

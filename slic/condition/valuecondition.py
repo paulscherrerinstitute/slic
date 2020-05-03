@@ -1,8 +1,8 @@
-from .checker import Checker
+from .condition import Condition
 from slic.task import Loop
 
 
-class ValueChecker(Checker):
+class ValueCondition(Condition):
 
     def __init__(self, get_value, *args, check_time, **kwargs):
         super().__init__(*args, **kwargs)

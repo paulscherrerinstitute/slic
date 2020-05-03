@@ -1,9 +1,9 @@
 from epics import PV
 
-from .checker import Checker
+from .condition import Condition
 
 
-class PVChecker(Checker):
+class PVCondition(Condition):
 
     def __init__(self, channel, *args, **kwargs):
         super().__init__(*args, **kwargs)
