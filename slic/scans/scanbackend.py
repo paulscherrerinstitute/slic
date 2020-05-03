@@ -9,10 +9,10 @@ from ..utils.ask_yes_no import ask_Yes_no
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, counters, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
+    def __init__(self, adjustables, values, acquisitions, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
         self.adjustables = adjustables
         self.values = values
-        self.counters = counters
+        self.acquisitions = acquisitions
         self.filename = filename
         self.n_pulses_per_step = n_pulses #TODO: to rename or not to rename?
         self.data_base_dir = data_base_dir
@@ -58,7 +58,7 @@ class ScanBackend:
         print("Moved adjustables, starting acquisition")
 
         fn = self.get_filename(n_step)
-        step_filenames = self.acquire_all_counters(fn)
+        step_filenames = self.acquire_all(fn)
         print("Acquisition done")
 
         self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
@@ -67,8 +67,8 @@ class ScanBackend:
     def create_output_dirs(self):
         make_dir(self.scan_info.base_dir)
 
-        for counter in self.counters:
-            default_dir = counter.default_dir
+        for acq in self.acquisitions:
+            default_dir = acq.default_dir
             if default_dir is None:
                 continue
             data_dir = default_dir + self.data_base_dir
@@ -86,10 +86,10 @@ class ScanBackend:
         return filename
 
 
-    def acquire_all_counters(self, filename):
+    def acquire_all(self, filename):
         acqs = []
         filenames = []
-        for ctr in self.counters:
+        for ctr in self.acquisitions:
             acq = ctr.acquire(filename=filename, n_pulses=self.n_pulses_per_step)
             acqs.append(acq)
             filenames.extend(acq.filenames)

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class BaseCounter(ABC):
+class BaseAcquisition(ABC):
 
     @abstractmethod
     def acquire(self):

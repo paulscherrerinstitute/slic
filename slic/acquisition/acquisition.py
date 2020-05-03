@@ -3,12 +3,12 @@ from abc import abstractmethod
 
 from ..utils.channels import Channels
 from slic.task import Task
-from .basecounter import BaseCounter
+from .baseacquisition import BaseAcquisition
 from .utils import can_create_file, fix_hdf5_filename, SwissFELPaths
 from slic.utils import typename
 
 
-class Counter(BaseCounter):
+class Acquisition(BaseAcquisition):
 
     def __init__(self, instrument, pgroup, default_channels=None, default_dir=None):
         self.instrument = instrument

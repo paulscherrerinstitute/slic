@@ -6,7 +6,7 @@ from detector_integration_api import DetectorIntegrationClient
 from ..utils.channels import Channels
 from ..utils.printing import printable_dict_of_dicts
 from slic.task import Task
-from .basecounter import BaseCounter
+from .baseacquisition import BaseAcquisition
 from .utils import can_create_file, SwissFELPaths
 from .pedestals import find_last_pedestal, take_pedestal
 
@@ -19,7 +19,7 @@ EXPTIME = {
 
 
 
-class DIACounter(BaseCounter):
+class DIAAcquisition(BaseAcquisition):
 
     def __init__(self, instrument, pgroup, default_channels=None, default_dir=None, api_address=None):
         self.instrument = instrument

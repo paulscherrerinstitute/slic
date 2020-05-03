@@ -3,11 +3,11 @@ import zmq
 from bsread.h5 import receive
 from bsread.avail import dispatcher
 
-from .counter import Counter
+from .acquisition import Acquisition
 
 
 
-class BSCounter(Counter):
+class BSAcquisition(Acquisition):
 
     def _acquire(self, *args, **kwargs):
         bsread_to_h5(*args, **kwargs)

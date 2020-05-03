@@ -2,11 +2,11 @@ from datetime import datetime, timedelta
 
 import data_api as dapi
 
-from .counter import Counter
+from .acquisition import Acquisition
 
 
 
-class DBCounter(Counter):
+class DBAcquisition(Acquisition):
 
     def _acquire(self, *args, **kwargs):
         dapi_to_h5(*args, **kwargs)

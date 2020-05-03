@@ -2,11 +2,11 @@ from time import sleep
 import numpy as np
 from epics import PV
 
-from .counter import Counter
+from .acquisition import Acquisition
 
 
 
-class PVCounter(Counter):
+class PVAcquisition(Acquisition):
 
     def _acquire(self, *args, polling=False, **kwargs):
         if polling:
