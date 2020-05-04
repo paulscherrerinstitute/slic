@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from slic.utils import glob_files
+
 
 EVERYTHING = "*"
 DIGITS = "[0-9]"
@@ -45,14 +47,6 @@ def next_int(nums):
 def zero_pad(i, n):
     return str(i).zfill(n)
 
-def glob_files(folder, pattern):
-    path = Path(folder)
-    fnames = path.glob(pattern)
-    fnames = filter_files(fnames)
-    return fnames
-
-def filter_files(paths):
-    return [p for p in paths if p.is_file()]
 
 def extract_runnumbers(fnames, *args):
     return [extract_runnumber(fn, *args) for fn in fnames]
