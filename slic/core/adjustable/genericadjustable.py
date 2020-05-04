@@ -7,7 +7,7 @@ class GenericAdjustable(BaseAdjustable):
     def __init__(self, set, get, wait=None):
         self.set = set
         self.get = get
-        self.wait = wait
+        self.wait = wait if wait is not None else self._default_wait
         self.last_target = get()
 
     def set_target_value(self, pos):
@@ -18,11 +18,10 @@ class GenericAdjustable(BaseAdjustable):
         return self.get()
 
     def is_moving(self):
-        if self.wait:
-            return not self.wait()
-        else:
-            return self.get() != self.last_target
+        return not self.wait()
 
+    def _default_wait(self):
+        return self.get() == self.last_target
 
 
 
