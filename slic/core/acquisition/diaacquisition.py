@@ -3,9 +3,9 @@ from datetime import datetime
 from time import sleep
 from detector_integration_api import DetectorIntegrationClient
 
-from ..utils.channels import Channels
-from ..utils.printing import printable_dict_of_dicts
-from slic.task import Task
+from slic.utils.channels import Channels
+from slic.utils.printing import printable_dict_of_dicts
+from slic.core.task import Task
 from .baseacquisition import BaseAcquisition
 from .utils import can_create_file, SwissFELPaths
 from .pedestals import find_last_pedestal, take_pedestal

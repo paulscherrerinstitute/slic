@@ -2,7 +2,7 @@ import numpy as np
 
 from .scanbackend import ScanBackend
 from .runname import RunFilenameGenerator
-from ..devices.general.adjustable import DummyAdjustable
+from slic.devices.general.adjustable import DummyAdjustable
 from slic.utils import typename
 
 

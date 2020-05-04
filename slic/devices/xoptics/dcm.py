@@ -1,7 +1,7 @@
 from ..basedevice import BaseDevice
 from ..general.motors import MotorRecord
 from epics import PV
-from slic.task import Task
+from slic.core.task import Task
 from time import sleep
 import numpy as np
 

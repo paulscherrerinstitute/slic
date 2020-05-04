@@ -1,7 +1,7 @@
 # import subprocess
 from epics import PV
 from time import sleep
-from slic.task import Task
+from slic.core.task import Task
 
 # from ..eco_epics import device
 # from ..eco_epics.device import Device

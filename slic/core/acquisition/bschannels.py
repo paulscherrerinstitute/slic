@@ -1,6 +1,6 @@
 from bsread.avail import dispatcher
 
-from ..utils.printing import format_header
+from slic.utils.printing import format_header
 
 
 

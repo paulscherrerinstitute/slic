@@ -1,5 +1,5 @@
 from epics import PV
-from slic.task import Task
+from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
 from enum import IntEnum, auto
 import colorama

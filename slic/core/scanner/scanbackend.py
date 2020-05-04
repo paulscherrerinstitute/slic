@@ -1,9 +1,9 @@
 import os
 import colorama
 
-from ..utils import json_dump, make_dir
-from ..utils.printing import printable_dict
-from ..utils.ask_yes_no import ask_Yes_no
+from slic.utils import json_dump, make_dir
+from slic.utils.printing import printable_dict
+from slic.utils.ask_yes_no import ask_Yes_no
 
 
 

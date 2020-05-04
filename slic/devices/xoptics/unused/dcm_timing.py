@@ -1,7 +1,7 @@
 from ..devices_general.motors import MotorRecord
 from epics import PV
 from ..eco_epics.utilities_epics import EnumWrapper
-from slic.task import Task
+from slic.core.task import Task
 from time import sleep
 import numpy as np
 

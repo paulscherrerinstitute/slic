@@ -2,7 +2,7 @@ from slic.controls.eco_epics.motor import Motor as _Motor
 from slic.controls.eco_epics.utilities_epics import EpicsString
 import subprocess
 from epics import PV
-from slic.task import Task
+from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
 from .adjustable import spec_convenience, ValueInRange, update_changes, AdjustableError
 import colorama

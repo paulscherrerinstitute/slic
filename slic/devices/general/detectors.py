@@ -11,7 +11,7 @@ import h5py
 from time import sleep
 from datetime import datetime
 
-from slic.task import Task
+from slic.core.task import Task
 
 try:
     import sys, os

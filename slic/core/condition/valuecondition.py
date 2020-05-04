@@ -1,5 +1,5 @@
 from .condition import Condition
-from slic.task import Loop
+from slic.core.task import Loop
 
 
 class ValueCondition(Condition):
