@@ -122,8 +122,8 @@ def get_all_current_values(adjustables):
     return [adj.get_current_value() for adj in adjustables]
 
 def set_all_target_values_and_wait(adjustables, values):
-    changers = set_all_target_values(adjustables, values)
-    wait_for_all(changers)
+    tasks = set_all_target_values(adjustables, values)
+    wait_for_all(tasks)
 
 def set_all_target_values(adjustables, values):
     return [adj.set_target_value(val) for adj, val in zip(adjustables, values)]
