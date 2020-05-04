@@ -2,26 +2,26 @@ from time import sleep
 from .baseadjustable import BaseAdjustable
 
 
-class AutoAdjustable(BaseAdjustable):
+class GenericAdjustable(BaseAdjustable):
 
-    def __init__(self, setter, getter, waiter=None):
-        self.setter = setter
-        self.getter = getter
-        self.waiter = waiter
-        self.last_target = getter()
+    def __init__(self, set, get, wait=None):
+        self.set = set
+        self.get = get
+        self.wait = wait
+        self.last_target = get()
 
     def set_target_value(self, pos):
         self.last_target = pos
-        return self.setter(pos)
+        return self.set(pos)
 
     def get_current_value(self):
-        return self.getter()
+        return self.get()
 
     def is_moving(self):
-        if self.waiter:
-            return not self.waiter()
+        if self.wait:
+            return not self.wait()
         else:
-            return self.getter() != self.last_target
+            return self.get() != self.last_target
 
 
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         return pos
 
 
-    motor1 = AutoAdjustable(move_motor1_to, where_is_motor1)
+    motor1 = GenericAdjustable(move_motor1_to, where_is_motor1)
 
     motor1.set_target_value(10)
     while motor1.is_moving():
