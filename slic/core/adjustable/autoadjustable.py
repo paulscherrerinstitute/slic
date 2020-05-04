@@ -17,11 +17,11 @@ class AutoAdjustable(BaseAdjustable):
     def get_current_value(self):
         return self.getter()
 
-    def get_moveDone(self):
+    def is_moving(self):
         if self.waiter:
-            return self.waiter()
+            return not self.waiter()
         else:
-            return self.getter() == self.last_target
+            return self.getter() != self.last_target
 
 
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     motor1 = AutoAdjustable(move_motor1_to, where_is_motor1)
 
     motor1.set_target_value(10)
-    while not motor1.get_moveDone():
+    while motor1.is_moving():
         sleep(1)
 
     pos = motor1.get_current_value()
