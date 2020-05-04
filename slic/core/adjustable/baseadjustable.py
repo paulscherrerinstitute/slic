@@ -5,18 +5,17 @@ class BaseAdjustable(ABC):
 
     @abstractmethod
     def get_current_value(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def set_target_value(self, value):
-        pass
+        raise NotImplementedError
 
-    # underscore + camelCase ?
-    # returning 0 or 1 ? not bool?
-    # moving(self) -> bool ?
     @abstractmethod
-    def get_moveDone(self):
-        pass
+    def is_moving(self):
+        raise NotImplementedError
+
+
 
 
 
@@ -32,14 +31,14 @@ if __name__ == "__main__":
         def set_target_value(self, value):
             self.value = value
 
-        def get_moveDone(self):
-            return (self.value is not None)
+        def is_moving(self):
+            return (self.value is None)
 
 
     a = WorkingAdj()
-    print(a.get_moveDone(), a.get_current_value())
+    print(a.is_moving(), a.get_current_value())
     a.set_target_value(10)
-    print(a.get_moveDone(), a.get_current_value())
+    print(a.is_moving(), a.get_current_value())
 
 
 
