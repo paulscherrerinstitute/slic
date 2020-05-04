@@ -47,9 +47,9 @@ class Double_Crystal_Mono_AramisMacro:
     def set_current_value(self,value):
         self.energy_sp.put(value)
 
-    def get_moveDone(self):
+    def is_moving(self):
         inmotion = int(self.moving.get())
-        return inmotion
+        return not bool(inmotion)
 
     # spec-inspired convenience methods
     def mv(self,value):
@@ -59,7 +59,7 @@ class Double_Crystal_Mono_AramisMacro:
         return self.get_current_value(*args,**kwargs)
 
     def mvr(self,value,*args,**kwargs):
-        if(self.get_moveDone == 1):
+        if not self.is_moving():
             startvalue = self.get_current_value(*args,**kwargs)
         else:
             startvalue = self.get_current_value(*args,**kwargs)
@@ -161,9 +161,9 @@ class Double_Crystal_Mono(BaseDevice):
     def set_current_value(self,value):
         self.energy_sp.put(value)
 
-    def get_moveDone(self):
+    def is_moving(self):
         inmotion = int(self.moving.get())
-        return inmotion
+        return not bool(inmotion)
 
     # spec-inspired convenience methods
     def mv(self,value):
@@ -173,7 +173,7 @@ class Double_Crystal_Mono(BaseDevice):
         return self.get_current_value(*args,**kwargs)
 
     def mvr(self,value,*args,**kwargs):
-        if(self.get_moveDone == 1):
+        if not self.is_moving():
             startvalue = self.get_current_value(*args,**kwargs)
         else:
             startvalue = self.get_current_value(*args,**kwargs)

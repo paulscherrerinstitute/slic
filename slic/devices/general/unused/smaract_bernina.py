@@ -201,7 +201,7 @@ class SmarActRecord:
         """ Adjustable convention"""
         pass
 
-    def get_moveDone(self):
+    def is_moving(self):
         pass
 
     def set_limits(self, values, posType='user', relative_to_present=False):

@@ -45,7 +45,7 @@ class PvRecord:
             currval = self._pv.get()
         return currval
 
-    def get_moveDone(self):
+    def is_moving(self):
         """ Adjustable convention"""
         """ 0: moving 1: move done"""
         movedone = 1
@@ -60,12 +60,12 @@ class PvRecord:
                 movedone = 0
         else:
             sleep(self.sleeptime)
-        return movedone
+        return not bool(movedone)
 
     def move(self, value):
         self._pv.put(value)
         time.sleep(0.1)
-        while self.get_moveDone() == 0:
+        while self.is_moving():
             time.sleep(0.1)
 
     def set_target_value(self, value, hold=False):
@@ -82,7 +82,7 @@ class PvRecord:
 
     def mvr(self, value, *args, **kwargs):
 
-        if self.get_moveDone == 1:
+        if not self.is_moving():
             startvalue = self.get_current_value(readback=True, *args, **kwargs)
         else:
             startvalue = self.get_current_value(readback=False, *args, **kwargs)

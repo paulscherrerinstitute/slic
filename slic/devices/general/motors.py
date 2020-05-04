@@ -112,11 +112,10 @@ class MotorRecord:
         """ Adjustable convention"""
         pass
 
-    def get_moveDone(self):
+    def is_moving(self):
         """ Adjustable convention"""
-        """ 0: moving 1: move done"""
-        return PV(str(self.Id+".DMOV")).value
-        
+        res = PV(str(self.Id + ".DMOV")).value # 0: moving 1: move done
+        return not bool(res)
 
     def set_limits(self, values, posType='user', relative_to_present=False):
         """ Adjustable convention"""
@@ -162,7 +161,7 @@ class MotorRecord:
         return self.get_current_value(*args,**kwargs)
     def mvr(self,value,*args,**kwargs):
 
-        if(self.get_moveDone == 1):
+        if not self.is_moving():
             startvalue = self.get_current_value(readback=True,*args,**kwargs)
         else:
             startvalue = self.get_current_value(readback=False,*args,**kwargs)

@@ -201,7 +201,7 @@ class SmarActRecord:
 #         """ Adjustable convention"""
 #         pass
 # 
-#     def get_moveDone(self):
+#     def is_moving(self):
 #         """ Adjustable convention"""
 #         pass        
 
@@ -242,7 +242,7 @@ class SmarActRecord:
 #         return self.get_current_value(*args,**kwargs)
 #     def mvr(self,value,*args,**kwargs):
 # 
-#         if(self.get_moveDone == 1):
+#         if not self.is_moving():
 #             startvalue = self.get_current_value(readback=True,*args,**kwargs)
 #         else:
 #             startvalue = self.get_current_value(readback=False,*args,**kwargs)

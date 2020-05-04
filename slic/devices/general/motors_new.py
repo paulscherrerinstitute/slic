@@ -124,10 +124,10 @@ class MotorRecord:
         """ Adjustable convention"""
         pass
 
-    def get_moveDone(self):
+    def is_moving(self):
         """ Adjustable convention"""
-        """ 0: moving 1: move done"""
-        return PV(str(self.Id + ".DMOV")).value
+        res = PV(str(self.Id + ".DMOV")).value # 0: moving 1: move done
+        return not bool(res)
 
     def set_limits(
         self, low_limit, high_limit, posType="user", relative_to_present=False
