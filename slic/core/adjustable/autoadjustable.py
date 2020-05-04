@@ -1,5 +1,5 @@
 from time import sleep
-from adjustable import BaseAdjustable
+from .baseadjustable import BaseAdjustable
 
 
 class AutoAdjustable(BaseAdjustable):
