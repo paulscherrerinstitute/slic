@@ -45,7 +45,8 @@ class Condition(BaseCondition):
 
     def stop_counting_and_analyze(self):
         self.stop_counting()
-        return self.analyze()
+        state = self.analyze()
+        return state
 
     @abstractmethod
     def stop_counting(self):
