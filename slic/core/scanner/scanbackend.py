@@ -1,7 +1,7 @@
 import os
 import colorama
 
-from slic.utils import json_dump, make_dir
+from slic.utils import json_dump, make_missing_dir
 from slic.utils.printing import printable_dict
 from slic.utils.ask_yes_no import ask_Yes_no
 
@@ -65,14 +65,14 @@ class ScanBackend:
 
 
     def create_output_dirs(self):
-        make_dir(self.scan_info.base_dir)
+        make_missing_dir(self.scan_info.base_dir)
 
         for acq in self.acquisitions:
             default_dir = acq.default_dir
             if default_dir is None:
                 continue
             data_dir = default_dir + self.data_base_dir
-            make_dir(data_dir)
+            make_missing_dir(data_dir)
 
 
     def get_filename(self, istep):

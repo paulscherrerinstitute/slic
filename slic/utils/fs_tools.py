@@ -17,14 +17,16 @@ def can_create_file(filename):
     return False
 
 
-def make_dir(p):
+def make_missing_dir(p):
     p = Path(p)
     if p.exists():
         return
+
     printable = p.absolute().as_posix()
-    print(f"Path \"{printable}\" does not exist, will try to create it...")
-    p.mkdir(parents=True)
-    p.chmod(0o775)
+    msg = "Directory \"{}\" does not exist, creating it...".format(printable)
+    print(msg)
+
+    p.mkdir(mode=0o775, parents=True, exist_ok=True)
 
 
 def glob_files(folder, pattern):

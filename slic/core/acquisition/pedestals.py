@@ -4,6 +4,7 @@ from datetime import datetime
 from collections import defaultdict
 from jungfrau_utils.scripts.jungfrau_run_pedestals import run as ju_record_raw_pedestal
 
+from slic.utils import make_missing_dir
 
 
 TIMESTAMP_FORMAT = "%Y%m%d_%H%M"
@@ -76,17 +77,6 @@ def take_pedestal(instrument, pgroup, api_address, raw_dir, res_dir, analyze_loc
         analyze_pedestal_on_cluster(instrument, raw_file_base, res_dir, user)
 
     return res_file_base
-
-
-def make_missing_dir(d):
-    if os.path.exists(d):
-        return
-
-    msg = "Directory \"{}\" does not exist, creating it...".format(d)
-    print(msg)
-
-    os.makedirs(d, exist_ok=True)
-    os.chmod(d, 0o775)
 
 
 def analyze_pedestal_on_cluster(instrument, raw_file_base, res_dir, user=None):
