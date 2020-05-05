@@ -1,7 +1,7 @@
 import os
 import colorama
 
-from slic.utils import json_dump, make_missing_dir
+from slic.utils import make_missing_dir
 from slic.utils.printing import printable_dict
 from slic.utils.ask_yes_no import ask_Yes_no
 
@@ -131,56 +131,6 @@ def set_all_target_values(adjustables, values):
 def wait_for_all(tasks):
     for t in tasks:
         t.wait()
-
-
-
-class ScanInfo:
-
-    def __init__(self, filename_base, base_dir, adjustables, values):
-        self.base_dir = base_dir
-        self.filename = os.path.join(base_dir, filename_base)
-        self.filename += "_scan_info.json"
-
-        names = [ta.name if hasattr(ta, "name") else "noName" for ta in adjustables] #TODO else None?
-        ids =   [ta.Id   if hasattr(ta, "Id")   else "noId"   for ta in adjustables]
-        self.parameters = {"name": names, "Id": ids}
-
-        self.values_all = values
-
-        self.values = []
-        self.readbacks = []
-        self.files = []
-        self.info = []
-
-
-    def update(self, *args):
-        self.append(*args)
-        self.write()
-
-    def append(self, values, readbacks, files, info):
-        if callable(info):
-            info = info()
-        self.values.append(values)
-        self.readbacks.append(readbacks)
-        self.files.append(files)
-        self.info.append(info)
-
-    def write(self):
-        json_dump(self.to_dict(), self.filename)
-
-    def to_dict(self):
-        scan_info_dict = {
-            "scan_parameters": self.parameters,
-            "scan_values_all": self.values_all,
-            "scan_values":     self.values,
-            "scan_readbacks":  self.readbacks,
-            "scan_files":      self.files,
-            "scan_info":       self.info
-        }
-        return scan_info_dict
-
-    def __str__(self):
-        return "Scan info in {}".format(self.filename)
 
 
 
