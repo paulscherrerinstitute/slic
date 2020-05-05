@@ -109,6 +109,8 @@ class ScanBackend:
 
 
 
+#TODO: add class AdjustableGroup with the below as methods?
+
 def print_all_current_values(adjustables):
     res = {}
     for adj in adjustables:
