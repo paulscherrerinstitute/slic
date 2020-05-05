@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from slic.utils import glob_files
+from slic.utils import glob_files, next_int, zero_pad
 
 
 EVERYTHING = "*"
@@ -38,14 +38,6 @@ class RunFilenameGenerator:
 
 
 
-def next_int(nums):
-    if nums:
-        return max(nums) + 1
-    else:
-        return 0
-
-def zero_pad(i, n):
-    return str(i).zfill(n)
 
 
 def extract_runnumbers(fnames, *args):
