@@ -2,6 +2,8 @@ from time import sleep
 import numpy as np
 from epics import PV
 
+from slic.utils import get_dtype, get_shape
+
 from .acquisition import Acquisition
 
 
@@ -73,22 +75,6 @@ def make_arrays(pvs, n_pulses):
         arrays.append(arr)
 
     return arrays
-
-
-def get_dtype(v):
-    if is_array(v):
-        return v.dtype
-    else:
-        return type(v)
-
-def get_shape(v):
-    if is_array(v):
-        return v.shape
-    else:
-        return tuple()
-
-def is_array(v):
-    return isinstance(v, np.ndarray)
 
 
 def write_to_h5(filename, channels, arrays):

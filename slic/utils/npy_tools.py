@@ -25,4 +25,20 @@ def fraction_to_percentage(fraction, ndigits=1):
     return percentage
 
 
+def get_dtype(v):
+    if is_array(v):
+        return v.dtype
+    else:
+        return type(v)
+
+def get_shape(v):
+    if is_array(v):
+        return v.shape
+    else:
+        return tuple()
+
+def is_array(v):
+    return isinstance(v, np.ndarray)
+
+
 
