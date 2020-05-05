@@ -5,9 +5,9 @@ from detector_integration_api import DetectorIntegrationClient
 
 from slic.utils.channels import Channels
 from slic.utils.printing import printable_dict_of_dicts
+from slic.utils import can_create_file
 from slic.core.task import Task
 from .baseacquisition import BaseAcquisition
-from .utils import can_create_file
 from .sfpaths import SwissFELPaths
 from .pedestals import find_last_pedestal, take_pedestal
 

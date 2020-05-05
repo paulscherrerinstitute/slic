@@ -2,11 +2,11 @@ import os
 from abc import abstractmethod
 
 from slic.utils.channels import Channels
+from slic.utils import can_create_file, typename
 from slic.core.task import Task
 from .baseacquisition import BaseAcquisition
-from .utils import can_create_file, fix_hdf5_filename
+from .utils import fix_hdf5_filename
 from .sfpaths import SwissFELPaths
-from slic.utils import typename
 
 
 class Acquisition(BaseAcquisition):
