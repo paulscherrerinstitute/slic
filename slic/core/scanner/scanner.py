@@ -66,11 +66,6 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
-    def dscan(self, *args, **kwargs):
-        print("Warning: dscan will be deprecated for rscan unless someone explains what it stands for in spec!")
-        return self.rscan(*args, **kwargs)
-
-
     def ascan_list(self, adjustable, positions, *args, **kwargs):
         adjustables = [adjustable]
 
