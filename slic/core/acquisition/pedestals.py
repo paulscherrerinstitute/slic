@@ -8,6 +8,7 @@ from slic.utils import make_missing_dir
 
 
 TIMESTAMP_FORMAT = "%Y%m%d_%H%M"
+PREFIX = "pedestal_"
 
 
 
@@ -35,7 +36,7 @@ def find_last_pedestal(clients, directory="."):
     best = max(good)
     best = best.strftime(TIMESTAMP_FORMAT)
 
-    res = "pedestal_" + best
+    res = PREFIX + best
     res = os.path.join(directory, res)
     return res
 
@@ -43,9 +44,8 @@ def find_last_pedestal(clients, directory="."):
 def extract_timestamp(fn):
     fn = strip_dir(fn)
     base = fn.split(".")[0]
-    prefix = "pedestal_"
-    assert base.startswith(prefix), "\"{}\" does not start with \"{}\"".format(base, prefix)
-    timestamp = base[len(prefix):]
+    assert base.startswith(PREFIX), "\"{}\" does not start with \"{}\"".format(base, PREFIX)
+    timestamp = base[len(PREFIX):]
     timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
     return timestamp
 
@@ -63,7 +63,7 @@ def take_pedestal(instrument, pgroup, api_address, raw_dir, res_dir, analyze_loc
     make_missing_dir(res_dir)
 
     now = datetime.now().strftime(TIMESTAMP_FORMAT)
-    file_base = "pedestal_" + now
+    file_base = PREFIX + now
 
     raw_file_base = raw_dir + file_base
     res_file_base = res_dir + file_base
