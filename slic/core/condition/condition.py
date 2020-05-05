@@ -1,9 +1,10 @@
 from abc import abstractmethod
 from time import sleep
 
-from .basecondition import BaseCondition
 from slic.utils import within, within_fraction, fraction_to_percentage
 from slic.utils import typename
+
+from .basecondition import BaseCondition
 
 
 class Condition(BaseCondition):

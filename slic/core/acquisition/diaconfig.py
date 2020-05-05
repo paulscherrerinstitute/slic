@@ -3,12 +3,10 @@ from datetime import datetime
 from slic.utils.printing import printable_dict_of_dicts
 
 
-
 EXPTIME = {
     "alvra":   0.000005,
     "bernina": 0.00001
 }
-
 
 
 class DIAConfig:

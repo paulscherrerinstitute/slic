@@ -6,7 +6,6 @@ from slic.utils.printing import printable_dict
 from slic.utils.ask_yes_no import ask_Yes_no
 
 
-
 class ScanBackend:
 
     def __init__(self, adjustables, values, acquisitions, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):

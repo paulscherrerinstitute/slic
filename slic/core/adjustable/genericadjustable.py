@@ -1,4 +1,5 @@
 from time import sleep
+
 from .baseadjustable import BaseAdjustable
 
 
@@ -22,6 +23,7 @@ class GenericAdjustable(BaseAdjustable):
 
     def _default_wait(self):
         return self.get() == self.last_target
+
 
 
 

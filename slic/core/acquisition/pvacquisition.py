@@ -7,7 +7,6 @@ from slic.utils import get_dtype, get_shape
 from .acquisition import Acquisition
 
 
-
 class PVAcquisition(Acquisition):
 
     def _acquire(self, *args, polling=False, **kwargs):
@@ -30,7 +29,6 @@ def epics_to_h5_polling(filename, channels, n_pulses=100, wait_time=0.5):
         sleep(wait_time)
 
     write_to_h5(filename, channels, arrays)
-
 
 
 def epics_to_h5_triggered(filename, channels, n_pulses=100, wait_time=0.5):

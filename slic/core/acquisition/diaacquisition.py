@@ -12,7 +12,6 @@ from .sfpaths import SwissFELPaths
 from .pedestals import find_last_pedestal, take_pedestal
 
 
-
 class DIAAcquisition(BaseAcquisition):
 
     def __init__(self, instrument, pgroup, default_channels=None, default_dir=None, api_address=None):

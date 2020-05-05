@@ -3,7 +3,6 @@ from bsread.avail import dispatcher
 from slic.utils.printing import format_header
 
 
-
 class BSChannels:
 
     def __init__(self, channels):

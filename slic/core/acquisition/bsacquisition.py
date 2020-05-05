@@ -6,7 +6,6 @@ from bsread.avail import dispatcher
 from .acquisition import Acquisition
 
 
-
 class BSAcquisition(Acquisition):
 
     def _acquire(self, *args, **kwargs):

@@ -11,7 +11,6 @@ TIMESTAMP_FORMAT = "%Y%m%d_%H%M"
 PREFIX = "pedestal_"
 
 
-
 def find_last_pedestal(clients, directory="."):
     clients = set(clients)
     clients = clients - {"bsread"}

@@ -1,7 +1,8 @@
 from threading import Thread
 
-from .basetask import BaseTask
 from slic.utils import typename
+
+from .basetask import BaseTask
 
 
 class Task(BaseTask):

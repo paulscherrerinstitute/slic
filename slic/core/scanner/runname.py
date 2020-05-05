@@ -7,7 +7,6 @@ EVERYTHING = "*"
 DIGITS = "[0-9]"
 
 
-
 class RunFilenameGenerator:
 
     def __init__(self, base_dir, prefix="run", n_digits=4, separator="_", extension="json"):
@@ -35,8 +34,6 @@ class RunFilenameGenerator:
 
     def _fill_filename_pattern(name, run_index):
         return self.prefix + run_index + self.separator + name + "." + self.extension
-
-
 
 
 

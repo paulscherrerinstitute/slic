@@ -1,9 +1,7 @@
 from datetime import datetime, timedelta
-
 import data_api as dapi
 
 from .acquisition import Acquisition
-
 
 
 class DBAcquisition(Acquisition):
