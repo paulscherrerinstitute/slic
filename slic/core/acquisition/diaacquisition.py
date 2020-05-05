@@ -7,7 +7,8 @@ from slic.utils.channels import Channels
 from slic.utils.printing import printable_dict_of_dicts
 from slic.core.task import Task
 from .baseacquisition import BaseAcquisition
-from .utils import can_create_file, SwissFELPaths
+from .utils import can_create_file
+from .sfpaths import SwissFELPaths
 from .pedestals import find_last_pedestal, take_pedestal
 
 

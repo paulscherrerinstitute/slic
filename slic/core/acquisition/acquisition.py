@@ -4,7 +4,8 @@ from abc import abstractmethod
 from slic.utils.channels import Channels
 from slic.core.task import Task
 from .baseacquisition import BaseAcquisition
-from .utils import can_create_file, fix_hdf5_filename, SwissFELPaths
+from .utils import can_create_file, fix_hdf5_filename
+from .sfpaths import SwissFELPaths
 from slic.utils import typename
 
 
