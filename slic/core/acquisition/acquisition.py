@@ -5,7 +5,6 @@ from slic.utils.channels import Channels
 from slic.utils import can_create_file, typename
 from slic.core.task import Task
 from .baseacquisition import BaseAcquisition
-from .utils import fix_hdf5_filename
 from .sfpaths import SwissFELPaths
 
 
@@ -53,6 +52,16 @@ class Acquisition(BaseAcquisition):
     def __repr__(self):
         name = typename(self)
         return "{}: {}/{}".format(name, self.instrument, self.pgroup) #TODO
+
+
+
+def fix_hdf5_filename(filename):
+    if filename:
+        if not filename.endswith(".h5"):
+            filename += ".h5"
+    else:
+        filename = "/dev/null"
+    return filename
 
 
 
