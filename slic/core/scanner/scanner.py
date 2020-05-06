@@ -41,7 +41,7 @@ class Scanner:
         adjustables = [adjustable]
 
         positions = make_positions(start_pos, end_pos, n_intervals)
-        positions = zip(positions)
+        positions = transpose(positions)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -51,7 +51,7 @@ class Scanner:
 
         positions0 = make_positions(start0_pos, end0_pos, n_intervals)
         positions1 = make_positions(start1_pos, end1_pos, n_intervals)
-        positions = zip(positions0, positions1)
+        positions = transpose(positions0, positions1)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -61,7 +61,7 @@ class Scanner:
 
         positions = make_positions(start_pos, end_pos, n_intervals)
         positions += adjustable.get_current_value()
-        positions = zip(positions)
+        positions = transpose(positions)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -69,7 +69,7 @@ class Scanner:
     def ascan_list(self, adjustable, positions, *args, **kwargs):
         adjustables = [adjustable]
 
-        positions = zip(positions)
+        positions = transpose(positions)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -77,7 +77,7 @@ class Scanner:
     def a2scan_list(self, adjustable0, positions0, adjustable1, positions1, *args, **kwargs):
         adjustables = [adjustable0, adjustable1]
 
-        positions = zip(positions0, positions1)
+        positions = transpose(positions0, positions1)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -87,13 +87,18 @@ class Scanner:
         adjustables = [adjustable]
 
         positions = range(n_intervals)
-        positions = zip(positions)
+        positions = transpose(positions)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
     def __repr__(self):
         return typename(self) #TODO
+
+
+
+def transpose(*args):
+    return list(zip(*args))
 
 
 
