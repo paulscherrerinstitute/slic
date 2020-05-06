@@ -1,14 +1,4 @@
-import json
-
-
-def loadConfig(fina):
-    with open(fina, 'r') as f:
-        return json.load(f)
-
-def writeConfig(fina, obj):
-    with open(fina, 'w') as f:
-        json.dump(obj, f)
-
+from .json import json_load
 
 
 class Config:
@@ -16,7 +6,7 @@ class Config:
 #    elog_url = user = screenshot_directory = pgroup = None
 
     def __init__(self, fname):
-        cfg = loadConfig(fname)
+        cfg = json_load(fname)
         self.__dict__.update(cfg)
 
 

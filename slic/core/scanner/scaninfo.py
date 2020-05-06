@@ -1,6 +1,6 @@
 import os
 
-from slic.utils import json_dump
+from slic.utils import json_save
 
 
 class ScanInfo:
@@ -35,7 +35,7 @@ class ScanInfo:
         self.info.append(info)
 
     def write(self):
-        json_dump(self.to_dict(), self.filename)
+        json_save(self.to_dict(), self.filename)
 
     def to_dict(self):
         scan_info_dict = {
