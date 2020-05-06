@@ -20,7 +20,7 @@ class RunFilenameGenerator:
         runnums = self.get_existing_runnumbers()
         irun = next_int(runnums)
         formatted_irun = zero_pad(irun, self.n_digits)
-        return _fill_filename_pattern(name, formatted_irun)
+        return self._fill_filename_pattern(name, formatted_irun)
 
     def get_existing_runnumbers(self):
         fnames = glob_files(self.base_dir, self.pattern)
@@ -30,9 +30,9 @@ class RunFilenameGenerator:
     @property
     def pattern(self):
         runnum_pattern = self.n_digits * DIGITS
-        return _fill_filename_pattern(EVERYTHING, runnum_pattern)
+        return self._fill_filename_pattern(EVERYTHING, runnum_pattern)
 
-    def _fill_filename_pattern(name, run_index):
+    def _fill_filename_pattern(self, name, run_index):
         return self.prefix + run_index + self.separator + name + "." + self.extension
 
 
