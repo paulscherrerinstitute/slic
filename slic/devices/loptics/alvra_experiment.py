@@ -1,4 +1,4 @@
-from slic.controls.pv import PV
+from slic.utils.pv import PV
 from slic.utils.printing import printable_dict
 
 from ..basedevice import BaseDevice
