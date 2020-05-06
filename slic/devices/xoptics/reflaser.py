@@ -42,9 +42,9 @@ class RefLaser_Aramis:
             else:
                 print('String %s not recognized!'%value)
         if value:
-            self.mirrmotor.changeTo(self._inpos)
+            self.mirrmotor.set_target_value(self._inpos)
         else:
-            self.mirrmotor.changeTo(self._outpos)
+            self.mirrmotor.set_target_value(self._outpos)
         
 
     def __repr__(self):

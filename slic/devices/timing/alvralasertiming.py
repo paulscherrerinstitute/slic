@@ -209,7 +209,7 @@ class Lxt(object):
         delay = int(idx_pulse)*_OSCILLATOR_PERIOD - phase_shifter
         return -delay
 
-    def changeTo(self, value, hold=False):
+    def set_target_value(self, value, hold=False):
         """ Adjustable convention"""
         changer = lambda: self.move(value)
         return Task(changer, hold=hold)
@@ -256,7 +256,7 @@ class eTiming:
     def __repr__(self):
         return self.__str__()
 
-    def changeTo(self,value,hold=False):
+    def set_target_value(self,value,hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold)
 

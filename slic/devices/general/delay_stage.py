@@ -62,10 +62,10 @@ class Delay:
         self._stage.set_current_value(motor_pos)
         return (value, motor_pos)
 
-    def changeTo(self, value, hold=False, check=True):
+    def set_target_value(self, value, hold=False, check=True):
         value = self.delay_to_motor(value) + self.delay_stage_offset
         delay = pos_to_delay(value - self.delay_stage_offset)
-        return self._stage.changeTo(value, hold, check)
+        return self._stage.set_target_value(value, hold, check)
 
 
     def gui(self, guiType='xdm'):
@@ -74,7 +74,7 @@ class Delay:
 
     # spec-inspired convenience methods
     def mv(self, value):
-        self._stage._currentChange = self.changeTo(value)
+        self._stage._currentChange = self.set_target_value(value)
 
     def wm(self, *args, **kwargs):
         return self.get_current_value(*args, **kwargs)
@@ -102,7 +102,7 @@ class Delay:
 
 
     def __call__(self, value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
 
 
 

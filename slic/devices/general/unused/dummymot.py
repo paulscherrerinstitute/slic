@@ -36,10 +36,10 @@ class DummyMot:
         self._stage.set_current_value(motor_pos)
         return (value, motor_pos) 
 
-    def changeTo(self, value, hold=False, check=True):
+    def set_target_value(self, value, hold=False, check=True):
         value = self.delay_to_motor(value) + self.delay_stage_offset
         delay = (value - self.delay_stage_offset)*2.*3.33333333*1e-12
-        return self._stage.changeTo(value, hold, check)
+        return self._stage.set_target_value(value, hold, check)
 
         
     def gui(self, guiType='xdm'):
@@ -48,7 +48,7 @@ class DummyMot:
 
     # spec-inspired convenience methods
     def mv(self,value):
-        self._stage._currentChange = self.changeTo(value)
+        self._stage._currentChange = self.set_target_value(value)
 
     def wm(self,*args,**kwargs):
         return self.get_current_value(*args,**kwargs)
@@ -78,5 +78,5 @@ class DummyMot:
         return self.__str__()
 
     def __call__(self,value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
 

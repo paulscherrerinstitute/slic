@@ -19,24 +19,24 @@ class SlitBlades_old:
         return (self._y1.get_current_value()+self._y2.get_current_value())/2
     def set_hg(self,value):
         ho = self.get_ho()
-        c1 = self._x1.changeTo(ho-value/2)
-        c2 = self._x2.changeTo(ho+value/2)
+        c1 = self._x1.set_target_value(ho-value/2)
+        c2 = self._x2.set_target_value(ho+value/2)
         return c1,c2
     def set_vg(self,value):
         vo = self.get_vo()
-        c1 = self._y1.changeTo(vo-value/2)
-        c2 = self._y2.changeTo(vo+value/2)
+        c1 = self._y1.set_target_value(vo-value/2)
+        c2 = self._y2.set_target_value(vo+value/2)
         return c1,c2
 
     def set_ho(self,value):
         hg = self.get_hg()
-        c1 = self._x1.changeTo(value-hg/2)
-        c2 = self._x2.changeTo(value+hg/2)
+        c1 = self._x1.set_target_value(value-hg/2)
+        c2 = self._x2.set_target_value(value+hg/2)
         return c1,c2
     def set_vo(self,value):
         vg = self.get_vg()
-        c1 = self._y1.changeTo(value-vg/2)
-        c2 = self._y2.changeTo(value+vg/2)
+        c1 = self._y1.set_target_value(value-vg/2)
+        c2 = self._y2.set_target_value(value+vg/2)
         return c1,c2
 
     def __call__(self,width,height):
@@ -72,32 +72,32 @@ class SlitFourBlades_old:
         return (self._ay1.get_current_value()+self._ay2.get_current_value())/2
     def set_hg(self,value):
         ho = self.get_ho()
-        c1 = self._ax1.changeTo(ho-value/2)
-        c2 = self._ax2.changeTo(ho+value/2)
-        c3 = self._bx1.changeTo(ho-value/2)
-        c4 = self._bx2.changeTo(ho+value/2)
+        c1 = self._ax1.set_target_value(ho-value/2)
+        c2 = self._ax2.set_target_value(ho+value/2)
+        c3 = self._bx1.set_target_value(ho-value/2)
+        c4 = self._bx2.set_target_value(ho+value/2)
         return c1,c2,c3,c4
     def set_vg(self,value):
         vo = self.get_vo()
-        c1 = self._ay1.changeTo(vo-value/2)
-        c2 = self._ay2.changeTo(vo+value/2)
-        c3 = self._by1.changeTo(vo-value/2)
-        c4 = self._by2.changeTo(vo+value/2)
+        c1 = self._ay1.set_target_value(vo-value/2)
+        c2 = self._ay2.set_target_value(vo+value/2)
+        c3 = self._by1.set_target_value(vo-value/2)
+        c4 = self._by2.set_target_value(vo+value/2)
         return c1,c2,c3,c4
 
     def set_ho(self,value):
         hg = self.get_hg()
-        c1 = self._ax1.changeTo(value-hg/2)
-        c2 = self._ax2.changeTo(value+hg/2)
-        c3 = self._bx1.changeTo(value-hg/2)
-        c4 = self._bx2.changeTo(value+hg/2)
+        c1 = self._ax1.set_target_value(value-hg/2)
+        c2 = self._ax2.set_target_value(value+hg/2)
+        c3 = self._bx1.set_target_value(value-hg/2)
+        c4 = self._bx2.set_target_value(value+hg/2)
         return c1,c2,c3,c4
     def set_vo(self,value):
         vg = self.get_vg()
-        c1 = self._ay1.changeTo(value-vg/2)
-        c2 = self._ay2.changeTo(value+vg/2)
-        c3 = self._by1.changeTo(value-vg/2)
-        c4 = self._by2.changeTo(value+vg/2)
+        c1 = self._ay1.set_target_value(value-vg/2)
+        c2 = self._ay2.set_target_value(value+vg/2)
+        c3 = self._by1.set_target_value(value-vg/2)
+        c4 = self._by2.set_target_value(value+vg/2)
         return c1,c2,c3,c4
 
     def __call__(self,width,height):
@@ -132,17 +132,17 @@ class SlitPosWidth_old:
     def get_vo(self):
         return self._yoffs.get_current_value()
     def set_hg(self,value):
-        c = self._xgap.changeTo(value)
+        c = self._xgap.set_target_value(value)
         return c
     def set_vg(self,value):
-        c = self._ygap.changeTo(value)
+        c = self._ygap.set_target_value(value)
         return c
 
     def set_ho(self,value):
-        c = self._xoffs.changeTo(value)
+        c = self._xoffs.set_target_value(value)
         return c
     def set_vo(self,value):
-        c = self._yoffs.changeTo(value)
+        c = self._yoffs.set_target_value(value)
         return c
 
     def __call__(self,width,height):

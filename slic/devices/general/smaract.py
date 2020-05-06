@@ -65,7 +65,7 @@ class SmarActRecord:
 # 		self.units = self._drive.get('EGU')
 
     # Conventional methods and properties for all Adjustable objects
-	def changeTo(self, value, hold=False):
+	def set_target_value(self, value, hold=False):
 		changer = lambda: self.move_and_wait(value)
 		return Task(changer, hold=hold, stopper=self._stop.put(1))
 
@@ -237,7 +237,7 @@ class SmarActRecord:
 
 
 #     def mv(self,value):
-#         self._currentChange = self.changeTo(value)
+#         self._currentChange = self.set_target_value(value)
 #     def wm(self,*args,**kwargs):
 #         return self.get_current_value(*args,**kwargs)
 #     def mvr(self,value,*args,**kwargs):
@@ -246,7 +246,7 @@ class SmarActRecord:
 #             startvalue = self.get_current_value(readback=True,*args,**kwargs)
 #         else:
 #             startvalue = self.get_current_value(readback=False,*args,**kwargs)
-#         self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)
+#         self._currentChange = self.set_target_value(value+startvalue,*args,**kwargs)
 #     def wait(self):
 #         self._currentChange.wait()
 
@@ -260,7 +260,7 @@ class SmarActRecord:
 		return self.__str__()
 
 #     def __call__(self,value):
-#         self._currentChange = self.changeTo(value)
+#         self._currentChange = self.set_target_value(value)
 # 
 
 # class SmarActDevice(SmarActRecord):

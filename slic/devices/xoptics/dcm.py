@@ -27,7 +27,7 @@ class Double_Crystal_Mono_AramisMacro:
         while abs(self.wait_for_valid_value()-value)>precision:
             sleep(checktime)
 
-    def changeTo(self,value,hold=False):
+    def set_target_value(self,value,hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(hold=hold, stopper=self.stop)
 
@@ -53,7 +53,7 @@ class Double_Crystal_Mono_AramisMacro:
 
     # spec-inspired convenience methods
     def mv(self,value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
 
     def wm(self,*args,**kwargs):
         return self.get_current_value(*args,**kwargs)
@@ -63,7 +63,7 @@ class Double_Crystal_Mono_AramisMacro:
             startvalue = self.get_current_value(*args,**kwargs)
         else:
             startvalue = self.get_current_value(*args,**kwargs)
-        self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)
+        self._currentChange = self.set_target_value(value+startvalue,*args,**kwargs)
 
     def wait(self):
         self._currentChange.wait()
@@ -82,7 +82,7 @@ class Double_Crystal_Mono_AramisMacro:
         return self.__str__()
 
     def __call__(self,value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
 
 
 
@@ -112,7 +112,7 @@ class EcolEnergy:
             #print(self.dmov.get())
             sleep(checktime)
 
-    def changeTo(self,value,hold=False):
+    def set_target_value(self,value,hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold)
 
@@ -141,7 +141,7 @@ class Double_Crystal_Mono(BaseDevice):
         while abs(self.wait_for_valid_value()-value)>precision:
             sleep(checktime)
 
-    def changeTo(self,value,hold=False):
+    def set_target_value(self,value,hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold, stopper=self.stop)
 
@@ -167,7 +167,7 @@ class Double_Crystal_Mono(BaseDevice):
 
     # spec-inspired convenience methods
     def mv(self,value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
 
     def wm(self,*args,**kwargs):
         return self.get_current_value(*args,**kwargs)
@@ -177,7 +177,7 @@ class Double_Crystal_Mono(BaseDevice):
             startvalue = self.get_current_value(*args,**kwargs)
         else:
             startvalue = self.get_current_value(*args,**kwargs)
-        self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)
+        self._currentChange = self.set_target_value(value+startvalue,*args,**kwargs)
 
     def wait(self):
         self._currentChange.wait()
@@ -196,7 +196,7 @@ class Double_Crystal_Mono(BaseDevice):
         return self.__str__()
 
     def __call__(self,value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
 
 
 
@@ -226,7 +226,7 @@ class EcolEnergy:
             #print(self.dmov.get())
             sleep(checktime)
 
-    def changeTo(self,value,hold=False):
+    def set_target_value(self,value,hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold)
 
@@ -246,12 +246,12 @@ class MonoEcolEnergy:
         return self.dcm.get_current_value()
 
     def move_and_wait(self,value):
-        ch = [self.dcm.changeTo(value),
-                self.ecol.changeTo(self.calcEcol(value))]
+        ch = [self.dcm.set_target_value(value),
+                self.ecol.set_target_value(self.calcEcol(value))]
         for tc in ch:
             tc.wait()
 
-    def changeTo(self,value,hold=False):
+    def set_target_value(self,value,hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold, stopper=self.dcm.stop)
 
@@ -331,7 +331,7 @@ class AlvraDCM_FEL:
         while self._energyChanging == 1:
             sleep(checktime)
 
-    def changeTo(self,value,hold=False):
+    def set_target_value(self,value,hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold)
 

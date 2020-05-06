@@ -46,7 +46,7 @@ class MotorRecord:
 
 
     # Conventional methods and properties for all Adjustable objects
-    def changeTo(self, value, hold=False, check=True):
+    def set_target_value(self, value, hold=False, check=True):
         """ Adjustable convention"""
 
         def changer():
@@ -156,7 +156,7 @@ class MotorRecord:
 
     # spec-inspired convenience methods
     def mv(self,value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
     def wm(self,*args,**kwargs):
         return self.get_current_value(*args,**kwargs)
     def mvr(self,value,*args,**kwargs):
@@ -165,7 +165,7 @@ class MotorRecord:
             startvalue = self.get_current_value(readback=True,*args,**kwargs)
         else:
             startvalue = self.get_current_value(readback=False,*args,**kwargs)
-        self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)
+        self._currentChange = self.set_target_value(value+startvalue,*args,**kwargs)
     def wait(self):
         self._currentChange.wait()
 
@@ -178,7 +178,7 @@ class MotorRecord:
         return self.__str__()
 
     def __call__(self,value):
-        self._currentChange = self.changeTo(value)
+        self._currentChange = self.set_target_value(value)
 
 
 

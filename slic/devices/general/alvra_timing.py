@@ -150,7 +150,7 @@ class PhaseShifterAramis:
         self._elog = elog
         self.name = name
     
-    def changeTo(self, value, hold=False, check=True):
+    def set_target_value(self, value, hold=False, check=True):
         """ Adjustable convention"""
         mover = lambda: self._pshifter.move(value)
         return Task(mover, hold=hold)
