@@ -2,7 +2,7 @@ from ..general.motors import MotorRecord
 from ..general.detectors import CameraCA,CameraBS
 #from ..general.epics_wrappers import EnumSelector
 from epics import PV
-from slic.controls.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
 class Pprm:
     def __init__(self, Id, z_undulator=None, description=None):

@@ -1,5 +1,5 @@
-from slic.controls.eco_epics.motor import Motor as _Motor
-from slic.controls.eco_epics.utilities_epics import EpicsString
+from slic.utils.eco_epics.motor import Motor as _Motor
+from slic.utils.eco_epics.utilities_epics import EpicsString
 import subprocess
 from epics import PV
 from slic.core.task import Task

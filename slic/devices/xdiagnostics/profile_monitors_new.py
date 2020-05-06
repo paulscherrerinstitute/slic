@@ -5,7 +5,7 @@ from ..general.adjustable import PvEnum
 
 # from ..devices_general.epics_wrappers import EnumSelector
 from epics import PV
-from slic.controls.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
 
 def addMotorRecordToSelf(self, Id=None, name=None):
