@@ -22,7 +22,7 @@ class Acquisition(BaseAcquisition):
             default_channels = Channels(default_channel_list)
 
         if not default_dir:
-            default_dir = self.paths.raw
+            default_dir = self.paths.res
 
         self.default_channels = default_channels
         self.default_dir = default_dir
