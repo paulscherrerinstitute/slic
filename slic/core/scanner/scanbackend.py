@@ -5,6 +5,8 @@ from slic.utils import make_missing_dir
 from slic.utils.printing import printable_dict
 from slic.utils.ask_yes_no import ask_Yes_no
 
+from .scaninfo import ScanInfo
+
 
 class ScanBackend:
 
