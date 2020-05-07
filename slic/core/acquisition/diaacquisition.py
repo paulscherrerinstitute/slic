@@ -69,12 +69,18 @@ class DIAAcquisition(BaseAcquisition):
 
 
     def can_create_all_files(self, base):
-        for client in self.active_clients:
-            client = client.upper()
-            filename = "{}.{}.h5".format(base, client)
-            if not can_create_file(filename):
+        for fn in self.all_filenames(base):
+            if not can_create_file(fn):
                 return False
         return True
+
+    def all_filenames(self, base):
+        res = []
+        for client in self.active_clients:
+            client = client.upper()
+            fn = "{}.{}.h5".format(base, client)
+            res.append(fn)
+        return res
 
     @property
     def active_clients(self):
