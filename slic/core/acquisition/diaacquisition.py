@@ -65,16 +65,16 @@ class DIAAcquisition(BaseAcquisition):
             self.wait_until_finished()
             self.client.reset()
 
-        return Task(acquire=_acquire, stopper=self.client.stop, hold=False)
+        return Task(_acquire, stopper=self.client.stop, hold=False)
 
 
     def can_create_all_files(self, base):
-        for fn in self.all_filenames(base):
+        for fn in self.make_all_filenames(base):
             if not can_create_file(fn):
                 return False
         return True
 
-    def all_filenames(self, base):
+    def make_all_filenames(self, base):
         res = []
         for client in self.active_clients:
             client = client.upper()
