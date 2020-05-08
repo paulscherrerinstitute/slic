@@ -27,7 +27,7 @@ class Screenshot:
         tim = datetime.datetime.now()
         fina = '%s-%s-%s_%s-%s-%s'%tim.timetuple()[:6]
         if 'Author' in kwargs.keys():
-            fina+='_%s'%user
+            fina+='_%s'%kwargs['Author']
         else:
             fina+='_%s'%self.user
         fina+='.png'
