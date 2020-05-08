@@ -95,7 +95,7 @@ class ScanBackend:
             tasks.append(t)
             filenames.extend(t.filenames)
 
-        wait_for_all(acqs)
+        wait_for_all(tasks)
         return filenames #TODO: returning this is weird
 
 
