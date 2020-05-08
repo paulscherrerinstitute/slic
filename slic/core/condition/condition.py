@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from time import sleep
+from time import time, sleep
 
 from slic.utils import within, within_fraction, fraction_to_percentage
 from slic.utils import typename
