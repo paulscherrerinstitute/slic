@@ -70,7 +70,7 @@ def make_arrays(pvs, n_pulses):
         shape = get_shape(val)
         shape = (n_pulses,) + shape
 
-        arr =  np.empty(shape, dtype)
+        arr = np.empty(shape, dtype)
         arrays.append(arr)
 
     return arrays

@@ -34,9 +34,9 @@ class Loop(Task):
 
 class TimedLoop(Loop):
 
-    def __init__(self, func, max_time, wait_time=0, hold=True):
+    def __init__(self, func, max_time, **kwargs):
         self.timer = Timer(max_time)
-        super().__init__(func, wait_time, hold)
+        super().__init__(func, **kwargs)
 
     def loop(self):
         while self.running and self.timer:

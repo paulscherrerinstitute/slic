@@ -15,7 +15,7 @@ class SwissFELPaths:
         # converted:     "/sf/alvra/data/p18442/res/JF_pedestals/pedestal_20200202_2046.JF02T09V02.res.h5"
         # send to DIA:   "/sf/alvra/data/p18442/res/JF_pedestals/pedestal_20200202_2046" where ".DETECTOR.res.h5" will be appended
 
-        pede_files = pede + "pedestal_*.res.h5" 
+        pede_files = pede + "pedestal_*.res.h5"
 
         default_channel_list = instrument + "config/com/channel_lists/default_channel_list"
 

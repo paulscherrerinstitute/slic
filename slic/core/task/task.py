@@ -29,11 +29,9 @@ class Task(BaseTask):
     def status(self):
         if self.thread.ident is None:
             return "ready"
-        else:
-            if self.thread.isAlive():
-                return "running"
-            else:
-                return "done"
+        if self.thread.isAlive():
+            return "running"
+        return "done"
 
     def __repr__(self):
         name = typename(self)

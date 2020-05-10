@@ -96,7 +96,7 @@ def analyze_pedestal_on_cluster(instrument, raw_file_base, res_dir, user=None):
         cmd = f"sbatch jungfrau_create_pedestals --filename {ped} --directory {res_dir} --verbosity 4"
         commands.append(cmd)
 
-    cmd = "\;".join(commands)
+    cmd = "; ".join(commands)
     os.system(cmd)
 
 

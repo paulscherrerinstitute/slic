@@ -13,7 +13,7 @@ def make_positions(start, end, n):
 
 class Scanner:
 
-    def __init__(self, data_base_dir="", scan_info_dir="", default_acquisitions=[], condition=None, make_scan_sub_dir=True):
+    def __init__(self, data_base_dir="", scan_info_dir="", default_acquisitions=(), condition=None, make_scan_sub_dir=True):
         self.data_base_dir = data_base_dir
         self.scan_info_dir = scan_info_dir
         self.default_acquisitions = default_acquisitions
@@ -23,7 +23,7 @@ class Scanner:
         self.filename_generator = RunFilenameGenerator(scan_info_dir)
 
 
-    def make_scan(self, adjustables, positions, n_pulses, filename, acquisitions=[], start_immediately=True, step_info=None):
+    def make_scan(self, adjustables, positions, n_pulses, filename, acquisitions=(), start_immediately=True, step_info=None):
         filename = self.filename_generator.get_next_run_filename(filename)
 
         if not acquisitions:

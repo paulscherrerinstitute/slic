@@ -1,5 +1,4 @@
 import os
-import colorama
 
 from slic.utils import make_missing_dir
 from slic.utils.printing import printable_dict

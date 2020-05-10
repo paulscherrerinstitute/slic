@@ -38,7 +38,7 @@ class DIAAcquisition(BaseAcquisition):
         self.client = DetectorIntegrationClient(api_address)
 
 
-    def acquire(self, filename=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False, **kwargs):
+    def acquire(self, filename=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False):
         if filename:
             if use_default_dir:
                 filename = os.path.join(self.default_dir, filename)
