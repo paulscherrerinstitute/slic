@@ -4,6 +4,13 @@ from pathlib import Path
 from .ask_yes_no import ask_yes_No
 
 
+def can_create_all_files(filenames):
+    for fn in filenames:
+        if not can_create_file(fn):
+            return False
+    return True
+
+
 def can_create_file(filename):
     if not os.path.isfile(filename):
         return True

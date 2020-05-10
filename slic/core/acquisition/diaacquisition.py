@@ -3,8 +3,8 @@ from time import sleep
 from detector_integration_api import DetectorIntegrationClient
 
 from slic.utils.channels import Channels
-from slic.utils import can_create_file
-from slic.core.task import Task
+from slic.utils import can_create_all_files
+from slic.core.task import DAQTask
 
 from .baseacquisition import BaseAcquisition
 from .diaconfig import DIAConfig, EXPTIME
@@ -42,7 +42,8 @@ class DIAAcquisition(BaseAcquisition):
         if filename:
             if use_default_dir:
                 filename = os.path.join(self.default_dir, filename)
-            if not self.can_create_all_files(filename):
+            filenames = self.make_all_filenames(filename)
+            if not can_create_all_files(filenames):
                 return
         else:
             filename = "/dev/null"
@@ -65,14 +66,8 @@ class DIAAcquisition(BaseAcquisition):
             self.wait_until_finished()
             self.client.reset()
 
-        return Task(_acquire, stopper=self.client.stop, hold=False)
+        return DAQTask(_acquire, stopper=self.client.stop, filenames=filenames, hold=False)
 
-
-    def can_create_all_files(self, base):
-        for fn in self.make_all_filenames(base):
-            if not can_create_file(fn):
-                return False
-        return True
 
     def make_all_filenames(self, base):
         res = []

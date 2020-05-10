@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 from slic.utils.channels import Channels
 from slic.utils import can_create_file, typename
-from slic.core.task import Task
+from slic.core.task import DAQTask
 
 from .baseacquisition import BaseAcquisition
 from .sfpaths import SwissFELPaths
@@ -42,7 +42,7 @@ class Acquisition(BaseAcquisition):
             channels = self.default_channels
 
         acq = lambda: self._acquire(filename, channels, **kwargs)
-        return Task(acq, hold=False)
+        return DAQTask(acq, filename=filename, hold=False)
 
 
     @abstractmethod
