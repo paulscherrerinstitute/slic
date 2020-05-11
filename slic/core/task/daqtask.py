@@ -1,3 +1,5 @@
+from slic.utils.printing import itemize
+
 from .task import Task
 
 
@@ -6,6 +8,14 @@ class DAQTask(Task):
     def __init__(self, *args, filename=None, filenames=(), **kwargs):
         super().__init__(*args, **kwargs)
         self.filenames = homogenized_list(filename, filenames)
+
+    def __repr__(self):
+        res = super().__repr__()
+        if self.filenames:
+            items = itemize(self.filenames)
+            header = "Output files:"
+            res = "\n".join((res, header, items))
+        return res
 
 
 

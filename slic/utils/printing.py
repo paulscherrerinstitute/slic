@@ -26,4 +26,11 @@ def format_header(msg, line_char="-"):
     return msg
 
 
+def itemize(iterable, bullet="-"):
+    if not bullet.endswith(" "):
+        bullet += " "
+    lines = (bullet + str(i) for i in iterable)
+    return "\n".join(lines)
+
+
 
