@@ -72,6 +72,11 @@ class ScanBackend:
             if default_dir is None:
                 continue
             data_dir = default_dir + self.data_base_dir
+
+            if self.make_scan_sub_dir:
+                filebase = os.path.basename(self.filename)
+                data_dir += filebase
+
             make_missing_dir(data_dir)
 
 
