@@ -5,10 +5,10 @@ from slic.utils import json_save
 
 class ScanInfo:
 
-    def __init__(self, filename_base, base_dir, adjustables, values):
+    def __init__(self, filename_base, base_dir, adjustables, values, suffix="_scan_info.json"):
         self.base_dir = base_dir
         self.filename = os.path.join(base_dir, filename_base)
-        self.filename += "_scan_info.json"
+        self.filename += suffix
 
         names = [ta.name if hasattr(ta, "name") else "noName" for ta in adjustables] #TODO else None?
         ids =   [ta.Id   if hasattr(ta, "Id")   else "noId"   for ta in adjustables]
