@@ -10,9 +10,17 @@ class Task(BaseTask):
     def __init__(self, func, stopper=None, hold=True):
         self.func = func
         self.stopper = stopper
-        self.thread = Thread(target=func)
+        self.thread = Thread(target=self.target)
+        self.result = None
+        self.exception = None
         if not hold:
             self.start()
+
+    def target(self):
+        try:
+            self.result = self.func()
+        except BaseException as exc: # BaseException covers a few more cases than Exception
+            self.exception = exc
 
     def start(self):
         self.thread.start()
@@ -20,10 +28,13 @@ class Task(BaseTask):
     def stop(self):
         if self.stopper is not None:
             self.stopper()
-        self.thread.join()
+        return self.wait()
 
     def wait(self):
         self.thread.join()
+        if self.exception:
+            raise TaskError from self.exception
+        return self.result
 
     @property
     def status(self):
@@ -36,6 +47,13 @@ class Task(BaseTask):
     def __repr__(self):
         name = typename(self)
         return "{}: {}".format(name, self.status)
+
+
+
+class TaskError(RuntimeError):
+    def __init__(self):
+        message = "Exception in Task"
+        super().__init__(message)
 
 
 
