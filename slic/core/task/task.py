@@ -7,8 +7,9 @@ from .basetask import BaseTask
 
 class Task(BaseTask):
 
-    def __init__(self, func, stopper=None, hold=True):
+    def __init__(self, func, starter=None, stopper=None, hold=True):
         self.func = func
+        self.starter = starter
         self.stopper = stopper
         self.thread = Thread(target=self.target)
         self.result = None
@@ -23,10 +24,12 @@ class Task(BaseTask):
             self.exception = exc
 
     def start(self):
+        if self.starter:
+            self.starter()
         self.thread.start()
 
     def stop(self):
-        if self.stopper is not None:
+        if self.stopper:
             self.stopper()
         return self.wait()
 
