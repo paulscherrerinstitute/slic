@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Event
 from time import sleep, time
 
 from .task import Task
@@ -6,29 +6,24 @@ from .task import Task
 
 class Loop(Task):
 
-    def __init__(self, func, wait_time=0, hold=True):
-        self.func = func
+    def __init__(self, step_func, wait_time=0, hold=True):
+        self.step_func = step_func
         self.wait_time = wait_time
-        self.thread = Thread(target=self.loop)
-        self.running = False
-        if not hold:
-            self.start()
+
+        self.running = Event()
+        starter = self.running.set
+        stopper = self.running.clear
+        super().__init__(self.loop, starter=starter, stopper=stopper, hold=hold)
+
 
     def loop(self):
-        while self.running:
-            self.func()
+        while self.running.is_set():
+            result = self.step_func()
             self.sleep()
+        return result
 
     def sleep(self):
         sleep(self.wait_time)
-
-    def start(self):
-        self.running = True
-        self.thread.start()
-
-    def stop(self):
-        self.running = False
-        self.thread.join()
 
 
 
@@ -87,7 +82,7 @@ if __name__ == "__main__":
     def g():
         print("g")
 
-    tlr = TimedLoop(g, 3, 0.3)
+    tlr = TimedLoop(g, 3, wait_time=0.3)
     tlr.start()
 
     sleep(3.1)
