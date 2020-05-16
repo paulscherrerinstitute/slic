@@ -1,23 +1,26 @@
+from pathlib import Path
+
 
 class SwissFELPaths:
 
     def __init__(self, instrument, pgroup):
-        instrument = "/sf/{}/".format(instrument)
-        pgroup = instrument + "data/{}/".format(pgroup)
+        sf = Path("/sf")
+        instrument = sf / instrument
+        pgroup = instrument / "data" / pgroup
 
-        raw = pgroup + "raw/"
-        res = pgroup + "res/"
+        raw = pgroup / "raw"
+        res = pgroup / "res"
 
-        gain = instrument + "config/jungfrau/gainMaps/"
-        pede = res + "JF_pedestals/"
+        gain = instrument / "config/jungfrau/gainMaps"
+        pede = res / "JF_pedestals"
 
         # raw pede file: "/sf/alvra/data/p18442/raw/JF_pedestals/pedestal_20200202_2046.JF02T09V02.h5"
         # converted:     "/sf/alvra/data/p18442/res/JF_pedestals/pedestal_20200202_2046.JF02T09V02.res.h5"
         # send to DIA:   "/sf/alvra/data/p18442/res/JF_pedestals/pedestal_20200202_2046" where ".DETECTOR.res.h5" will be appended
 
-        pede_files = pede + "pedestal_*.res.h5"
+        pede_files = pede / "pedestal_*.res.h5"
 
-        default_channel_list = instrument + "config/com/channel_lists/default_channel_list"
+        default_channel_list = instrument / "config/com/channel_lists/default_channel_list"
 
         self.instrument = instrument
         self.pgroup = pgroup
@@ -31,14 +34,14 @@ class SwissFELPaths:
 
     def __repr__(self):
         lines = [
-            "raw: " + self.raw,
-            "res: " + self.res,
+            "raw: {}".format(self.raw),
+            "res: {}".format(self.res),
             "",
-            "gain:       " + self.gain,
-            "pede:       " + self.pede,
-            "pede files: " + self.pede_files,
+            "gain:       {}".format(self.gain),
+            "pede:       {}".format(self.pede),
+            "pede files: {}".format(self.pede_files),
             "",
-            "channels: " + self.default_channel_list
+            "channels: {}".format(self.default_channel_list)
         ]
         return "\n".join(lines)
 
