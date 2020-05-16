@@ -36,7 +36,7 @@ def epics_to_h5_triggered(filename, channels, n_pulses=100, wait_time=0.5):
     pvs = [PV(ch) for ch in channels]
 
     n_channels = len(channels)
-    counters = np.zeros(n_channels)
+    counters = np.zeros(n_channels, dtype=int)
 
     arrays = make_arrays(pvs, n_pulses)
 
