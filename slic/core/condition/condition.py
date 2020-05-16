@@ -101,7 +101,7 @@ class Condition(BaseCondition):
 
     def __repr__(self):
         name = typename(self)
-        status = "happy" if self.check else "unhappy"
+        status = "happy" if self.check() else "unhappy"
         return "{}: {}".format(name, status) #TODO
 
 
