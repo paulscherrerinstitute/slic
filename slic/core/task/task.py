@@ -23,6 +23,10 @@ class Task(BaseTask):
         except BaseException as exc: # BaseException covers a few more cases than Exception
             self.exception = exc
 
+    def run(self):
+        self.start()
+        return self.wait()
+
     def start(self):
         if self.starter:
             self.starter()
