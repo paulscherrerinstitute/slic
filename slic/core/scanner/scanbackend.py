@@ -71,11 +71,11 @@ class ScanBackend:
             default_dir = acq.default_dir
             if default_dir is None:
                 continue
-            data_dir = default_dir + self.data_base_dir
+            data_dir = os.path.join(default_dir, self.data_base_dir)
 
             if self.make_scan_sub_dir:
                 filebase = os.path.basename(self.filename)
-                data_dir += filebase
+                data_dir = os.path.join(data_dir, filebase)
 
             make_missing_dir(data_dir)
 
@@ -137,7 +137,10 @@ def set_all_target_values(adjustables, values):
 
 def wait_for_all(tasks):
     for t in tasks:
-        t.wait()
+        try: # TODO: what do we want to do here? not write the filenames(s?) to scan_info?
+            t.wait()
+        except Exception as e:
+            print(e)
 
 
 

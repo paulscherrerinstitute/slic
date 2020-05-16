@@ -64,8 +64,8 @@ def take_pedestal(instrument, pgroup, api_address, raw_dir, res_dir, analyze_loc
     now = datetime.now().strftime(TIMESTAMP_FORMAT)
     file_base = PREFIX + now
 
-    raw_file_base = raw_dir + file_base
-    res_file_base = res_dir + file_base
+    raw_file_base = os.path.join(raw_dir, file_base)
+    res_file_base = os.path.join(res_dir, file_base)
 
     period = 1 / freq
     trigger = 1
