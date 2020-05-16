@@ -2,9 +2,9 @@ import numpy as np
 
 
 def within(val, vmin, vmax):
-    vmin, vmax = sorted(vmin, vmax)
+    vmin, vmax = sorted((vmin, vmax))
     left  = True if vmin is None else (vmin <= val) #TODO: equal?
-    right = True if vmax is None else (val < vmax) #TODO: equal?
+    right = True if vmax is None else (val < vmax)  #TODO: equal?
     return (left & right) # & works for regular Python booleans and numpy arrays
 
 
