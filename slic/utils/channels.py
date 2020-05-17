@@ -1,19 +1,5 @@
 
-#def parseChannelListFile(fina):
-#    out = []
-#    with open(fina,'r') as f:
-#        done = False
-#        while not done:
-#           d = f.readline()
-#           if not d:
-#               done=True
-#           if len(d)>0:
-#               if not d.isspace():
-#                   if not d[0]=='#':
-#                       out.append(d.strip())
-#    return out
-
-def parseChannelListFile(fname):
+def parse_channel_list_file(fname):
     out = set()
     with open(fname, "r") as f:
         for line in f:
@@ -28,7 +14,7 @@ def parseChannelListFile(fname):
 class Channels(list):
 
     def __init__(self, fname):
-        chs = parseChannelListFile(fname)
+        chs = parse_channel_list_file(fname)
         self.extend(chs)
 
 

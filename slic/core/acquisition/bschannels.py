@@ -1,6 +1,7 @@
 from bsread.avail import dispatcher
 
 from slic.utils.printing import format_header
+from slic.utils.channels import parse_channel_list_file
 
 
 class BSChannels:
@@ -9,9 +10,10 @@ class BSChannels:
         self.channels = channels
 
 
-#TODO:
-#    @classmethod
-#    def from_file
+    @classmethod
+    def from_file(cls, fname):
+        channels = parse_channel_list_file(fname)
+        return cls(channels)
 
 
     def cleanup(self):
