@@ -58,9 +58,11 @@ class BSChannels:
         return status
 
 
-    def avail(self): #TODO: not a method
+    def avail(self, search=None): #TODO: not a method
         available_channels = dispatcher.get_current_channels()
         available_channels_names = set(i['name'] for i in available_channels)
+        if search:
+            available_channels_names = set(i for i in available_channels_names if search in i)
         return available_channels_names
 
 
