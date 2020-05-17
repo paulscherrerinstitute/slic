@@ -42,6 +42,17 @@ class BSChannels:
             print()
 
 
+    @property
+    def online(self):
+        status = self.status()
+        return status["online"]
+
+    @property
+    def offline(self):
+        status = self.status()
+        return status["offline"]
+
+
     def status(self):
         channels = self.channels
         channels = set(channels)
@@ -61,8 +72,10 @@ class BSChannels:
     def avail(self, search=None): #TODO: not a method
         available_channels = dispatcher.get_current_channels()
         available_channels_names = set(i['name'] for i in available_channels)
+
         if search:
             available_channels_names = set(i for i in available_channels_names if search in i)
+
         return available_channels_names
 
 
