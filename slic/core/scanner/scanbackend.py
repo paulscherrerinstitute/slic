@@ -9,11 +9,12 @@ from .scaninfo import ScanInfo
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, acquisitions, filename, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
+    def __init__(self, adjustables, values, acquisitions, filename, channels, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
         self.filename = filename
+        self.channels = channels
         self.n_pulses_per_step = n_pulses #TODO: to rename or not to rename?
         self.data_base_dir = data_base_dir
 
@@ -95,7 +96,7 @@ class ScanBackend:
         tasks = []
         filenames = []
         for acq in self.acquisitions:
-            t = acq.acquire(filename=filename, n_pulses=self.n_pulses_per_step)
+            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step)
             tasks.append(t)
             filenames.extend(t.filenames)
 
