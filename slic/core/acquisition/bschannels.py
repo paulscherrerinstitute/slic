@@ -76,7 +76,8 @@ class BSChannels:
         available_channels_names = set(i['name'] for i in available_channels)
 
         if search:
-            available_channels_names = set(i for i in available_channels_names if search in i)
+            search = search.lower()
+            available_channels_names = set(i for i in available_channels_names if search in i.lower())
 
         return available_channels_names
 
