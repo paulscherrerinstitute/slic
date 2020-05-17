@@ -25,8 +25,10 @@ class ScanBackend:
 
         self.store_initial_values()
 
+        self.current_tasks = None
 
-    def scan(self, step_info=None):
+
+    def run(self, step_info=None):
         self.store_initial_values()
 
         do_step = self.do_checked_step if self.condition else self.do_step
@@ -99,6 +101,8 @@ class ScanBackend:
             t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step)
             tasks.append(t)
             filenames.extend(t.filenames)
+
+        self.current_tasks = tasks
 
         wait_for_all(tasks)
         return filenames #TODO: returning this is weird

@@ -27,6 +27,8 @@ class Acquisition(BaseAcquisition):
         self.default_channels = default_channels
         self.default_dir = default_dir
 
+        self.current_task = None
+
 
     def acquire(self, filename=None, channels=None, use_default_dir=True, **kwargs):
         if filename and use_default_dir:
@@ -42,7 +44,10 @@ class Acquisition(BaseAcquisition):
             channels = self.default_channels
 
         acq = lambda: self._acquire(filename, channels, **kwargs)
-        return DAQTask(acq, filename=filename, hold=False)
+
+        task = DAQTask(acq, filename=filename, hold=False)
+        self.current_task = task
+        return task
 
 
     @abstractmethod

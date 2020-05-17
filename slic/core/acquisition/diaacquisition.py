@@ -37,6 +37,8 @@ class DIAAcquisition(BaseAcquisition):
         self.api_address = api_address
         self.client = DetectorIntegrationClient(api_address)
 
+        self.current_task = None
+
 
     def acquire(self, filename=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False):
         if filename:
@@ -66,7 +68,9 @@ class DIAAcquisition(BaseAcquisition):
             self.wait_until_finished()
             self.client.reset()
 
-        return DAQTask(_acquire, stopper=self.client.stop, filenames=filenames, hold=False)
+        task = DAQTask(_acquire, stopper=self.client.stop, filenames=filenames, hold=False)
+        self.current_task = task
+        return task
 
 
     def make_all_filenames(self, base):

@@ -22,6 +22,8 @@ class Scanner:
 
         self.filename_generator = RunFilenameGenerator(scan_info_dir)
 
+        self.current_scan = None
+
 
     def make_scan(self, adjustables, positions, n_pulses, filename, channels=None, acquisitions=(), start_immediately=True, step_info=None):
         filename = self.filename_generator.get_next_run_filename(filename)
@@ -29,12 +31,13 @@ class Scanner:
         if not acquisitions:
             acquisitions = self.default_acquisitions
 
-        s = ScanBackend(adjustables, positions, acquisitions, filename, channels, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition)
+        scan = ScanBackend(adjustables, positions, acquisitions, filename, channels, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition)
 
         if start_immediately:
-            s.scan(step_info=step_info)
+            scan.run(step_info=step_info)
 
-        return s
+        self.current_scan = scan
+        return scan
 
 
     def ascan(self, adjustable, start_pos, end_pos, n_intervals, *args, **kwargs):
