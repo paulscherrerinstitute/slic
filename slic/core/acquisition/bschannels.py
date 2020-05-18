@@ -1,6 +1,6 @@
 from bsread.avail import dispatcher
 
-from slic.utils.printing import format_header
+from slic.utils.printing import format_header, itemize
 from slic.utils.channels import parse_channel_list_file
 
 
@@ -24,7 +24,7 @@ class BSChannels:
         if offline:
             self.channels = online
             print("Removed offline channels:")
-            print("\n".join(offline))
+            print(itemize(offline))
             print("(Note: The channels have not been deleted from the respective config file.)")
 
 
@@ -34,13 +34,13 @@ class BSChannels:
         if print_online:
             online = status["online"]
             print(format_header("Online Channels"))
-            print("\n".join(online))
+            print(itemize(online))
             print()
 
         if print_offline:
             offline = status["offline"]
             print(format_header("Offline Channels"))
-            print("\n".join(offline))
+            print(itemize(offline))
             print()
 
 
@@ -59,7 +59,7 @@ class BSChannels:
         channels = self.channels
         channels = set(channels)
 
-        available = self.avail()
+        available = bs_avail()
 
         online  = channels.intersection(available)
         offline = channels.difference(available)
@@ -72,18 +72,25 @@ class BSChannels:
 
 
     def avail(self, search=None): #TODO: not a method
-        available_channels = dispatcher.get_current_channels()
-        available_channels_names = set(i['name'] for i in available_channels)
+        available_channels_names = bs_avail()
 
         if search:
             search = search.lower()
             available_channels_names = set(i for i in available_channels_names if search in i.lower())
 
-        return available_channels_names
+        available_channels_names = sorted(available_channels_names)
+        print(itemize(available_channels_names))
 
 
     def __repr__(self):
-        return "\n".join(self.channels)
+        return itemize(self.channels)
+
+
+
+def bs_avail():
+    available_channels = dispatcher.get_current_channels()
+    available_channels_names = set(i['name'] for i in available_channels)
+    return available_channels_names
 
 
 
