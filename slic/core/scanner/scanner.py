@@ -12,8 +12,21 @@ def make_positions(start, end, n):
 
 
 class Scanner:
+    """
+    Scanner contains several different types of scans as methods.
+    The methods simply convert the input parameters to parameters for the N-dimensional scan make_scan().
+    Each method returns a ScanBackend instance, which contains the actual scan logic.
+    """
 
     def __init__(self, data_base_dir="scan_data", scan_info_dir="", default_acquisitions=(), condition=None, make_scan_sub_dir=True):
+        """
+        Parameters:
+            data_base_dir (string, optional): Subfolder to collect scan data in. Will be appended to the acquisitions' default_dir.
+            scan_info_dir (string, optional): Folder to store ScanInfo.
+            default_acquisitions (sequence of BaseAcquisitions, optional): List of default acquisition objects to acquire from.
+            condition (BaseCondition): Condition that needs to be fullfilled to accept a recorded step of the scan.
+            make_scan_sub_dir (bool): If True (default), create a sub folder in data_base_dir in the acquisition's default_dir for each scan: scanname/scanname_step00001.h5. If False, the per-step files will be saved directly to data_base_dir in the acquisition's default_dir
+        """
         self.data_base_dir = data_base_dir
         self.scan_info_dir = scan_info_dir
         self.default_acquisitions = default_acquisitions
@@ -26,6 +39,20 @@ class Scanner:
 
 
     def make_scan(self, adjustables, positions, n_pulses, filename, channels=None, acquisitions=(), start_immediately=True, step_info=None):
+        """N-dimensional scan
+
+        Parameters:
+            adjustables (sequence of BaseAdjustables): Adjustables to scan.
+            positions (sequence of sequences): One sequence of positions to iterate through for each adjustable.
+            n_pulses (int): Number of pulses per step.
+            channels (sequence of strings, optional): List of channels to acquire. If None (default), the default lists of the acquisitions will be used.
+            acquisitions (sequence of BaseAcquisitions, optional): List of acquisition objects to acquire from. If empty (default) the default list will be used.
+            start_immediately (bool, optional): If True (default), start the scan immediately. If False, the returned scan can be started via its run method.
+            step_info: Arbitraty data that is appended to the ScanInfo in each step.
+
+        Returns:
+            ScanBackend: Scan instance.
+        """
         filename = self.filename_generator.get_next_run_filename(filename)
 
         if not acquisitions:
@@ -41,6 +68,19 @@ class Scanner:
 
 
     def ascan(self, adjustable, start_pos, end_pos, n_intervals, *args, **kwargs):
+        """One-dimensional scan
+
+        Parameters:
+            adjustable (BaseAdjustable): Adjustable to scan
+            start_pos (number): Starting position
+            end_pos (number): End position
+            n_intervals (int): Number of intervals
+            args: are forwarded to make_scan()
+            kwargs: are forwarded to make_scan()
+
+        Returns:
+            ScanBackend: Scan instance
+        """
         adjustables = [adjustable]
 
         positions = make_positions(start_pos, end_pos, n_intervals)
