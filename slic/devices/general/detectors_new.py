@@ -56,7 +56,7 @@ class PvDataStream:
 
 
     def acquire(self, hold=False, **kwargs):
-	    _acquire = lambda: self.collect(**kwargs)
+        _acquire = lambda: self.collect(**kwargs)
         return Task(_acquire, hold=hold)
 
     def accumulate(self, n_buffer):

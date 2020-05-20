@@ -1,4 +1,4 @@
-from ..devices_general.smaract import SmarActRecord
+from ...general.smaract import SmarActRecord
 from epics import PV
 
 class SmaractTower:

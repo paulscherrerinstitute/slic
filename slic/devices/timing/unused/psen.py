@@ -1,7 +1,7 @@
-from ..devices_general.motors import MotorRecord
-from ..devices_general.smaract import SmarActRecord
+from ...general.motors import MotorRecord
+from ...general.smaract import SmarActRecord
 from epics import PV
-from ..devices_general.delay_stage import DelayStage
+from ...general.delay_stage import DelayStage
 
 
 class Psen:
