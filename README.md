@@ -1,4 +1,4 @@
-#SwissFEL Library for Instrument Control
+# SwissFEL Library for Instrument Control
 
 slic is a python library providing a toolbox for creating control environments as well as writing automation scripts or control GUIs for experiments.
 
