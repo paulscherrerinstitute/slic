@@ -22,7 +22,7 @@ install:
   - conda info -a
 
 script:
-  - conda build conda-recipe
+  - conda build .conda-recipe
 
 deploy:
   provider: script
