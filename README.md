@@ -40,26 +40,76 @@ Collection of utility functions and classes that are used throughout both of the
 ---
 
 ## Getting Started
-### Dependencies
 
-All dependencies should be available via [conda](https://docs.conda.io/en/latest/). If need be, create a new conda environment:
+### Latest release version
+
+#### Installation
+
+The latest slic release is available via [conda](https://docs.conda.io/en/latest/) from the PSI channel. You may either install it (and its dependencies) into your current conda environment
+
+```bash
+conda install -c paulscherrerinstitute slic
+```
+
+or create a new dedicated environment
+```bash
+conda create -c paulscherrerinstitute -n slic slic
+```
+
+The beamline codes are hosted in git repositories and should be cloned (here, with Alvra as example, for other beamlines replace `alvra` with the respective name):
+
+- either via https:
+
+```bash
+git clone https://gitlab.psi.ch/slic/alvra.git
+```
+
+- or via ssh:
+
+```bash
+git clone git@gitlab.psi.ch:slic/alvra.git
+```
+
+#### Running
+
+Activate the conda environment used during the [installation](#installation), e.g.,
+
+```bash
+conda activate slic
+```
+
+Then, the ipython environment can be started like this:
+
+```bash
+ipython -i alvra/alvra.py
+```
+
+This assumes that the command is executed from the folder where the beamline script was cloned into — adapt as necessary.
+
+### Current code from git repositories
+
+#### Dependencies
+
+All dependencies should be available via [conda](https://docs.conda.io/en/latest/).
+
+If need be, create a new conda environment:
 
 ```bash
 conda create -n slic
 conda activate slic
 ```
 
-Some dependencies might need the PSI conda channel, thus:
+Some dependencies might need the PSI channel, thus:
 
 ```bash
 conda install -c paulscherrerinstitute bsread colorama data_api detector_integration_api elog pyepics ipython jungfrau_utils
 ```
 
-### Installation
+#### Installation
 
-The library and the beamline codes are stored in separate git repositories within a gitlab group. This allows to easily check out only the desired parts.
+The library and the beamline codes are stored in separate git repositories within a [gitlab group](https://gitlab.psi.ch/slic). This allows to easily check out only the desired parts.
 
-For the future, we plan to build conda packages for the library. Currently, both parts should be git-cloned (here, with Alvra as example, for other beamlines replace `alvra` with the respective name):
+For the most current code, both parts should be cloned (here, with Alvra as example, for other beamlines replace `alvra` with the respective name):
 
 - either via https:
 
@@ -75,15 +125,21 @@ git clone git@gitlab.psi.ch:slic/slic.git
 git clone git@gitlab.psi.ch:slic/alvra.git
 ```
 
-### Running
+#### Running
 
-Until we have conda packages and/or a small launcher script, the ipython environment for, e.g., Alvra can be started like this:
+Activate the conda environment into which the [dependencies were installed](#dependencies), e.g.,
 
 ```bash
-PYTHONPATH=$PYTHONPATH:slic ipython -i alvra/alvra.py
+conda activate slic
 ```
 
-This assumes that both repos have been cloned into the same folder, and that the command is ran from that folder — adapt as necessary. The first part makes sure that the library can be found; the second starts an interactive ipython shell from the beamline script. Again, Alvra is just an example, for other beamlines replace `alvra` with the respective name. 
+Until we have a small launcher script, the ipython environment for, e.g., Alvra can be started like this:
+
+```bash
+PYTHONPATH=slic:$PYTHONPATH ipython -i alvra/alvra.py
+```
+
+This assumes that both repos have been cloned into the same folder, and that the command is executed from that folder — adapt as necessary. The first part makes sure that the library can be found; the second starts an interactive ipython shell from the beamline script. Again, Alvra is just an example, for other beamlines replace `alvra` with the respective name. 
 
 
 
