@@ -45,15 +45,16 @@ Collection of utility functions and classes that are used throughout both of the
 
 #### Installation
 
-The latest slic release is available via [conda](https://docs.conda.io/en/latest/) from the PSI channel. You may either install it (and its dependencies) into your current conda environment
+The latest slic release is available via [conda](https://docs.conda.io/en/latest/) from the PSI channel. You may **either** create a new dedicated environment
+
+```bash
+conda create -c paulscherrerinstitute -n slic slic
+```
+
+**or** install it (and its dependencies) into your current conda environment
 
 ```bash
 conda install -c paulscherrerinstitute slic
-```
-
-or create a new dedicated environment
-```bash
-conda create -c paulscherrerinstitute -n slic slic
 ```
 
 The beamline codes are hosted in git repositories and should be cloned (here, with Alvra as example, for other beamlines replace `alvra` with the respective name):
