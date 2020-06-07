@@ -79,13 +79,13 @@ Activate the conda environment used during the [installation](#installation), e.
 conda activate slic
 ```
 
-Then, the ipython environment can be started like this:
+Until we have a small launcher script, the ipython environment for, e.g., Alvra can be started like this:
 
 ```bash
 ipython -i alvra/alvra.py
 ```
 
-This assumes that the command is executed from the folder where the beamline script was cloned into — adapt as necessary.
+This assumes that the command is executed from the folder where the beamline script was cloned into — adapt as necessary. This starts an interactive ipython shell from the beamline script. Again, Alvra is just an example, for other beamlines replace `alvra` with the respective name. 
 
 ### Current code from git repositories
 
