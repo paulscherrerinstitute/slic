@@ -102,7 +102,7 @@ conda activate slic
 Some dependencies might need the PSI channel, thus:
 
 ```bash
-conda install -c paulscherrerinstitute bsread colorama data_api detector_integration_api elog pyepics ipython jungfrau_utils
+conda install -c paulscherrerinstitute bsread cam_server colorama data_api detector_integration_api elog ipython jungfrau_utils pyepics
 ```
 
 #### Installation

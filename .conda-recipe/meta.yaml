@@ -18,6 +18,7 @@ requirements:
     run:
         - python
         - bsread
+        - cam_server
         - colorama
         - data_api
         - detector_integration_api
