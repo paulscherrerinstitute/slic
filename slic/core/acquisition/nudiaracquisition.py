@@ -29,9 +29,10 @@ class NuDIArAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename=None, channels=None, n_pulses=100):
-        if not filename:
-            filename = "/dev/null"
+    def acquire(self, filename, channels=None, n_pulses=100):
+        if not filename or filename == "/dev/null":
+            print("Skipping retrieval since no filename was given.")
+            return
 
         if not channels:
             print("No channels specified, using default channel list.")
@@ -50,7 +51,7 @@ class NuDIArAcquisition(BaseAcquisition):
         return self.client.status
 
     def __repr__(self):
-        return "New unnamed DIA replacement on {} (status: {})".format(self.api_address, self.status)
+        return "New unnamed DIA replacement on {} (status: {}, last run: {})".format(self.api_address, self.status, self.client.run_number)
 
 
 

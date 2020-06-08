@@ -1,5 +1,6 @@
 import requests
 from time import sleep
+from tqdm import tqdm
 
 from .broker_tools import get_current_pulseid
 
@@ -16,6 +17,7 @@ class BrokerClient:
         self.n_pulses = 0
         self.args = []
         self.kwargs = {}
+        self.run_number = None
 
 
     def set_config(self, n_pulses, *args, **kwargs):
@@ -25,18 +27,22 @@ class BrokerClient:
 
 
     def start(self):
-        start_pulseid = get_current_pulseid()
+        start_pulseid = current_pulseid = get_current_pulseid()
         stop_pulseid = start_pulseid + self.n_pulses
 
         self.running = True
 
-        while self.running and get_current_pulseid() < stop_pulseid:
-            print(self.status, start_pulseid, get_current_pulseid(), stop_pulseid)
-            sleep(0.1)
+        with tqdm(total=self.n_pulses) as pbar:
+            while self.running:
+                current_pulseid = get_current_pulseid()
+                if current_pulseid > stop_pulseid:
+                    break
+                sleep(0.1)
+                pbar.update(current_pulseid - start_pulseid - pbar.n)
 
         self.running = False
 
-        stop_pulseid = get_current_pulseid() # in case we stopped early
+        stop_pulseid = current_pulseid # in case we stopped early
         self.run_number = self.retrieve(*self.args, start_pulseid, stop_pulseid, **self.kwargs)
         return self.run_number
 

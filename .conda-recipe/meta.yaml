@@ -26,5 +26,6 @@ requirements:
         - ipython
         - jungfrau_utils
         - pyepics
+        - tqdm
 
 
