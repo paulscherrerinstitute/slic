@@ -6,9 +6,9 @@ from slic.utils import singleton
 
 
 PULSEID_PVS = {
-    "alvra"   : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
-    "bernina" : "SLAAR21-LTIM01-EVR0:RX-PULSEID",
-    "maloja"  : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
+    "alvra"  : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
+    "bernina": "SLAAR21-LTIM01-EVR0:RX-PULSEID",
+    "maloja" : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
 }
 
 IP_TO_BEAMLINE = {
@@ -55,7 +55,7 @@ class get_current_pulseid():
                 self.get = pv.get
 
     def __call__(self):
-        return self.get()
+        return int(self.get())
 
 
 
