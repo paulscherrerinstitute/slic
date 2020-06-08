@@ -1,4 +1,7 @@
 import requests
+from time import sleep
+
+from .broker_tools import get_current_pulseid
 
 
 class BrokerClient:
@@ -6,6 +9,52 @@ class BrokerClient:
     def __init__(self, *args, address="http://sf-daq-1:10002", **kwargs):
         self.config = BrokerConfig(*args, **kwargs)
         self.address = address
+
+#TODO begin start/stop logic / needs refactor!
+
+        self.running = False
+        self.n_pulses = 0
+        self.args = []
+        self.kwargs = {}
+
+
+    def set_config(self, n_pulses, *args, **kwargs):
+        self.n_pulses = n_pulses
+        self.args = args
+        self.kwargs = kwargs
+
+
+    def start(self):
+        start_pulseid = get_current_pulseid()
+        stop_pulseid = start_pulseid + self.n_pulses
+
+        self.running = True
+
+        while self.running and get_current_pulseid() < stop_pulseid:
+            print(self.status, start_pulseid, get_current_pulseid(), stop_pulseid)
+            sleep(0.1)
+
+        self.running = False
+
+        stop_pulseid = get_current_pulseid() # in case we stopped early
+        self.run_number = self.retrieve(*self.args, start_pulseid, stop_pulseid, **self.kwargs)
+        return self.run_number
+
+
+    def stop(self):
+        self.running = False
+
+
+    @property
+    def status(self):
+        if self.running:
+            return "running"
+        else:
+            return "idle"
+
+
+#TODO end start/stop logic
+
 
     def retrieve(self, *args, timeout=10, **kwargs):
         requrl = self.address.rstrip("/") + "/retrieve_from_buffers"
