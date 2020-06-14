@@ -27,8 +27,8 @@ class BrokerClient:
 
 
     def start(self):
-        start_pulseid = current_pulseid = get_current_pulseid()
-        stop_pulseid = start_pulseid + self.n_pulses
+        current_pulseid = get_current_pulseid()
+        start_pulseid, stop_pulseid = aligned_pids(current_pulseid, self.n_pulses, self.config.rate_multiplicator)
 
         self.running = True
 
@@ -55,8 +55,7 @@ class BrokerClient:
     def status(self):
         if self.running:
             return "running"
-        else:
-            return "idle"
+        return "idle"
 
 
 #TODO end start/stop logic
@@ -89,7 +88,7 @@ class BrokerConfig:
 
     def __init__(self, pgroup, rate_multiplicator=1):
         self.pgroup = pgroup
-        self.rate_multiplicator = rate_multiplicator
+        self.rate_multiplicator = rate_multiplicator #TODO: can we read that from epics?
 
 
     def to_dict(self, output_dir, start_pulseid, stop_pulseid, detectors=None, channels=None, pvs=None, scan_info=None):
@@ -132,6 +131,19 @@ def split_channels(channels):
             bsread_channels.append(c)
 
     return bsread_channels, camera_channels
+
+
+
+def aligned_pids(start, n, rm):
+    """
+    return start/stop pids aligned to rep rate
+    """
+#    start -= 1 #TODO: count from zero?
+    block_start = (start // rm) + 1 # calc block where start is in, then take following block
+    block_stop  = block_start + n
+    start = block_start * rm # adjust to actual rep rate (example: recording is at 100 Hz; for a 50 Hz device, 2*n pulses need to be recorded to get n pulses with that device)
+    stop  = block_stop  * rm #TODO: check whether upper boundary is excluded (otherwise -1 here)
+    return int(start), int(stop)
 
 
 
