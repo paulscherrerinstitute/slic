@@ -7,23 +7,24 @@ from .broker_tools import get_current_pulseid
 
 class BrokerClient:
 
-    def __init__(self, *args, address="http://sf-daq-1:10002", **kwargs):
+    def __init__(self, *args, address="http://sf-daq-1:10002", wait_time=0.1, **kwargs):
         self.config = BrokerConfig(*args, **kwargs)
         self.address = address
+        self.wait_time = wait_time
 
-#TODO begin start/stop logic / needs refactor!
+        self.set_config(0, None, 0, 0) #TODO: sensible defaults?
 
         self.running = False
-        self.n_pulses = 0
-        self.args = []
-        self.kwargs = {}
         self.run_number = None
 
 
-    def set_config(self, n_pulses, *args, **kwargs):
+    def set_config(self, n_pulses, *args, timeout=10, **kwargs):
         self.n_pulses = n_pulses
-        self.args = args
-        self.kwargs = kwargs
+        self.timeout = timeout
+        self.config.set(*args, **kwargs)
+
+    def get_config(self):
+        return self.config.to_dict()
 
 
     def start(self):
@@ -37,13 +38,15 @@ class BrokerClient:
                 current_pulseid = get_current_pulseid()
                 if current_pulseid > stop_pulseid:
                     break
-                sleep(0.1)
+                sleep(self.wait_time)
                 pbar.update(current_pulseid - start_pulseid - pbar.n)
 
         self.running = False
 
-        stop_pulseid = current_pulseid # in case we stopped early
-        self.run_number = self.retrieve(*self.args, start_pulseid, stop_pulseid, **self.kwargs)
+        stop_pulseid = current_pulseid # in case we stopped early #TODO: align as well?
+
+        params = self.get_config()
+        self.run_number = retrieve(self.address, params, timeout=self.timeout)
         return self.run_number
 
 
@@ -58,15 +61,17 @@ class BrokerClient:
         return "idle"
 
 
-#TODO end start/stop logic
+
+def retrieve(address, *args, **kwargs):
+    requrl = address.rstrip("/") + "/retrieve_from_buffers"
+    response = post_request(requrl, *args, **kwargs)
+    runnumber = int(response)
+    return runnumber
 
 
-    def retrieve(self, *args, timeout=10, **kwargs):
-        requrl = self.address.rstrip("/") + "/retrieve_from_buffers"
-        params = self.config.to_dict(*args, **kwargs)
-        response = requests.post(requrl, json=params, timeout=timeout).json()
-        return validate_response(response)
-
+def post_request(requrl, params, timeout=10):
+    response = requests.post(requrl, json=params, timeout=timeout).json()
+    return validate_response(response)
 
 
 def validate_response(resp):
@@ -89,33 +94,43 @@ class BrokerConfig:
     def __init__(self, pgroup, rate_multiplicator=1):
         self.pgroup = pgroup
         self.rate_multiplicator = rate_multiplicator #TODO: can we read that from epics?
+        self.set(None, 0, 0) #TODO: sensible defaults?
+
+    def set(self, output_dir, start_pulseid, stop_pulseid, detectors=None, channels=None, pvs=None, scan_info=None):
+        self.output_dir = output_dir
+        self.start_pulseid = start_pulseid
+        self.stop_pulseid = stop_pulseid
+        self.detectors = detectors
+        self.channels = channels
+        self.pvs = pvs
+        self.scan_info = scan_info
 
 
-    def to_dict(self, output_dir, start_pulseid, stop_pulseid, detectors=None, channels=None, pvs=None, scan_info=None):
+    def to_dict(self):
         config = {
             "pgroup": self.pgroup,
             "rate_multiplicator": self.rate_multiplicator,
-            "directory_name": output_dir,
-            "start_pulseid": start_pulseid,
-            "stop_pulseid": stop_pulseid,
+            "directory_name": self.output_dir,
+            "start_pulseid": self.start_pulseid,
+            "stop_pulseid": self.stop_pulseid,
         }
 
-        if detectors:
-            detectors = {d: {} for d in detectors} # currently the dicts are empty, thus allow giving just a list as argument
+        if self.detectors:
+            detectors = {d: {} for d in self.detectors} # currently the dicts are empty, thus allow giving just a list as argument
             config["detectors"] = detectors
 
-        if channels:
-            bsread_channels, camera_channels = split_channels(channels)
+        if self.channels:
+            bsread_channels, camera_channels = split_channels(self.channels)
             if bsread_channels:
                 config["channels_list"] = bsread_channels
             if camera_channels:
                 config["camera_list"] = camera_channels
 
-        if pvs:
-            config["pv_list"] = pvs
+        if self.pvs:
+            config["pv_list"] = self.pvs
 
-        if scan_info:
-            config["scan_info"] = scan_info
+        if self.scan_info:
+            config["scan_info"] = self.scan_info
 
         return config
 
