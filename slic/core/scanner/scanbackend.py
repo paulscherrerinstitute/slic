@@ -96,15 +96,17 @@ class ScanBackend:
 
     def acquire_all(self, filename):
         tasks = []
-        filenames = []
         for acq in self.acquisitions:
             t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step)
             tasks.append(t)
-            filenames.extend(t.filenames)
 
         self.current_tasks = tasks
-
         wait_for_all(tasks)
+
+        filenames = []
+        for t in tasks:
+            filenames.extend(t.filenames)
+
         return filenames #TODO: returning this is weird
 
 
