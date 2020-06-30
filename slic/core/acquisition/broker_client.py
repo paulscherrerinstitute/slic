@@ -28,19 +28,22 @@ class BrokerClient:
 
 
     def start(self):
+        n_pulses = self.n_pulses
+        rate_multiplicator = self.config.rate_multiplicator
+
         current_pulseid = get_current_pulseid()
-        start_pulseid, stop_pulseid = aligned_pids(current_pulseid, self.n_pulses, self.config.rate_multiplicator)
+        start_pulseid, stop_pulseid = aligned_pids(current_pulseid, n_pulses, rate_multiplicator)
 
         self.running = True
 
-        with tqdm(total=self.n_pulses) as pbar:
+        with tqdm(total=n_pulses) as pbar:
             while self.running:
                 current_pulseid = get_current_pulseid()
                 if current_pulseid > stop_pulseid:
                     break
                 sleep(self.wait_time)
-                delta_n = 1 + ((current_pulseid - start_pulseid) // self.config.rate_multiplicator) - pbar.n
-                pbar.update(delta_n) # clamp [0, 1]
+                delta_n = 1 + ((current_pulseid - start_pulseid) // rate_multiplicator) - pbar.n # +1 to start at 0 (otherwise starts at -1)
+                pbar.update(delta_n)
 
         self.running = False
 
