@@ -16,6 +16,8 @@ def printable_dict(d, header=None):
 
 
 def maxlen(seq):
+    if not seq: # max of empty sequence is a ValueError
+        return 0
     return max(len(i) for i in seq)
 
 
