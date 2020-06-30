@@ -39,7 +39,8 @@ class BrokerClient:
                 if current_pulseid > stop_pulseid:
                     break
                 sleep(self.wait_time)
-                pbar.update(current_pulseid - start_pulseid - pbar.n)
+                delta_n = 1 + ((current_pulseid - start_pulseid) // self.config.rate_multiplicator) - pbar.n
+                pbar.update(delta_n) # clamp [0, 1]
 
         self.running = False
 
