@@ -46,6 +46,10 @@ class BrokerClient:
 
         stop_pulseid = current_pulseid # in case we stopped early #TODO: align as well?
 
+        #TODO
+        self.config.start_pulseid = start_pulseid
+        self.config.stop_pulseid = stop_pulseid
+
         params = self.get_config()
         self.run_number = retrieve(self.address, params, timeout=self.timeout)
         return self.run_number

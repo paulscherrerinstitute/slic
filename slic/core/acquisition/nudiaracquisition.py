@@ -39,7 +39,7 @@ class NuDIArAcquisition(BaseAcquisition):
             channels = self.default_channels
 
         client = self.client
-        client.set_config(n_pulses, filename, channels=channels)
+        client.set_config(n_pulses, filename, 0, 0, channels=channels) #TODO
 
         task = DAQTask(client.start, stopper=client.stop, filename=filename, hold=False)
         self.current_task = task
