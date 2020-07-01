@@ -12,7 +12,7 @@ class BrokerClient:
         self.address = address
         self.wait_time = wait_time
 
-        self.set_config(0, None, 0, 0) #TODO: sensible defaults?
+        self.set_config(0, None) #TODO: sensible defaults?
 
         self.running = False
         self.run_number = None
@@ -23,8 +23,8 @@ class BrokerClient:
         self.timeout = timeout
         self.config.set(*args, **kwargs)
 
-    def get_config(self):
-        return self.config.to_dict()
+    def get_config(self, *args):
+        return self.config.to_dict(*args)
 
 
     def start(self):
@@ -49,11 +49,7 @@ class BrokerClient:
 
         stop_pulseid = current_pulseid # in case we stopped early #TODO: align as well?
 
-        #TODO
-        self.config.start_pulseid = start_pulseid
-        self.config.stop_pulseid = stop_pulseid
-
-        params = self.get_config()
+        params = self.get_config(start_pulseid, stop_pulseid)
         self.run_number = retrieve(self.address, params, timeout=self.timeout)
         return self.run_number
 
@@ -102,25 +98,23 @@ class BrokerConfig:
     def __init__(self, pgroup, rate_multiplicator=1):
         self.pgroup = pgroup
         self.rate_multiplicator = rate_multiplicator #TODO: can we read that from epics?
-        self.set(None, 0, 0) #TODO: sensible defaults?
+        self.set(None) #TODO: sensible defaults?
 
-    def set(self, output_dir, start_pulseid, stop_pulseid, detectors=None, channels=None, pvs=None, scan_info=None):
+    def set(self, output_dir, detectors=None, channels=None, pvs=None, scan_info=None):
         self.output_dir = output_dir
-        self.start_pulseid = start_pulseid
-        self.stop_pulseid = stop_pulseid
         self.detectors = detectors
         self.channels = channels
         self.pvs = pvs
         self.scan_info = scan_info
 
 
-    def to_dict(self):
+    def to_dict(self, start_pulseid, stop_pulseid):
         config = {
             "pgroup": self.pgroup,
             "rate_multiplicator": self.rate_multiplicator,
             "directory_name": self.output_dir,
-            "start_pulseid": self.start_pulseid,
-            "stop_pulseid": self.stop_pulseid,
+            "start_pulseid": start_pulseid,
+            "stop_pulseid": stop_pulseid
         }
 
         if self.detectors:
