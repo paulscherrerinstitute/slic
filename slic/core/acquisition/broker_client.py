@@ -36,14 +36,14 @@ class BrokerClient:
 
         self.running = True
 
-        with tqdm(total=n_pulses) as pbar:
+        with stqdm(total=n_pulses) as pbar:
             while self.running:
                 current_pulseid = get_current_pulseid()
                 if current_pulseid > stop_pulseid:
                     break
                 sleep(self.wait_time)
-                delta_n = 1 + ((current_pulseid - start_pulseid) // rate_multiplicator) - pbar.n # +1 to start at 0 (otherwise starts at -1)
-                pbar.update(delta_n)
+                delta_n = (current_pulseid - start_pulseid) // rate_multiplicator
+                pbar.set(delta_n)
 
         self.running = False
 
@@ -167,6 +167,17 @@ def aligned_pids(start, n, rm):
     start = block_start * rm # adjust to actual rep rate (example: recording is at 100 Hz; for a 50 Hz device, 2*n pulses need to be recorded to get n pulses with that device)
     stop  = block_stop  * rm #TODO: check whether upper boundary is excluded (otherwise -1 here)
     return int(start), int(stop)
+
+
+
+class stqdm(tqdm):
+
+    def set(self, elapsed):
+        """
+        update with elapsed n, i.e., the delta between start and current n
+        """
+        increment = elapsed + 1 - self.n # +1 to start at 0 (otherwise starts at -1)
+        self.update(increment)
 
 
 
