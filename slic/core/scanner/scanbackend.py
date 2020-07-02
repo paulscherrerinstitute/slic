@@ -30,10 +30,25 @@ class ScanBackend:
 
     def run(self, step_info=None):
         self.store_initial_values()
-
-        do_step = self.do_checked_step if self.condition else self.do_step
-
         self.create_output_dirs()
+
+        try:
+            self.scan_loop(step_info=None)
+        except KeyboardInterrupt:
+            print() # print new line after ^C
+            self.stop()
+            print("Stopped current DAQ tasks:")
+            for t in self.current_tasks:
+                print()
+                print(t)
+                print()
+
+        if ask_Yes_no("Move back to initial values"): #TODO: should this be asked or a parameter?
+            self.change_to_initial_values()
+
+
+    def scan_loop(self, step_info=None):
+        do_step = self.do_checked_step if self.condition else self.do_step
 
         values = self.values
         ntotal = len(values)
@@ -42,9 +57,6 @@ class ScanBackend:
             do_step(n, val, step_info=step_info)
 
         print("All scan steps done")
-
-        if ask_Yes_no("Move back to initial values"): #TODO: should this be asked or a parameter?
-            self.change_to_initial_values()
 
 
     def do_checked_step(self, *args, **kwargs):
@@ -120,6 +132,9 @@ class ScanBackend:
     def change_to_initial_values(self):
         set_all_target_values_and_wait(self.adjustables, self.initial_values)
 
+    def stop(self):
+        stop_all(self.current_tasks)
+
 
 
 #TODO: add class AdjustableGroup with the below as methods?
@@ -147,6 +162,13 @@ def wait_for_all(tasks):
     for t in tasks:
         try: # TODO: what do we want to do here? not write the filenames(s?) to scan_info?
             t.wait()
+        except Exception as e:
+            print(e)
+
+def stop_all(tasks):
+    for t in tasks:
+        try:
+            t.stop()
         except Exception as e:
             print(e)
 
