@@ -70,17 +70,18 @@ class ScanBackend:
     def create_output_dirs(self):
         make_missing_dir(self.scan_info.base_dir)
 
-        for acq in self.acquisitions:
-            default_dir = acq.default_dir
-            if default_dir is None:
-                continue
-            data_dir = os.path.join(default_dir, self.data_base_dir)
+#TODO: cannot do this anymore for NuDIA, but need it for other methods...
+#        for acq in self.acquisitions:
+#            default_dir = acq.default_dir
+#            if default_dir is None:
+#                continue
+#            data_dir = os.path.join(default_dir, self.data_base_dir)
 
-            if self.make_scan_sub_dir:
-                filebase = os.path.basename(self.filename)
-                data_dir = os.path.join(data_dir, filebase)
+#            if self.make_scan_sub_dir:
+#                filebase = os.path.basename(self.filename)
+#                data_dir = os.path.join(data_dir, filebase)
 
-            make_missing_dir(data_dir)
+#            make_missing_dir(data_dir)
 
 
     def get_filename(self, istep):
