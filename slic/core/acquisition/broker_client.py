@@ -170,8 +170,16 @@ class stqdm(tqdm):
         """
         update with elapsed n, i.e., the delta between start and current n
         """
-        increment = elapsed + 1 - self.n # +1 to start at 0 (otherwise starts at -1)
+        elapsed = clamp(elapsed, 0, self.total)
+        increment = elapsed - self.n
         self.update(increment)
+
+
+
+def clamp(val, vmin, vmax):
+    val = max(val, vmin)
+    val = min(val, vmax)
+    return val
 
 
 
