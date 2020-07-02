@@ -40,7 +40,7 @@ class DIAAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False):
+    def acquire(self, filename=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False, wait=True):
         if filename:
             if use_default_dir:
                 filename = os.path.join(self.default_dir, filename)
@@ -70,6 +70,10 @@ class DIAAcquisition(BaseAcquisition):
 
         task = DAQTask(_acquire, stopper=self.client.stop, filenames=filenames, hold=False)
         self.current_task = task
+
+        if wait:
+            task.wait()
+
         return task
 
 

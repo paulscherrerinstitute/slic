@@ -30,7 +30,7 @@ class Acquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename=None, channels=None, use_default_dir=True, **kwargs):
+    def acquire(self, filename=None, channels=None, use_default_dir=True, wait=True, **kwargs):
         if filename and use_default_dir:
             filename = os.path.join(self.default_dir, filename)
 
@@ -47,6 +47,10 @@ class Acquisition(BaseAcquisition):
 
         task = DAQTask(acq, filename=filename, hold=False)
         self.current_task = task
+
+        if wait:
+            task.wait()
+
         return task
 
 

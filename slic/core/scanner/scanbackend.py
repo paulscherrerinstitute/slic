@@ -110,7 +110,7 @@ class ScanBackend:
     def acquire_all(self, filename):
         tasks = []
         for acq in self.acquisitions:
-            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step)
+            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
             tasks.append(t)
 
         self.current_tasks = tasks

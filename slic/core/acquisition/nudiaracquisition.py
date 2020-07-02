@@ -29,7 +29,7 @@ class NuDIArAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename, channels=None, n_pulses=100):
+    def acquire(self, filename, channels=None, n_pulses=100, wait=True):
         if not filename or filename == "/dev/null":
             print("Skipping retrieval since no filename was given.")
             return
@@ -50,6 +50,10 @@ class NuDIArAcquisition(BaseAcquisition):
 
         task = DAQTask(_acquire, stopper=client.stop, filename=filename, hold=False)
         self.current_task = task
+
+        if wait:
+            task.wait()
+
         return task
 
 
