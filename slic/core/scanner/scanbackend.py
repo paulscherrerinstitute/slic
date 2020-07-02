@@ -25,7 +25,7 @@ class ScanBackend:
 
         self.store_initial_values()
 
-        self.current_tasks = None
+        self.current_tasks = []
 
 
     def run(self, step_info=None):
