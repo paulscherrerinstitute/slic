@@ -41,7 +41,14 @@ class NuDIArAcquisition(BaseAcquisition):
         client = self.client
         client.set_config(n_pulses, filename, channels=channels)
 
-        task = DAQTask(client.start, stopper=client.stop, filename=filename, hold=False)
+        def _acquire():
+            run_number = self.client.start()
+            printable_run_number = str(run_number).zfill(6)
+            filename_pattern = self.paths.raw / filename / f"run_{printable_run_number}.*.h5"
+            filename_pattern = str(filename_pattern) # json cannot serialize pathlib paths
+            return [filename_pattern] #TODO: list? insert the file types instead of the asterisk?
+
+        task = DAQTask(_acquire, stopper=client.stop, filename=filename, hold=False)
         self.current_task = task
         return task
 
