@@ -15,6 +15,9 @@ def within_fraction(data, vmin, vmax):
     ntotal = len(data)
     ngood  = sum(good)
 
+    if not ntotal:
+        return 0
+
     fraction = ngood / ntotal
     return fraction
 
