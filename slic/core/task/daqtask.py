@@ -9,6 +9,11 @@ class DAQTask(Task):
         super().__init__(*args, **kwargs)
         self.filenames = homogenized_list(filename, filenames)
 
+    def wait(self):
+        result = super().wait()
+        if result is not None:
+            self.filenames = result #TODO: single/multiple?
+
     def __repr__(self):
         res = super().__repr__()
         if self.filenames:
