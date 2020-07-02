@@ -9,7 +9,7 @@ DIGITS = "[0-9]"
 
 class RunFilenameGenerator:
 
-    def __init__(self, base_dir, prefix="run", n_digits=4, separator="_", suffix="_scan_info.json"):
+    def __init__(self, base_dir, prefix="scan", n_digits=4, separator="_", suffix="_scan_info.json"):
         self.base_dir = base_dir
         self.prefix = prefix
         self.n_digits = n_digits
