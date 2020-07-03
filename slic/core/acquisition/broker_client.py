@@ -45,9 +45,11 @@ class BrokerClient:
                 delta_n = (current_pulseid - start_pulseid) // rate_multiplicator
                 pbar.set(delta_n)
 
-        self.running = False
+        if not self.running: # stopped early
+            stop_pulseid = current_pulseid
+            stop_pulseid = align_pid_right(stop_pulseid, rate_multiplicator)
 
-        stop_pulseid = current_pulseid # in case we stopped early #TODO: align as well?
+        self.running = False
 
         params = self.get_config(start_pulseid, stop_pulseid)
         self.run_number = retrieve(self.address, params, timeout=self.timeout)
@@ -161,6 +163,18 @@ def aligned_pids(start, n, rm):
     start = block_start * rm # adjust to actual rep rate (example: recording is at 100 Hz; for a 50 Hz device, 2*n pulses need to be recorded to get n pulses with that device)
     stop  = block_stop  * rm #TODO: check whether upper boundary is excluded (otherwise -1 here)
     return int(start), int(stop)
+
+
+def align_pid_left(pid, rm):
+    return align_pid(pid, rm, 0)
+
+def align_pid_right(pid, rm):
+    return align_pid(pid, rm, 1)
+
+def align_pid(pid, rm, block_offset=0):
+    block = pid // rm
+    block += block_offset
+    return block * rm
 
 
 
