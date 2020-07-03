@@ -10,7 +10,7 @@ from .sfpaths import SwissFELPaths
 from .broker_client import BrokerClient
 
 
-class NuDIArAcquisition(BaseAcquisition):
+class SFAcquisition(BaseAcquisition):
 
     def __init__(self, instrument, pgroup, default_channels=None, api_address="http://sf-daq-1:10002", rate_multiplicator=1):
         self.instrument = instrument
@@ -62,7 +62,7 @@ class NuDIArAcquisition(BaseAcquisition):
         return self.client.status
 
     def __repr__(self):
-        return "New unnamed DIA replacement on {} (status: {}, last run: {})".format(self.api_address, self.status, self.client.run_number)
+        return "SF DAQ on {} (status: {}, last run: {})".format(self.api_address, self.status, self.client.run_number)
 
 
 
