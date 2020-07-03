@@ -38,7 +38,13 @@ class Task(BaseTask):
         return self.wait()
 
     def wait(self):
-        self.thread.join()
+        try:
+            staggered_join(self.thread)
+        except KeyboardInterrupt:
+            print() # print new line after ^C
+            if self.stopper:
+                self.stopper()
+            self.thread.join() #TODO: should this timeout?
         if self.exception:
             raise TaskError from self.exception
         return self.result
@@ -61,6 +67,15 @@ class TaskError(RuntimeError):
     def __init__(self):
         message = "Exception in Task"
         super().__init__(message)
+
+
+
+def staggered_join(thread, timeout=1):
+    """
+    Continuously join for timeout seconds to not block KeyboardInterrupt
+    """
+    while thread.is_alive():
+        thread.join(timeout)
 
 
 
