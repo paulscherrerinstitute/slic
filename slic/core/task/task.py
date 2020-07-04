@@ -1,6 +1,7 @@
 from threading import Thread
 
 from slic.utils import typename
+from slic.utils.exceptions import ChainedException
 
 from .basetask import BaseTask
 
@@ -64,7 +65,7 @@ class Task(BaseTask):
 
 
 
-class TaskError(RuntimeError):
+class TaskError(ChainedException):
     def __init__(self):
         message = "Exception in Task"
         super().__init__(message)
