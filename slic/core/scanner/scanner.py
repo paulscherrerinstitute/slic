@@ -53,7 +53,8 @@ class Scanner:
         Returns:
             ScanBackend: Scan instance.
         """
-        filename = self.filename_generator.get_next_run_filename(filename)
+        #TODO: sf_daq counts runs
+#        filename = self.filename_generator.get_next_run_filename(filename)
 
         if not acquisitions:
             acquisitions = self.default_acquisitions

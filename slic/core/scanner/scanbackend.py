@@ -99,11 +99,13 @@ class ScanBackend:
     def get_filename(self, istep):
         filename = os.path.join(self.data_base_dir, self.filename)
 
-        if self.make_scan_sub_dir:
-            filebase = os.path.basename(self.filename)
-            filename = os.path.join(filename, filebase)
+#TODO: no settable file names in sf_daq, but need it for other methods...
+#        if self.make_scan_sub_dir:
+#            filebase = os.path.basename(self.filename)
+#            filename = os.path.join(filename, filebase)
 
-        filename += "_step{:04d}".format(istep)
+#TODO: sf_daq counts runs
+#        filename += "_step{:04d}".format(istep)
         return filename
 
 
