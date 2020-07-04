@@ -39,11 +39,11 @@ class BrokerClient:
         with stqdm(total=n_pulses) as pbar:
             while self.running:
                 current_pulseid = get_current_pulseid()
+                delta_n = (current_pulseid - start_pulseid) // rate_multiplicator
+                pbar.set(delta_n)
                 if current_pulseid > stop_pulseid:
                     break
                 sleep(self.wait_time)
-                delta_n = (current_pulseid - start_pulseid) // rate_multiplicator
-                pbar.set(delta_n)
 
         if not self.running: # stopped early
             stop_pulseid = current_pulseid
