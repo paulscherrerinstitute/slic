@@ -162,7 +162,9 @@ def wait_for_all(tasks):
     for t in tasks:
         try: # TODO: what do we want to do here? not write the filenames(s?) to scan_info?
             t.wait()
-        except Exception as e:
+        except KeyboardInterrupt:
+            raise
+        except Exception as e: #TODO: should this just be TaskError?
             print(e)
 
 def stop_all(tasks):

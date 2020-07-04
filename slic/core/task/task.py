@@ -45,6 +45,7 @@ class Task(BaseTask):
             if self.stopper:
                 self.stopper()
             self.thread.join() #TODO: should this timeout?
+            raise
         if self.exception:
             raise TaskError from self.exception
         return self.result
