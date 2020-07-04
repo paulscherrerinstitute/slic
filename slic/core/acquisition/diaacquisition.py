@@ -72,7 +72,10 @@ class DIAAcquisition(BaseAcquisition):
         self.current_task = task
 
         if wait:
-            task.wait()
+            try:
+                task.wait()
+            except KeyboardInterrupt:
+                print("Stopped current DAQ task:")
 
         return task
 
