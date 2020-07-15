@@ -1,3 +1,4 @@
+from slic.core.adjustable import Adjustable
 from slic.utils.eco_epics.motor import Motor as _Motor
 import subprocess
 from epics import PV
@@ -30,7 +31,7 @@ def _keywordChecker(kw_key_list_tups):
     for tkw,tkey,tlist in kw_key_list_tups:
         assert tkey in tlist, "Keyword %s should be one of %s"%(tkw,tlist)
 
-class MotorRecord:
+class MotorRecord(Adjustable):
     def __init__(self,pvname, name=None, elog=None):
         self.Id = pvname
         self._motor = _Motor(pvname)
