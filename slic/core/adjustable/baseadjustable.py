@@ -1,7 +1,9 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+
+from slic.utils.metaclasses import RegistryABC
 
 
-class BaseAdjustable(ABC):
+class BaseAdjustable(RegistryABC):
 
     @abstractmethod
     def get_current_value(self):
