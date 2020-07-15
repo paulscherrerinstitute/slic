@@ -1,6 +1,6 @@
 import numpy as np
 
-from slic.devices.general.adjustable import DummyAdjustable
+from slic.core.adjustable import DummyAdjustable
 from slic.utils import typename
 
 from .scanbackend import ScanBackend
@@ -127,8 +127,8 @@ class Scanner:
 
 
     def acquire(self, n_intervals, *args, **kwargs):
-        adjustable = DummyAdjustable()
-        adjustables = [adjustable]
+        dummy = DummyAdjustable()
+        adjustables = [dummy]
 
         positions = range(n_intervals)
         positions = transpose(positions)
