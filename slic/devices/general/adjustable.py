@@ -5,80 +5,7 @@ from enum import IntEnum, auto
 import colorama
 import time
 import datetime
-
-
-
-def default_representation(Obj):
-
-    def get_name(Obj):
-        if Obj.alias:
-            return Obj.alias.get_full_name()
-        elif Obj.name:
-            return Obj.name
-        else:
-            return Obj.Id
-
-    def get_repr(Obj):
-        s = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')+': '
-        s += f"{colorama.Style.BRIGHT}{Obj._get_name()}{colorama.Style.RESET_ALL} at {colorama.Style.BRIGHT}{Obj.get_current_value():g}{colorama.Style.RESET_ALL}"
-        return s
-
-    Obj._get_name = get_name
-    Obj.__repr__ = get_repr
-    return Obj
-
-
-
-def spec_convenience(Adj):
-
-    def mv(self, value):
-        self._currentChange = self.set_target_value(value)
-        return self._currentChange
-
-    def wm(self, *args, **kwargs):
-        return self.get_current_value(*args, **kwargs)
-
-    def mvr(self, value, *args, **kwargs):
-        if (
-            hasattr(self, "_currentChange")
-            and self._currentChange
-            and not (self._currentChange.status() == "done")
-        ):
-            startvalue = self._currentChange.target
-        elif hasattr(self, "is_moving") and not self.is_moving():
-            startvalue = self.get_current_value(readback=True, *args, **kwargs)
-        else:
-            startvalue = self.get_current_value(*args, **kwargs)
-        self._currentChange = self.set_target_value(value + startvalue, *args, **kwargs)
-        return self._currentChange
-
-    def wait(self):
-        self._currentChange.wait()
-
-    def call(self, value=None):
-        if not value is None:
-            self._currentChange = self.set_target_value(value)
-            return self._currentChange
-        else:
-            return self.get_current_value()
-
-    def umv(self, *args, **kwargs):
-        self.update_change(*args, **kwargs)
-
-    def umvr(self, *args, **kwargs):
-        self.update_change_relative(*args, **kwargs)
-
-    Adj.mv = mv
-    Adj.wm = wm
-    Adj.mvr = mvr
-    Adj.wait = wait
-    Adj.__call__ = call
-    if hasattr(Adj, "update_change"):
-        Adj.umv = umv
-        Adj.umvr = umvr
-
-    return Adj
-
+from .convenience import SpecConvenience, DefaultRepresentation
 
 
 class PvRecord:
@@ -162,9 +89,7 @@ class PvRecord:
 
 
 
-#@default_representation
-@spec_convenience
-class PvEnum:
+class PvEnum(SpecConvenience):
 
     def __init__(self, pvname, name=None):
         self.Id = pvname
@@ -214,9 +139,7 @@ class PvEnum:
 
 
 
-@default_representation
-@spec_convenience
-class AdjustableVirtual:
+class AdjustableVirtual(SpecConvenience, DefaultRepresentation):
 
     def __init__(
         self,

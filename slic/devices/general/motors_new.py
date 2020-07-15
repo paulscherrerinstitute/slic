@@ -4,7 +4,7 @@ import subprocess
 from epics import PV
 from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
-from .adjustable import spec_convenience
+from slic.core.adjustable.convenience import SpecConvenience
 from .motors_new_helper import update_changes, ValueInRange, AdjustableError
 import colorama
 
@@ -35,9 +35,8 @@ def _keywordChecker(kw_key_list_tups):
         assert tkey in tlist, "Keyword %s should be one of %s" % (tkw, tlist)
 
 
-@spec_convenience
 @update_changes
-class MotorRecord:
+class MotorRecord(SpecConvenience):
     def __init__(
         self,
         pvname,
