@@ -4,7 +4,8 @@ import subprocess
 from epics import PV
 from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
-from .adjustable import spec_convenience, ValueInRange, update_changes, AdjustableError
+from .adjustable import spec_convenience
+from .motors_new_helper import update_changes, ValueInRange, AdjustableError
 import colorama
 
 _MotorRocordStandardProperties = {}
