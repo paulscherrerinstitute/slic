@@ -1,9 +1,9 @@
 from time import sleep
 
-from .baseadjustable import BaseAdjustable
+from .adjustable import Adjustable
 
 
-class GenericAdjustable(BaseAdjustable):
+class GenericAdjustable(Adjustable):
 
     def __init__(self, set, get, wait=None):
         self.set = set
