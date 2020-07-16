@@ -1,33 +1,16 @@
-from epics import PV
-import os
-import numpy as np
-import time
-from slic.core.task import Task
-from ..aliases import Alias
 from time import sleep
 
+from epics import PV
 
-class PvRecord:
-    def __init__(
-        self,
-        pvsetname,
-        pvreadbackname=None,
-        accuracy=None,
-        sleeptime=0,
-        name=None,
-        elog=None,
-    ):
+from slic.core.task import Task
 
-        #        alias_fields={"setpv": pvsetname, "readback": pvreadbackname},
-        #    ):
+
+class PvAdjustable:
+
+    def __init__(self, pvsetname, pvreadbackname=None, accuracy=None, sleeptime=0, name=None):
         self.Id = pvsetname
         self.name = name
-        self.alias = Alias(name)
         self.sleeptime = sleeptime
-        #        for an, af in alias_fields.items():
-        #            self.alias.append(
-        #                Alias(an, channel=".".join([pvname, af]), channeltype="CA")
-        #            )
 
         self._pv = PV(self.Id)
         self._currentChange = None
@@ -38,6 +21,7 @@ class PvRecord:
         else:
             self._pvreadback = PV(pvreadbackname)
 
+
     def get_current_value(self, readback=True):
         if readback:
             currval = self._pvreadback.get()
@@ -46,12 +30,10 @@ class PvRecord:
         return currval
 
     def is_moving(self):
-        """ Adjustable convention"""
-        """ 0: moving 1: move done"""
         movedone = 1
         if self.accuracy is not None:
             if (
-                np.abs(
+                abs(
                     self.get_current_value(readback=False)
                     - self.get_current_value(readback=True)
                 )
@@ -64,14 +46,14 @@ class PvRecord:
 
     def move(self, value):
         self._pv.put(value)
-        time.sleep(0.1)
+        sleep(0.1)
         while self.is_moving():
-            time.sleep(0.1)
+            sleep(0.1)
 
     def set_target_value(self, value, hold=False):
-        """ Adjustable convention"""
         changer = lambda: self.move(value)
         return Task(changer, hold=hold)
+
 
     # spec-inspired convenience methods
     def mv(self, value):
@@ -81,7 +63,6 @@ class PvRecord:
         return self.get_current_value(*args, **kwargs)
 
     def mvr(self, value, *args, **kwargs):
-
         if not self.is_moving():
             startvalue = self.get_current_value(readback=True, *args, **kwargs)
         else:
@@ -91,5 +72,9 @@ class PvRecord:
     def wait(self):
         self._currentChange.wait()
 
+
     def __repr__(self):
         return "%s is at: %s" % (self.Id, self.get_current_value())
+
+
+
