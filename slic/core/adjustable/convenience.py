@@ -1,5 +1,3 @@
-import colorama
-
 
 class SpecConvenience:
 
@@ -41,23 +39,6 @@ class SpecConvenience:
     #TODO: if hasattr(Adj, "update_change_relative"):
     def umvr(self, *args, **kwargs):
         self.update_change_relative(*args, **kwargs)
-
-
-
-class DefaultRepresentation:
-
-    def _get_name(self):
-        if self.alias:
-            return self.alias.get_full_name()
-        elif self.name:
-            return self.name
-        else:
-            return self.Id
-
-    def __repr__(self):
-        s = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')+': '
-        s += f"{colorama.Style.BRIGHT}{self._get_name()}{colorama.Style.RESET_ALL} at {colorama.Style.BRIGHT}{self.get_current_value():g}{colorama.Style.RESET_ALL}"
-        return s
 
 
 

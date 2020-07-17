@@ -5,7 +5,7 @@ from enum import IntEnum, auto
 import colorama
 import time
 import datetime
-from .convenience import SpecConvenience, DefaultRepresentation
+from .convenience import SpecConvenience
 
 
 class PvRecord:
@@ -139,7 +139,7 @@ class PvEnum(SpecConvenience):
 
 
 
-class AdjustableVirtual(SpecConvenience, DefaultRepresentation):
+class AdjustableVirtual(SpecConvenience):
 
     def __init__(
         self,
@@ -202,6 +202,22 @@ class AdjustableVirtual(SpecConvenience, DefaultRepresentation):
             vals = self._foo_set_target_value_current_value(value)
             for adj, val in zip(self._adjustables, vals):
                 adj.set_current_value(val)
+
+
+    #TODO: below from DefaultRepresentation
+
+    def _get_name(self):
+        if self.alias:
+            return self.alias.get_full_name()
+        elif self.name:
+            return self.name
+        else:
+            return self.Id
+
+    def __repr__(self):
+        s = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')+': '
+        s += f"{colorama.Style.BRIGHT}{self._get_name()}{colorama.Style.RESET_ALL} at {colorama.Style.BRIGHT}{self.get_current_value():g}{colorama.Style.RESET_ALL}"
+        return s
 
 
 
