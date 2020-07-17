@@ -1,34 +1,39 @@
-from time import sleep
-
+from slic.core.task import Task
 from .adjustable import Adjustable
 
 
 class GenericAdjustable(Adjustable):
 
-    def __init__(self, set, get, wait=None):
-        self.set = set
-        self.get = get
-        self.wait = wait if wait is not None else self._default_wait
-        self.last_target = get()
-
-    def set_target_value(self, pos):
-        self.last_target = pos
-        return self.set(pos)
+    def __init__(self, set, get, wait=None, name=None):
+        super().__init__(name)
+        self._set = set
+        self._get = get
+        self._wait = wait or self._generic_wait
+        self._last_target = None
 
     def get_current_value(self):
-        return self.get()
+        return self._get()
+
+    def set_target_value(self, value, hold=False):
+        self._last_target = value
+        change = lambda: self._set(value)
+        self.current_task = task = Task(change, hold=hold)
+        return task
 
     def is_moving(self):
-        return not self.wait()
+        return not self._wait()
 
-    def _default_wait(self):
-        return self.get() == self.last_target
+    def _generic_wait(self):
+        if self._last_target is None:
+            return True
+        return self._get() == self._last_target
 
 
 
 
 
 if __name__ == "__main__":
+    from time import sleep
 
     pos = 0
 

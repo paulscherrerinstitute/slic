@@ -1,24 +1,24 @@
+from slic.core.task import Task
 from .adjustable import Adjustable
 
 
 class DummyAdjustable(Adjustable):
 
     def __init__(self, initial_value=0, name="Dummy"):
-        self.name = name
+        super().__init__(name)
         self._current_value = initial_value
 
     def get_current_value(self):
         return self._current_value
 
     def set_target_value(self, value, hold=False):
-        def changer():
+        def change():
             self._current_value = value
-        return Task(changer, hold=hold)
+        self.current_task = task = Task(change, hold=hold)
+        return task
 
-    def __repr__(self):
-        name = self.name
-        value = self.get_current_value()
-        return f"{name} at {value}"
+    def is_moving(self):
+        return False
 
 
 

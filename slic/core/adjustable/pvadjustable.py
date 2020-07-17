@@ -1,80 +1,52 @@
-from time import sleep
-
+from types import SimpleNamespace
 from epics import PV
-
 from slic.core.task import Task
+from .adjustable import Adjustable
 
 
-class PvAdjustable:
+class PvAdjustable(Adjustable):
 
-    def __init__(self, pvsetname, pvreadbackname=None, accuracy=None, sleeptime=0, name=None):
-        self.Id = pvsetname
-        self.name = name
-        self.sleeptime = sleeptime
+    def __init__(self, pvname_setvalue, pvname_readback=None, accuracy=None, name=None):
+        name = name or pvname_setvalue
+        super().__init__(name)
 
-        self._pv = PV(self.Id)
-        self._currentChange = None
         self.accuracy = accuracy
 
-        if pvreadbackname is None:
-            self._pvreadback = PV(self.Id)
-        else:
-            self._pvreadback = PV(pvreadbackname)
+        pv_setvalue = PV(pvname_setvalue)
+        pv_readback = PV(pvname_readback) if pvname_readback else pv_setvalue
+
+        self.pvnames = SimpleNamespace(
+            setvalue = pvname_setvalue,
+            readback = pvname_readback
+        )
+
+        self.pvs = SimpleNamespace(
+            setvalue = pv_setvalue,
+            readback = pv_readback
+        )
 
 
     def get_current_value(self, readback=True):
         if readback:
-            currval = self._pvreadback.get()
-        if not readback:
-            currval = self._pv.get()
-        return currval
-
-    def is_moving(self):
-        movedone = 1
-        if self.accuracy is not None:
-            if (
-                abs(
-                    self.get_current_value(readback=False)
-                    - self.get_current_value(readback=True)
-                )
-                > self.accuracy
-            ):
-                movedone = 0
+            return self.pvs.readback.get()
         else:
-            sleep(self.sleeptime)
-        return not bool(movedone)
-
-    def move(self, value):
-        self._pv.put(value)
-        sleep(0.1)
-        while self.is_moving():
-            sleep(0.1)
+            return self.pvs.setvalue.get()
 
     def set_target_value(self, value, hold=False):
-        changer = lambda: self.move(value)
-        return Task(changer, hold=hold)
+        def change():
+            # use_complete=True enables status in PV.put_complete
+            self.pvs.setvalue.put(value, wait=True, use_complete=True)
+        self.current_task = task = Task(change, hold=hold)
+        return task
 
-
-    # spec-inspired convenience methods
-    def mv(self, value):
-        self._currentChange = self.set_target_value(value)
-
-    def wm(self, *args, **kwargs):
-        return self.get_current_value(*args, **kwargs)
-
-    def mvr(self, value, *args, **kwargs):
-        if not self.is_moving():
-            startvalue = self.get_current_value(readback=True, *args, **kwargs)
+    def is_moving(self):
+        if self.accuracy is not None:
+            setvalue = self.get_current_value(readback=False)
+            readback = self.get_current_value(readback=True)
+            delta = abs(setvalue - readback)
+            return delta > self.accuracy
         else:
-            startvalue = self.get_current_value(readback=False, *args, **kwargs)
-        self._currentChange = self.set_target_value(value + startvalue, *args, **kwargs)
-
-    def wait(self):
-        self._currentChange.wait()
-
-
-    def __repr__(self):
-        return "%s is at: %s" % (self.Id, self.get_current_value())
+            return not self.pvs.setvalue.put_complete
 
 
 
