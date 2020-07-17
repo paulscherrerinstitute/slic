@@ -1,6 +1,6 @@
 from ..general.motors_new import MotorRecord
 from ..general.detectors import CameraCA, CameraBS
-from ..general.adjustable import PvRecord
+from slic.core.adjustable import PVAdjustable
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 
 # from ..devices_general.epics_wrappers import EnumSelector
@@ -13,13 +13,13 @@ def addMotorRecordToSelf(self, Id=None, name=None):
     self.alias.append(self.__dict__[name].alias)
 
 
-def addPvRecordToSelf(
-    self, name=None, pvsetname=None, pvreadbackname=None, accuracy=None
-):
-    self.__dict__[name] = PvRecord(
-        name=name, pvsetname=pvsetname, pvreadbackname=pvreadbackname, accuracy=accuracy
-    )
-    self.alias.append(self.__dict__[name].alias)
+#def addPvRecordToSelf(
+#    self, name=None, pvname_setvalue=None, pvname_readback=None, accuracy=None
+#):
+#    self.__dict__[name] = PVAdjustable(
+#        pvname_setvalue, pvname_readback=pvname_readback, accuracy=accuracy, name=name
+#    )
+#    self.alias.append(self.__dict__[name].alias)
 
 
 class Sigma:
@@ -42,10 +42,10 @@ class Sigma:
         if zoomstage_pvs:
             append_object_to_object(
                 self,
-                PvRecord,
-                name="zoom",
-                pvsetname=zoomstage_pvs["set_value"],
-                pvreadbackname=zoomstage_pvs["readback"],
+                PVAdjustable,
+                zoomstage_pvs["set_value"],
+                pvname_readback=zoomstage_pvs["readback"],
+                name="zoom"
             )
 
         try:
