@@ -1,60 +1,8 @@
-from epics import PV
 from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
-from enum import IntEnum, auto
 import colorama
 import datetime
 from .convenience import SpecConvenience
-
-
-class PvEnum(SpecConvenience):
-
-    def __init__(self, pvname, name=None):
-        self.Id = pvname
-        self._pv = PV(pvname)
-        self.name = name
-        self.enum_strs = self._pv.enum_strs
-        if name:
-            enumname = self.name
-        else:
-            enumname = self.Id
-        self.PvEnum = IntEnum(
-            enumname, {tstr: n for n, tstr in enumerate(self.enum_strs)}
-        )
-        self.alias = Alias(name, channel=self.Id, channeltype="CA")
-
-    def validate(self, value):
-        if type(value) is str:
-            return self.PvEnum.__members__[value]
-        else:
-            return self.PvEnum(value)
-
-    def get_current_value(self):
-        return self.validate(self._pv.get())
-
-    def set_target_value(self, value, hold=False):
-        """ Adjustable convention"""
-        value = self.validate(value)
-        changer = lambda: self._pv.put(value, wait=True)
-        return Task(changer, hold=hold)
-
-    def __repr__(self):
-        if not self.name:
-            name = self.Id
-        else:
-            name = self.name
-        cv = self.get_current_value()
-        s = f"{name} (enum) at value: {cv}" + "\n"
-        s += "{:<5}{:<5}{:<}\n".format("Num.", "Sel.", "Name")
-        # s+= '_'*40+'\n'
-        for name, val in self.PvEnum.__members__.items():
-            if val == cv:
-                sel = "x"
-            else:
-                sel = " "
-            s += "{:>4}   {}  {}\n".format(val, sel, name)
-        return s
-
 
 
 class AdjustableVirtual(SpecConvenience):

@@ -1,7 +1,7 @@
 from epics import PV
 from slic.utils.eco_components.aliases import Alias
 from slic.utils.eco_components.lazy_proxy import Proxy
-from ..general.adjustable import PvEnum
+from slic.core.adjustable import PVEnumAdjustable
 from cta_lib import CtaLib
 from numbers import Number
 
@@ -208,7 +208,7 @@ class EvrPulser:
         self.pv_base = pv_base
         self.name = name
         self._pvs = {}
-        self.polarity = PvEnum(f"{self.pv_base}-Polarity-Sel", name="polarity")
+        self.polarity = PVEnumAdjustable(f"{self.pv_base}-Polarity-Sel", name="polarity")
 
     def _get_pv(self, pvname):
         if not pvname in self._pvs:
@@ -251,8 +251,8 @@ class EvrOutput:
         self._pulsers = None
         # self._update_connected_pulsers()
         self.pulsers_numbers = (
-            PvEnum(f"{self.pv_base}_SNUMPD", name="pulserA"),
-            PvEnum(f"{self.pv_base}_SNUMPD2", name="pulserB"),
+            PVEnumAdjustable(f"{self.pv_base}_SNUMPD", name="pulserA"),
+            PVEnumAdjustable(f"{self.pv_base}_SNUMPD2", name="pulserB"),
         )
 
     def _get_pulserA(self):

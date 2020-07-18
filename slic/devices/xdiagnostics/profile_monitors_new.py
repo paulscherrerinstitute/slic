@@ -1,7 +1,7 @@
 from ..general.motors_new import MotorRecord
 from ..general.detectors import CameraCA, CameraBS
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
-from ..general.adjustable import PvEnum
+from slic.core.adjustable import PVEnumAdjustable
 
 # from ..devices_general.epics_wrappers import EnumSelector
 from epics import PV
@@ -19,8 +19,8 @@ class Pprm:
         self.name = name
         self.target_pos = MotorRecord(Id + ":MOTOR_PROBE", name="target_pos")
         self.cam = CameraCA(Id)
-        self.led = PvEnum(self.Id + ":LED", name="led")
-        self.target = PvEnum(self.Id + ":PROBE_SP", name="target")
+        self.led = PVEnumAdjustable(self.Id + ":LED", name="led")
+        self.target = PVEnumAdjustable(self.Id + ":PROBE_SP", name="target")
         if name:
             self.alias = Alias(name)
             self.alias.append(self.target_pos.alias)

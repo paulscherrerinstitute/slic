@@ -3,7 +3,6 @@ from epics import PV
 from time import sleep
 from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
-from ..general.adjustable import PvEnum
 
 
 class AttenuatorAramis:

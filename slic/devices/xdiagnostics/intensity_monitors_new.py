@@ -1,7 +1,7 @@
 from ..general.motors_new import MotorRecord
 from slic.utils.eco_epics.utilities_epics import EnumWrapper
 from ..general.detectors_new import FeDigitizer,PvDataStream
-from ..general.adjustable import PvEnum
+from slic.core.adjustable import PVEnumAdjustable
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 from epics import PV
 import numpy as np
@@ -36,7 +36,7 @@ class SolidTargetDetectorPBPS_new:
         append_object_to_object(self,MotorRecord,pvname + ":MOTOR_X1", name="x_diodes")
         append_object_to_object(self,MotorRecord,pvname + ":MOTOR_Y1", name="y_diodes")
         append_object_to_object(self,MotorRecord,pvname + ":MOTOR_PROBE", name="target_y")
-        append_object_to_object(self,PvEnum,pvname + ":PROBE_SP", name="target")
+        append_object_to_object(self,PVEnumAdjustable, pvname + ":PROBE_SP", name="target")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
             self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
@@ -209,7 +209,7 @@ class SolidTargetDetectorPBPS:
         self.diode_x = MotorRecord(Id + ":MOTOR_X1", name="diode_x")
         self.diode_y = MotorRecord(Id + ":MOTOR_Y1", name="diode_y")
         self.target_pos = MotorRecord(Id + ":MOTOR_PROBE", name="target_pos")
-        self.target = PvEnum(Id + ":PROBE_SP", name="target")
+        self.target = PVEnumAdjustable(Id + ":PROBE_SP", name="target")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
             self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
