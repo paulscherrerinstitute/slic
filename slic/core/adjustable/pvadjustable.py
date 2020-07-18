@@ -4,7 +4,7 @@ from slic.core.task import Task
 from .adjustable import Adjustable
 
 
-class PvAdjustable(Adjustable):
+class PVAdjustable(Adjustable):
 
     def __init__(self, pvname_setvalue, pvname_readback=None, accuracy=None, name=None):
         name = name or pvname_setvalue
