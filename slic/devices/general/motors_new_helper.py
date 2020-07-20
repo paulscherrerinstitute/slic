@@ -36,11 +36,7 @@ def update_changes(Adj):
         return self._currentChange
 
     def update_change_relative(self, value, *args, **kwargs):
-        if (
-            hasattr(self, "_currentChange")
-            and self._currentChange
-            and not (self._currentChange.status() == "done")
-        ):
+        if hasattr(self, "_currentChange") and self._currentChange and not (self._currentChange.status() == "done"):
             startvalue = self._currentChange.target
         elif hasattr(self, "is_moving") and not self.is_moving():
             startvalue = self.get_current_value(readback=True, *args, **kwargs)
