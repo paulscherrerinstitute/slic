@@ -11,25 +11,22 @@ from slic.utils.eco_components.aliases import Alias
 from .motors_new_helper import update_changes, ValueInRange, AdjustableError
 
 
-_MotorRocordStandardProperties = {}
-_posTypes = ["user", "dial", "raw"]
-_guiTypes = ["xdm"]
+POS_TYPES = ["user", "dial", "raw"]
 
-
-_status_messages = {
-    -13: "invalid value (cannot convert to float).  Move not attempted.",
-    -12: "target value outside soft limits.         Move not attempted.",
-    -11: "drive PV is not connected:                Move not attempted.",
-    -8: "move started, but timed-out.",
-    -7: "move started, timed-out, but appears done.",
-    -5: "move started, unexpected return value from PV.put()",
-    -4: "move-with-wait finished, soft limit violation seen",
-    -3: "move-with-wait finished, hard limit violation seen",
-    0: "move-with-wait finish OK.",
-    1: "move-without-wait executed, not confirmed",
-    2: "move-without-wait executed, move confirmed",
-    3: "move-without-wait finished, hard limit violation seen",
-    4: "move-without-wait finished, soft limit violation seen",
+STATUS_MESSAGES = {
+    -13: "invalid value (cannot convert to float). Move not attempted.",
+    -12: "target value outside soft limits. Move not attempted.",
+    -11: "drive PV is not connected: Move not attempted.",
+    -8:  "move started, but timed-out.",
+    -7:  "move started, timed-out, but appears done.",
+    -5:  "move started, unexpected return value from PV.put()",
+    -4:  "move-with-wait finished, soft limit violation seen",
+    -3:  "move-with-wait finished, hard limit violation seen",
+    0:   "move-with-wait finish OK.",
+    1:   "move-without-wait executed, not confirmed",
+    2:   "move-without-wait executed, move confirmed",
+    3:   "move-without-wait finished, hard limit violation seen",
+    4:   "move-without-wait finished, soft limit violation seen",
 }
 
 
@@ -51,13 +48,13 @@ class Motor(SpecConvenience):
             self.alias.append(
                 Alias(an, channel=".".join([pvname, af]), channeltype="CA")
             )
-        self._currentChange = None
-        self.description = EpicsString(pvname+'.DESC')
+        self.current_task = None
+        self.description = EpicsString(pvname + '.DESC')
 
     def set_target_value(self, value, hold=False, check=True):
         def changer():
             self._status = self._motor.move(value, ignore_limits=(not check), wait=True)
-            self._status_message = _status_messages[self._status]
+            self._status_message = STATUS_MESSAGES[self._status]
             if self._status < 0:
                 raise AdjustableError(self._status_message)
             elif self._status > 0:
@@ -67,39 +64,40 @@ class Motor(SpecConvenience):
 
     def stop(self):
         try:
-            self._currentChange.stop()
+            self.current_task.stop()
         except:
             self._motor.stop()
 
-    def get_current_value(self, posType="user", readback=True):
-        _keywordChecker([("posType", posType, _posTypes)])
-        if posType == "user":
+    def get_current_value(self, pos_type="user", readback=True):
+        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
+        if pos_type == "user":
             return self._motor.get_position(readback=readback)
-        if posType == "dial":
+        if pos_type == "dial":
             return self._motor.get_position(readback=readback, dial=True)
-        if posType == "raw":
+        if pos_type == "raw":
             return self._motor.get_position(readback=readback, raw=True)
 
-    def reset_current_value_to(self, value, posType="user"):
-        _keywordChecker([("posType", posType, _posTypes)])
-        if posType == "user":
+    def reset_current_value_to(self, value, pos_type="user"):
+        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
+        if pos_type == "user":
             return self._motor.set_position(value)
-        if posType == "dial":
+        if pos_type == "dial":
             return self._motor.set_position(value, dial=True)
-        if posType == "raw":
+        if pos_type == "raw":
             return self._motor.set_position(value, raw=True)
 
     def is_moving(self):
-        res = PV(str(self.Id + ".DMOV")).value # 0: moving 1: move done
+        res = PV(self.Id + ".DMOV").value # 0: moving 1: move done
         return not bool(res)
 
-    def set_limits(self, low_limit, high_limit, posType="user", relative_to_present=False):
-        _keywordChecker([("posType", posType, _posTypes)])
-        ll_name, hl_name = "LLM", "HLM"
-        if posType is "dial":
+    def set_limits(self, low_limit, high_limit, pos_type="user", relative_to_present=False):
+        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
+        if pos_type == "dial":
             ll_name, hl_name = "DLLM", "DHLM"
+        else:
+            ll_name, hl_name = "LLM", "HLM"
         if relative_to_present:
-            v = self.get_current_value(posType=posType)
+            v = self.get_current_value(pos_type=pos_type)
             low_limit = v + low_limit
             high_limit = v + high_limit
         self._motor.put(ll_name, low_limit)
@@ -114,14 +112,15 @@ class Motor(SpecConvenience):
         else:
             self._motor.get_pv("RBV").clear_callbacks()
 
-    def get_limits(self, posType="user"):
-        _keywordChecker([("posType", posType, _posTypes)])
-        ll_name, hl_name = "LLM", "HLM"
-        if posType is "dial":
+    def get_limits(self, pos_type="user"):
+        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
+        if pos_type == "dial":
             ll_name, hl_name = "DLLM", "DHLM"
+        else:
+            ll_name, hl_name = "LLM", "HLM"
         return self._motor.get(ll_name), self._motor.get(hl_name)
 
-    def gui(self, guiType="xdm"):
+    def gui(self):
         cmd = ["caqtdm", "-macro"]
         cmd.append('"P=%s:,M=%s"' % tuple(self.Id.split(":")))
         # cmd.append('/sf/common/config/qt/motorx_more.ui')
@@ -131,7 +130,7 @@ class Motor(SpecConvenience):
 
     def __repr__(self):
         s = f"{self.name}"
-        s += f"\t@ {colorama.Style.BRIGHT}{self.get_current_value():1.6g}{colorama.Style.RESET_ALL} (dial @ {self.get_current_value(posType='dial'):1.6g})"
+        s += f"\t@ {colorama.Style.BRIGHT}{self.get_current_value():1.6g}{colorama.Style.RESET_ALL} (dial @ {self.get_current_value(pos_type='dial'):1.6g})"
         # # s +=  "\tuser limits      (low,high) : {:1.6g},{:1.6g}\n".format(*self.get_limits())
         s += f"\n{colorama.Style.DIM}low limit {colorama.Style.RESET_ALL}"
         s += ValueInRange(*self.get_limits()).get_str(self.get_current_value())
