@@ -10,6 +10,7 @@ class PVEnumAdjustable(Adjustable):
         name = name or pvname
         super().__init__(name)
 
+        self.pvname = pvname
         self.pv = PV(pvname)
         self.states = Enum(self.pv.enum_strs)
 
