@@ -76,8 +76,8 @@ class Motor(Adjustable):
         return self._motor.set_position(value, **kwargs)
 
 
-    def set_target_value(self, value, hold=False, check=True):
-        ignore_limits = not check
+    def set_target_value(self, value, hold=False, check_limits=True):
+        ignore_limits = not check_limits
 
         def change():
             status = self._motor.move(value, ignore_limits=ignore_limits, wait=True)
