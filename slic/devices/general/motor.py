@@ -1,17 +1,31 @@
 import subprocess
+from types import SimpleNamespace
 import colorama
 from epics import PV
 
 from slic.core.task import Task
-from slic.core.adjustable.convenience import SpecConvenience
+from slic.core.adjustable import Adjustable
 from slic.utils.eco_epics.motor import Motor as _Motor
 from slic.utils.eco_epics.utilities_epics import EpicsString
 from slic.utils.eco_components.aliases import Alias
 
-from .motors_new_helper import update_changes, ValueInRange, AdjustableError
+from .motors_new_helper import AdjustableError #TODO
 
 
-POS_TYPES = ["user", "dial", "raw"]
+POS_TYPES = {"dial", "raw", "user"}
+
+POS_TYPE_KWARGS = {
+    "dial": {"dial": True},
+    "raw":  {"raw":  True},
+    "user": {}
+}
+
+POS_TYPE_LIMIT_NAMES = {
+    "dial": ("DLLM", "DHLM"),
+    "raw":  ("LLM",  "HLM"),
+    "user": ("LLM",  "HLM")
+}
+
 
 STATUS_MESSAGES = {
     -13: "invalid value (cannot convert to float). Move not attempted.",
@@ -23,120 +37,139 @@ STATUS_MESSAGES = {
     -4:  "move-with-wait finished, soft limit violation seen",
     -3:  "move-with-wait finished, hard limit violation seen",
     0:   "move-with-wait finish OK.",
-    1:   "move-without-wait executed, not confirmed",
-    2:   "move-without-wait executed, move confirmed",
+    0:   "move-without-wait executed, not confirmed",
+    1:   "move-without-wait executed, move confirmed",
     3:   "move-without-wait finished, hard limit violation seen",
     4:   "move-without-wait finished, soft limit violation seen",
 }
 
 
-def _keywordChecker(kw_key_list_tups):
-    for tkw, tkey, tlist in kw_key_list_tups:
-        assert tkey in tlist, "Keyword %s should be one of %s" % (tkw, tlist)
+
+class Motor(Adjustable):
+
+    def __init__(self, pvname, name=None):
+        name = name or pvname
+        super().__init__(name)
+
+        self.pvname = pvname
+        self._motor = motor = _Motor(pvname)
+
+        self.pvs = SimpleNamespace(
+            readback    = motor.get_pv("RBV"),
+            user_offset = motor.get_pv("OFF"),
+            done_move   = motor.get_pv("DMOV"),
+            description = motor.get_pv("DESC")
+        )
+
+        self.status = None
+        self.status_message = None
 
 
+    def get_current_value(self, readback=True, pos_type="user"):
+        check_pos_type(pos_type)
+        kwargs = POS_TYPE_KWARGS[pos_type]
+        return self._motor.get_position(readback=readback, **kwargs)
 
-class Motor(SpecConvenience):
+    def reset_current_value_to(self, value, pos_type="user"):
+        check_pos_type(pos_type)
+        kwargs = POS_TYPE_KWARGS[pos_type]
+        return self._motor.set_position(value, **kwargs)
 
-    def __init__(self, pvname, name=None, elog=None, alias_fields={"readback": "RBV", "user_offset": "OFF"}):
-        self.Id = pvname
-        self._motor = _Motor(pvname)
-        self._elog = elog
-        self.name = name
-        self.alias = Alias(name)
-        for an, af in alias_fields.items():
-            self.alias.append(
-                Alias(an, channel=".".join([pvname, af]), channeltype="CA")
-            )
-        self.current_task = None
-        self.description = EpicsString(pvname + '.DESC')
 
     def set_target_value(self, value, hold=False, check=True):
-        def changer():
-            self._status = self._motor.move(value, ignore_limits=(not check), wait=True)
-            self._status_message = STATUS_MESSAGES[self._status]
-            if self._status < 0:
-                raise AdjustableError(self._status_message)
-            elif self._status > 0:
-                print("\n")
-                print(self._status_message)
-        return Task(changer, hold=hold, stopper=self._motor.stop)
+        ignore_limits = not check
+
+        def change():
+            status = self._motor.move(value, ignore_limits=ignore_limits, wait=True)
+            message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
+            self.status = status
+            self.status_message = message
+            validate_status(status, message)
+
+        return Task(change, hold=hold, stopper=self._motor.stop)
+
+
+    def is_moving(self):
+        done = self.pvs.done_move.value # 0: moving, 1: move done
+        return not bool(done)
+
 
     def stop(self):
         try:
-            self.current_task.stop()
+            if self.current_task:
+                self.current_task.stop()
         except:
             self._motor.stop()
 
-    def get_current_value(self, pos_type="user", readback=True):
-        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
-        if pos_type == "user":
-            return self._motor.get_position(readback=readback)
-        if pos_type == "dial":
-            return self._motor.get_position(readback=readback, dial=True)
-        if pos_type == "raw":
-            return self._motor.get_position(readback=readback, raw=True)
 
-    def reset_current_value_to(self, value, pos_type="user"):
-        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
-        if pos_type == "user":
-            return self._motor.set_position(value)
-        if pos_type == "dial":
-            return self._motor.set_position(value, dial=True)
-        if pos_type == "raw":
-            return self._motor.set_position(value, raw=True)
+    def get_limits(self, pos_type="user"):
+        check_pos_type(pos_type)
+        ll_name, hl_name = POS_TYPE_LIMIT_NAMES[pos_type]
+        low_limit  = self._motor.get(ll_name)
+        high_limit = self._motor.get(hl_name)
+        return low_limit, high_limit
 
-    def is_moving(self):
-        res = PV(self.Id + ".DMOV").value # 0: moving 1: move done
-        return not bool(res)
-
-    def set_limits(self, low_limit, high_limit, pos_type="user", relative_to_present=False):
-        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
-        if pos_type == "dial":
-            ll_name, hl_name = "DLLM", "DHLM"
-        else:
-            ll_name, hl_name = "LLM", "HLM"
-        if relative_to_present:
-            v = self.get_current_value(pos_type=pos_type)
-            low_limit = v + low_limit
-            high_limit = v + high_limit
+    def set_limits(self, low_limit, high_limit, relative_to_current=False, pos_type="user"):
+        check_pos_type(pos_type)
+        ll_name, hl_name = POS_TYPE_LIMIT_NAMES[pos_type]
+        if relative_to_current:
+            val = self.get_current_value(pos_type=pos_type)
+            low_limit  += val
+            high_limit += val
         self._motor.put(ll_name, low_limit)
         self._motor.put(hl_name, high_limit)
 
+    def print_limits(self): #TODO: is the bar helpful?
+        low, high = self.get_limits()
+        val = self.get_current_value()
+        print(f"{low} < {val} < {high}")
+
+
     def add_value_callback(self, callback, index=None):
-        return self._motor.get_pv("RBV").add_callback(callback=callback, index=index)
+        return self.pvs.readback.add_callback(callback=callback, index=index)
 
     def clear_value_callback(self, index=None):
         if index:
-            self._motor.get_pv("RBV").remove_callback(index)
+            self.pvs.readback.remove_callback(index)
         else:
-            self._motor.get_pv("RBV").clear_callbacks()
+            self.pvs.readback.clear_callbacks()
 
-    def get_limits(self, pos_type="user"):
-        _keywordChecker([("pos_type", pos_type, POS_TYPES)])
-        if pos_type == "dial":
-            ll_name, hl_name = "DLLM", "DHLM"
-        else:
-            ll_name, hl_name = "LLM", "HLM"
-        return self._motor.get(ll_name), self._motor.get(hl_name)
 
     def gui(self):
-        cmd = ["caqtdm", "-macro"]
-        cmd.append('"P=%s:,M=%s"' % tuple(self.Id.split(":")))
-        # cmd.append('/sf/common/config/qt/motorx_more.ui')
-        cmd.append("motorx_more.ui")
-        # os.system(' '.join(cmd))
-        return subprocess.Popen(" ".join(cmd), shell=True)
+        device, motor = self.pvname.split(":")
+        cmd = f'caqtdm -macro "P={device}:,M={motor}" motorx_more.ui'
+        return subprocess.Popen(cmd, shell=True)
+
+
+    @property
+    def description(self):
+        return self.pvs.description.value
+
 
     def __repr__(self):
-        s = f"{self.name}"
-        s += f"\t@ {colorama.Style.BRIGHT}{self.get_current_value():1.6g}{colorama.Style.RESET_ALL} (dial @ {self.get_current_value(pos_type='dial'):1.6g})"
-        # # s +=  "\tuser limits      (low,high) : {:1.6g},{:1.6g}\n".format(*self.get_limits())
-        s += f"\n{colorama.Style.DIM}low limit {colorama.Style.RESET_ALL}"
-        s += ValueInRange(*self.get_limits()).get_str(self.get_current_value())
-        s += f" {colorama.Style.DIM}high limit{colorama.Style.RESET_ALL}"
-        # # s +=  "\tuser limits      (low,high) : {:1.6g},{1.6g}".format(self.get_limits())
-        return s
+        res = super().__repr__()
+        dial = self.get_current_value(pos_type="dial")
+        res += f" (dial: {dial})"
+        return res
+
+
+
+def check_pos_type(pos_type):
+    if pos_type not in POS_TYPES:
+        msg = f"{pos_type} not in {POS_TYPES}"
+        raise ValueError(msg)
+
+
+def validate_status(status, message):
+    if status < 0:
+        raise MotorError(message)
+    elif status > 0:
+        print()
+        print(message)
+
+class MotorError(AdjustableError):
+    pass
+
 
 
 #TODO
