@@ -27,3 +27,11 @@ class Adjustable(BaseAdjustable, SpecConvenience):
 
 
 #TODO handle Task creation only here, not in every subclass
+
+
+
+class AdjustableError(Exception):
+    pass
+
+
+

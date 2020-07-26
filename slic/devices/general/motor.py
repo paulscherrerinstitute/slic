@@ -4,12 +4,10 @@ import colorama
 from epics import PV
 
 from slic.core.task import Task
-from slic.core.adjustable import Adjustable
+from slic.core.adjustable import Adjustable, AdjustableError
 from slic.utils.eco_epics.motor import Motor as _Motor
 from slic.utils.eco_epics.utilities_epics import EpicsString
 from slic.utils.eco_components.aliases import Alias
-
-from .motors_new_helper import AdjustableError #TODO
 
 
 POS_TYPES = {"dial", "raw", "user"}
@@ -167,15 +165,16 @@ def validate_status(status, message):
         print()
         print(message)
 
+
 class MotorError(AdjustableError):
     pass
 
 
 
 #TODO
-#precision
-#speed
-#speedMax
+#- precision
+#- speed
+#- speedMax
 
 
 
