@@ -5,7 +5,7 @@ from epics import PV
 
 from slic.core.task import Task
 from slic.core.adjustable import Adjustable, AdjustableError
-from slic.utils.eco_epics.motor import Motor as _Motor
+from slic.utils.eco_epics.motor import Motor as EpicsMotor
 from slic.utils.eco_epics.utilities_epics import EpicsString
 from slic.utils.eco_components.aliases import Alias
 
@@ -50,7 +50,7 @@ class Motor(Adjustable):
         super().__init__(name)
 
         self.pvname = pvname
-        self._motor = motor = _Motor(pvname)
+        self._motor = motor = EpicsMotor(pvname)
 
         self.pvs = SimpleNamespace(
             readback    = motor.get_pv("RBV"),
