@@ -1,10 +1,13 @@
-from ..general.motors_new import MotorRecord
+import numpy as np
+from epics import PV
+
+from slic.devices.general.motor import Motor
 from slic.utils.eco_epics.utilities_epics import EnumWrapper
-from ..general.detectors_new import FeDigitizer,PvDataStream
+from ..general.detectors_new import FeDigitizer, PvDataStream
 from slic.core.adjustable import PVEnumAdjustable
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
-from epics import PV
-import numpy as np
+
+
 
 
 class GasDetector:
@@ -33,10 +36,10 @@ class SolidTargetDetectorPBPS_new:
         self.name = name
         self.pvname = pvname
         self.alias = Alias(name)
-        append_object_to_object(self,MotorRecord,pvname + ":MOTOR_X1", name="x_diodes")
-        append_object_to_object(self,MotorRecord,pvname + ":MOTOR_Y1", name="y_diodes")
-        append_object_to_object(self,MotorRecord,pvname + ":MOTOR_PROBE", name="target_y")
-        append_object_to_object(self,PVEnumAdjustable, pvname + ":PROBE_SP", name="target")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_X1", name="x_diodes")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_Y1", name="y_diodes")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_PROBE", name="target_y")
+        append_object_to_object(self, PVEnumAdjustable, pvname + ":PROBE_SP", name="target")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
             self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
@@ -45,17 +48,17 @@ class SolidTargetDetectorPBPS_new:
 
 
         if channels:
-            append_object_to_object(self,PvDataStream,channels['up'], name="signal_up")
-            append_object_to_object(self,PvDataStream,channels['down'], name="signal_down")
-            append_object_to_object(self,PvDataStream,channels['left'], name="signal_left")
-            append_object_to_object(self,PvDataStream,channels['right'], name="signal_right")
+            append_object_to_object(self, PvDataStream, channels['up'], name="signal_up")
+            append_object_to_object(self, PvDataStream, channels['down'], name="signal_down")
+            append_object_to_object(self, PvDataStream, channels['left'], name="signal_left")
+            append_object_to_object(self, PvDataStream, channels['right'], name="signal_right")
 
         if calc:
-            append_object_to_object(self,PvDataStream,calc['itot'], name="intensity")
-            append_object_to_object(self,PvDataStream,calc['xpos'], name="xpos")
-            append_object_to_object(self,PvDataStream,calc['ypos'], name="ypos")
+            append_object_to_object(self, PvDataStream, calc['itot'], name="intensity")
+            append_object_to_object(self, PvDataStream, calc['xpos'], name="xpos")
+            append_object_to_object(self, PvDataStream, calc['ypos'], name="ypos")
 
-    def get_calibration_values(self,seconds=5):
+    def get_calibration_values(self, seconds=5):
         self.x_diodes.set_target_value(0).wait()
         self.y_diodes.set_target_value(0).wait()
         ds = [self.signal_up, self.signal_down, self.signal_left, self.signal_right]
@@ -66,7 +69,7 @@ class SolidTargetDetectorPBPS_new:
         norm_diodes = [1/tm/4 for tm in mean]
         return norm_diodes
 
-    def set_calibration_values(self,norm_diodes):
+    def set_calibration_values(self, norm_diodes):
         #this is now only for bernina when using the ioxos from sla
         channels = ['SLAAR21-LTIM01-EVR0:CALCI.INPG','SLAAR21-LTIM01-EVR0:CALCI.INPH','SLAAR21-LTIM01-EVR0:CALCI.INPF','SLAAR21-LTIM01-EVR0:CALCI.INPE']
         for tc,tv in zip(channels,norm_diodes):
@@ -78,7 +81,7 @@ class SolidTargetDetectorPBPS_new:
         for tc,tv in zip(channels,norm_diodes[0:2]):
             PV(tc).put(bytes(str(tv),'utf8'))
 
-    def get_calibration_values_position(self,calib_intensities,seconds=5,motion_range=.2):
+    def get_calibration_values_position(self, calib_intensities,seconds=5, motion_range=.2):
         self.x_diodes.set_limits(-motion_range/2-.1,+motion_range/2+.1)
         self.y_diodes.set_limits(-motion_range/2-.1,+motion_range/2+.1)
         self.x_diodes.set_target_value(0).wait()
@@ -105,7 +108,7 @@ class SolidTargetDetectorPBPS_new:
         self.y_diodes.set_target_value(0).wait()
         return xcalib,ycalib
 
-    def set_calibration_values_position(self,xcalib,ycalib):
+    def set_calibration_values_position(self, xcalib, ycalib):
         channels = ['SLAAR21-LTIM01-EVR0:CALCX.INPJ','SLAAR21-LTIM01-EVR0:CALCX.INPI']
         # txcalib = [-1*xcalib[0],-1*xcalib[1]]
         for tc,tv in zip(channels,xcalib):
@@ -206,9 +209,9 @@ class SolidTargetDetectorPBPS:
     ):
         self.Id = Id
         self.name = name
-        self.diode_x = MotorRecord(Id + ":MOTOR_X1", name="diode_x")
-        self.diode_y = MotorRecord(Id + ":MOTOR_Y1", name="diode_y")
-        self.target_pos = MotorRecord(Id + ":MOTOR_PROBE", name="target_pos")
+        self.diode_x = Motor(Id + ":MOTOR_X1", name="diode_x")
+        self.diode_y = Motor(Id + ":MOTOR_Y1", name="diode_y")
+        self.target_pos = Motor(Id + ":MOTOR_PROBE", name="target_pos")
         self.target = PVEnumAdjustable(Id + ":PROBE_SP", name="target")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
@@ -288,3 +291,6 @@ class SolidTargetDetectorPBPS:
             print("No diodes configured, can not change any gain!")
 
         # SAROP21-CVME-PBPS:Lnk10Ch15-WD-gain
+
+
+

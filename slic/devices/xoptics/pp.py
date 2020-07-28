@@ -2,12 +2,13 @@ from epics import PV
 from time import sleep
 import numpy as np
 
+from slic.devices.general.motor import Motor
 from slic.utils.eco_components.aliases import Alias
 
 
-def addMotorRecordToSelf(self, name=None, Id=None):
+def addMotorToSelf(self, name=None, Id=None):
     try:
-        self.__dict__[name] = MotorRecord(Id, name=name)
+        self.__dict__[name] = Motor(Id, name=name)
         self.alias.append(self.__dict__[name].alias)
     except:
         print(f"Warning! Could not find motor {name} (Id:{Id})")
@@ -23,8 +24,8 @@ class Pulsepick:
         self.Id = Id
         self._openclose = PV(self.evronoff)
         self._evrsrc = PV(self.evrsrc)
-        addMotorRecordToSelf(self, Id=self.Id + ":MOTOR_X1", name="x")
-        addMotorRecordToSelf(self, Id=self.Id + ":MOTOR_Y1", name="y")
+        addMotorToSelf(self, Id=self.Id + ":MOTOR_X1", name="x")
+        addMotorToSelf(self, Id=self.Id + ":MOTOR_Y1", name="y")
 
     def movein(self):
         self.x.set_target_value(4.45)
@@ -62,4 +63,4 @@ class Pulsepick:
         return f'FEL pulse picker state {self.get_status()}.'
 
 
-            
+

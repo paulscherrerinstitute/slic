@@ -1,18 +1,18 @@
-from slic.utils.eco_components.aliases import Alias
-from ..general.motors import MotorRecord
-from ..general.smaract import SmarActRecord
-
 from epics import PV
+
+from slic.utils.eco_components.aliases import Alias
+from slic.devices.general.motor import Motor
+from ..general.smaract import SmarActRecord
 from ..general.delay_stage import DelayStage
 from ..general.adjustable import AdjustableVirtual
 
-import colorama,datetime
+import colorama, datetime
 from pint import UnitRegistry
 ureg = UnitRegistry()
 
 
-def addMotorRecordToSelf(self, Id=None, name=None):
-    self.__dict__[name] = MotorRecord(Id, name=name)
+def addMotorToSelf(self, Id=None, name=None):
+    self.__dict__[name] = Motor(Id, name=name)
     self.alias.append(self.__dict__[name].alias)
 
 
@@ -116,13 +116,13 @@ class Laser_Exp:
 
         # Waveplate and Delay stage
         try:
-            addMotorRecordToSelf(self, self.Id + "-M534:MOT", name="pump_wp")
-            addMotorRecordToSelf(self, self.Id + "-M533:MOT", name="tt_wp")
+            addMotorToSelf(self, self.Id + "-M534:MOT", name="pump_wp")
+            addMotorToSelf(self, self.Id + "-M533:MOT", name="tt_wp")
         except:
             print("No wp found")
 
         try:
-            addMotorRecordToSelf(
+            addMotorToSelf(
                 self, Id=self.Id + "-M521:MOTOR_1", name="_pump_delaystg"
             )
             addDelayStageToSelf(
@@ -133,7 +133,7 @@ class Laser_Exp:
             print(expt)
 
         # try:
-        addMotorRecordToSelf(self, Id=self.Id + "-M521:MOTOR_1", name="delay_eos_stg")
+        addMotorToSelf(self, Id=self.Id + "-M521:MOTOR_1", name="delay_eos_stg")
         self.delay_eos = DelayTime(self.delay_eos_stg, name="delay_eos")
         self.alias.append(self.delay_eos.alias)
         self.lxt_eos = DelayTime(self.delay_eos_stg, direction=-1,name="lxt_eos")
@@ -143,7 +143,7 @@ class Laser_Exp:
         # print(expt)
 
         try:
-            addMotorRecordToSelf(
+            addMotorToSelf(
                 self, Id=self.Id + "-M522:MOTOR_1", name="delay_tt_stg"
             )
             self.delay_tt = DelayTime(self.delay_tt_stg, name="delay_tt")
@@ -151,7 +151,7 @@ class Laser_Exp:
         except:
             print("Problems initializing global delay stage")
         try:
-            addMotorRecordToSelf(
+            addMotorToSelf(
                 self, Id=self.Id + "-M523:MOTOR_1", name="delay_glob_stg"
             )
             self.delay_glob = DelayTime(self.delay_glob_stg, name="delay_glob")
@@ -170,8 +170,8 @@ class Laser_Exp:
         except: 
             print('Problems initializing virtual pump delay stage')
         # compressor
-        addMotorRecordToSelf(self, Id=self.Id + "-M532:MOT", name="compressor")
-        # self.compressor = MotorRecord(Id+'-M532:MOT')
+        addMotorToSelf(self, Id=self.Id + "-M532:MOT", name="compressor")
+        # self.compressor = Motor(Id+'-M532:MOT')
 
         # LAM delay stages
         addSmarActRecordToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
@@ -181,22 +181,22 @@ class Laser_Exp:
         # self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
-        addMotorRecordToSelf(self, Id=self.Id + "-M548:MOT", name="_lam_delaystg")
+        addMotorToSelf(self, Id=self.Id + "-M548:MOT", name="_lam_delaystg")
         addDelayStageToSelf(self, self.__dict__["_lam_delaystg"], name="lam_delay")
-        # self._lam_delayStg = MotorRecord(self.Id+'-M548:MOT')
+        # self._lam_delayStg = Motor(self.Id+'-M548:MOT')
         # self.lam_delay = DelayStage(self._lam_delayStg)
 
         # PALM delay stages
-        addMotorRecordToSelf(self, Id=self.Id + "-M552:MOT", name="_palm_delaystg")
+        addMotorToSelf(self, Id=self.Id + "-M552:MOT", name="_palm_delaystg")
         addDelayStageToSelf(self, self.__dict__["_palm_delaystg"], name="palm_delay")
-        # self._palm_delayStg = MotorRecord(self.Id+'-M552:MOT')
+        # self._palm_delayStg = Motor(self.Id+'-M552:MOT')
         # self.palm_delay = DelayStage(self._palm_delayStg)
 
         # PSEN delay stages
-        # self._psen_delayStg = MotorRecord(self.Id+'')
+        # self._psen_delayStg = Motor(self.Id+'')
         # self.psen_delay = DelayStage(self._pump_delayStg)
         try:
-            addMotorRecordToSelf(
+            addMotorToSelf(
                 self, Id=self.Id + "-M561:MOT", name="_psen_delaystg"
             )
             addDelayStageToSelf(
@@ -250,13 +250,13 @@ class Laser_Exp_old:
 
         # Waveplate and Delay stage
         try:
-            addMotorRecordToSelf(self, self.Id + "-M534:MOT", name="pump_wp")
-            addMotorRecordToSelf(self, self.Id + "-M533:MOT", name="tt_wp")
+            addMotorToSelf(self, self.Id + "-M534:MOT", name="pump_wp")
+            addMotorToSelf(self, self.Id + "-M533:MOT", name="tt_wp")
         except:
             print("No wp found")
 
         try:
-            addMotorRecordToSelf(
+            addMotorToSelf(
                 self, Id=self.Id + "-M521:MOTOR_1", name="_pump_delaystg"
             )
             addDelayStageToSelf(
@@ -266,7 +266,7 @@ class Laser_Exp_old:
             print("No eos delay stage")
             pass
         try:
-            addMotorRecordToSelf(
+            addMotorToSelf(
                 self, Id=self.Id + "-M522:MOTOR_1", name="_tt_delaystg"
             )
             addDelayStageToSelf(self, self.__dict__["_tt_delaystg"], name="tt_delay")
@@ -276,15 +276,15 @@ class Laser_Exp_old:
             pass
 
         try:
-            addMotorRecordToSelf(self, Id=self.Id + "-M553:MOT", name="_exp_delaystg")
+            addMotorToSelf(self, Id=self.Id + "-M553:MOT", name="_exp_delaystg")
             addDelayStageToSelf(self, self.__dict__["_exp_delaystg"], name="exp_delay")
             # addDelayStageToSelf(self,self.__dict__["_thz_delaystg"], name="thz_delay")
         except:
             print("No thz delay stage")
             pass
         # compressor
-        addMotorRecordToSelf(self, Id=self.Id + "-M532:MOT", name="compressor")
-        # self.compressor = MotorRecord(Id+'-M532:MOT')
+        addMotorToSelf(self, Id=self.Id + "-M532:MOT", name="compressor")
+        # self.compressor = Motor(Id+'-M532:MOT')
 
         # LAM delay stages
         addSmarActRecordToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
@@ -294,19 +294,19 @@ class Laser_Exp_old:
         # self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
-        addMotorRecordToSelf(self, Id=self.Id + "-M548:MOT", name="_lam_delaystg")
+        addMotorToSelf(self, Id=self.Id + "-M548:MOT", name="_lam_delaystg")
         addDelayStageToSelf(self, self.__dict__["_lam_delaystg"], name="lam_delay")
-        # self._lam_delayStg = MotorRecord(self.Id+'-M548:MOT')
+        # self._lam_delayStg = Motor(self.Id+'-M548:MOT')
         # self.lam_delay = DelayStage(self._lam_delayStg)
 
         # PALM delay stages
-        addMotorRecordToSelf(self, Id=self.Id + "-M552:MOT", name="_palm_delaystg")
+        addMotorToSelf(self, Id=self.Id + "-M552:MOT", name="_palm_delaystg")
         addDelayStageToSelf(self, self.__dict__["_palm_delaystg"], name="palm_delay")
-        # self._palm_delayStg = MotorRecord(self.Id+'-M552:MOT')
+        # self._palm_delayStg = Motor(self.Id+'-M552:MOT')
         # self.palm_delay = DelayStage(self._palm_delayStg)
 
         # PSEN delay stages
-        # self._psen_delayStg = MotorRecord(self.Id+'')
+        # self._psen_delayStg = Motor(self.Id+'')
         # self.psen_delay = DelayStage(self._pump_delayStg)
 
         # SmarAct ID
@@ -340,3 +340,6 @@ class Laser_Exp_old:
 
     def __repr__(self):
         return self.get_adjustable_positions_str()
+
+
+

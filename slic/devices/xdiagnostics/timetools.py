@@ -1,4 +1,4 @@
-from ..general.motors_new import MotorRecord
+from slic.devices.general.motor import Motor
 # from ..devices_general.smaract import SmarActRecord
 # from epics import PV
 from ..general.delay_stage import DelayStage
@@ -15,15 +15,15 @@ class SpectralEncoder:
         self.pvname = pvname
         self.name=name
         self.alias = Alias(name)
-        append_object_to_object(self,MotorRecord,pvname+":MOTOR_X1",name='x_target')
-        append_object_to_object(self,MotorRecord,pvname+":MOTOR_Y1",name='y_target')
+        append_object_to_object(self, Motor, pvname+":MOTOR_X1", name='x_target')
+        append_object_to_object(self, Motor, pvname+":MOTOR_Y1", name='y_target')
         if delay_stages:
             for key,pv in delay_stages.items():
                 tname = 'delay_'+key+'_stg'
-                append_object_to_object(self,MotorRecord,pv,name=tname)
-                append_object_to_object(self,DelayTime,self.__dict__[tname],name='delay_'+key)
+                append_object_to_object(self, Motor, pv, name=tname)
+                append_object_to_object(self, DelayTime, self.__dict__[tname], name='delay_'+key)
 
-        # self.delay = MotorRecord(self.Id + "-M424:MOT")
+        # self.delay = Motor(self.Id + "-M424:MOT")
         # self.delayTime = DelayStage(self.delay)
         self.data_reduction_client =  PsenProcessingClient(address=reduction_client_address)
 
@@ -55,15 +55,15 @@ class SpatialEncoder:
     def __init__(self, name=None, reduction_client_address="http://sf-daqsync-02:12003/",delay_stages={'spatial_tt':"SLAAR21-LMOT-M522:MOTOR_1"},pipeline_id='SARES20-CAMS142-M4_psen_db1'):
         self.name=name
         self.alias = Alias(name)
-        # append_object_to_object(self,MotorRecord,pvname+":MOTOR_X1",name='x_target')
-        # append_object_to_object(self,MotorRecord,pvname+":MOTOR_Y1",name='y_target')
+        # append_object_to_object(self,Motor,pvname+":MOTOR_X1",name='x_target')
+        # append_object_to_object(self,Motor,pvname+":MOTOR_Y1",name='y_target')
         if delay_stages:
             for key,pv in delay_stages.items():
                 tname = 'delay_'+key+'_stg'
-                append_object_to_object(self,MotorRecord,pv,name=tname)
+                append_object_to_object(self,Motor,pv,name=tname)
                 append_object_to_object(self,DelayTime,self.__dict__[tname],name='delay_'+key)
 
-        # self.delay = MotorRecord(self.Id + "-M424:MOT")
+        # self.delay = Motor(self.Id + "-M424:MOT")
         # self.delayTime = DelayStage(self.delay)
         # self.data_reduction_client =  PsenProcessingClient(address=reduction_client_address)
         self._camera_server_client = PipelineClient()
@@ -108,3 +108,6 @@ class SpatialEncoder:
         s.append(f"  roi            {self.roi}")
         s.append(f"  roi_background {self.roi_background}")
         return '\n'.join(s)
+
+
+

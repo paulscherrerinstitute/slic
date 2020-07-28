@@ -1,8 +1,8 @@
 from slic.utils.pv import PV
 from slic.utils.printing import printable_dict
 
+from slic.devices.general.motor import Motor
 from ..basedevice import BaseDevice
-from ..general.motors import MotorRecord
 from ..general.delay_stage import DelayStage
 from ..timing.alvralasertiming import eTiming
 
@@ -20,8 +20,8 @@ class LaserExp(BaseDevice):
         self.darkRate = PV("SIN-TIMAST-TMA:Evt-23-Freq-I")
 
         # Waveplates
-        self.wpTopas = MotorRecord(Id + "-M442:MOT")
-        self.wpHarmonics = MotorRecord(Id + "-M432:MOT")
+        self.wpTopas = Motor(Id + "-M442:MOT")
+        self.wpHarmonics = Motor(Id + "-M432:MOT")
 
         # Delay stages
         self.pumpTopas_delay = DelayStage(Id + "-M451:MOTOR_1")
@@ -36,10 +36,10 @@ class LaserExp(BaseDevice):
         self.psen_delay = DelayStage(Id + "-M424:MOT")
 
         # Experimental compressor delay stage
-        self.compressorExp_delay = MotorRecord(Id + "-M431:MOT")
+        self.compressorExp_delay = Motor(Id + "-M431:MOT")
 
         # Experimental compressor delay stage
-        self.compressorDiag_delay = MotorRecord(Id + "-M421:MOT")
+        self.compressorDiag_delay = Motor(Id + "-M421:MOT")
 
         # Pump A/C delay stage
         self.pump_autocorr_delay = DelayStage(Id + "-M444:MOT")
@@ -48,7 +48,7 @@ class LaserExp(BaseDevice):
         self.pump_toFEL_delay = DelayStage(Id + "-M441:MOT")
 
         # Experiment focussing lens position
-        self.pump_lens_focus = MotorRecord(Id + "-M443:MOT")
+        self.pump_lens_focus = Motor(Id + "-M443:MOT")
 
         # Globi electronic timing PV from Edwin
         self.eTiming = eTiming(Id + "-eTiming")
@@ -57,7 +57,7 @@ class LaserExp(BaseDevice):
     def __repr__(self):
         to_print = {}
         for key, item in self.__dict__.items():
-            if type(item) in (MotorRecord, DelayStage, PV, eTiming):
+            if type(item) in (Motor, DelayStage, PV, eTiming):
                 to_print[key] = item
 
         head = "Laser motor positions"

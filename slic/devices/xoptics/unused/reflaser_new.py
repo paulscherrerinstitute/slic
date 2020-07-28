@@ -1,5 +1,5 @@
-from ...general.motors import MotorRecord
 from epics import PV
+from slic.devices.general.motor import Motor
 from ..aliases import Alias, append_object_to_object
 
 
@@ -13,12 +13,12 @@ class RefLaser_Aramis:
 
         self._inpos = inpos
         self._outpos = outpos
-        self.mirrmotor = MotorRecord(self.Id + ":MOTOR_1")
+        self.mirrmotor = Motor(self.Id + ":MOTOR_1")
 
     def __call__(self, *args, **kwargs):
         self.set(*args, **kwargs)
 
-    def __str__(self):
+    def __repr__(self):
         status = self.get_status()
         if status:
             return "Reflaser is In."
@@ -50,5 +50,5 @@ class RefLaser_Aramis:
         else:
             self.mirrmotor.set_target_value(self._outpos)
 
-    def __repr__(self):
-        return self.__str__()
+
+

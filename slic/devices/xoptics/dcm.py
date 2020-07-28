@@ -1,25 +1,26 @@
-from ..basedevice import BaseDevice
-from ..general.motors import MotorRecord
-from epics import PV
-from slic.core.task import Task
 from time import sleep
 import numpy as np
+from epics import PV
+
+from ..basedevice import BaseDevice
+from slic.devices.general.motor import Motor
+from slic.core.task import Task
 
 
 class Double_Crystal_Mono_AramisMacro:
 
     def __init__(self,Id):
         self.Id = Id
-        self.theta = MotorRecord(Id+':RX12')
-        self.x = MotorRecord(Id+':TX12')
-        self.gap = MotorRecord(Id+':T2')
-        self.roll1 = MotorRecord(Id+':RZ1')
-        self.roll2 = MotorRecord(Id+':RZ2')
-        self.pitch2 = MotorRecord(Id+':RX2')
+        self.theta = Motor(Id + ':RX12')
+        self.x = Motor(Id + ':TX12')
+        self.gap = Motor(Id + ':T2')
+        self.roll1 = Motor(Id + ':RZ1')
+        self.roll2 = Motor(Id + ':RZ2')
+        self.pitch2 = Motor(Id + ':RX2')
 
-        self.energy_rbk = PV(Id+':ENERGY')
-        self.energy_sp = PV(Id+':ENERGY_SP')
-        self.moving = PV(Id+':MOVING')
+        self.energy_rbk = PV(Id + ':ENERGY')
+        self.energy_sp = PV(Id + ':ENERGY_SP')
+        self.moving = PV(Id + ':MOVING')
         self._stop = PV(Id +':STOP.PROC')
 
     def move_and_wait(self,value,checktime=.01,precision=.5):
@@ -124,16 +125,16 @@ class Double_Crystal_Mono(BaseDevice):
         self.z_undulator = z_undulator
         self.description = description
 
-        self.theta = MotorRecord(Id+':RX12')
-        self.x = MotorRecord(Id+':TX12')
-        self.gap = MotorRecord(Id+':T2')
-        self.roll1 = MotorRecord(Id+':RZ1')
-        self.roll2 = MotorRecord(Id+':RZ2')
-        self.pitch2 = MotorRecord(Id+':RX2')
+        self.theta = Motor(Id + ':RX12')
+        self.x = Motor(Id + ':TX12')
+        self.gap = Motor(Id + ':T2')
+        self.roll1 = Motor(Id + ':RZ1')
+        self.roll2 = Motor(Id + ':RZ2')
+        self.pitch2 = Motor(Id + ':RX2')
 
-        self.energy_rbk = PV(Id+':ENERGY')
-        self.energy_sp = PV(Id+':ENERGY_SP')
-        self.moving = PV(Id+':MOVING')
+        self.energy_rbk = PV(Id + ':ENERGY')
+        self.energy_sp = PV(Id + ':ENERGY_SP')
+        self.moving = PV(Id + ':MOVING')
         self._stop = PV(Id +':STOP.PROC')
 
     def move_and_wait(self,value,checktime=.01,precision=.5):

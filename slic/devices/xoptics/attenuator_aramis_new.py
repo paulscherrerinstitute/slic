@@ -1,4 +1,4 @@
-from ..general.motors_new import MotorRecord
+from slic.devices.general.motor import Motor
 from epics import PV
 from time import sleep
 from slic.core.task import Task
@@ -16,7 +16,7 @@ class AttenuatorAramis:
         self.alias = Alias(name)
         self.pulse_picker = pulse_picker
         self.motors = [
-            MotorRecord(f"{self.Id}:MOTOR_{n+1}", name=f"motor{n+1}")
+            Motor(f"{self.Id}:MOTOR_{n+1}", name=f"motor{n+1}")
             for n in range(6)
         ]
         for n, mot in enumerate(self.motors):
@@ -25,11 +25,6 @@ class AttenuatorAramis:
             if set_limits:
                 mot.set_limits(*set_limits)
 
-    def __str__(self):
-        pass
-
-    def __status__(self):
-        pass
 
     def updateE(self, energy=None):
         while not energy:
@@ -92,3 +87,6 @@ class AttenuatorAramis:
 
     def __call__(self, *args, **kwargs):
         self.set_transmission(*args, **kwargs)
+
+
+

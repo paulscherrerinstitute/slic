@@ -1,6 +1,6 @@
 
 from . import alvra_timing
-from . import motors
+from . import motor
 from . import smaract
 from . import delay_stage
 

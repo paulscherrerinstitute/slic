@@ -1,6 +1,7 @@
-from ...general.motors import MotorRecord
-from ...general.smaract import SmarActRecord
 from epics import PV
+
+from slic.devices.general.motor import Motor
+from ...general.smaract import SmarActRecord
 from ...general.delay_stage import DelayStage
 
 
@@ -8,7 +9,7 @@ class Psen:
     def __init__(self, Id):
         self.Id = Id
 
-        self._delayStg = MotorRecord(self.Id + "-M561:MOT")
+        self._delayStg = Motor(self.Id + "-M561:MOT")
         self.delay = DelayStage(self._delayStg)
 
     def get_adjustable_positions_str(self):
@@ -22,3 +23,6 @@ class Psen:
 
     def __repr__(self):
         return self.get_adjustable_positions_str()
+
+
+

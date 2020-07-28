@@ -1,5 +1,5 @@
-from .motors import MotorRecord
 from epics import PV
+from slic.devices.general.motor import Motor
 
 
 SPEED_OF_LIGHT = 299792458 # m/s
@@ -20,7 +20,7 @@ def pos_to_delay(pos):
 class DelayStage:
 
     def __init__(self, channel):
-        self.motor = MotorRecord(channel)
+        self.motor = Motor(channel)
         self.delay = Delay(self.motor)
 
     def __repr__(self):

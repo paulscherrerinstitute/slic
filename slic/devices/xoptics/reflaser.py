@@ -1,5 +1,6 @@
-from ..general.motors import MotorRecord
 from epics import PV
+from slic.devices.general.motor import Motor
+
 
 class RefLaser_Aramis:
     def __init__(self, Id, elog=None, name=None, inpos=-18.818, outpos=-5, z_undulator=None, description=None):
@@ -8,13 +9,13 @@ class RefLaser_Aramis:
         self.name = name
         self._inpos = inpos
         self._outpos = outpos
-        self.mirrmotor = MotorRecord(self.Id+':MOTOR_1')
+        self.mirrmotor = Motor(self.Id + ':MOTOR_1')
 
 
-    def __call__(self,*args,**kwargs):
-        self.set(*args,**kwargs)
+    def __call__(self, *args, **kwargs):
+        self.set(*args, **kwargs)
 
-    def __str__(self):
+    def __repr__(self):
         status = self.get_status()
         if status:
             return "Reflaser is In."
@@ -33,7 +34,7 @@ class RefLaser_Aramis:
             isin = None
         return isin
 
-    def set(self,value):
+    def set(self, value):
         if type(value) is str:
             if value.lower()=='in':
                 value = True
@@ -45,7 +46,6 @@ class RefLaser_Aramis:
             self.mirrmotor.set_target_value(self._inpos)
         else:
             self.mirrmotor.set_target_value(self._outpos)
-        
 
-    def __repr__(self):
-        return self.__str__()
+
+

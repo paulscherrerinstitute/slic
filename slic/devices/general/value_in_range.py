@@ -104,8 +104,3 @@ class ValueInRange:
 
 
 
-class AdjustableError(Exception):
-    pass
-
-
-

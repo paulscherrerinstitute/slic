@@ -1,4 +1,4 @@
-from ..general.motors_new import MotorRecord
+from slic.devices.general.motor import Motor
 from ..general.detectors import CameraCA, CameraBS
 from slic.core.adjustable import PVAdjustable
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
@@ -8,8 +8,8 @@ from epics import PV
 from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
 
-def addMotorRecordToSelf(self, Id=None, name=None):
-    self.__dict__[name] = MotorRecord(Id, name=name)
+def addMotorToSelf(self, Id=None, name=None):
+    self.__dict__[name] = Motor(Id, name=name)
     self.alias.append(self.__dict__[name].alias)
 
 
@@ -79,10 +79,10 @@ class Qioptiq:
         self.name = name
 
         if zoomstage_pv:
-            append_object_to_object(self, MotorRecord, zoomstage_pv, name="zoom")
+            append_object_to_object(self, Motor, zoomstage_pv, name="zoom")
 
         try:
-            addMotorRecordToSelf(self, Id="SARES20-EXP:MOT_QIOPT_F", name="focus")
+            addMotorToSelf(self, Id="SARES20-EXP:MOT_QIOPT_F", name="focus")
 
         except:
             print("Qioptic focus motor not found")
@@ -107,3 +107,6 @@ class Qioptiq:
 
     def __repr__(self):
         return self.get_adjustable_positions_str()
+
+
+

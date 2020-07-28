@@ -1,4 +1,4 @@
-from ..general.motors_new import MotorRecord
+from slic.devices.general.motor import Motor
 from ..general.adjustable import AdjustableVirtual
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 from functools import partial
@@ -17,14 +17,14 @@ class SlitBlades:
         self.name = name
         self.Id = pvname
         self.alias = Alias(name)
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_X1", name="right")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_X2", name="left")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_Y1", name="down")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_Y2", name="up")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_X", name="hpos_virt_mrec")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_W", name="hgap_virt_mrec")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_Y", name="vpos_virt_mrec")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_H", name="vgap_virt_mrec")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_X1", name="right")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_X2", name="left")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_Y1", name="down")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_Y2", name="up")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_X", name="hpos_virt_mrec")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_W", name="hgap_virt_mrec")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_Y", name="vpos_virt_mrec")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_H", name="vgap_virt_mrec")
 
         def getgap(xn, xp):
             return xp - xn
@@ -109,10 +109,10 @@ class SlitPosWidth:
         self.name = name
         self.Id = pvname
         self.alias = Alias(name)
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_X", name="hpos")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_Y", name="vpos")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_W", name="hgap")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_H", name="vgap")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_X", name="hpos")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_Y", name="vpos")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_W", name="hgap")
+        append_object_to_object(self, Motor, pvname + ":MOTOR_H", name="vgap")
 
         def getblade(pos,gap,direction=1):
             return pos + direction*gap/2
@@ -205,10 +205,10 @@ class SlitBlades_JJ:
         self.name = name
         self.Id = pvname
         self.alias = Alias(name)
-        append_object_to_object(self, MotorRecord, pvname + ":MOT_1", name="right")
-        append_object_to_object(self, MotorRecord, pvname + ":MOT_2", name="left")
-        append_object_to_object(self, MotorRecord, pvname + ":MOT_4", name="down")
-        append_object_to_object(self, MotorRecord, pvname + ":MOT_3", name="up")
+        append_object_to_object(self, Motor, pvname + ":MOT_1", name="right")
+        append_object_to_object(self, Motor, pvname + ":MOT_2", name="left")
+        append_object_to_object(self, Motor, pvname + ":MOT_4", name="down")
+        append_object_to_object(self, Motor, pvname + ":MOT_3", name="up")
 
         def getgap(xn, xp):
             return xp - xn
@@ -292,10 +292,10 @@ class SlitBlades_old:
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
-        self._x1 = MotorRecord(Id + ":MOTOR_X1")
-        self._x2 = MotorRecord(Id + ":MOTOR_X2")
-        self._y1 = MotorRecord(Id + ":MOTOR_Y1")
-        self._y2 = MotorRecord(Id + ":MOTOR_Y2")
+        self._x1 = Motor(Id + ":MOTOR_X1")
+        self._x2 = Motor(Id + ":MOTOR_X2")
+        self._y1 = Motor(Id + ":MOTOR_Y1")
+        self._y2 = Motor(Id + ":MOTOR_Y2")
 
     def get_hg(self):
         return self._x2.get_current_value() - self._x1.get_current_value()
@@ -347,10 +347,10 @@ class SlitBladesJJ_old:
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
-        self._x1 = MotorRecord(Id + ":MOT2")
-        self._x2 = MotorRecord(Id + ":MOT3")
-        self._y1 = MotorRecord(Id + ":MOT4")
-        self._y2 = MotorRecord(Id + ":MOT5")
+        self._x1 = Motor(Id + ":MOT2")
+        self._x2 = Motor(Id + ":MOT3")
+        self._y1 = Motor(Id + ":MOT4")
+        self._y2 = Motor(Id + ":MOT5")
 
     def get_hg(self):
         return -(self._x2.get_current_value() - self._x1.get_current_value())
@@ -402,14 +402,14 @@ class SlitFourBlades_old:
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
-        self._ax1 = MotorRecord(Id + ":MOTOR_AX1")
-        self._ax2 = MotorRecord(Id + ":MOTOR_AX2")
-        self._ay1 = MotorRecord(Id + ":MOTOR_AY1")
-        self._ay2 = MotorRecord(Id + ":MOTOR_AY2")
-        self._bx1 = MotorRecord(Id + ":MOTOR_BX1")
-        self._bx2 = MotorRecord(Id + ":MOTOR_BX2")
-        self._by1 = MotorRecord(Id + ":MOTOR_BY1")
-        self._by2 = MotorRecord(Id + ":MOTOR_BY2")
+        self._ax1 = Motor(Id + ":MOTOR_AX1")
+        self._ax2 = Motor(Id + ":MOTOR_AX2")
+        self._ay1 = Motor(Id + ":MOTOR_AY1")
+        self._ay2 = Motor(Id + ":MOTOR_AY2")
+        self._bx1 = Motor(Id + ":MOTOR_BX1")
+        self._bx2 = Motor(Id + ":MOTOR_BX2")
+        self._by1 = Motor(Id + ":MOTOR_BY1")
+        self._by2 = Motor(Id + ":MOTOR_BY2")
 
     def get_hg(self):
         return self._ax2.get_current_value() - self._ax1.get_current_value()
@@ -472,10 +472,10 @@ class SlitPosWidth_old:
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
-        self._xoffs = MotorRecord(Id + ":MOTOR_X")
-        self._yoffs = MotorRecord(Id + ":MOTOR_Y")
-        self._xgap = MotorRecord(Id + ":MOTOR_W")
-        self._ygap = MotorRecord(Id + ":MOTOR_H")
+        self._xoffs = Motor(Id + ":MOTOR_X")
+        self._yoffs = Motor(Id + ":MOTOR_Y")
+        self._xgap = Motor(Id + ":MOTOR_W")
+        self._ygap = Motor(Id + ":MOTOR_H")
 
     def get_hg(self):
         return self._xgap.get_current_value()

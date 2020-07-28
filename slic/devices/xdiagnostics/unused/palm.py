@@ -1,6 +1,7 @@
-from ...general.motors import MotorRecord
-from ...general.smaract import SmarActRecord
 from epics import PV
+
+from slic.devices.general.motor import Motor
+from ...general.smaract import SmarActRecord
 from ...general.delay_stage import DelayStage
 
 
@@ -8,11 +9,11 @@ class palm:
     def __init__(self, Id):
         self.Id = Id
 
-        self.delay = MotorRecord(self.Id + "-M423:MOT")
+        self.delay = Motor(self.Id + "-M423:MOT")
         self.delayTime = DelayStage(self.delay)
 
-    # 		self.delay2 = MotorRecord(self.Id+'-M422:MOT')
-    #         self.delayTime2 = DelayStage(self.delay)
+#        self.delay2 = Motor(self.Id + '-M422:MOT')
+#        self.delayTime2 = DelayStage(self.delay)
 
     def get_adjustable_positions_str(self):
         ostr = "***** PALM motor positions ******\n"
@@ -31,7 +32,7 @@ class eo:
     def __init__(self, Id):
         self.Id = Id
 
-        self.delay = MotorRecord(self.Id + "-M422:MOT")
+        self.delay = Motor(self.Id + "-M422:MOT")
         self.delayTime = DelayStage(self.delay)
 
     def get_adjustable_positions_str(self):
@@ -45,3 +46,6 @@ class eo:
 
     def __repr__(self):
         return self.get_adjustable_positions_str()
+
+
+

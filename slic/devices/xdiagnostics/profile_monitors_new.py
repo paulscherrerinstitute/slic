@@ -1,4 +1,4 @@
-from ..general.motors_new import MotorRecord
+from slic.devices.general.motor import Motor
 from ..general.detectors import CameraCA, CameraBS
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 from slic.core.adjustable import PVEnumAdjustable
@@ -8,8 +8,8 @@ from epics import PV
 from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
 
-def addMotorRecordToSelf(self, Id=None, name=None):
-    self.__dict__[name] = MotorRecord(Id, name=name)
+def addMotorToSelf(self, Id=None, name=None):
+    self.__dict__[name] = Motor(Id, name=name)
     self.alias.append(self.__dict__[name].alias)
 
 
@@ -17,7 +17,7 @@ class Pprm:
     def __init__(self, Id, name=None):
         self.Id = Id
         self.name = name
-        self.target_pos = MotorRecord(Id + ":MOTOR_PROBE", name="target_pos")
+        self.target_pos = Motor(Id + ":MOTOR_PROBE", name="target_pos")
         self.cam = CameraCA(Id)
         self.led = PVEnumAdjustable(self.Id + ":LED", name="led")
         self.target = PVEnumAdjustable(self.Id + ":PROBE_SP", name="target")
@@ -46,7 +46,7 @@ class Bernina_XEYE:
         self.alias = Alias(name)
         self.name = name
         if zoomstage_pv:
-            append_object_to_object(self, MotorRecord, zoomstage_pv, name="zoom")
+            append_object_to_object(self, Motor, zoomstage_pv, name="zoom")
         try:
             self.cam = CameraCA(camera_pv)
         except:
@@ -82,3 +82,6 @@ class Bernina_XEYE:
 #    def get_illumination_state(self):
 #        return bool(self._led.get())
 #
+
+
+

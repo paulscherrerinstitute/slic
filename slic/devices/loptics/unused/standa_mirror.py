@@ -1,5 +1,5 @@
-from ...general.motors import MotorRecord
 from epics import PV
+from slic.devices.general.motor import Motor
 
 
 class Laser_Exp:
@@ -8,12 +8,14 @@ class Laser_Exp:
 
         ### Mirrors used in the expeirment ###
         try:
-            self.phi = MotorRecord(Id + "-M517:MOT")
+            self.phi = Motor(Id + "-M517:MOT")
         except:
             print("No Standa steering phi mirror")
-            pass
+
         try:
-            self.th = MotorRecord(Id + "-M518:MOT")
+            self.th = Motor(Id + "-M518:MOT")
         except:
             print("No Standa steering theta mirror")
-            pass
+
+
+
