@@ -285,7 +285,7 @@ class DIAClient:
             print("Directory %s not existing, creating it" % res_dir)
             os.makedirs(res_dir)
         filename = "pedestal_%s.h5" % datetime.now().strftime("%Y%m%d_%H%M")
-#        period = 0.02	# for 25 Hz this is 0.04, for 10 Hz this 0.1
+#        period = 0.02  # for 25 Hz this is 0.04, for 10 Hz this 0.1
         jungfrau_utils_run(self._api_address, filename, directory, self.pgroup, period, self.detector_config["exptime"], n_frames, 1, analyze, n_bad_modules, self.instrument, self.jf_name)
 
         if update_config:

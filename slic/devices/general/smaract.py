@@ -68,7 +68,7 @@ class SmarActRecord:
         self._elog = elog
         self.name = name
 
-# 		 self.units = self._drive.get('EGU')
+#        self.units = self._drive.get('EGU')
 
     # Conventional methods and properties for all Adjustable objects
     def set_target_value(self, value, hold=False):
