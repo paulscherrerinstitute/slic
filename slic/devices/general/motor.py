@@ -29,16 +29,16 @@ STATUS_MESSAGES = {
     -13: "invalid value (cannot convert to float). Move not attempted.",
     -12: "target value outside soft limits. Move not attempted.",
     -11: "drive PV is not connected: Move not attempted.",
-    -8:  "move started, but timed-out.",
-    -7:  "move started, timed-out, but appears done.",
-    -5:  "move started, unexpected return value from PV.put()",
-    -4:  "move-with-wait finished, soft limit violation seen",
-    -3:  "move-with-wait finished, hard limit violation seen",
-    0:   "move-with-wait finish OK.",
-    0:   "move-without-wait executed, not confirmed",
-    1:   "move-without-wait executed, move confirmed",
-    3:   "move-without-wait finished, hard limit violation seen",
-    4:   "move-without-wait finished, soft limit violation seen",
+     -8: "move started, but timed-out.",
+     -7: "move started, timed-out, but appears done.",
+     -5: "move started, unexpected return value from PV.put()",
+     -4: "move-with-wait finished, soft limit violation seen",
+     -3: "move-with-wait finished, hard limit violation seen",
+      0: "move-with-wait finish OK.",
+      0: "move-without-wait executed, not confirmed",
+      1: "move-without-wait executed, move confirmed",
+      3: "move-without-wait finished, hard limit violation seen",
+      4: "move-without-wait finished, soft limit violation seen"
 }
 
 
