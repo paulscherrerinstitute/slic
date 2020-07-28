@@ -36,8 +36,7 @@ class Delay:
         self._stage = stage
         self.delay_stage_offset = 0.0
         self.name = self._stage.name
-        self.Id = self._stage.Id
-        self._elog = self._stage._elog
+        self.Id = self._stage.pvname
 
     def delay_to_motor(self, delay):
         motor_pos = delay_to_pos(delay)
