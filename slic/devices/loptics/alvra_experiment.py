@@ -7,7 +7,6 @@ from ..general.delay_stage import DelayStage
 from ..timing.alvralasertiming import eTiming
 
 
-
 class LaserExp(BaseDevice):
     """Experiment laser hardware"""
 
@@ -52,7 +51,6 @@ class LaserExp(BaseDevice):
 
         # Globi electronic timing PV from Edwin
         self.eTiming = eTiming(Id + "-eTiming")
-
 
     def __repr__(self):
         to_print = {}

@@ -14,6 +14,7 @@ def addMotorToSelf(self, Id=None, name=None):
 
 
 class Pprm:
+
     def __init__(self, Id, name=None):
         self.Id = Id
         self.name = name
@@ -40,9 +41,8 @@ class Pprm:
 
 
 class Bernina_XEYE:
-    def __init__(
-        self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None, name=None
-    ):
+
+    def __init__(self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None, name=None):
         self.alias = Alias(name)
         self.name = name
         if zoomstage_pv:

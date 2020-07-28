@@ -2,16 +2,17 @@ from epics import PV
 
 
 class AttenuatorAramis:
+
     def __init__(self, Id, z_undulator=None, description=None):
         self.Id = Id
-        self._pv_status_str = PV(Id + ':MOT2TRANS.VALD')
-        self._pv_status_int = PV(Id + ':IDX_RB')
+        self._pv_status_str = PV(Id + ":MOT2TRANS.VALD")
+        self._pv_status_int = PV(Id + ":IDX_RB")
 
-    def updateE(self, energy = None):
+    def updateE(self, energy=None):
         if energy == None:
             energy = PV("SARUN03-UIND030:FELPHOTENE").value
             energy = energy * 1000
-        PV(self.Id + ":ENERGY").put(energy)  
+        PV(self.Id + ":ENERGY").put(energy)
         print("Set energy to %s eV" % energy)
 
     def set_transmission(self, value, energy=None):
@@ -40,13 +41,13 @@ class AttenuatorAramis:
 
     def __repr__(self):
         t = self.get_transmission()
-        s =  '1st harm. transmission = %g\n' % t[0]
-        s += '3rd harm. transmission = %g\n' % t[1]
-        s += 'Targets in beam:\n'
-        s += '%s' % self.get_status()[0]
+        s = "1st harm. transmission = %g\n" % t[0]
+        s += "3rd harm. transmission = %g\n" % t[1]
+        s += "Targets in beam:\n"
+        s += "%s" % self.get_status()[0]
         return s
 
-    def __call__(self,*args,**kwargs):
+    def __call__(self, *args, **kwargs):
         self.set_transmission(*args, **kwargs)
 
 

@@ -8,11 +8,14 @@ def addSlitRepr(Slitobj):
     def repr(self):
         s = f"pos ({self.hpos.get_current_value():6.3f},{self.vpos.get_current_value():6.3f}), gap ({self.hgap.get_current_value():6.3f},{self.vgap.get_current_value():6.3f})"
         return s
-    Slitobj.__repr__ =  repr
+
+    Slitobj.__repr__ = repr
     return Slitobj
+
 
 @addSlitRepr
 class SlitBlades:
+
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
         self.Id = pvname
@@ -45,40 +48,16 @@ class SlitBlades:
             return tuple([tx + self.vgap.get_current_value() for tx in [-x / 2, x / 2]])
 
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.right, self.left],
-            getgap,
-            setwidth,
-            reset_current_value_to=True,
-            name="hgap",
+            self, AdjustableVirtual, [self.right, self.left], getgap, setwidth, reset_current_value_to=True, name="hgap",
         )
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.down, self.up],
-            getgap,
-            setheight,
-            reset_current_value_to=True,
-            name="vgap",
+            self, AdjustableVirtual, [self.down, self.up], getgap, setheight, reset_current_value_to=True, name="vgap",
         )
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.right, self.left],
-            getpos,
-            sethpos,
-            reset_current_value_to=True,
-            name="hpos",
+            self, AdjustableVirtual, [self.right, self.left], getpos, sethpos, reset_current_value_to=True, name="hpos",
         )
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.down, self.up],
-            getpos,
-            setvpos,
-            reset_current_value_to=True,
-            name="vpos",
+            self, AdjustableVirtual, [self.down, self.up], getpos, setvpos, reset_current_value_to=True, name="vpos",
         )
 
     def __call__(self, *args):
@@ -103,8 +82,10 @@ class SlitBlades:
         else:
             raise Exception("wrong number of input arguments!")
 
+
 @addSlitRepr
 class SlitPosWidth:
+
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
         self.Id = pvname
@@ -114,14 +95,14 @@ class SlitPosWidth:
         append_object_to_object(self, Motor, pvname + ":MOTOR_W", name="hgap")
         append_object_to_object(self, Motor, pvname + ":MOTOR_H", name="vgap")
 
-        def getblade(pos,gap,direction=1):
-            return pos + direction*gap/2
+        def getblade(pos, gap, direction=1):
+            return pos + direction * gap / 2
 
-        def setblade(bde,pos,gap,direction=1):
-            delta = bde-getblade(pos,gap,direction=direction)
-            ngap = gap + direction*delta
-            npos = pos + direction*delta/2
-            return npos,ngap
+        def setblade(bde, pos, gap, direction=1):
+            delta = bde - getblade(pos, gap, direction=direction)
+            ngap = gap + direction * delta
+            npos = pos + direction * delta / 2
+            return npos, ngap
 
         def getpos(xn, xp):
             return (xn + xp) / 2
@@ -138,42 +119,10 @@ class SlitPosWidth:
         def setvpos(x):
             return tuple([tx + self.vgap.get_current_value() for tw in [-x / 2, x / 2]])
 
-        append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.vpos, self.vgap],
-            partial(getblade,direction=1),
-            partial(setblade,direction=1),
-            reset_current_value_to=True,
-            name="up"
-        )
-        append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.vpos, self.vgap],
-            partial(getblade,direction=-1),
-            partial(setblade,direction=-1),
-            reset_current_value_to=True,
-            name="down"
-        )
-        append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.hpos, self.hgap],
-            partial(getblade,direction=1),
-            partial(setblade,direction=1),
-            reset_current_value_to=True,
-            name="left"
-        )
-        append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.hpos, self.hgap],
-            partial(getblade,direction=-1),
-            partial(setblade,direction=-1),
-            reset_current_value_to=True,
-            name="right"
-        )
+        append_object_to_object(self, AdjustableVirtual, [self.vpos, self.vgap], partial(getblade, direction=1), partial(setblade, direction=1), reset_current_value_to=True, name="up")
+        append_object_to_object(self, AdjustableVirtual, [self.vpos, self.vgap], partial(getblade, direction=-1), partial(setblade, direction=-1), reset_current_value_to=True, name="down")
+        append_object_to_object(self, AdjustableVirtual, [self.hpos, self.hgap], partial(getblade, direction=1), partial(setblade, direction=1), reset_current_value_to=True, name="left")
+        append_object_to_object(self, AdjustableVirtual, [self.hpos, self.hgap], partial(getblade, direction=-1), partial(setblade, direction=-1), reset_current_value_to=True, name="right")
 
     def __call__(self, *args):
         if len(args) == 0:
@@ -198,9 +147,9 @@ class SlitPosWidth:
             raise Exception("wrong number of input arguments!")
 
 
-
 @addSlitRepr
 class SlitBlades_JJ:
+
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
         self.Id = pvname
@@ -229,40 +178,16 @@ class SlitBlades_JJ:
             return tuple([tx + self.vgap.get_current_value() for tx in [-x / 2, x / 2]])
 
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.right, self.left],
-            getgap,
-            setwidth,
-            reset_current_value_to=True,
-            name="hgap",
+            self, AdjustableVirtual, [self.right, self.left], getgap, setwidth, reset_current_value_to=True, name="hgap",
         )
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.down, self.up],
-            getgap,
-            setheight,
-            reset_current_value_to=True,
-            name="vgap",
+            self, AdjustableVirtual, [self.down, self.up], getgap, setheight, reset_current_value_to=True, name="vgap",
         )
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.right, self.left],
-            getpos,
-            sethpos,
-            reset_current_value_to=True,
-            name="hpos",
+            self, AdjustableVirtual, [self.right, self.left], getpos, sethpos, reset_current_value_to=True, name="hpos",
         )
         append_object_to_object(
-            self,
-            AdjustableVirtual,
-            [self.down, self.up],
-            getpos,
-            setvpos,
-            reset_current_value_to=True,
-            name="vpos",
+            self, AdjustableVirtual, [self.down, self.up], getpos, setvpos, reset_current_value_to=True, name="vpos",
         )
 
     def __call__(self, *args):
@@ -289,6 +214,7 @@ class SlitBlades_JJ:
 
 
 class SlitBlades_old:
+
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
@@ -344,6 +270,7 @@ class SlitBlades_old:
 
 
 class SlitBladesJJ_old:
+
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
@@ -399,6 +326,7 @@ class SlitBladesJJ_old:
 
 
 class SlitFourBlades_old:
+
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
@@ -469,6 +397,7 @@ class SlitFourBlades_old:
 
 
 class SlitPosWidth_old:
+
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self.name = name
@@ -513,3 +442,6 @@ class SlitPosWidth_old:
         string1 = "gap: (%g,%g) mm" % (self.get_hg(), self.get_vg())
         string2 = "pos: (%g,%g) mm" % (self.get_ho(), self.get_vo())
         return "\n".join((string1, string2))
+
+
+

@@ -3,7 +3,7 @@ from ..general.detectors import CameraCA, CameraBS
 from slic.core.adjustable import PVAdjustable
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 
-# from ..devices_general.epics_wrappers import EnumSelector
+#from ..devices_general.epics_wrappers import EnumSelector
 from epics import PV
 from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
@@ -23,16 +23,9 @@ def addMotorToSelf(self, Id=None, name=None):
 
 
 class Sigma:
+
     def __init__(
-        self,
-        camera_pv=None,
-        zoomstage_pvs={
-            "set_value": "SARES20-OPSI:MOT_SP",
-            "readback": "SEARES20-OPSI:MOT_RB",
-        },
-        bshost=None,
-        bsport=None,
-        name=None,
+        self, camera_pv=None, zoomstage_pvs={"set_value": "SARES20-OPSI:MOT_SP", "readback": "SEARES20-OPSI:MOT_RB",}, bshost=None, bsport=None, name=None,
     ):
         self.alias = Alias(name)
 
@@ -40,13 +33,7 @@ class Sigma:
 
         append_object_to_object
         if zoomstage_pvs:
-            append_object_to_object(
-                self,
-                PVAdjustable,
-                zoomstage_pvs["set_value"],
-                pvname_readback=zoomstage_pvs["readback"],
-                name="zoom"
-            )
+            append_object_to_object(self, PVAdjustable, zoomstage_pvs["set_value"], pvname_readback=zoomstage_pvs["readback"], name="zoom")
 
         try:
             self.cam = CameraCA(camera_pv)
@@ -71,9 +58,8 @@ class Sigma:
 
 
 class Qioptiq:
-    def __init__(
-        self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None, name=None
-    ):
+
+    def __init__(self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None, name=None):
         self.alias = Alias(name)
 
         self.name = name

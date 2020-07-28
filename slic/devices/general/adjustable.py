@@ -8,13 +8,7 @@ from .convenience import SpecConvenience
 class AdjustableVirtual(SpecConvenience):
 
     def __init__(
-        self,
-        adjustables,
-        foo_get_current_value,
-        foo_set_target_value_current_value,
-        reset_current_value_to=False,
-        append_aliases=False,
-        name=None,
+        self, adjustables, foo_get_current_value, foo_set_target_value_current_value, reset_current_value_to=False, append_aliases=False, name=None,
     ):
         self.name = name
         self.alias = Alias(name)
@@ -40,10 +34,7 @@ class AdjustableVirtual(SpecConvenience):
             vals = (vals,)
 
         def changer():
-            self._active_changers = [
-                adj.set_target_value(val, hold=False)
-                for val, adj in zip(vals, self._adjustables)
-            ]
+            self._active_changers = [adj.set_target_value(val, hold=False) for val, adj in zip(vals, self._adjustables)]
             for tc in self._active_changers:
                 tc.wait()
 
@@ -55,20 +46,15 @@ class AdjustableVirtual(SpecConvenience):
         return self._currentChange
 
     def get_current_value(self):
-        return self._foo_get_current_value(
-            *[adj.get_current_value() for adj in self._adjustables]
-        )
+        return self._foo_get_current_value(*[adj.get_current_value() for adj in self._adjustables])
 
     def set_current_value(self, value):
         if not self._set_current_value:
-            raise NotImplementedError(
-                "There is no value setting implemented for this virtual adjuster!"
-            )
+            raise NotImplementedError("There is no value setting implemented for this virtual adjuster!")
         else:
             vals = self._foo_set_target_value_current_value(value)
             for adj, val in zip(self._adjustables, vals):
                 adj.set_current_value(val)
-
 
     #TODO: below from DefaultRepresentation
 
@@ -81,7 +67,7 @@ class AdjustableVirtual(SpecConvenience):
             return self.Id
 
     def __repr__(self):
-        s = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')+': '
+        s = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S") + ": "
         s += f"{colorama.Style.BRIGHT}{self._get_name()}{colorama.Style.RESET_ALL} at {colorama.Style.BRIGHT}{self.get_current_value():g}{colorama.Style.RESET_ALL}"
         return s
 

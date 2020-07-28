@@ -33,3 +33,6 @@ def plotTrace(fina="./scope2_testdata_2017-02-21/C2Trace00003txt"):
     ax.plot(crossers[0], crossers[1], "xr")
     ax.set_xlabel("Time / s")
     ax.set_ylabel("Amplitude / V")
+
+
+

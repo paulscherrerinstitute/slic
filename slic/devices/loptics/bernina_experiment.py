@@ -8,6 +8,7 @@ from ..general.adjustable import AdjustableVirtual
 
 import colorama, datetime
 from pint import UnitRegistry
+
 ureg = UnitRegistry()
 
 
@@ -27,6 +28,7 @@ def addDelayStageToSelf(self, stage=None, name=None):
 
 
 class DelayTime(AdjustableVirtual):
+
     def __init__(self, stage, direction=1, passes=2, reset_current_value_to=True, name=None):
         self._direction = direction
         self._group_velo = 299798458  # m/s
@@ -34,12 +36,7 @@ class DelayTime(AdjustableVirtual):
         self.Id = stage.Id + "_delay"
         self._stage = stage
         AdjustableVirtual.__init__(
-            self,
-            [stage],
-            self._mm_to_s,
-            self._s_to_mm,
-            reset_current_value_to=reset_current_value_to,
-            name=name,
+            self, [stage], self._mm_to_s, self._s_to_mm, reset_current_value_to=reset_current_value_to, name=name,
         )
 
     def _mm_to_s(self, mm):
@@ -49,25 +46,25 @@ class DelayTime(AdjustableVirtual):
         return s * self._group_velo * 1e3 / self._passes * self._direction
 
     def __repr__(self):
-        s = ''
+        s = ""
         s += f"{colorama.Style.DIM}"
-        s += datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')+': '
+        s += datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S") + ": "
         s += f"{colorama.Style.RESET_ALL}"
         s += f"{colorama.Style.BRIGHT}{self._get_name()}{colorama.Style.RESET_ALL} at "
-        s += f'{(self.get_current_value()*ureg.second).to_compact():P~6.3f}'
+        s += f"{(self.get_current_value()*ureg.second).to_compact():P~6.3f}"
         s += f"{colorama.Style.RESET_ALL}"
         return s
 
     def get_limits(self):
         return [self._mm_to_s(tl) for tl in self._stage.get_limits()]
 
-    def set_limits(self,low_limit,high_limit):
-        lims_stage = [self._s_to_mm(tl) for tl in [low_limit,high_limit]]
+    def set_limits(self, low_limit, high_limit):
+        lims_stage = [self._s_to_mm(tl) for tl in [low_limit, high_limit]]
         lims_stage.sort()
         self._stage.set_limits(*lims_stage)
 
-
         return [self._mm_to_s(tl) for tl in self._stage.get_limits()]
+
 
 class DelayCompensation(AdjustableVirtual):
     """Simple virtual adjustable for compensating delay adjustables. It assumes the first adjustable is the master for 
@@ -77,12 +74,7 @@ class DelayCompensation(AdjustableVirtual):
         self._directions = directions
         self.Id = name
         AdjustableVirtual.__init__(
-            self,
-            adjustables,
-            self._from_values,
-            self._calc_values,
-            set_current_value = set_current_value,
-            name=name,
+            self, adjustables, self._from_values, self._calc_values, set_current_value=set_current_value, name=name,
         )
 
     def _calc_values(self, value):
@@ -93,19 +85,20 @@ class DelayCompensation(AdjustableVirtual):
         return positions[0]
 
         tuple(tdir * value for tdir in self._directions)
-    
+
     def __repr__(self):
-        s = ''
+        s = ""
         s += f"{colorama.Style.DIM}"
-        s += datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')+': '
+        s += datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S") + ": "
         s += f"{colorama.Style.RESET_ALL}"
         s += f"{colorama.Style.BRIGHT}{self._get_name()}{colorama.Style.RESET_ALL} at "
-        s += f'{(self.get_current_value()*ureg.second).to_compact():P~6.3f}'
+        s += f"{(self.get_current_value()*ureg.second).to_compact():P~6.3f}"
         s += f"{colorama.Style.RESET_ALL}"
         return s
 
 
 class Laser_Exp:
+
     def __init__(self, Id=None, name=None, smar_config=None):
         self.Id = Id
         self.IdExp1 = "SARES20-EXP"
@@ -122,12 +115,8 @@ class Laser_Exp:
             print("No wp found")
 
         try:
-            addMotorToSelf(
-                self, Id=self.Id + "-M521:MOTOR_1", name="_pump_delaystg"
-            )
-            addDelayStageToSelf(
-                self, stage=self.__dict__["_pump_delaystg"], name="pump_delay"
-            )
+            addMotorToSelf(self, Id=self.Id + "-M521:MOTOR_1", name="_pump_delaystg")
+            addDelayStageToSelf(self, stage=self.__dict__["_pump_delaystg"], name="pump_delay")
         except Exception as expt:
             print("No eos delay stage")
             print(expt)
@@ -136,24 +125,20 @@ class Laser_Exp:
         addMotorToSelf(self, Id=self.Id + "-M521:MOTOR_1", name="delay_eos_stg")
         self.delay_eos = DelayTime(self.delay_eos_stg, name="delay_eos")
         self.alias.append(self.delay_eos.alias)
-        self.lxt_eos = DelayTime(self.delay_eos_stg, direction=-1,name="lxt_eos")
+        self.lxt_eos = DelayTime(self.delay_eos_stg, direction=-1, name="lxt_eos")
         self.alias.append(self.lxt_eos.alias)
         # except Exception as expt:
         # print("Problems initializing eos delay stage")
         # print(expt)
 
         try:
-            addMotorToSelf(
-                self, Id=self.Id + "-M522:MOTOR_1", name="delay_tt_stg"
-            )
+            addMotorToSelf(self, Id=self.Id + "-M522:MOTOR_1", name="delay_tt_stg")
             self.delay_tt = DelayTime(self.delay_tt_stg, name="delay_tt")
             self.alias.append(self.delay_tt.alias)
         except:
             print("Problems initializing global delay stage")
         try:
-            addMotorToSelf(
-                self, Id=self.Id + "-M523:MOTOR_1", name="delay_glob_stg"
-            )
+            addMotorToSelf(self, Id=self.Id + "-M523:MOTOR_1", name="delay_glob_stg")
             self.delay_glob = DelayTime(self.delay_glob_stg, name="delay_glob")
             self.alias.append(self.delay_glob.alias)
             self.lxt_glob = DelayTime(self.delay_glob_stg, direction=-1, name="lxt_glob")
@@ -163,21 +148,17 @@ class Laser_Exp:
 
         # Implementation of delay compensation, this assumes for now that delays_glob and delay_tt actually delay in positive directions.
         try:
-            self.delay_lxtt = DelayCompensation(
-                [self.delay_glob, self.delay_tt], [-1, 1], name="delay_lxtt"
-            )
+            self.delay_lxtt = DelayCompensation([self.delay_glob, self.delay_tt], [-1, 1], name="delay_lxtt")
             self.alias.append(self.delay_lxtt.alias)
-        except: 
-            print('Problems initializing virtual pump delay stage')
+        except:
+            print("Problems initializing virtual pump delay stage")
         # compressor
         addMotorToSelf(self, Id=self.Id + "-M532:MOT", name="compressor")
         # self.compressor = Motor(Id+'-M532:MOT')
 
         # LAM delay stages
         addSmarActRecordToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
-        addDelayStageToSelf(
-            self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar"
-        )
+        addDelayStageToSelf(self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
         # self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
@@ -196,12 +177,8 @@ class Laser_Exp:
         # self._psen_delayStg = Motor(self.Id+'')
         # self.psen_delay = DelayStage(self._pump_delayStg)
         try:
-            addMotorToSelf(
-                self, Id=self.Id + "-M561:MOT", name="_psen_delaystg"
-            )
-            addDelayStageToSelf(
-                self, stage=self.__dict__["_psen_delaystg"], name="psen_delay"
-            )
+            addMotorToSelf(self, Id=self.Id + "-M561:MOT", name="_psen_delaystg")
+            addDelayStageToSelf(self, stage=self.__dict__["_psen_delaystg"], name="psen_delay")
         except Exception as expt:
             print("No psen delay stage")
             print(expt)
@@ -211,14 +188,9 @@ class Laser_Exp:
 
         for smar_name, smar_address in self.smar_config.items():
             try:
-                addSmarActRecordToSelf(
-                    self, Id=(self.IdSA + smar_address), name=smar_name
-                )
+                addSmarActRecordToSelf(self, Id=(self.IdSA + smar_address), name=smar_name)
             except:
-                print("Loading %s SmarAct motor in bernina laser conifg failed") % (
-                    smar_name
-                )
-                pass
+                print("Loading %s SmarAct motor in bernina laser conifg failed") % (smar_name)
 
     def get_adjustable_positions_str(self):
         ostr = "*****Laser motor positions******\n"
@@ -226,10 +198,10 @@ class Laser_Exp:
         for tkey, item in sorted(self.__dict__.items()):
             if hasattr(item, "get_current_value"):
                 pos = item.get_current_value()
-                posdialstr = ''
+                posdialstr = ""
                 try:
-                    posdial = item.get_current_value(postype = 'dial')
-                    posdialstr = '    dial:  % 14g\n' % posdial
+                    posdial = item.get_current_value(postype="dial")
+                    posdialstr = "    dial:  % 14g\n" % posdial
                 except:
                     pass
                 ostr += "  " + tkey.ljust(18) + " : % 14g\n" % pos + posdialstr
@@ -240,6 +212,7 @@ class Laser_Exp:
 
 
 class Laser_Exp_old:
+
     def __init__(self, Id=None, name=None, smar_config=None):
         self.Id = Id
         self.IdExp1 = "SARES20-EXP"
@@ -256,19 +229,13 @@ class Laser_Exp_old:
             print("No wp found")
 
         try:
-            addMotorToSelf(
-                self, Id=self.Id + "-M521:MOTOR_1", name="_pump_delaystg"
-            )
-            addDelayStageToSelf(
-                self, stage=self.__dict__["_pump_delaystg"], name="pump_delay"
-            )
+            addMotorToSelf(self, Id=self.Id + "-M521:MOTOR_1", name="_pump_delaystg")
+            addDelayStageToSelf(self, stage=self.__dict__["_pump_delaystg"], name="pump_delay")
         except:
             print("No eos delay stage")
             pass
         try:
-            addMotorToSelf(
-                self, Id=self.Id + "-M522:MOTOR_1", name="_tt_delaystg"
-            )
+            addMotorToSelf(self, Id=self.Id + "-M522:MOTOR_1", name="_tt_delaystg")
             addDelayStageToSelf(self, self.__dict__["_tt_delaystg"], name="tt_delay")
             # addDelayStageToSelf(self,self.__dict__["_thz_delaystg"], name="thz_delay")
         except:
@@ -288,9 +255,7 @@ class Laser_Exp_old:
 
         # LAM delay stages
         addSmarActRecordToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
-        addDelayStageToSelf(
-            self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar"
-        )
+        addDelayStageToSelf(self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
         # self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
@@ -314,14 +279,9 @@ class Laser_Exp_old:
 
         for smar_name, smar_address in self.smar_config.items():
             try:
-                addSmarActRecordToSelf(
-                    self, Id=(self.IdSA + smar_address), name=smar_name
-                )
+                addSmarActRecordToSelf(self, Id=(self.IdSA + smar_address), name=smar_name)
             except:
-                print("Loading %s SmarAct motor in bernina laser conifg failed") % (
-                    smar_name
-                )
-                pass
+                print("Loading %s SmarAct motor in bernina laser conifg failed") % (smar_name)
 
     def get_adjustable_positions_str(self):
         ostr = "*****Laser motor positions******\n"
@@ -329,10 +289,10 @@ class Laser_Exp_old:
         for tkey, item in sorted(self.__dict__.items()):
             if hasattr(item, "get_current_value"):
                 pos = item.get_current_value()
-                posdialstr = ''
+                posdialstr = ""
                 try:
-                    posdial = item.get_current_value(postype = 'dial')
-                    posdialstr = '    dial:  % 14g\n' % posdial
+                    posdial = item.get_current_value(postype="dial")
+                    posdialstr = "    dial:  % 14g\n" % posdial
                 except:
                     pass
                 ostr += "  " + tkey.ljust(18) + " : % 14g\n" % pos + posdialstr

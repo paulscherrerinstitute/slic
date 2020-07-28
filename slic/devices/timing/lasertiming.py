@@ -83,6 +83,7 @@ class Storage(object):
 
 
 class Pockels_trigger(PV):
+
     def __init__(self, pv_get, pv_set, pv_offset_get=None):
         pvname = pv_get
         PV.__init__(self, pvname)
@@ -96,11 +97,7 @@ class Pockels_trigger(PV):
         return self._storage.value
 
     def get_dial(self):
-        return (
-            np.round(super().get() * 1e-6, 9)
-            + self._pv_offset_get.get() * 1e-9
-            - 7.41e-9
-        )
+        return np.round(super().get() * 1e-6, 9) + self._pv_offset_get.get() * 1e-9 - 7.41e-9
 
     def get(self):
         """ convert time to sec """
@@ -131,9 +128,7 @@ _OSCILLATOR_PERIOD = 1 / 71.368704e6
 class Phase_shifter(PV):
     """ this class is needed to store the offset in files and read in ps """
 
-    def __init__(
-        self, pv_basename="SLAAR02-TSPL-EPL", dial_max=14.0056e-9, precision=100e-15
-    ):
+    def __init__(self, pv_basename="SLAAR02-TSPL-EPL", dial_max=14.0056e-9, precision=100e-15):
         pvname = pv_basename + ":CURR_DELTA_T"
         PV.__init__(self, pvname)
         self._filename = os.path.join(_basefolder, pvname)
@@ -186,17 +181,9 @@ class Phase_shifter(PV):
         return "Phase Shifter: user,dial = %s , %s" % (user, dial)
 
 
-_slicer_gate = Pockels_trigger(
-    "SLAAR-LTIM02-EVR0:Pul3-Delay-RB",
-    "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY",
-    pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB",
-)
+_slicer_gate = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul3-Delay-RB", "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY", pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB",)
 
-_sdg1 = Pockels_trigger(
-    "SLAAR-LTIM02-EVR0:Pul2-Delay-RB",
-    "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY",
-    pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB",
-)
+_sdg1 = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul2-Delay-RB", "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY", pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB",)
 
 _phase_shifter = Phase_shifter("SLAAR02-TSPL-EPL")
 
@@ -205,6 +192,7 @@ _POCKELS_CELL_RESOLUTION = 7e-9
 
 
 class Lxt(object):
+
     def __init__(self, accuracy_poly=[100e-15, 1e-7]):
         self.sdg1 = _sdg1
         self.slicer_gate = _slicer_gate
@@ -257,3 +245,6 @@ class Lxt(object):
 
 
 lxt = Lxt()
+
+
+

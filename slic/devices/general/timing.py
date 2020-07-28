@@ -22,6 +22,7 @@ def timeToStr(value, n=12):
 
 
 class Storage(object):
+
     def __init__(self, pvname):
         self._filename = os.path.join(_basefolder, pvname)
         self.pvname = pvname
@@ -149,6 +150,7 @@ class Phase_shifter(PV):
 
 
 class PhaseShifterAramis:
+
     def __init__(self, Id, name=None, elog=None):
         self.Id = Id
         self._pshifter = Phase_shifter(Id)
@@ -178,7 +180,6 @@ class PhaseShifterAramis:
         _keywordChecker([("posType", posType, _posTypes)])
         if posType == "user":
             return self._motor.set(value)
-
 
 
 def _keywordChecker(kw_key_list_tups):

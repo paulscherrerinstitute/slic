@@ -2,6 +2,7 @@ from epics import caput, caget
 
 
 class laser_shutter:
+
     def __init__(self, Id):
         self.Id = Id
 
@@ -23,3 +24,6 @@ class laser_shutter:
 
     def close(self):
         caput(self.Id + ":FrontUnivOut3_SOURCE", 3)
+
+
+

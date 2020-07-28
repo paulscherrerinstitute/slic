@@ -7,14 +7,13 @@ CONVERSION_FACTOR_METER_TO_MILLIMETER = 1e3
 CONVERSION_FACTOR_DELAY_TO_POS = SPEED_OF_LIGHT * CONVERSION_FACTOR_METER_TO_MILLIMETER / 2 # back and forth
 CONVERSION_FACTOR_POS_TO_DELAY = 1 / CONVERSION_FACTOR_DELAY_TO_POS
 
+
 def delay_to_pos(delay):
     return delay * CONVERSION_FACTOR_DELAY_TO_POS
 
+
 def pos_to_delay(pos):
     return pos * CONVERSION_FACTOR_POS_TO_DELAY
-
-
-
 
 
 class DelayStage:
@@ -27,21 +26,15 @@ class DelayStage:
         return "{} | {}".format(self.motor, self.delay)
 
     def get(self):
-        res = {
-            "motor": self.motor.get_current_value(),
-            "delay": self.delay.get_current_value()
-        }
+        res = {"motor": self.motor.get_current_value(), "delay": self.delay.get_current_value()}
         return res
-
-
-
 
 
 class Delay:
 
     def __init__(self, stage):
         self._stage = stage
-        self.delay_stage_offset =0.
+        self.delay_stage_offset = 0.0
         self.name = self._stage.name
         self.Id = self._stage.Id
         self._elog = self._stage._elog
@@ -67,10 +60,8 @@ class Delay:
         delay = pos_to_delay(value - self.delay_stage_offset)
         return self._stage.set_target_value(value, hold, check)
 
-
-    def gui(self, guiType='xdm'):
+    def gui(self, guiType="xdm"):
         return self._stage.gui()
-
 
     # spec-inspired convenience methods
     def mv(self, value):
@@ -89,17 +80,13 @@ class Delay:
     def stop(self):
         """ Adjustable convention"""
         try:
-             self._stage._currentChange.stop()
+            self._stage._currentChange.stop()
         except:
-             self._stage.stop()
-        pass
-
-
+            self._stage.stop()
 
     # return string with motor value as variable representation
     def __repr__(self):
         return "Delay at %s sec" % self.wm()
-
 
     def __call__(self, value):
         self._currentChange = self.set_target_value(value)

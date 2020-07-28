@@ -4,6 +4,7 @@ from ..aliases import Alias
 
 
 class XRD:
+
     def __init__(self, name=None, Id=None, configuration=[]):
         """X-ray diffractometer platform in AiwssFEL Bernina.\
                 <configuration> : list of elements mounted on 

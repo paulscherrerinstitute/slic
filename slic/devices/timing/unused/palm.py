@@ -6,6 +6,7 @@ from ...general.delay_stage import DelayStage
 
 
 class Palm:
+
     def __init__(self, Id):
         self.Id = Id
 

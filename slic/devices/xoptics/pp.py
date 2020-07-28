@@ -15,6 +15,7 @@ def addMotorToSelf(self, name=None, Id=None):
 
 
 class Pulsepick:
+
     def __init__(self, Id=None, evronoff=None, evrsrc=None, name=None):
         self.name = name
         self.alias = Alias(name)
@@ -52,15 +53,15 @@ class Pulsepick:
 
     def get_status(self):
         stat = self._evrsrc.get()
-        if stat==62 and self._openclose.get()==1:
-                return 'open'
-        if self._openclose.get()==0:
-            return 'closed'
+        if stat == 62 and self._openclose.get() == 1:
+            return "open"
+        if self._openclose.get() == 0:
+            return "closed"
         else:
-            return 'unknown'
+            return "unknown"
 
     def __repr__(self):
-        return f'FEL pulse picker state {self.get_status()}.'
+        return f"FEL pulse picker state {self.get_status()}."
 
 
 

@@ -2,7 +2,6 @@ import colorama
 
 
 def update_changes(Adj):
-
     def get_position_str(start, end, value):
         s = ValueInRange(start, end, bar_width=30, unit="", fmt="1.5g").get_str(value)
         return (
@@ -16,9 +15,7 @@ def update_changes(Adj):
 
     def update_change(self, value):
         start = self.get_current_value()
-        print(
-            f"Changing {self.name} from {start:1.5g} by {value-start:1.5g} to {value:1.5g}\n"
-        )
+        print(f"Changing {self.name} from {start:1.5g} by {value-start:1.5g} to {value:1.5g}\n")
         print(get_position_str(start, value, start), end="\r")
         try:
 
@@ -49,7 +46,6 @@ def update_changes(Adj):
     Adj.update_change_relative = update_change_relative
 
     return Adj
-
 
 
 class ValueInRange:

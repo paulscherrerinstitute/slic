@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE, STDOUT
 
 
 class ScreenPanel:
+
     def __init__(self, name=None):
         self.name = name
         self._proc = None
@@ -12,12 +13,7 @@ class ScreenPanel:
     @property
     def proc(self):
         if not self._proc:
-            if (
-                input(
-                    "No screenpanel running, would you like to start now? (y/n)\n"
-                ).strip()
-                == "y"
-            ):
+            if input("No screenpanel running, would you like to start now? (y/n)\n").strip() == "y":
                 self.start()
         return self._proc
 
@@ -26,12 +22,7 @@ class ScreenPanel:
             print(f"Sreenpanel {self.name} is already running")
         else:
             # self.proc = subprocess.Popen(["screen_panel","-console"],stdout=subprocess.PIPE)
-            self._proc = Popen(
-                ["bash", "screen_panel", "-console", "-persist"],
-                stdin=PIPE,
-                stdout=PIPE,
-                preexec_fn=os.setsid,
-            )
+            self._proc = Popen(["bash", "screen_panel", "-console", "-persist"], stdin=PIPE, stdout=PIPE, preexec_fn=os.setsid,)
 
     def quit(self):
         os.killpg(self.proc.pid, signal.SIGTERM)
@@ -40,3 +31,6 @@ class ScreenPanel:
     def set_camera(self, camera_name):
         self.proc.stdin.write(("cam " + camera_name + "\n").encode())
         self.proc.stdin.flush()
+
+
+

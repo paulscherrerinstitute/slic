@@ -130,6 +130,7 @@ tim_tick = 7e-9
 
 
 class MasterEventSystem:
+
     def __init__(self, pvname, name=None):
         self.name = name
         self.pvname = pvname
@@ -187,23 +188,22 @@ class MasterEventSystem:
         Id = self._get_evtcode_Id(evtcode)
         return self._get_Id_period(Id) / 1000
 
-    def get_evt_code_status(self,codes=None):
+    def get_evt_code_status(self, codes=None):
         if not codes:
             codes = sorted(eventcodes)
-        if isinstance(codes,Number):
+        if isinstance(codes, Number):
             codes = [codes]
         s = []
         for c in codes:
-            s.append(f'{c:3d}: delay = {self.get_evtcode_delay(c)*1e6:9.3f} us; frequency: {self.get_evtcode_frequency(c):5.1f} Hz; Desc.: {self.get_evtcode_description(c)}')
+            s.append(f"{c:3d}: delay = {self.get_evtcode_delay(c)*1e6:9.3f} us; frequency: {self.get_evtcode_frequency(c):5.1f} Hz; Desc.: {self.get_evtcode_description(c)}")
         return s
 
-    def status(self,codes=None):
-        print('\n'.join(self.get_evt_code_status(codes)))
-
-
+    def status(self, codes=None):
+        print("\n".join(self.get_evt_code_status(codes)))
 
 
 class EvrPulser:
+
     def __init__(self, pv_base, outputs=None, name=None):
         self.pv_base = pv_base
         self.name = name
@@ -245,6 +245,7 @@ class EvrPulser:
 
 
 class EvrOutput:
+
     def __init__(self, pv_base, name=None):
         self.pv_base = pv_base
         self.name = name
@@ -280,9 +281,8 @@ class EvrOutput:
 
 
 class EventReceiver:
-    def __init__(
-        self, pvname, n_pulsers=24, n_output_front=8, n_output_rear=16, name=None
-    ):
+
+    def __init__(self, pvname, n_pulsers=24, n_output_front=8, n_output_rear=16, name=None):
         self.name = name
         self.pvname = pvname
         pulsers = []
@@ -291,15 +291,14 @@ class EventReceiver:
         self.pulsers = tuple(pulsers)
         outputs = []
         for n in range(n_output_front):
-            outputs.append(
-                EvrOutput(f"{self.pvname}:FrontUnivOut{n}", name=f"output_front{n}")
-            )
+            outputs.append(EvrOutput(f"{self.pvname}:FrontUnivOut{n}", name=f"output_front{n}"))
         for to in outputs:
             to._pulsers = self.pulsers
         self.outputs = outputs
 
 
 class CTA_sequencer:
+
     def __init__(self, Id, name=None, master_frequency=100):
         self._cta = CtaLib(Id)
         self.sequence_local = {}
@@ -332,7 +331,7 @@ class CTA_sequencer:
             config={
                 "mode": self._cta.StartMode(mode),
                 "modulo": divisor,
-                "offset": offset,
+                "offset": offset
             }
         )
 
@@ -370,3 +369,6 @@ class CTA_sequencer:
 
     def stop(self):
         self._cta.stop()
+
+
+

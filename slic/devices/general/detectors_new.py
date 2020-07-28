@@ -8,7 +8,7 @@ from slic.utils.eco_epics.utilities_epics import EnumWrapper
 # from bsread import source, SUB
 import subprocess
 import h5py
-from time import sleep,time
+from time import sleep, time
 from datetime import datetime
 
 from slic.core.task import Task
@@ -16,75 +16,70 @@ from slic.utils.eco_components.aliases import Alias
 
 
 class PvDataStream:
+
     def __init__(self, Id, name=None):
         self.Id = Id
         self._pv = PV(Id)
         self.name = name
         self.alias = Alias(self.name, channel=self.Id, channeltype="CA")
 
-    def collect(self,seconds=None,samples=None):
+    def collect(self, seconds=None, samples=None):
         if (not seconds) and (not samples):
-            raise Exception('Either a time interval or number of samples need to be defined.')
+            raise Exception("Either a time interval or number of samples need to be defined.")
         try:
-            self._pv.callbacks.pop(self._collection['ix_cb'])
+            self._pv.callbacks.pop(self._collection["ix_cb"])
         except:
             pass
-        self._collection = {'done':False}
+        self._collection = {"done": False}
         self.data_collected = []
         if seconds:
-            self._collection['start_time']= time()
-            self._collection['seconds']= seconds
-            stopcond = lambda: (time() - self._collection['start_time']) > self._collection['seconds']
+            self._collection["start_time"] = time()
+            self._collection["seconds"] = seconds
+            stopcond = lambda: (time() - self._collection["start_time"]) > self._collection["seconds"]
+
             def addData(**kw):
                 if not stopcond():
-                    self.data_collected.append(kw['value'])
+                    self.data_collected.append(kw["value"])
                 else:
-                    self._pv.callbacks.pop(self._collection['ix_cb'])
-                    self._collection['done'] = True
-        elif samples:
-            self._collection['samples'] = samples
-            stopcond = lambda: len(self.data_collected) >= self._collection['samples']
-            def addData(**kw):
-                self.data_collected.append(kw['value'])
-                if stopcond():
-                    self._pv.callbacks.pop(self._collection['ix_cb'])
-                    self._collection['done'] = True
-        self._collection['ix_cb'] = self._pv.add_callback(addData)
-        while not self._collection['done']:
-            sleep(.005)
-        return self.data_collected
+                    self._pv.callbacks.pop(self._collection["ix_cb"])
+                    self._collection["done"] = True
 
+        elif samples:
+            self._collection["samples"] = samples
+            stopcond = lambda: len(self.data_collected) >= self._collection["samples"]
+
+            def addData(**kw):
+                self.data_collected.append(kw["value"])
+                if stopcond():
+                    self._pv.callbacks.pop(self._collection["ix_cb"])
+                    self._collection["done"] = True
+
+        self._collection["ix_cb"] = self._pv.add_callback(addData)
+        while not self._collection["done"]:
+            sleep(0.005)
+        return self.data_collected
 
     def acquire(self, hold=False, **kwargs):
         _acquire = lambda: self.collect(**kwargs)
         return Task(_acquire, hold=hold)
 
     def accumulate(self, n_buffer):
-        if not hasattr(self,'_accumulate'):
+        if not hasattr(self, "_accumulate"):
             self._accumulate = {"n_buffer": n_buffer, "ix": 0, "n_cb": -1}
         else:
-            self._accumulate['n_buffer'] = n_buffer
-            self._accumulate['ix'] = 0
+            self._accumulate["n_buffer"] = n_buffer
+            self._accumulate["ix"] = 0
         self._pv.callbacks.pop(self._accumulate["n_cb"], None)
         self._data = np.squeeze(np.zeros([n_buffer * 2, self._pv.count])) * np.nan
 
         def addData(**kw):
-            self._accumulate["ix"] = (self._accumulate["ix"] + 1) % self._accumulate[
-                "n_buffer"
-            ]
-            self._data[self._accumulate["ix"] :: self._accumulate["n_buffer"]] = kw[
-                "value"
-            ]
+            self._accumulate["ix"] = (self._accumulate["ix"] + 1) % self._accumulate["n_buffer"]
+            self._data[self._accumulate["ix"] :: self._accumulate["n_buffer"]] = kw["value"]
 
         self._accumulate["n_cb"] = self._pv.add_callback(addData)
 
     def get_data(self):
-        return self._data[
-            self._accumulate["ix"]
-            + 1 : self._accumulate["ix"]
-            + 1
-            + self._accumulate["n_buffer"]
-        ]
+        return self._data[self._accumulate["ix"] + 1 : self._accumulate["ix"] + 1 + self._accumulate["n_buffer"]]
 
     data = property(get_data)
 
@@ -93,6 +88,7 @@ _cameraArrayTypes = ["monochrome", "rgb"]
 
 
 class CameraCA:
+
     def __init__(self, pvname, cameraArrayType="monochrome", elog=None):
         self.Id = pvname
         self.isBS = False
@@ -138,6 +134,7 @@ class CameraCA:
 
 
 class CameraBS:
+
     def __init__(self, host=None, port=None, elog=None):
         self._stream_host = host
         self._stream_port = port
@@ -149,9 +146,7 @@ class CameraBS:
 
     def get_images(self, N_images):
         data = []
-        with source(
-            host=self._stream_host, port=self._stream_port, mode=SUB
-        ) as input_stream:
+        with source(host=self._stream_host, port=self._stream_port, mode=SUB) as input_stream:
             input_stream.connect()
 
             for n in range(N_images):
@@ -161,22 +156,19 @@ class CameraBS:
     def record_images(self, fina, N_images, dsetname="images"):
         ds = None
         with h5py.File(fina, "w") as f:
-            with source(
-                host=self._stream_host, port=self._stream_port, mode=SUB
-            ) as input_stream:
+            with source(host=self._stream_host, port=self._stream_port, mode=SUB) as input_stream:
 
                 input_stream.connect()
 
                 for n in range(N_images):
                     image = input_stream.receive().data.data["image"].value
                     if not ds:
-                        ds = f.create_dataset(
-                            dsetname, dtype=image.dtype, shape=(N_images,) + image.shape
-                        )
+                        ds = f.create_dataset(dsetname, dtype=image.dtype, shape=(N_images,) + image.shape)
                     ds[n, :, :] = image
 
 
 class FeDigitizer:
+
     def __init__(self, Id, elog=None):
         self.Id = Id
         self.gain = EnumWrapper(Id + "-WD-gain")
@@ -198,8 +190,12 @@ class FeDigitizer:
 
 
 class DiodeDigitizer:
+
     def __init__(self, Id, VME_crate=None, link=None, ch_0=7, ch_1=8, elog=None):
         self.Id = Id
         if VME_crate:
             self.diode_0 = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_0))
             self.diode_1 = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_1))
+
+
+

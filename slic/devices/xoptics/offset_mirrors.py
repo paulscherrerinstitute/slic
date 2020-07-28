@@ -13,6 +13,7 @@ def addMotorToSelf(self, name=None, Id=None):
 
 
 class OffsetMirror:
+
     def __init__(self, name=None, Id=None, alias_namespace=None):
         self.Id = Id
         self.name = name

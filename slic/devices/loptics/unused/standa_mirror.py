@@ -3,6 +3,7 @@ from slic.devices.general.motor import Motor
 
 
 class Laser_Exp:
+
     def __init__(self, Id):
         self.Id = Id
 

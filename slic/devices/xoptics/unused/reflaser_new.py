@@ -4,6 +4,7 @@ from ..aliases import Alias, append_object_to_object
 
 
 class RefLaser_Aramis:
+
     def __init__(self, Id, elog=None, name=None, inpos=-18.818, outpos=-5):
         self.Id = Id
         self.elog = elog

@@ -1,4 +1,6 @@
+
 class Hexapod_PI:
+
     def __init__(self, Id):
         self.Id = Id
         self.x, self.y, self.z = [
@@ -13,3 +15,6 @@ class Hexapod_PI:
             ValueRdback(self.id + f":SET-PIVOT-{i}", self.id + f":PIVOT-R-{i}")
             for i in "RST"
         ]
+
+
+

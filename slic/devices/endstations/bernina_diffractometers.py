@@ -14,9 +14,8 @@ def addMotorToSelf(self, name=None, Id=None):
 
 
 class GPS:
-    def __init__(
-        self, name=None, Id=None, configuration=["base"], alias_namespace=None
-    ):
+
+    def __init__(self, name=None, Id=None, configuration=["base"], alias_namespace=None):
         self.Id = Id
         self.name = name
         self.alias = Alias(name)
@@ -39,18 +38,18 @@ class GPS:
 
         if "phi_hex" in self.configuration:
             ### motors PI hexapod ###
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-X", pvname_readback="SARES20-HEX_PI:POSI-X", name='xhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Y", pvname_readback="SARES20-HEX_PI:POSI-Y", name='yhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Z", pvname_readback="SARES20-HEX_PI:POSI-Z", name='zhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-U", pvname_readback="SARES20-HEX_PI:POSI-U", name='uhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-V", pvname_readback="SARES20-HEX_PI:POSI-V", name='vhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-W", pvname_readback="SARES20-HEX_PI:POSI-W", name='whex')
-            # self.hex_x = PV("SARES20-HEX_PI:POSI-X")
-            # self.hex_y = PV("SARES20-HEX_PI:POSI-Y")
-            # self.hex_z = PV("SARES20-HEX_PI:POSI-Z")
-            # self.hex_u = PV("SARES20-HEX_PI:POSI-U")
-            # self.hex_v = PV("SARES20-HEX_PI:POSI-V")
-            # self.hex_w = PV("SARES20-HEX_PI:POSI-W")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-X", pvname_readback="SARES20-HEX_PI:POSI-X", name="xhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Y", pvname_readback="SARES20-HEX_PI:POSI-Y", name="yhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Z", pvname_readback="SARES20-HEX_PI:POSI-Z", name="zhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-U", pvname_readback="SARES20-HEX_PI:POSI-U", name="uhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-V", pvname_readback="SARES20-HEX_PI:POSI-V", name="vhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-W", pvname_readback="SARES20-HEX_PI:POSI-W", name="whex")
+            #self.hex_x = PV("SARES20-HEX_PI:POSI-X")
+            #self.hex_y = PV("SARES20-HEX_PI:POSI-Y")
+            #self.hex_z = PV("SARES20-HEX_PI:POSI-Z")
+            #self.hex_u = PV("SARES20-HEX_PI:POSI-U")
+            #self.hex_v = PV("SARES20-HEX_PI:POSI-V")
+            #self.hex_w = PV("SARES20-HEX_PI:POSI-W")
 
         if "hlxz" in self.configuration:
             ### motors heavy load goniometer ###
@@ -63,7 +62,6 @@ class GPS:
         if "hlrxrz" in self.configuration:
             addMotorToSelf(self, Id=Id + ":MOT_TBL_RX", name="rxhl")
             addMotorToSelf(self, Id=Id + ":MOT_TBL_RZ", name="rzhl")
-
 
     def get_adjustable_positions_str(self):
         ostr = "*****GPS motor positions******\n"
@@ -79,6 +77,7 @@ class GPS:
 
 
 class XRD:
+
     def __init__(self, name=None, Id=None, configuration=["base"]):
         """X-ray diffractometer platform in AiwssFEL Bernina.\
                 <configuration> : list of elements mounted on 
@@ -133,23 +132,22 @@ class XRD:
 
         if "phi_hex" in self.configuration:
             ### motors PI hexapod ###
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-X", pvname_readback="SARES20-HEX_PI:POSI-X", name='xhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Y", pvname_readback="SARES20-HEX_PI:POSI-Y", name='yhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Z", pvname_readback="SARES20-HEX_PI:POSI-Z", name='zhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-U", pvname_readback="SARES20-HEX_PI:POSI-U", name='uhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-V", pvname_readback="SARES20-HEX_PI:POSI-V", name='vhex')
-            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-W", pvname_readback="SARES20-HEX_PI:POSI-W", name='whex')
-        
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-X", pvname_readback="SARES20-HEX_PI:POSI-X", name="xhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Y", pvname_readback="SARES20-HEX_PI:POSI-Y", name="yhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-Z", pvname_readback="SARES20-HEX_PI:POSI-Z", name="zhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-U", pvname_readback="SARES20-HEX_PI:POSI-U", name="uhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-V", pvname_readback="SARES20-HEX_PI:POSI-V", name="vhex")
+            append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-W", pvname_readback="SARES20-HEX_PI:POSI-W", name="whex")
+
         if "kappa" in self.configuration:
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_KRX", name='eta')
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_KAP", name='kappa')
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_KPH", name='phi')
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DTY", name='zkap')
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DTX", name='xkap')
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DTZ", name='ykap')
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DRX", name='rxkap')
-            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DRZ", name='rykap')
-            
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_KRX", name="eta")
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_KAP", name="kappa")
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_KPH", name="phi")
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DTY", name="zkap")
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DTX", name="xkap")
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DTZ", name="ykap")
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DRX", name="rxkap")
+            append_object_to_object(self, Motor, "SARES21-XRD:MOT_KAP_DRZ", name="rykap")
 
     def get_adjustable_positions_str(self):
         ostr = "*****XRD motor positions******\n"
