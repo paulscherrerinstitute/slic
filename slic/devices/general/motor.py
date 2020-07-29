@@ -123,11 +123,11 @@ class Motor(Adjustable):
         print(f"{low} < {val} < {high}")
 
 
-    def add_value_callback(self, callback, index=None):
+    def add_callback(self, callback, index=None):
         return self.pvs.readback.add_callback(callback=callback, index=index)
 
-    def clear_value_callback(self, index=None):
-        if index:
+    def remove_callback(self, index=None):
+        if index is not None:
             self.pvs.readback.remove_callback(index)
         else:
             self.pvs.readback.clear_callbacks()

@@ -15,14 +15,14 @@ def update_changes(Adj):
             def cbfoo(**kwargs):
                 print(get_position_str(start, value, kwargs["value"]), end="\r")
 
-            cb_id = self.add_value_callback(cbfoo)
+            cb_id = self.add_callback(cbfoo)
             self._currentChange = self.set_target_value(value)
             self._currentChange.wait()
         except KeyboardInterrupt:
             self._currentChange.stop()
             print(f"\nAborted change at (~) {self.get_current_value():1.5g}")
         finally:
-            self.clear_value_callback(cb_id)
+            self.remove_callback(cb_id)
         return self._currentChange
 
     def update_change_relative(self, value, *args, **kwargs):
