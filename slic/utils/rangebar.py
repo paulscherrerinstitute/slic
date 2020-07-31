@@ -27,6 +27,20 @@ class RangeBar:
         self.fmt = fmt
 
 
+    def __enter__(self):
+        self.show(self.start) # show initial bar (also if nothing changes)
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        print() # print newline after last bar update
+        return (exc_type is None)
+
+
+    def show(self, value):
+        bar = self.get(value)
+        print_and_return(bar)
+
+
     def get(self, value):
         start = self.start
         stop  = self.stop
@@ -41,7 +55,7 @@ class RangeBar:
 
         value = style_emph(value)
 
-        return f"{value}   [ {start} |{bar}| {stop} ]"
+        return f"[ {start} |{bar}| {stop} ]   {value}"
 
 
     def format_number(self, num):
@@ -116,6 +130,10 @@ def color_bad(string):
 
 def style_emph(string):
     return STYLE_EMPH + string + STYLE_RESET
+
+def print_and_return(*args, **kwargs):
+    """prints then returns cursor to start of current line"""
+    print(*args, end="\r", **kwargs)
 
 
 
