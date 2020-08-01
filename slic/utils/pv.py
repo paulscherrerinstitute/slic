@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import epics
 from slic.utils import typename
 from slic.utils.rangebar import RangeBar
@@ -18,11 +19,17 @@ class PV(epics.PV):
             def on_change(value=None, **kw):
                 rbar.show(value)
 
-            index = self.add_callback(on_change)
-            res = super().put(stop, *args, **kwargs)
-            self.remove_callback(index)
+            with self.use_callback(on_change):
+                return super().put(stop, *args, **kwargs)
 
-        return res
+
+    @contextmanager
+    def use_callback(self, callback):
+        index = self.add_callback(callback)
+        try:
+            yield index
+        finally:
+            self.remove_callback(index)
 
 
     def __repr__(self):
