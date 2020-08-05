@@ -42,3 +42,35 @@ def update_changes(Adj):
 
 
 
+class ProgressBar:
+
+    def __init__(self, pv, *args, **kwargs):
+        orig_put = pv.put
+
+        self.index = None
+        self.rbar = None
+
+        def wrapped_put(value, *a, **kw):
+            start = pv.get()
+            stop = value
+            self.rbar = RangeBar(start, stop, *args, **kwargs)
+            res = orig_put(value, *a, wait=True, **kw)
+            print()
+            if self.index:
+                pv.remove_callback(self.index)
+            pv.put = orig_put
+            return res
+
+        pv.put = wrapped_put
+
+        def on_change(value=None, **kwargs):
+            if self.rbar:
+                s = self.rbar.get(value)
+                print(s, end="\r")
+            else:
+                print("->", value)
+
+        self.index = pv.add_callback(on_change)
+
+
+
