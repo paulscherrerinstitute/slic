@@ -1,7 +1,7 @@
 import subprocess
 from types import SimpleNamespace
+from contextlib import contextmanager
 import colorama
-from epics import PV
 
 from slic.core.task import Task
 from slic.core.adjustable import Adjustable, AdjustableError
@@ -74,17 +74,34 @@ class Motor(Adjustable):
         return self._motor.set_position(value, **kwargs)
 
 
-    def set_target_value(self, value, hold=False, check_limits=True):
+    def set_target_value(self, value, hold=False, check_limits=True, show_progress=False):
         ignore_limits = not check_limits
 
-        def change():
-            status = self._motor.move(value, ignore_limits=ignore_limits, wait=True)
-            message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
-            self.status = status
-            self.status_message = message
-            validate_status(status, message)
+        if not show_progress:
+            def change():
+                self._move(value, ignore_limits=ignore_limits, wait=True)
+
+        else:
+            def change():
+                start = self.get_current_value()
+                stop = value
+
+                with RangeBar(start, stop) as rbar:
+                    def on_change(value=None, **kw):
+                        rbar.show(value)
+
+                    with self.use_callback(on_change):
+                        self._move(stop, ignore_limits=ignore_limits, wait=True)
 
         return Task(change, hold=hold, stopper=self._motor.stop)
+
+
+    def _move(self, *args, **kwargs):
+        status = self._motor.move(*args, **kwargs)
+        message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
+        self.status = status
+        self.status_message = message
+        validate_status(status, message)
 
 
     def is_moving(self):
@@ -131,6 +148,14 @@ class Motor(Adjustable):
             self.pvs.readback.remove_callback(index)
         else:
             self.pvs.readback.clear_callbacks()
+
+    @contextmanager
+    def use_callback(self, callback):
+        index = self.add_callback(callback)
+        try:
+            yield index
+        finally:
+            self.remove_callback(index)
 
 
     def gui(self):
