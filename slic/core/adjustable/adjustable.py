@@ -20,9 +20,11 @@ class Adjustable(BaseAdjustable, SpecConvenience):
         return self.is_moving()
 
     def __repr__(self):
-        name = self.name or typename(self)
+        tname = typename(self)
+        name = self.name
         value = self.get_current_value()
-        return "{} at {}".format(name, value)
+        name = f"{tname} \"{name}\"" if name is not None else tname
+        return f"{name} at {value}"
 
 
 
