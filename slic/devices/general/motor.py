@@ -56,7 +56,8 @@ class Motor(Adjustable):
             readback    = motor.get_pv("RBV"),
             user_offset = motor.get_pv("OFF"),
             done_move   = motor.get_pv("DMOV"),
-            description = motor.get_pv("DESC")
+            description = motor.get_pv("DESC"),
+            units       = motor.get_pv("EGU")
         )
 
         self.status = None
@@ -93,7 +94,8 @@ class Motor(Adjustable):
                     with self.use_callback(on_change):
                         self._move(stop, ignore_limits=ignore_limits, wait=True)
 
-        return Task(change, hold=hold, stopper=self._motor.stop)
+        self.current_task = task = Task(change, hold=hold, stopper=self._motor.stop)
+        return task
 
 
     def _move(self, *args, **kwargs):
@@ -168,11 +170,16 @@ class Motor(Adjustable):
     def description(self):
         return self.pvs.description.value
 
+    @property
+    def units(self):
+        return self.pvs.units.value
+
 
     def __repr__(self):
         res = super().__repr__()
         dial = self.get_current_value(pos_type="dial")
-        res += f" (dial: {dial})"
+        units = self.units
+        res += f" (dial: {dial}) {units}"
         return res
 
 
