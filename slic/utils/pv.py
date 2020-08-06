@@ -35,9 +35,9 @@ class PV(epics.PV):
     def __repr__(self):
         tname = typename(self)
         name = self.pvname
-        val = self.get()
+        value = self.get()
         units = self.units
-        return f"{tname} \"{name}\" at {val} {units}"
+        return f"{tname} \"{name}\" at {value} {units}"
 
     def orig_repr(self):
         return super().__repr__()
