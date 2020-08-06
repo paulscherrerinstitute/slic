@@ -18,7 +18,7 @@ _status_messages = {
 }
 
 
-class DummyMot:
+class DummyMot: #TODO: does not have _stage, delay_to_motor, etc. ?!
 
     def __init__(self):
         self._mot
