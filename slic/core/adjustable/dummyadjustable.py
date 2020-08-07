@@ -4,8 +4,8 @@ from .adjustable import Adjustable
 
 class DummyAdjustable(Adjustable):
 
-    def __init__(self, initial_value=0, name="Dummy"):
-        super().__init__(name)
+    def __init__(self, initial_value=0, name="Dummy", units=None):
+        super().__init__(name=name, units=units)
         self._current_value = initial_value
 
     def get_current_value(self):
