@@ -7,12 +7,14 @@ from .adjustable import Adjustable
 class PVEnumAdjustable(Adjustable):
 
     def __init__(self, pvname, name=None):
-        name = name or pvname
-        super().__init__(name)
-
         self.pvname = pvname
-        self.pv = PV(pvname)
-        self.states = Enum(self.pv.enum_strs)
+        self.pv = pv = PV(pvname)
+
+        name = name or pvname
+        units = pv.units
+        super().__init__(name=name, units=units)
+
+        self.states = Enum(pv.enum_strs)
 
 
     def get_current_value(self, as_number=False):

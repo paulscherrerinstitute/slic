@@ -7,13 +7,14 @@ from .adjustable import Adjustable
 class PVAdjustable(Adjustable):
 
     def __init__(self, pvname_setvalue, pvname_readback=None, accuracy=None, name=None):
-        name = name or pvname_setvalue
-        super().__init__(name)
-
-        self.accuracy = accuracy
-
         pv_setvalue = PV(pvname_setvalue)
         pv_readback = PV(pvname_readback) if pvname_readback else pv_setvalue
+
+        name = name or pvname_readback or pvname_setvalue
+        units = pv_readback.units
+        super().__init__(name=name, units=units)
+
+        self.accuracy = accuracy
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,
