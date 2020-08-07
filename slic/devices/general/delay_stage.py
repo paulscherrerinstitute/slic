@@ -37,15 +37,20 @@ class DelayStage:
 
 class Delay(Adjustable):
 
-    def __init__(self, motor):
+    def __init__(self, motor, name=None, units="sec"):
         self._motor = motor
-        self.name = motor.name
+        name = name or motor.name
+        super().__init__(name=name, units=units)
         self.pvname = motor.pvname
         self.offset_pos = 0
 
     @property
     def current_task(self):
         return self._motor.current_task
+
+    @current_task.setter
+    def current_task(self, value):
+        self._motor.current_task = value
 
 
     def get_current_value(self, *args, **kwargs):
@@ -80,12 +85,6 @@ class Delay(Adjustable):
 
     def gui(self):
         return self._motor.gui()
-
-
-    def __repr__(self):
-        res = super().__repr__()
-        res += " sec"
-        return res
 
 
 
