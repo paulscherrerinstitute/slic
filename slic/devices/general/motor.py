@@ -8,6 +8,7 @@ from slic.core.adjustable import Adjustable, AdjustableError
 from slic.utils.eco_epics.motor import Motor as EpicsMotor
 from slic.utils.eco_epics.utilities_epics import EpicsString
 from slic.utils.eco_components.aliases import Alias
+from slic.utils.rangebar import RangeBar
 
 
 POS_TYPES = {"dial", "raw", "user"}
@@ -46,19 +47,21 @@ STATUS_MESSAGES = {
 class Motor(Adjustable):
 
     def __init__(self, pvname, name=None):
-        name = name or pvname
-        super().__init__(name)
-
         self.pvname = pvname
         self._motor = motor = EpicsMotor(pvname)
 
         self.pvs = SimpleNamespace(
             readback    = motor.get_pv("RBV"),
-            user_offset = motor.get_pv("OFF"),
+            direction   = motor.get_pv("DIR"),
+            offset      = motor.get_pv("OFF"),
             done_move   = motor.get_pv("DMOV"),
             description = motor.get_pv("DESC"),
             units       = motor.get_pv("EGU")
         )
+
+        name = name or pvname
+        units = self.pvs.units.value
+        super().__init__(name=name, units=units)
 
         self.status = None
         self.status_message = None
@@ -136,10 +139,11 @@ class Motor(Adjustable):
         self._motor.put(ll_name, low_limit)
         self._motor.put(hl_name, high_limit)
 
-    def print_limits(self): #TODO: is the bar helpful?
+    def print_limits(self):
         low, high = self.get_limits()
         val = self.get_current_value()
-        print(f"{low} < {val} < {high}")
+        res = RangeBar(low, high).get(val)
+        print(res)
 
 
     def add_callback(self, callback, index=None):
@@ -165,22 +169,16 @@ class Motor(Adjustable):
         cmd = f'caqtdm -macro "P={device}:,M={motor}" motorx_more.ui'
         return subprocess.Popen(cmd, shell=True)
 
-
     @property
     def description(self):
         return self.pvs.description.value
 
-    @property
-    def units(self):
-        return self.pvs.units.value
-
-
-    def __repr__(self):
-        res = super().__repr__()
+    def print_dial(self):
         dial = self.get_current_value(pos_type="dial")
-        units = self.units
-        res += f" (dial: {dial}) {units}"
-        return res
+        offset = self.pvs.offset.value
+        direction = self.pvs.direction.value
+        res = f"dial at {dial} (direction={direction}, offset={offset})"
+        print(res)
 
 
 
