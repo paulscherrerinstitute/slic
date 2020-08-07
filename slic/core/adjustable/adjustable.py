@@ -5,8 +5,9 @@ from .convenience import SpecConvenience
 
 class Adjustable(BaseAdjustable, SpecConvenience):
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, units=None):
         self.name = name
+        self.units = units
         self.current_task = None
 
     def set(self, *args, **kwargs):
@@ -19,11 +20,16 @@ class Adjustable(BaseAdjustable, SpecConvenience):
     def moving(self):
         return self.is_moving()
 
+
     def __repr__(self):
         tname = typename(self)
         name = self.name
+        units = self.units
         value = self.get_current_value()
-        name = f"{tname} \"{name}\"" if name is not None else tname
+
+        name  = f"{tname} \"{name}\"" if name  is not None else tname
+        value = f"{value} {units}"    if units is not None else value
+
         return f"{name} at {value}"
 
 
