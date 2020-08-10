@@ -3,7 +3,7 @@ from matplotlib import pylab as plt
 
 
 def readTraceTextfile(fina, numbers=None):
-    if not numbers is None:
+    if numbers is not None:
         d = [readTraceTextfile(fina % number) for number in numbers]
     else:
         d = np.loadtxt(fina, skiprows=5, delimiter=",")

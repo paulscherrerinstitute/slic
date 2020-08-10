@@ -21,7 +21,7 @@ class SpecConvenience:
 
 
     def __call__(self, value=None):
-        if not value is None:
+        if value is not None:
             return self.set_target_value(value)
         else:
             return self.get_current_value()
