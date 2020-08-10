@@ -1,5 +1,4 @@
 from epics import PV
-from slic.core.task import Task
 from slic.utils.printing import printable_dict
 from .adjustable import Adjustable
 
@@ -24,8 +23,7 @@ class PVEnumAdjustable(Adjustable):
     def set_target_value(self, value, hold=False):
         value = self.states.get(value)
         change = lambda: self.pv.put(value, wait=True, use_complete=True)
-        self.current_task = task = Task(change, hold=hold)
-        return task
+        return self._as_task(change, hold=hold)
 
     def is_moving(self):
         return not self.pv.put_complete

@@ -1,4 +1,3 @@
-from slic.core.task import Task
 from .adjustable import Adjustable
 
 
@@ -17,8 +16,7 @@ class GenericAdjustable(Adjustable):
     def set_target_value(self, value, hold=False):
         self._last_target = value
         change = lambda: self._set(value)
-        self.current_task = task = Task(change, hold=hold)
-        return task
+        return self._as_task(change, hold=hold)
 
     def is_moving(self):
         return not self._wait()

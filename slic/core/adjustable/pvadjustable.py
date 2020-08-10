@@ -1,6 +1,5 @@
 from types import SimpleNamespace
 from epics import PV
-from slic.core.task import Task
 from .adjustable import Adjustable
 
 
@@ -37,8 +36,7 @@ class PVAdjustable(Adjustable):
         def change():
             # use_complete=True enables status in PV.put_complete
             self.pvs.setvalue.put(value, wait=True, use_complete=True)
-        self.current_task = task = Task(change, hold=hold)
-        return task
+        return self._as_task(change, hold=hold)
 
     def is_moving(self):
         if self.accuracy is not None:

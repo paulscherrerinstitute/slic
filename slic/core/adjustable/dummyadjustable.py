@@ -1,4 +1,3 @@
-from slic.core.task import Task
 from .adjustable import Adjustable
 
 
@@ -14,8 +13,7 @@ class DummyAdjustable(Adjustable):
     def set_target_value(self, value, hold=False):
         def change():
             self._current_value = value
-        self.current_task = task = Task(change, hold=hold)
-        return task
+        return self._as_task(change, hold=hold)
 
     def is_moving(self):
         return False

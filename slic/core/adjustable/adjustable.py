@@ -1,4 +1,5 @@
 from slic.utils import typename
+from slic.core.task import Task
 from .baseadjustable import BaseAdjustable
 from .convenience import SpecConvenience
 
@@ -9,6 +10,20 @@ class Adjustable(BaseAdjustable, SpecConvenience):
         self.name = name
         self.units = units
         self.current_task = None
+
+
+    def _as_task(self, *args, **kwargs):
+        self.current_task = task = Task(*args, **kwargs)
+        return task
+
+    def wait(self):
+        if self.current_task:
+            return self.current_task.wait()
+
+    def stop(self):
+        if self.current_task:
+            return self.current_task.stop()
+
 
     def set(self, *args, **kwargs):
         return self.set_target_value(*args, **kwargs)

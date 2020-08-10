@@ -20,11 +20,6 @@ class SpecConvenience:
         return self.current_task
 
 
-    def wait(self):
-        if self.current_task:
-            self.current_task.wait()
-
-
     def __call__(self, value=None):
         if not value is None:
             return self.set_target_value(value)

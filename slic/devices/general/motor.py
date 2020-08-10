@@ -3,7 +3,6 @@ from types import SimpleNamespace
 from contextlib import contextmanager
 import colorama
 
-from slic.core.task import Task
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.utils.eco_epics.motor import Motor as EpicsMotor
 from slic.utils.eco_epics.utilities_epics import EpicsString
@@ -97,8 +96,7 @@ class Motor(Adjustable):
                     with self.use_callback(on_change):
                         self._move(stop, ignore_limits=ignore_limits, wait=True)
 
-        self.current_task = task = Task(change, hold=hold, stopper=self._motor.stop)
-        return task
+        return self._as_task(change, hold=hold, stopper=self._motor.stop)
 
 
     def _move(self, *args, **kwargs):
@@ -116,8 +114,7 @@ class Motor(Adjustable):
 
     def stop(self):
         try:
-            if self.current_task:
-                self.current_task.stop()
+            return super().stop()
         except:
             self._motor.stop()
 
