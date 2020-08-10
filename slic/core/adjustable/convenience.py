@@ -20,13 +20,6 @@ class SpecConvenience:
         return self.current_task
 
 
-    def __call__(self, value=None):
-        if value is not None:
-            return self.set_target_value(value)
-        else:
-            return self.get_current_value()
-
-
     #TODO: if hasattr(Adj, "update_change"):
     def umv(self, *args, **kwargs):
         self.update_change(*args, **kwargs)
