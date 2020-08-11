@@ -13,6 +13,8 @@ _basefolder = "/sf/bernina/config/eco/offsets"
 PS = "SLAAR01-TSPL-EPL"
 _basefolder = "/sf/alvra/config/lasertiming"
 
+_posTypes = ["user", "dial", "raw"]
+
 
 def timeToStr(value, n=12):
     fmt = "%%+.%df" % n
@@ -314,6 +316,44 @@ class eTiming:
         s += "- electronic timing readback (ps): {}\n".format(eTimingRBKStr)
         s += "- electronic timing setpoint (ps): {}".format(eTimingSetStr)
         return s
+
+
+
+class PhaseShifterAramis:
+
+    def __init__(self, Id, name=None, elog=None, z_undulator=None, description=None):
+        self.Id = Id
+        self._pshifter = Phase_shifter(Id)
+        self._elog = elog
+        self.name = name
+
+    def set_target_value(self, value, hold=False, check=True):
+        """ Adjustable convention"""
+        mover = lambda: self._pshifter.move(value)
+        return Task(mover, hold=hold)
+
+    def stop(self):
+        """ Adjustable convention"""
+        pass
+
+    def get_current_value(self, posType="user", readback=True):
+        """ Adjustable convention"""
+        _keywordChecker([("posType", posType, _posTypes)])
+        if posType == "user":
+            return self._pshifter.get()
+        if posType == "dial":
+            return self._pshifter.get_dial()
+
+    def set_current_value(self, value, posType="user"):
+        """ Adjustable convention"""
+        _keywordChecker([("posType", posType, _posTypes)])
+        if posType == "user":
+            return self._motor.set(value)
+
+
+def _keywordChecker(kw_key_list_tups):
+    for tkw, tkey, tlist in kw_key_list_tups:
+        assert tkey in tlist, "Keyword %s should be one of %s" % (tkw, tlist)
 
 
 
