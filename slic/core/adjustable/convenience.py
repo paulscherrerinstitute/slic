@@ -14,13 +14,13 @@ class SpecConvenience:
         return self.set_target_value(value, *args, **kwargs)
 
 
-    #TODO: if hasattr(Adj, "update_change"):
-    def umv(self, *args, **kwargs):
-        self.update_change(*args, **kwargs)
+class SpecConvenienceProgress(SpecConvenience):
 
-    #TODO: if hasattr(Adj, "update_change_relative"):
-    def umvr(self, *args, **kwargs):
-        self.update_change_relative(*args, **kwargs)
+    def umv(self, *args, show_progress=True, **kwargs):
+        return self.mv(*args, show_progress=show_progress, **kwargs)
+
+    def umvr(self, *args, show_progress=True, **kwargs):
+        return self.mvr(*args, show_progress=show_progress, **kwargs)
 
 
 
