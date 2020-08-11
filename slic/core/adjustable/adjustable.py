@@ -24,12 +24,12 @@ class Adjustable(BaseAdjustable, SpecConvenience):
         if self.current_task:
             return self.current_task.stop()
 
+
     def __call__(self, value=None):
         if value is not None:
             return self.set_target_value(value)
         else:
             return self.get_current_value()
-
 
     def set(self, *args, **kwargs):
         return self.set_target_value(*args, **kwargs)
