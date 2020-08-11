@@ -4,7 +4,7 @@ from slic.utils.printing import printable_dict
 from slic.devices.general.motor import Motor
 from ..basedevice import BaseDevice
 from ..general.delay_stage import DelayStage
-from ..timing.alvralasertiming import eTiming
+from ..timing.lasertiming import eTiming
 
 
 class LaserExp(BaseDevice):
