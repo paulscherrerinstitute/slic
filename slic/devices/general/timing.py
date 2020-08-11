@@ -5,19 +5,20 @@ import time
 from slic.core.task import Task
 
 _basefolder = "/sf/bernina/config/com/data/src/lasertiming"
+_basefolder = "/sf/alvra/config/lasertiming"
 _posTypes = ["user", "dial", "raw"]
 
 
 def timeToStr(value, n=12):
     fmt = "%%+.%df" % n
     value = fmt % value
-    # print(value)
+    #print(value)
     idx_point = value.find(".")
     ret_str = value[:idx_point] + " ."
     ngroups = (len(value) - idx_point) // 3
     for n in range(ngroups):
         ret_str += " %s" % value[idx_point + 1 + 3 * n : idx_point + 1 + 3 * (n + 1)]
-        # print(idx_point+1+3*n,idx_point+1*3*(n-1),ret_str)
+        #print(idx_point+1+3*n,idx_point+1*3*(n-1),ret_str)
     return ret_str
 
 
@@ -41,7 +42,7 @@ class Storage(object):
         if os.path.isfile(self._filename):
             # need to read again ?
             if self.last_read_time == -1 or lmod > self.last_read_time:
-                # print("actually reading")
+                #print("actually reading")
                 value = float(np.loadtxt(self._filename))
                 self.last_read_time = lmod
                 self.last_read = value
@@ -59,7 +60,6 @@ class Storage(object):
 
 
 class Pockels_trigger(PV):
-    """ this class is needed to store the offset in files and read in s """
 
     def __init__(self, pv_basename):
         pvname = pv_basename + "-RB"
@@ -144,14 +144,14 @@ class Phase_shifter(PV):
         return "Phase Shifter: user,dial = %s , %s" % (user, dial)
 
 
-# _pockels_in  = Pockels_trigger("SLAAR-LTIM01-EVR0:Pul2-Delay")
-# _pockels_out = Pockels_trigger("SLAAR-LTIM01-EVR0:Pul3-Delay")
-# _phase_shifter = Phase_shifter("SLAAR01-TSPL-EPL")
+#_pockels_in  = Pockels_trigger("SLAAR-LTIM01-EVR0:Pul2-Delay")
+#_pockels_out = Pockels_trigger("SLAAR-LTIM01-EVR0:Pul3-Delay")
+#_phase_shifter = Phase_shifter("SLAAR01-TSPL-EPL")
 
 
 class PhaseShifterAramis:
 
-    def __init__(self, Id, name=None, elog=None):
+    def __init__(self, Id, name=None, elog=None, z_undulator=None, description=None):
         self.Id = Id
         self._pshifter = Phase_shifter(Id)
         self._elog = elog
@@ -159,9 +159,8 @@ class PhaseShifterAramis:
 
     def set_target_value(self, value, hold=False, check=True):
         """ Adjustable convention"""
-
         mover = lambda: self._pshifter.move(value)
-        return Task(mover, hold=hold, stopper=None)
+        return Task(mover, hold=hold)
 
     def stop(self):
         """ Adjustable convention"""

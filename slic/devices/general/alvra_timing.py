@@ -4,6 +4,7 @@ import numpy as np
 import time
 from slic.core.task import Task
 
+_basefolder = "/sf/bernina/config/com/data/src/lasertiming"
 _basefolder = "/sf/alvra/config/lasertiming"
 _posTypes = ["user", "dial", "raw"]
 
@@ -59,8 +60,6 @@ class Storage(object):
 
 
 class Pockels_trigger(PV):
-
-    """ this class is needed to store the offset in files and read in s """
 
     def __init__(self, pv_basename):
         pvname = pv_basename + "-RB"
