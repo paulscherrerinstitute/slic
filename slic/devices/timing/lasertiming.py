@@ -5,19 +5,25 @@ import time
 from slic.core.task import Task
 
 
+#TODO
+#bernina
+PS = "SLAAR02-TSPL-EPL"
 _basefolder = "/sf/bernina/config/eco/offsets"
+#alvra:
+PS = "SLAAR01-TSPL-EPL"
+_basefolder = "/sf/alvra/config/lasertiming"
 
 
 def timeToStr(value, n=12):
     fmt = "%%+.%df" % n
     value = fmt % value
-    # print(value)
+    #print(value)
     idx_point = value.find(".")
     ret_str = value[:idx_point] + " ."
     ngroups = (len(value) - idx_point) // 3
     for n in range(ngroups):
         ret_str += " %s" % value[idx_point + 1 + 3 * n : idx_point + 1 + 3 * (n + 1)]
-        # print(idx_point+1+3*n,idx_point+1*3*(n-1),ret_str)
+        #print(idx_point+1+3*n,idx_point+1*3*(n-1),ret_str)
     return ret_str
 
 
@@ -65,7 +71,7 @@ class Storage(object):
         if os.path.isfile(self._filename):
             # need to read again ?
             if self.last_read_time == -1 or lmod > self.last_read_time:
-                # print("actually reading")
+                #print("actually reading")
                 value = float(np.loadtxt(self._filename))
                 self.last_read_time = lmod
                 self.last_read = value
@@ -84,7 +90,7 @@ class Storage(object):
 
 class Pockels_trigger(PV):
 
-    def __init__(self, pv_get, pv_set, pv_offset_get=None):
+    def __init__(self, pv_get, pv_set, pv_offset_get): #TODO make offset optional
         pvname = pv_get
         PV.__init__(self, pvname)
         self._pv_offset_get = PV(pv_offset_get)
@@ -97,7 +103,7 @@ class Pockels_trigger(PV):
         return self._storage.value
 
     def get_dial(self):
-        return np.round(super().get() * 1e-6, 9) + self._pv_offset_get.get() * 1e-9 - 7.41e-9
+        return np.round(super().get() * 1e-6, 9) + self._pv_offset_get.get() * 1e-9 - 7.41e-9 #TODO what is the constant?
 
     def get(self):
         """ convert time to sec """
@@ -126,9 +132,8 @@ _OSCILLATOR_PERIOD = 1 / 71.368704e6
 
 
 class Phase_shifter(PV):
-    """ this class is needed to store the offset in files and read in ps """
 
-    def __init__(self, pv_basename="SLAAR02-TSPL-EPL", dial_max=14.0056e-9, precision=100e-15):
+    def __init__(self, pv_basename=PS, dial_max=14.0056e-9, precision=100e-15):
         pvname = pv_basename + ":CURR_DELTA_T"
         PV.__init__(self, pvname)
         self._filename = os.path.join(_basefolder, pvname)
@@ -165,9 +170,9 @@ class Phase_shifter(PV):
         self._pv_setvalue.put(dial_ps)
         time.sleep(0.1)
         self._pv_execute.put(1)
-        # print(accuracy)
+        #print(accuracy)
         while np.abs(self.get_dial() - dial) > accuracy:
-            # print(np.abs(self.get_dial()-dial))
+            #print(np.abs(self.get_dial()-dial))
             time.sleep(0.2)
 
     def set(self, value):
@@ -181,11 +186,33 @@ class Phase_shifter(PV):
         return "Phase Shifter: user,dial = %s , %s" % (user, dial)
 
 
-_slicer_gate = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul3-Delay-RB", "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY", pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB",)
 
-_sdg1 = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul2-Delay-RB", "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY", pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB",)
+#TODO
 
-_phase_shifter = Phase_shifter("SLAAR02-TSPL-EPL")
+#bernina
+sg_get = "SLAAR-LTIM02-EVR0:Pul3-Delay-RB"
+sg_set = "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY"
+sg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB"
+
+sdg_get = "SLAAR-LTIM02-EVR0:Pul2-Delay-RB"
+sdg_set = "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY"
+sdg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB"
+
+#alvra:
+sg = "SLAAR-LTIM01-EVR0:Pul2-Delay"
+sg_get = sg + "-RB"
+sg_set = sg + "-SP"
+sg_offset = "SLAAR-LTIM01-EVR0:UnivDlyModule1-Delay1-RB"
+
+sdg = "SLAAR-LTIM01-EVR0:Pul3-Delay"
+sdg_get = sdg + "-RB"
+sdg_set = sdg + "-SP"
+
+
+
+_slicer_gate = Pockels_trigger(sg_get, sg_set, sg_off)
+_sdg1 = Pockels_trigger(sdg_get, sdg_set, sdg_off)
+_phase_shifter = Phase_shifter(PS)
 
 
 _POCKELS_CELL_RESOLUTION = 7e-9
@@ -197,7 +224,7 @@ class Lxt(object):
         self.sdg1 = _sdg1
         self.slicer_gate = _slicer_gate
         self.phase_shifter = _phase_shifter
-        self.Id = "SLAAR02-TSPL-EPL"
+        self.Id = PS
         self.name = "lxt"
         self.elog = None
         self.accuracy_poly = accuracy_poly
@@ -244,7 +271,49 @@ class Lxt(object):
         return "delay = %s" % (delay)
 
 
-lxt = Lxt()
+
+
+class eTiming:
+
+    def __init__(self, Id):
+        self.Id = Id
+        self.name = "Globi laser electronic timing (us)"
+        self._eTimeSet = PV("SLAAR01-LTIM-PDLY:DELAY")  # current laser timing number from Edwin's timing PV
+        self._eTimeRBK = PV("SLAAR-LGEN:DLY_OFFS1")  # readback on Edwin's timing PV
+        self._moving = PV("SLAAR01-LTIM-PDLY:WAITING")
+
+    def get_current_value(self):
+        return self._eTimeRBK.get() * 1e6  # convert from us to ps
+
+    def wait_for_valid_value(self):
+        tval = np.nan
+        while not np.isfinite(tval):
+            tval = self.get_current_value()
+        return tval
+
+    def move_and_wait(self, value, checktime=0.01):
+        self._eTimeSet.put(value)
+        time.sleep(0.2)
+        while self._moving.get() == 0.0:
+            time.sleep(checktime)
+
+    def set_current_value(self, value):
+        self._eTimeSet.put(value)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def set_target_value(self, value, hold=False):
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold)
+
+    def __str__(self):
+        eTimingRBKStr = str(self.get_current_value())
+        eTimingSetStr = self._eTimeSet.get(as_string=True)
+        s = "Globi laser electronic timing\n"
+        s += "- electronic timing readback (ps): {}\n".format(eTimingRBKStr)
+        s += "- electronic timing setpoint (ps): {}".format(eTimingSetStr)
+        return s
 
 
 
