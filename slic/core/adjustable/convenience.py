@@ -1,21 +1,17 @@
 
 class SpecConvenience:
 
-    def mv(self, *args, **kwargs):
-        return self.set_target_value(*args, **kwargs)
-
     def wm(self, *args, **kwargs):
         return self.get_current_value(*args, **kwargs)
 
+    def mv(self, *args, **kwargs):
+        return self.set_target_value(*args, **kwargs)
 
-    #TODO
     def mvr(self, value, *args, **kwargs):
-        if hasattr(self, "current_task") and self.current_task and not (self.current_task.status() == "done"):
-            startvalue = self.current_task.target
-        else:
-            startvalue = self.get_current_value(*args, **kwargs)
-        self.current_task = self.set_target_value(value + startvalue, *args, **kwargs)
-        return self.current_task
+        self.wait()
+        start = self.get_current_value(*args, **kwargs)
+        value += start
+        return self.set_target_value(value, *args, **kwargs)
 
 
     #TODO: if hasattr(Adj, "update_change"):
