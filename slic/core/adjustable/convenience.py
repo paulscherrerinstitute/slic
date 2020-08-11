@@ -13,7 +13,7 @@ class SpecConvenience:
         if hasattr(self, "current_task") and self.current_task and not (self.current_task.status() == "done"):
             startvalue = self.current_task.target
         elif hasattr(self, "is_moving") and not self.is_moving():
-            startvalue = self.get_current_value(readback=True, *args, **kwargs)
+            startvalue = self.get_current_value(*args, **kwargs) # readback=True is the default!
         else:
             startvalue = self.get_current_value(*args, **kwargs)
         self.current_task = self.set_target_value(value + startvalue, *args, **kwargs)
