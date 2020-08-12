@@ -5,15 +5,37 @@ import time
 from slic.core.task import Task
 
 
-#TODO
-#bernina
-PS = "SLAAR02-TSPL-EPL"
-_basefolder = "/sf/bernina/config/eco/offsets"
-#alvra:
-PS = "SLAAR01-TSPL-EPL"
-_basefolder = "/sf/alvra/config/lasertiming"
-
 _posTypes = ["user", "dial", "raw"]
+
+_OSCILLATOR_PERIOD = 1 / 71.368704e6
+_POCKELS_CELL_RESOLUTION = 7e-9
+
+
+#bernina
+_basefolder = "/sf/bernina/config/eco/offsets"
+PS = "SLAAR02-TSPL-EPL"
+
+sg_get = "SLAAR-LTIM02-EVR0:Pul3-Delay-RB"
+sg_set = "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY"
+sg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB"
+
+sdg_get = "SLAAR-LTIM02-EVR0:Pul2-Delay-RB"
+sdg_set = "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY"
+sdg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB"
+
+#alvra:
+_basefolder = "/sf/alvra/config/lasertiming"
+PS = "SLAAR01-TSPL-EPL"
+
+sg = "SLAAR-LTIM01-EVR0:Pul2-Delay"
+sg_get = sg + "-RB"
+sg_set = sg + "-SP"
+sg_offset = "SLAAR-LTIM01-EVR0:UnivDlyModule1-Delay1-RB"
+
+sdg = "SLAAR-LTIM01-EVR0:Pul3-Delay"
+sdg_get = sdg + "-RB"
+sdg_set = sdg + "-SP"
+
 
 
 def time_to_str(value, n=12):
@@ -53,7 +75,7 @@ def nice_time_to_str(delay, fmt="%+.0f"):
 
 
 
-class Storage(object):
+class Storage:
     """ this class is needed to store the offset in files and read in s """
 
     def __init__(self, pvname):
@@ -132,10 +154,6 @@ class PockelsTrigger(PV):
 
 
 
-_OSCILLATOR_PERIOD = 1 / 71.368704e6
-
-
-
 class PhaseShifter(PV):
 
     def __init__(self, pv_basename=PS, dial_max=14.0056e-9, precision=100e-15):
@@ -191,47 +209,14 @@ class PhaseShifter(PV):
 
 
 
-#TODO
-
-#bernina
-sg_get = "SLAAR-LTIM02-EVR0:Pul3-Delay-RB"
-sg_set = "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY"
-sg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB"
-
-sdg_get = "SLAAR-LTIM02-EVR0:Pul2-Delay-RB"
-sdg_set = "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY"
-sdg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB"
-
-#alvra:
-sg = "SLAAR-LTIM01-EVR0:Pul2-Delay"
-sg_get = sg + "-RB"
-sg_set = sg + "-SP"
-sg_offset = "SLAAR-LTIM01-EVR0:UnivDlyModule1-Delay1-RB"
-
-sdg = "SLAAR-LTIM01-EVR0:Pul3-Delay"
-sdg_get = sdg + "-RB"
-sdg_set = sdg + "-SP"
-
-
-
-_slicer_gate = PockelsTrigger(sg_get, sg_set, sg_off)
-_sdg1 = PockelsTrigger(sdg_get, sdg_set, sdg_off)
-_phase_shifter = PhaseShifter(PS)
-
-
-_POCKELS_CELL_RESOLUTION = 7e-9
-
-
-
-class LXT(object):
+class LXT:
 
     def __init__(self, accuracy_poly=[100e-15, 1e-7]):
-        self.sdg1 = _sdg1
-        self.slicer_gate = _slicer_gate
-        self.phase_shifter = _phase_shifter
+        self.sdg1 = PockelsTrigger(sdg_get, sdg_set, sdg_off)
+        self.slicer_gate = PockelsTrigger(sg_get, sg_set, sg_off)
+        self.phase_shifter = PhaseShifter(PS)
         self.Id = PS
         self.name = "lxt"
-        self.elog = None
         self.accuracy_poly = accuracy_poly
 
     def move_sdg(self, value):
@@ -322,10 +307,9 @@ class ETiming:
 
 class PhaseShifterAramis:
 
-    def __init__(self, Id, name=None, elog=None, z_undulator=None, description=None):
+    def __init__(self, Id, name=None):
         self.Id = Id
         self._pshifter = PhaseShifter(Id)
-        self._elog = elog
         self.name = name
 
     def set_target_value(self, value, hold=False, check=True):
