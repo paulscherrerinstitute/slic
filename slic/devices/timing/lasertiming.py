@@ -16,7 +16,7 @@ _basefolder = "/sf/alvra/config/lasertiming"
 _posTypes = ["user", "dial", "raw"]
 
 
-def timeToStr(value, n=12):
+def time_to_str(value, n=12):
     fmt = "%%+.%df" % n
     value = fmt % value
     #print(value)
@@ -29,7 +29,7 @@ def timeToStr(value, n=12):
     return ret_str
 
 
-def niceTimeToStr(delay, fmt="%+.0f"):
+def nice_time_to_str(delay, fmt="%+.0f"):
     a_delay = abs(delay)
     if a_delay >= 1:
         ret = fmt % delay + "s"
@@ -50,6 +50,7 @@ def niceTimeToStr(delay, fmt="%+.0f"):
     else:
         ret = str(delay) + "s"
     return ret
+
 
 
 class Storage(object):
@@ -90,7 +91,8 @@ class Storage(object):
             f.write("%.15f" % value)
 
 
-class Pockels_trigger(PV):
+
+class PockelsTrigger(PV):
 
     def __init__(self, pv_get, pv_set, pv_offset_get): #TODO make offset optional
         pvname = pv_get
@@ -108,7 +110,6 @@ class Pockels_trigger(PV):
         return np.round(super().get() * 1e-6, 9) + self._pv_offset_get.get() * 1e-9 - 7.41e-9 #TODO what is the constant?
 
     def get(self):
-        """ convert time to sec """
         return self.get_dial() - self.offset
 
     def store(self, value=None):
@@ -125,15 +126,17 @@ class Pockels_trigger(PV):
         self.store(newoffset)
 
     def __repr__(self):
-        dial = timeToStr(self.get_dial(), n=12)
-        user = timeToStr(self.get(), n=12)
+        dial = time_to_str(self.get_dial(), n=12)
+        user = time_to_str(self.get(), n=12)
         return "Pockel Trigger PV: %s user , dial = %s, %s" % (self.pvname, user, dial)
+
 
 
 _OSCILLATOR_PERIOD = 1 / 71.368704e6
 
 
-class Phase_shifter(PV):
+
+class PhaseShifter(PV):
 
     def __init__(self, pv_basename=PS, dial_max=14.0056e-9, precision=100e-15):
         pvname = pv_basename + ":CURR_DELTA_T"
@@ -153,7 +156,6 @@ class Phase_shifter(PV):
         return super().get() * 1e-12
 
     def get(self):
-        """ convert time to sec """
         return self.get_dial() - self.offset
 
     def store(self, value=None):
@@ -183,8 +185,8 @@ class Phase_shifter(PV):
         self.store(newoffset)
 
     def __repr__(self):
-        dial = timeToStr(self.get_dial(), n=15)
-        user = timeToStr(self.get(), n=15)
+        dial = time_to_str(self.get_dial(), n=15)
+        user = time_to_str(self.get(), n=15)
         return "Phase Shifter: user,dial = %s , %s" % (user, dial)
 
 
@@ -212,15 +214,16 @@ sdg_set = sdg + "-SP"
 
 
 
-_slicer_gate = Pockels_trigger(sg_get, sg_set, sg_off)
-_sdg1 = Pockels_trigger(sdg_get, sdg_set, sdg_off)
-_phase_shifter = Phase_shifter(PS)
+_slicer_gate = PockelsTrigger(sg_get, sg_set, sg_off)
+_sdg1 = PockelsTrigger(sdg_get, sdg_set, sdg_off)
+_phase_shifter = PhaseShifter(PS)
 
 
 _POCKELS_CELL_RESOLUTION = 7e-9
 
 
-class Lxt(object):
+
+class LXT(object):
 
     def __init__(self, accuracy_poly=[100e-15, 1e-7]):
         self.sdg1 = _sdg1
@@ -258,7 +261,6 @@ class Lxt(object):
         return -delay
 
     def set_target_value(self, value, hold=False):
-        """ Adjustable convention"""
         changer = lambda: self.move(value)
         return Task(changer, hold=hold)
 
@@ -269,13 +271,12 @@ class Lxt(object):
         self.set(value)
 
     def __repr__(self):
-        delay = niceTimeToStr(lxt.get())
+        delay = nice_time_to_str(self.get())
         return "delay = %s" % (delay)
 
 
 
-
-class eTiming:
+class ETiming:
 
     def __init__(self, Id):
         self.Id = Id
@@ -323,21 +324,18 @@ class PhaseShifterAramis:
 
     def __init__(self, Id, name=None, elog=None, z_undulator=None, description=None):
         self.Id = Id
-        self._pshifter = Phase_shifter(Id)
+        self._pshifter = PhaseShifter(Id)
         self._elog = elog
         self.name = name
 
     def set_target_value(self, value, hold=False, check=True):
-        """ Adjustable convention"""
         mover = lambda: self._pshifter.move(value)
         return Task(mover, hold=hold)
 
     def stop(self):
-        """ Adjustable convention"""
         pass
 
     def get_current_value(self, posType="user", readback=True):
-        """ Adjustable convention"""
         _keywordChecker([("posType", posType, _posTypes)])
         if posType == "user":
             return self._pshifter.get()
@@ -345,10 +343,10 @@ class PhaseShifterAramis:
             return self._pshifter.get_dial()
 
     def set_current_value(self, value, posType="user"):
-        """ Adjustable convention"""
         _keywordChecker([("posType", posType, _posTypes)])
         if posType == "user":
             return self._motor.set(value)
+
 
 
 def _keywordChecker(kw_key_list_tups):

@@ -4,7 +4,7 @@ from slic.utils.printing import printable_dict
 from slic.devices.general.motor import Motor
 from ..basedevice import BaseDevice
 from ..general.delay_stage import DelayStage
-from ..timing.lasertiming import eTiming
+from ..timing.lasertiming import ETiming
 
 
 class LaserExp(BaseDevice):
@@ -50,12 +50,12 @@ class LaserExp(BaseDevice):
         self.pump_lens_focus = Motor(Id + "-M443:MOT")
 
         # Globi electronic timing PV from Edwin
-        self.eTiming = eTiming(Id + "-eTiming")
+        self.eTiming = ETiming(Id + "-eTiming")
 
     def __repr__(self):
         to_print = {}
         for key, item in self.__dict__.items():
-            if type(item) in (Motor, DelayStage, PV, eTiming):
+            if type(item) in (Motor, DelayStage, PV, ETiming):
                 to_print[key] = item
 
         head = "Laser motor positions"
