@@ -288,14 +288,11 @@ class ETiming:
     def set_current_value(self, value):
         self._eTimeSet.put(value)
 
-    def __repr__(self):
-        return self.__str__()
-
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold)
 
-    def __str__(self):
+    def __repr__(self):
         eTimingRBKStr = str(self.get_current_value())
         eTimingSetStr = self._eTimeSet.get(as_string=True)
         s = "Globi laser electronic timing\n"
