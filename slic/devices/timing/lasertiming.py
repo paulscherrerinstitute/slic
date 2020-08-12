@@ -1,8 +1,11 @@
-from epics import PV
 import os
+from time import sleep
+from types import SimpleNamespace
 import numpy as np
-import time
+from epics import PV
+
 from slic.core.task import Task
+from slic.core.adjustable import Adjustable
 
 
 _posTypes = ["user", "dial", "raw"]
@@ -38,44 +41,51 @@ sdg_set = sdg + "-SP"
 
 
 
-class ETiming:
+class ETiming(Adjustable):
 
-    def __init__(self, Id):
+    def __init__(self, Id, name="Globi laser electronic timing", units="ps"):
+        super().__init__(name=name, units=units)
         self.Id = Id
-        self.name = "Globi laser electronic timing (us)"
-        self._eTimeSet = PV("SLAAR01-LTIM-PDLY:DELAY")  # current laser timing number from Edwin's timing PV
-        self._eTimeRBK = PV("SLAAR-LGEN:DLY_OFFS1")  # readback on Edwin's timing PV
-        self._moving = PV("SLAAR01-LTIM-PDLY:WAITING")
+
+        self.pvs = SimpleNamespace(
+            setvalue = PV("SLAAR01-LTIM-PDLY:DELAY"),
+            readback = PV("SLAAR-LGEN:DLY_OFFS1"),
+            waiting  = PV("SLAAR01-LTIM-PDLY:WAITING")
+        )
+
 
     def get_current_value(self):
-        return self._eTimeRBK.get() * 1e6  # convert from us to ps
-
-    def wait_for_valid_value(self):
-        tval = np.nan
-        while not np.isfinite(tval):
-            tval = self.get_current_value()
-        return tval
-
-    def move_and_wait(self, value, checktime=0.01):
-        self._eTimeSet.put(value)
-        time.sleep(0.2)
-        while self._moving.get() == 0.0:
-            time.sleep(checktime)
-
-    def set_current_value(self, value):
-        self._eTimeSet.put(value)
+        return self.pvs.readback.get() * 1e6 # convert from us to ps
 
     def set_target_value(self, value, hold=False):
-        changer = lambda: self.move_and_wait(value)
-        return Task(changer, hold=hold)
+        changer = lambda: self.put_and_wait(value)
+        return self._as_task(changer, hold=hold)
+
+    def put_and_wait(self, value, checktime=0.01):
+        self.pvs.setvalue.put(value)
+        sleep(0.2)
+        while self.is_moving():
+            sleep(checktime)
+
+    def is_moving(self):
+        waiting = self.pvs.waiting.get()
+        return bool(waiting)
+
+#    def wait_for_valid_value(self):
+#        tval = np.nan
+#        while not np.isfinite(tval):
+#            tval = self.get_current_value()
+#        return tval
+
+#    def set_current_value(self, value):
+#        self.pvs.setvalue.put(value)
 
     def __repr__(self):
-        eTimingRBKStr = str(self.get_current_value())
-        eTimingSetStr = self._eTimeSet.get(as_string=True)
-        s = "Globi laser electronic timing\n"
-        s += "- electronic timing readback (ps): {}\n".format(eTimingRBKStr)
-        s += "- electronic timing setpoint (ps): {}".format(eTimingSetStr)
-        return s
+        res = super().__repr__()
+        setvalue = self.pvs.setvalue.get()
+        units = self.units
+        res += f" (set value: {setvalue} {units})"
+        return res
 
 
 
