@@ -180,9 +180,9 @@ class Motor(Adjustable, SpecConvenienceProgress):
 
 
 
-def check_pos_type(pos_type):
-    if pos_type not in POS_TYPES:
-        msg = f"{pos_type} not in {POS_TYPES}"
+def check_pos_type(pos_type, allowed=POS_TYPES):
+    if pos_type not in allowed:
+        msg = f"pos type \"{pos_type}\" not in {allowed}"
         raise ValueError(msg)
 
 
