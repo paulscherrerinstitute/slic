@@ -200,7 +200,7 @@ class PhaseShifter(OffsetStorageMixin):
         self.dial_max = dial_max
         self.tolerance = tolerance
 
-        pvname = pv_basename + ":CURR_DELTA_T" #TODO: should this be the basename only? actually stores the offset!
+        pvname = pv_basename + ":CURR_DELTA_T" #TODO: should this be the basename only? actually Storage stores the offset!
         super().__init__(pvname)
 
         self.pvs = SimpleNamespace(
