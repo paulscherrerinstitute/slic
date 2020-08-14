@@ -1,6 +1,7 @@
 import os
 from time import sleep, asctime
 from types import SimpleNamespace
+from abc import ABC, abstractmethod
 import numpy as np
 from epics import PV
 
@@ -14,7 +15,7 @@ _POCKELS_CELL_RESOLUTION = 7e-9
 
 
 #bernina
-_basefolder = "/sf/bernina/config/eco/offsets"
+BASE_FOLDER = "/sf/bernina/config/eco/offsets"
 PS = "SLAAR02-TSPL-EPL"
 
 sg_get = "SLAAR-LTIM02-EVR0:Pul3-Delay-RB"
@@ -26,7 +27,7 @@ sdg_set = "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY"
 sdg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB"
 
 #alvra:
-_basefolder = "/sf/alvra/config/lasertiming"
+BASE_FOLDER = "/sf/alvra/config/lasertiming"
 PS = "SLAAR01-TSPL-EPL"
 
 sg = "SLAAR-LTIM01-EVR0:Pul2-Delay"
@@ -171,7 +172,28 @@ class PhaseShifterAramis(Adjustable):
 
 
 
-class PhaseShifter:
+class OffsetStorageMixin(ABC):
+
+    def __init__(self, pvname):
+        self.storage = Storage(pvname)
+        self.filename = self.storage.filename
+
+    @property
+    def offset(self):
+        return self.storage.value or 0 #TODO: is 0 a sensible default?
+
+    def store(self, value=None):
+        if value is None:
+            value = self.get_dial()
+        self.storage.store(value)
+
+    @abstractmethod
+    def get_dial(self):
+        raise NotImplementedError
+
+
+
+class PhaseShifter(OffsetStorageMixin):
 
     def __init__(self, pv_basename=PS, dial_max=14.0056e-9, tolerance=100e-15):
         self.pv_basename = pv_basename
@@ -179,8 +201,7 @@ class PhaseShifter:
         self.tolerance = tolerance
 
         pvname = pv_basename + ":CURR_DELTA_T" #TODO: should this be the basename only? actually stores the offset!
-        self.storage = Storage(pvname)
-        self.filename = self.storage.filename
+        super().__init__(pvname)
 
         self.pvs = SimpleNamespace(
             setvalue = PV(pv_basename + ":NEW_DELTA_T"),
@@ -195,19 +216,10 @@ class PhaseShifter:
     def get_dial(self):
         return self.pvs.readback.get() * 1e-12 # convert from ps to s
 
-    @property
-    def offset(self):
-        return self.storage.value
-
     def set(self, value):
         new_offset = self.get_dial() - value
         new_offset %= _OSCILLATOR_PERIOD
         self.store(new_offset)
-
-    def store(self, value=None):
-        if value is None:
-            value = self.get_dial()
-        self.storage.store(value)
 
 
     def move(self, value, tolerance=None): # tolerance in s
@@ -238,12 +250,11 @@ class PhaseShifter:
 
 
 
-class PockelsTrigger:
+class PockelsTrigger(OffsetStorageMixin):
 
     def __init__(self, pv_get, pv_set, pv_offset): #TODO make offset optional?
         self.pvname = pvname = pv_get
-        self.storage = Storage(pvname)
-        self.filename = self.storage.filename
+        super().__init__(pvname)
 
         self.pvs = SimpleNamespace(
             setvalue = PV(pv_set),
@@ -261,18 +272,9 @@ class PockelsTrigger:
         offset = self.pvs.offset.get() * 1e-9 - 7.41e-9 #TODO what is the constant?
         return readback + offset
 
-    @property
-    def offset(self):
-        return self.storage.value
-
     def set(self, value):
         new_offset = self.get_dial() - value
         self.store(new_offset)
-
-    def store(self, value=None):
-        if value is None:
-            value = self.get_dial()
-        self.storage.store(value)
 
     def move(self, value):
         dial = value + self.offset
@@ -291,12 +293,11 @@ class PockelsTrigger:
 
 class Storage:
     """
-    Read/write a value from/to file
+    Read/write a value from/to a file
     """
 
-    def __init__(self, pvname):
-        self.pvname = pvname
-        self.filename = os.path.join(_basefolder, pvname)
+    def __init__(self, filename):
+        self.filename = os.path.join(BASE_FOLDER, filename)
         self.last_value = None
         self.last_read_time = None
 
