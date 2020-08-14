@@ -1,14 +1,13 @@
 import os
-from time import sleep
+from time import sleep, asctime
 from types import SimpleNamespace
 import numpy as np
 from epics import PV
 
-from slic.core.task import Task
 from slic.core.adjustable import Adjustable
+from slic.devices.general.motor import check_pos_type
+from slic.utils import typename
 
-
-_posTypes = ["user", "dial", "raw"]
 
 _OSCILLATOR_PERIOD = 1 / 71.368704e6
 _POCKELS_CELL_RESOLUTION = 7e-9
@@ -43,7 +42,7 @@ sdg_set = sdg + "-SP"
 
 class ETiming(Adjustable):
 
-    def __init__(self, Id, name="Globi laser electronic timing", units="ps"):
+    def __init__(self, Id, name="Globi Laser Electronic Timing", units="ps"):
         super().__init__(name=name, units=units)
         self.Id = Id
 
@@ -58,8 +57,8 @@ class ETiming(Adjustable):
         return self.pvs.readback.get() * 1e6 # convert from us to ps
 
     def set_target_value(self, value, hold=False):
-        changer = lambda: self.put_and_wait(value)
-        return self._as_task(changer, hold=hold)
+        change = lambda: self.put_and_wait(value)
+        return self._as_task(change, hold=hold)
 
     def put_and_wait(self, value, checktime=0.01):
         self.pvs.setvalue.put(value)
@@ -71,14 +70,14 @@ class ETiming(Adjustable):
         waiting = self.pvs.waiting.get()
         return bool(waiting)
 
-#    def wait_for_valid_value(self):
-#        tval = np.nan
-#        while not np.isfinite(tval):
-#            tval = self.get_current_value()
-#        return tval
+    def wait_for_valid_value(self):
+        tval = np.nan
+        while not np.isfinite(tval):
+            tval = self.get_current_value()
+        return tval
 
-#    def set_current_value(self, value):
-#        self.pvs.setvalue.put(value)
+    def set_current_value(self, value):
+        self.pvs.setvalue.put(value)
 
     def __repr__(self):
         res = super().__repr__()
@@ -89,260 +88,297 @@ class ETiming(Adjustable):
 
 
 
-class LXT:
+class LXT(Adjustable):
 
-    def __init__(self, accuracy_poly=[100e-15, 1e-7]):
-        self.sdg1 = PockelsTrigger(sdg_get, sdg_set, sdg_off)
-        self.slicer_gate = PockelsTrigger(sg_get, sg_set, sg_off)
-        self.phase_shifter = PhaseShifter(PS)
-        self.Id = PS
-        self.name = "lxt"
-        self.accuracy_poly = accuracy_poly
+    def __init__(self, Id, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
+        super().__init__(name=name, units=units)
+        self.Id = Id
+        self.tolerance_poly_coeff = tolerance_poly_coeff
 
-    def move_sdg(self, value):
-        self.sdg1.move(value)
+        self.devices = SimpleNamespace(
+            phase_shifter = PhaseShifter(PS),
+            sdg1 = PockelsTrigger(sdg_get, sdg_set, sdg_off), #TODO: naming
+            slicer_gate = PockelsTrigger(sg_get, sg_set, sg_off)
+        )
 
-    def move(self, value, accuracy=None):
-        self.sdg1.move(-value)
-        self.slicer_gate.move(-value)
-        if not accuracy:
-            accuracy = np.abs(value) * self.accuracy_poly[1] + self.accuracy_poly[0]
-        self.phase_shifter.move(value, accuracy=accuracy)
 
-    def set(self, value):
-        self.phase_shifter.set(value)
-        self.slicer_gate.set(-value)
-        self.sdg1.set(-value)
-
-    def get(self):
-        # pulses are at SOME_IDX*OSCILLATOR_PERIOD-PHASESHITER
-        # the -PHASESHITER is due to the inverted sign
-        phase_shifter = self.phase_shifter.get()
-        sdg1_delay = self.sdg1.get()
-
-        idx_pulse = (sdg1_delay + phase_shifter) / _OSCILLATOR_PERIOD
-
-        delay = int(idx_pulse) * _OSCILLATOR_PERIOD - phase_shifter
+    def get_current_value(self):
+        # pulses are at: INDEX * OSCILLATOR_PERIOD - PHASE_SHIFTER
+        # the -PHASE_SHIFTER is due to the inverted sign
+        phase_shifter = self.devices.phase_shifter.get()
+        sdg1 = self.devices.sdg1.get()
+        index = (phase_shifter + sdg1) // _OSCILLATOR_PERIOD
+        delay = index * _OSCILLATOR_PERIOD - phase_shifter
         return -delay
 
     def set_target_value(self, value, hold=False):
-        changer = lambda: self.move(value)
-        return Task(changer, hold=hold)
+        change = lambda: self.move(value)
+        return self._as_task(change, hold=hold)
 
-    def get_current_value(self):
-        return self.get()
+    def is_moving(self):
+        raise NotImplementedError
+
+    def move(self, value, tolerance=None):
+        self.devices.sdg1.move(-value)
+        self.devices.slicer_gate.move(-value)
+        if tolerance is None:
+            slope, const = self.tolerance_poly_coeff
+            tolerance = np.abs(value) * slope + const
+        self.devices.phase_shifter.move(value, tolerance=tolerance)
+
+    def move_sdg(self, value):
+        self.devices.sdg1.move(value)
 
     def set_current_value(self, value):
-        self.set(value)
+        self.devices.phase_shifter.set(value)
+        self.devices.sdg1.set(-value)
+        self.devices.slicer_gate.set(-value)
 
     def __repr__(self):
-        delay = nice_time_to_str(self.get())
-        return "delay = %s" % (delay)
+        res = super().__repr__()
+        delay = self.get_current_value()
+        delay = nice_time_to_str(delay)
+        res += f" ({delay})"
+        return res
 
 
 
-class PhaseShifterAramis:
+class PhaseShifterAramis(Adjustable):
 
     def __init__(self, Id, name=None):
+        super().__init__(name=name)
         self.Id = Id
-        self._pshifter = PhaseShifter(Id)
-        self.name = name
+        self._phase_shifter = PhaseShifter(Id)
 
-    def set_target_value(self, value, hold=False, check=True):
-        mover = lambda: self._pshifter.move(value)
-        return Task(mover, hold=hold)
+    def set_target_value(self, value, hold=False):
+        change = lambda: self._phase_shifter.move(value)
+        return self._as_task(change, hold=hold)
 
-    def stop(self):
-        pass
+    def get_current_value(self, pos_type="user"):
+        check_pos_type(pos_type, {"user", "dial"})
+        if pos_type == "user":
+            return self._phase_shifter.get()
+        if pos_type == "dial":
+            return self._phase_shifter.get_dial()
 
-    def get_current_value(self, posType="user", readback=True):
-        _keywordChecker([("posType", posType, _posTypes)])
-        if posType == "user":
-            return self._pshifter.get()
-        if posType == "dial":
-            return self._pshifter.get_dial()
+    def is_moving(self):
+        raise NotImplementedError
 
-    def set_current_value(self, value, posType="user"):
-        _keywordChecker([("posType", posType, _posTypes)])
-        if posType == "user":
-            return self._motor.set(value)
-
+    def set_current_value(self, value, pos_type="user"):
+        check_pos_type(pos_type, {"user"})
+        if pos_type == "user":
+            return self._phase_shifter.set(value)
 
 
-class PhaseShifter(PV):
 
-    def __init__(self, pv_basename=PS, dial_max=14.0056e-9, precision=100e-15):
-        pvname = pv_basename + ":CURR_DELTA_T"
-        PV.__init__(self, pvname)
-        self._filename = os.path.join(_basefolder, pvname)
-        self._pv_setvalue = PV(pv_basename + ":NEW_DELTA_T")
-        self._pv_execute = PV(pv_basename + ":SET_NEW_PHASE.PROC")
-        self._storage = Storage(pvname)
+class PhaseShifter:
+
+    def __init__(self, pv_basename=PS, dial_max=14.0056e-9, tolerance=100e-15):
+        self.pv_basename = pv_basename
         self.dial_max = dial_max
-        self.retry = precision
+        self.tolerance = tolerance
+
+        pvname = pv_basename + ":CURR_DELTA_T" #TODO: should this be the basename only? actually stores the offset!
+        self.storage = Storage(pvname)
+        self.filename = self.storage.filename
+
+        self.pvs = SimpleNamespace(
+            setvalue = PV(pv_basename + ":NEW_DELTA_T"),
+            readback = PV(pv_basename + ":CURR_DELTA_T"),
+            execute  = PV(pv_basename + ":SET_NEW_PHASE.PROC")
+        )
+
+
+    def get(self):
+        return self.get_dial() - self.offset # offset in s
+
+    def get_dial(self):
+        return self.pvs.readback.get() * 1e-12 # convert from ps to s
 
     @property
     def offset(self):
-        return self._storage.value
-
-    def get_dial(self):
-        return super().get() * 1e-12
-
-    def get(self):
-        return self.get_dial() - self.offset
-
-    def store(self, value=None):
-        if value == None:
-            value = self.get_dial()
-        self._storage.store(value)
-
-    def move(self, value, accuracy=None):
-        if accuracy is None:
-            accuracy = self.retry
-        dial = value + self.offset
-        dial = np.mod(dial, _OSCILLATOR_PERIOD)
-        if dial > self.dial_max:
-            dial = self.dial_max
-        dial_ps = dial * 1e12
-        self._pv_setvalue.put(dial_ps)
-        time.sleep(0.1)
-        self._pv_execute.put(1)
-        #print(accuracy)
-        while np.abs(self.get_dial() - dial) > accuracy:
-            #print(np.abs(self.get_dial()-dial))
-            time.sleep(0.2)
+        return self.storage.value
 
     def set(self, value):
-        newoffset = self.get_dial() - value
-        newoffset = np.mod(newoffset, _OSCILLATOR_PERIOD)
-        self.store(newoffset)
+        new_offset = self.get_dial() - value
+        new_offset %= _OSCILLATOR_PERIOD
+        self.store(new_offset)
+
+    def store(self, value=None):
+        if value is None:
+            value = self.get_dial()
+        self.storage.store(value)
+
+
+    def move(self, value, tolerance=None): # tolerance in s
+        dial = value + self.offset
+        dial %= _OSCILLATOR_PERIOD
+        dial = min(dial, self.dial_max)
+        dial_ps = dial * 1e12
+        self.pvs.setvalue.put(dial_ps)
+        sleep(0.1)
+        self.pvs.execute.put(1)
+
+        if tolerance is None:
+            tolerance = self.tolerance
+
+        while abs(self.get_dial() - dial) > tolerance:
+            #print(abs(self.get_dial() - dial), tolerance)
+            sleep(0.2)
+
 
     def __repr__(self):
-        dial = time_to_str(self.get_dial(), n=15)
-        user = time_to_str(self.get(), n=15)
-        return "Phase Shifter: user,dial = %s , %s" % (user, dial)
+        tname = typename(self)
+        name = self.pv_basename
+        n = 15
+        user = time_to_str(self.get(), n=n)
+        dial = time_to_str(self.get_dial(), n=n)
+        units = "sec"
+        return f"{tname} \"{name}\" at {user} {units} (dial at {dial} {units})"
 
 
 
-class PockelsTrigger(PV):
+class PockelsTrigger:
 
-    def __init__(self, pv_get, pv_set, pv_offset_get): #TODO make offset optional
-        pvname = pv_get
-        PV.__init__(self, pvname)
-        self._pv_offset_get = PV(pv_offset_get)
-        self._pv_setvalue = PV(pv_set)
-        self._filename = os.path.join(_basefolder, pvname)
-        self._storage = Storage(pvname)
+    def __init__(self, pv_get, pv_set, pv_offset): #TODO make offset optional?
+        self.pvname = pvname = pv_get
+        self.storage = Storage(pvname)
+        self.filename = self.storage.filename
 
-    @property
-    def offset(self):
-        return self._storage.value
+        self.pvs = SimpleNamespace(
+            setvalue = PV(pv_set),
+            readback = PV(pv_get),
+            offset   = PV(pv_offset)
+        )
 
-    def get_dial(self):
-        return np.round(super().get() * 1e-6, 9) + self._pv_offset_get.get() * 1e-9 - 7.41e-9 #TODO what is the constant?
 
     def get(self):
         return self.get_dial() - self.offset
 
+    def get_dial(self):
+        readback = self.pvs.readback.get() * 1e-6
+        readback = round(readback, 9) #TODO: why?
+        offset = self.pvs.offset.get() * 1e-9 - 7.41e-9 #TODO what is the constant?
+        return readback + offset
+
+    @property
+    def offset(self):
+        return self.storage.value
+
+    def set(self, value):
+        new_offset = self.get_dial() - value
+        self.store(new_offset)
+
     def store(self, value=None):
-        if value == None:
+        if value is None:
             value = self.get_dial()
-        self._storage.store(value)
+        self.storage.store(value)
 
     def move(self, value):
         dial = value + self.offset
-        self._pv_setvalue.put(dial * 1e6)
-
-    def set(self, value):
-        newoffset = self.get_dial() - value
-        self.store(newoffset)
+        self.pvs.setvalue.put(dial * 1e6)
 
     def __repr__(self):
-        dial = time_to_str(self.get_dial(), n=12)
-        user = time_to_str(self.get(), n=12)
-        return "Pockel Trigger PV: %s user , dial = %s, %s" % (self.pvname, user, dial)
+        tname = typename(self)
+        name = self.pvname
+        n = 12
+        user = time_to_str(self.get(), n=n)
+        dial = time_to_str(self.get_dial(), n=n)
+        units = "sec"
+        return f"{tname} \"{name}\" at {user} {units} (dial at {dial} {units})"
 
 
 
 class Storage:
-    """ this class is needed to store the offset in files and read in s """
+    """
+    Read/write a value from/to file
+    """
 
     def __init__(self, pvname):
-        self._filename = os.path.join(_basefolder, pvname)
         self.pvname = pvname
-        self.last_read_time = -1
+        self.filename = os.path.join(_basefolder, pvname)
+        self.last_value = None
+        self.last_read_time = None
 
-    @property
-    def last_modified_time(self):
-        if os.path.isfile(self._filename):
-            return os.stat(self._filename).st_mtime
-        else:
-            return -1
 
     @property
     def value(self):
-        lmod = self.last_modified_time
-        if os.path.isfile(self._filename):
-            # need to read again ?
-            if self.last_read_time == -1 or lmod > self.last_read_time:
-                #print("actually reading")
-                value = float(np.loadtxt(self._filename))
-                self.last_read_time = lmod
-                self.last_read = value
-            else:
-                value = self.last_read
-        else:
-            print("could not read", self._filename)
-            value = 0
-        return value
+        if not self.exists:
+            fname = self.filename
+            print(f"Warning: Storage file \"{fname}\" does not exist") #TODO: raise an error?
+            return None
+
+        tlread = self.last_read_time
+        tlmod = self.last_modified_time
+        if tlread is None or tlmod > tlread:
+            self.last_value = self.load()
+            self.last_read_time = tlmod
+
+        return self.last_value
+
+
+    @property
+    def exists(self):
+        return os.path.isfile(self.filename)
+
+    @property
+    def last_modified_time(self):
+        if self.exists:
+            return os.stat(self.filename).st_mtime
 
     def store(self, value):
-        with open(self._filename, "w") as f:
-            f.write("# %s\n" % time.asctime())
-            f.write("%.15f" % value)
+        timestamp = asctime()
+        with open(self.filename, "w") as f: #TODO: use numpy here as well?
+            f.write(f"# {timestamp}\n")
+            f.write(f"{value}\n")
+
+    def load(self):
+        value = np.loadtxt(self.filename) #TODO: parse manually here as well?
+        return float(value)
 
 
 
-def _keywordChecker(kw_key_list_tups):
-    for tkw, tkey, tlist in kw_key_list_tups:
-        assert tkey in tlist, "Keyword %s should be one of %s" % (tkw, tlist)
-
-
-
-def time_to_str(value, n=12):
+def time_to_str(time, n=12):
     fmt = "%%+.%df" % n
-    value = fmt % value
-    #print(value)
-    idx_point = value.find(".")
-    ret_str = value[:idx_point] + " ."
-    ngroups = (len(value) - idx_point) // 3
-    for n in range(ngroups):
-        ret_str += " %s" % value[idx_point + 1 + 3 * n : idx_point + 1 + 3 * (n + 1)]
-        #print(idx_point+1+3*n,idx_point+1*3*(n-1),ret_str)
+    time = fmt % time
+    #print(time)
+    idx_point = time.find(".")
+    ret_str = time[:idx_point] + " ."
+    ngroups = (len(time) - idx_point) // 3
+    for ng in range(ngroups):
+        ret_str += " %s" % time[idx_point + 1 + 3 * ng : idx_point + 1 + 3 * (ng + 1)]
+        #print(idx_point + 1 + 3 * ng, idx_point + 1 * 3 * (ng - 1), ret_str)
     return ret_str
 
 
-def nice_time_to_str(delay, fmt="%+.0f"):
-    a_delay = abs(delay)
-    if a_delay >= 1:
-        ret = fmt % delay + "s"
-    elif 1e-3 <= a_delay < 1:
-        ret = fmt % (delay * 1e3) + "ms"
-    elif 1e-6 <= a_delay < 1e-3:
-        ret = fmt % (delay * 1e6) + "us"
-    elif 1e-9 <= a_delay < 1e-6:
-        ret = fmt % (delay * 1e9) + "ns"
-    elif 1e-12 <= a_delay < 1e-9:
-        ret = fmt % (delay * 1e12) + "ps"
-    elif 1e-15 <= a_delay < 1e-12:
-        ret = fmt % (delay * 1e12) + "fs"
-    elif 1e-18 <= a_delay < 1e-15:
-        ret = fmt % (delay * 1e12) + "as"
-    elif a_delay < 1e-18:
-        ret = "0s"
+def nice_time_to_str(time, fmt="%+.0f"):
+    abs_time = abs(time)
+    if abs_time >= 1:
+        factor = 1
+        units = "s"
+    elif 1e-3 <= abs_time < 1:
+        factor = 1e3
+        units = "ms"
+    elif 1e-6 <= abs_time < 1e-3:
+        factor = 1e6
+        units = "us"
+    elif 1e-9 <= abs_time < 1e-6:
+        factor = 1e9
+        units = "ns"
+    elif 1e-12 <= abs_time < 1e-9:
+        factor = 1e12
+        units = "ps"
+    elif 1e-15 <= abs_time < 1e-12:
+        factor = 1e15
+        units = "fs"
+    elif 1e-18 <= abs_time < 1e-15:
+        factor = 1e18
+        units = "as"
+    elif abs_time < 1e-18:
+        return "0 s"
     else:
-        ret = str(delay) + "s"
-    return ret
+        return str(time)
+    return fmt % (time * factor) + " " + units
 
 
 
