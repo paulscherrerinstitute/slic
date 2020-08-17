@@ -2,7 +2,7 @@ from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
 import colorama
 import datetime
-from .convenience import SpecConvenience
+from slic.core.adjustable.convenience import SpecConvenience
 
 
 class AdjustableVirtual(SpecConvenience):
