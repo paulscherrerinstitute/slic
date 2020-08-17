@@ -10,47 +10,42 @@ from slic.devices.general.motor import check_pos_type
 from slic.utils import typename
 
 
-_OSCILLATOR_PERIOD = 1 / 71.368704e6
-_POCKELS_CELL_RESOLUTION = 7e-9
+OSCILLATOR_PERIOD = 1 / 71.368704e6
+#POCKELS_CELL_RESOLUTION = 7e-9 #TODO: what was this supposed to do?
 
 
 #bernina
 BASE_FOLDER = "/sf/bernina/config/eco/offsets"
-PS = "SLAAR02-TSPL-EPL"
-
-sg_get = "SLAAR-LTIM02-EVR0:Pul3-Delay-RB"
-sg_set = "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY"
-sg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB"
-
-sdg_get = "SLAAR-LTIM02-EVR0:Pul2-Delay-RB"
-sdg_set = "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY"
-sdg_off = "SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB"
 
 #alvra:
 BASE_FOLDER = "/sf/alvra/config/lasertiming"
-PS = "SLAAR01-TSPL-EPL"
-
-sg = "SLAAR-LTIM01-EVR0:Pul2-Delay"
-sg_get = sg + "-RB"
-sg_set = sg + "-SP"
-sg_offset = "SLAAR-LTIM01-EVR0:UnivDlyModule1-Delay1-RB"
-
-sdg = "SLAAR-LTIM01-EVR0:Pul3-Delay"
-sdg_get = sdg + "-RB"
-sdg_set = sdg + "-SP"
 
 
 
 class ETiming(Adjustable):
 
-    def __init__(self, Id, name="Globi Laser Electronic Timing", units="ps"):
+    def __init__(
+        self,
+        Id,
+        pvname_setvalue="SLAAR01-LTIM-PDLY:DELAY",
+        pvname_readback="SLAAR-LGEN:DLY_OFFS1",
+        pvname_waiting="SLAAR01-LTIM-PDLY:WAITING",
+        name="Globi Laser Electronic Timing",
+        units="ps"
+    ):
         super().__init__(name=name, units=units)
         self.Id = Id
 
+        self.pvnames = SimpleNamespace(
+            setvalue = pvname_setvalue,
+            readback = pvname_readback,
+            waiting  = pvname_waiting
+        )
+
         self.pvs = SimpleNamespace(
-            setvalue = PV("SLAAR01-LTIM-PDLY:DELAY"),
-            readback = PV("SLAAR-LGEN:DLY_OFFS1"),
-            waiting  = PV("SLAAR01-LTIM-PDLY:WAITING")
+            setvalue = PV(pvname_setvalue),
+            readback = PV(pvname_readback),
+            waiting  = PV(pvname_waiting)
         )
 
 
@@ -91,15 +86,23 @@ class ETiming(Adjustable):
 
 class LXT(Adjustable):
 
-    def __init__(self, Id, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
+    def __init__(self, Id_phase_shifter, Id_timing, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
         super().__init__(name=name, units=units)
-        self.Id = Id
+        self.Id = Id = Id_phase_shifter #TODO: does that make sense?
         self.tolerance_poly_coeff = tolerance_poly_coeff
 
+        pvname_sdg1_readback = Id_timing + ":Pul2-Delay-RB"
+        pvname_sdg1_setvalue = Id_timing + ":Pul2_NEW_DELAY" #TODO: ":Pul2-Delay-SP" ?
+        pvname_sdg1_offset   = Id_timing + ":UnivDlyModule1-Delay0-RB"
+
+        pvname_slicer_gate_readback = Id_timing + ":Pul3-Delay-RB"
+        pvname_slicer_gate_setvalue = Id_timing + ":Pul3_NEW_DELAY" #TODO: ":Pul3-Delay-SP" ?
+        pvname_slicer_gate_offset   = Id_timing + ":UnivDlyModule1-Delay1-RB"
+
         self.devices = SimpleNamespace(
-            phase_shifter = PhaseShifter(PS),
-            sdg1 = PockelsTrigger(sdg_get, sdg_set, sdg_off), #TODO: naming
-            slicer_gate = PockelsTrigger(sg_get, sg_set, sg_off)
+            phase_shifter = PhaseShifter(Id_phase_shifter),
+            sdg1 = PockelsTrigger(pvname_sdg1_readback, pvname_sdg1_setvalue, pvname_sdg1_offset),
+            slicer_gate = PockelsTrigger(pvname_slicer_gate_readback, pvname_slicer_gate_setvalue, pvname_slicer_gate_offset)
         )
 
 
@@ -108,8 +111,8 @@ class LXT(Adjustable):
         # the -PHASE_SHIFTER is due to the inverted sign
         phase_shifter = self.devices.phase_shifter.get()
         sdg1 = self.devices.sdg1.get()
-        index = (phase_shifter + sdg1) // _OSCILLATOR_PERIOD
-        delay = index * _OSCILLATOR_PERIOD - phase_shifter
+        index = (phase_shifter + sdg1) // OSCILLATOR_PERIOD
+        delay = index * OSCILLATOR_PERIOD - phase_shifter
         return -delay
 
     def set_target_value(self, value, hold=False):
@@ -127,7 +130,7 @@ class LXT(Adjustable):
             tolerance = np.abs(value) * slope + const
         self.devices.phase_shifter.move(value, tolerance=tolerance)
 
-    def move_sdg(self, value):
+    def move_sdg1(self, value):
         self.devices.sdg1.move(value)
 
     def set_current_value(self, value):
@@ -195,7 +198,7 @@ class OffsetStorageMixin(ABC):
 
 class PhaseShifter(OffsetStorageMixin):
 
-    def __init__(self, pv_basename=PS, dial_max=14.0056e-9, tolerance=100e-15):
+    def __init__(self, pv_basename, dial_max=14.0056e-9, tolerance=100e-15):
         self.pv_basename = pv_basename
         self.dial_max = dial_max
         self.tolerance = tolerance
@@ -203,10 +206,20 @@ class PhaseShifter(OffsetStorageMixin):
         pvname = pv_basename + ":CURR_DELTA_T" #TODO: should this be the basename only? actually Storage stores the offset!
         super().__init__(pvname)
 
+        pvname_setvalue = pv_basename + ":NEW_DELTA_T"
+        pvname_readback = pv_basename + ":CURR_DELTA_T"
+        pvname_execute  = pv_basename + ":SET_NEW_PHASE.PROC"
+
+        self.pvnames = SimpleNamespace(
+            setvalue = pvname_setvalue,
+            readback = pvname_readback,
+            execute  = pvname_execute
+        )
+
         self.pvs = SimpleNamespace(
-            setvalue = PV(pv_basename + ":NEW_DELTA_T"),
-            readback = PV(pv_basename + ":CURR_DELTA_T"),
-            execute  = PV(pv_basename + ":SET_NEW_PHASE.PROC")
+            setvalue = PV(pvname_setvalue),
+            readback = PV(pvname_readback),
+            execute  = PV(pvname_execute)
         )
 
 
@@ -218,13 +231,13 @@ class PhaseShifter(OffsetStorageMixin):
 
     def set(self, value):
         new_offset = self.get_dial() - value
-        new_offset %= _OSCILLATOR_PERIOD
+        new_offset %= OSCILLATOR_PERIOD
         self.store(new_offset)
 
 
     def move(self, value, tolerance=None): # tolerance in s
         dial = value + self.offset
-        dial %= _OSCILLATOR_PERIOD
+        dial %= OSCILLATOR_PERIOD
         dial = min(dial, self.dial_max)
         dial_ps = dial * 1e12
         self.pvs.setvalue.put(dial_ps)
@@ -252,14 +265,20 @@ class PhaseShifter(OffsetStorageMixin):
 
 class PockelsTrigger(OffsetStorageMixin):
 
-    def __init__(self, pv_get, pv_set, pv_offset): #TODO make offset optional?
-        self.pvname = pvname = pv_get
+    def __init__(self, pvname_readback, pvname_setvalue, pvname_offset): #TODO make offset optional?
+        self.pvname = pvname = pvname_readback
         super().__init__(pvname)
 
+        self.pvnames = SimpleNamespace(
+            setvalue = pvname_setvalue,
+            readback = pvname_readback,
+            offset   = pvname_offset
+        )
+
         self.pvs = SimpleNamespace(
-            setvalue = PV(pv_set),
-            readback = PV(pv_get),
-            offset   = PV(pv_offset)
+            setvalue = PV(pvname_setvalue),
+            readback = PV(pvname_readback),
+            offset   = PV(pvname_offset)
         )
 
 
