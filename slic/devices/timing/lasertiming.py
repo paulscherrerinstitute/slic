@@ -14,14 +14,6 @@ OSCILLATOR_PERIOD = 1 / 71.368704e6
 #POCKELS_CELL_RESOLUTION = 7e-9 #TODO: what was this supposed to do?
 
 
-#bernina
-BASE_FOLDER = "/sf/bernina/config/eco/offsets"
-
-#alvra:
-BASE_FOLDER = "/sf/alvra/config/lasertiming"
-
-
-
 class ETiming(Adjustable):
 
     def __init__(
@@ -86,7 +78,7 @@ class ETiming(Adjustable):
 
 class LXT(Adjustable):
 
-    def __init__(self, Id_phase_shifter, Id_timing, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
+    def __init__(self, Id_phase_shifter, Id_timing, base_folder, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
         super().__init__(name=name, units=units)
         self.Id = Id = Id_phase_shifter #TODO: does that make sense?
         self.tolerance_poly_coeff = tolerance_poly_coeff
@@ -100,9 +92,9 @@ class LXT(Adjustable):
         pvname_slicer_gate_offset   = Id_timing + ":UnivDlyModule1-Delay1-RB"
 
         self.devices = SimpleNamespace(
-            phase_shifter = PhaseShifter(Id_phase_shifter),
-            sdg1 = PockelsTrigger(pvname_sdg1_readback, pvname_sdg1_setvalue, pvname_sdg1_offset),
-            slicer_gate = PockelsTrigger(pvname_slicer_gate_readback, pvname_slicer_gate_setvalue, pvname_slicer_gate_offset)
+            phase_shifter = PhaseShifter(Id_phase_shifter, base_folder),
+            sdg1 = PockelsTrigger(pvname_sdg1_readback, pvname_sdg1_setvalue, pvname_sdg1_offset, base_folder),
+            slicer_gate = PockelsTrigger(pvname_slicer_gate_readback, pvname_slicer_gate_setvalue, pvname_slicer_gate_offset, base_folder)
         )
 
 
@@ -149,10 +141,10 @@ class LXT(Adjustable):
 
 class PhaseShifterAramis(Adjustable):
 
-    def __init__(self, Id, name=None):
+    def __init__(self, Id, base_folder, name=None):
         super().__init__(name=name)
         self.Id = Id
-        self._phase_shifter = PhaseShifter(Id)
+        self._phase_shifter = PhaseShifter(Id, base_folder)
 
     def set_target_value(self, value, hold=False):
         change = lambda: self._phase_shifter.move(value)
@@ -177,8 +169,8 @@ class PhaseShifterAramis(Adjustable):
 
 class OffsetStorageMixin(ABC):
 
-    def __init__(self, pvname):
-        self.storage = Storage(pvname)
+    def __init__(self, base_folder, pvname):
+        self.storage = Storage(base_folder, pvname)
         self.filename = self.storage.filename
 
     @property
@@ -198,13 +190,13 @@ class OffsetStorageMixin(ABC):
 
 class PhaseShifter(OffsetStorageMixin):
 
-    def __init__(self, pv_basename, dial_max=14.0056e-9, tolerance=100e-15):
+    def __init__(self, pv_basename, base_folder, dial_max=14.0056e-9, tolerance=100e-15):
         self.pv_basename = pv_basename
         self.dial_max = dial_max
         self.tolerance = tolerance
 
         pvname = pv_basename + ":CURR_DELTA_T" #TODO: should this be the basename only? actually Storage stores the offset!
-        super().__init__(pvname)
+        super().__init__(base_folder, pvname)
 
         pvname_setvalue = pv_basename + ":NEW_DELTA_T"
         pvname_readback = pv_basename + ":CURR_DELTA_T"
@@ -265,9 +257,9 @@ class PhaseShifter(OffsetStorageMixin):
 
 class PockelsTrigger(OffsetStorageMixin):
 
-    def __init__(self, pvname_readback, pvname_setvalue, pvname_offset): #TODO make offset optional?
+    def __init__(self, pvname_readback, pvname_setvalue, pvname_offset, base_folder): #TODO make offset optional?
         self.pvname = pvname = pvname_readback
-        super().__init__(pvname)
+        super().__init__(base_folder, pvname)
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,
@@ -315,8 +307,8 @@ class Storage:
     Read/write a value from/to a file
     """
 
-    def __init__(self, filename):
-        self.filename = os.path.join(BASE_FOLDER, filename)
+    def __init__(self, base_folder, filename):
+        self.filename = os.path.join(base_folder, filename)
         self.last_value = None
         self.last_read_time = None
 
