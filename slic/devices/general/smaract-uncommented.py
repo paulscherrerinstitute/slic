@@ -268,7 +268,6 @@ class SmarActRecord:
     def __repr__(self):
         return self.__str__()
 
-
     def __call__(self, value):
         self._currentChange = self.set_target_value(value)
 
