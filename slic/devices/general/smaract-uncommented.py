@@ -1,8 +1,7 @@
 import subprocess
 from epics import PV, ca
 import time
-from ..eco_epics import device
-from ..eco_epics.device import Device
+
 from slic.core.task import Task
 
 
@@ -20,8 +19,9 @@ class SmarActException(Exception):
 
 class SmarActRecord:
 
-    def __init__(self, Id, name=None, elog=None):
+    def __init__(self, Id, name=None):
         self.Id = Id
+        self.name = name
         self._drive = PV(Id + ":DRIVE")
         self._rbv = PV(Id + ":MOTRBV")
         self._hlm = PV(Id + ":HLM")
@@ -31,13 +31,11 @@ class SmarActRecord:
         self._stop = PV(Id + ":STOP.PROC")
         self._hold = PV(Id + ":HOLD")
         self._twv = PV(Id + ":TWV")
-        self._elog = elog
-        self.name = name
         self.units = PV(Id + ":DRIVE.EGU").get()
 
     def set_target_value(self, value, hold=False):
-        mover = lambda: self.move_and_wait(value)
-        return Task(mover, hold=hold, stopper=self.stop)
+        change = lambda: self.move_and_wait(value)
+        return Task(change, hold=hold, stopper=self.stop)
 
     def stop(self):
         try:
@@ -46,8 +44,9 @@ class SmarActRecord:
             self._stop.put(1)
 
     def within_limits(self, val):
-        """ returns whether a value for a motor is within drive limits"""
-        return val <= self._hlm.get() and val >= self._llm.get()
+        llm = self._llm.get()
+        hlm = self._hlm.get()
+        return llm <= val <= hlm
 
     def move_and_wait(self, value, checktime=0.1):
         self._drive.put(value)
@@ -197,13 +196,8 @@ class SmarActRecord:
     def wait(self):
         self._currentChange.wait()
 
-    # return string with motor value as variable representation
-    def __str__(self):
-        return "SmarAct is at %s" % (self.get_current_value())
-        #return "SmarAct is at %s %s" % (self.get_current_value(), self.units)
-
     def __repr__(self):
-        return self.__str__()
+        return "SmarAct at %s" % (self.get_current_value())
 
     def __call__(self, value):
         self._currentChange = self.set_target_value(value)
@@ -218,11 +212,8 @@ class SmarActStage:
         for ax_name, ax_id in axes.items():
             self.__dict__[ax_name] = SmarActRecord(ax_id)
 
-    def __str__(self):
-        return "SmarAct positions\n%s" % "\n".join(["%s: %s" % (key, self.__dict__[key].get_current_value()) for key in self._keys])
-
     def __repr__(self):
-        return str({key: self.__dict__[key].get_current_value() for key in self._keys})
+        return "SmarAct positions\n%s" % "\n".join(["%s: %s" % (key, self.__dict__[key].get_current_value()) for key in self._keys])
 
 
 
