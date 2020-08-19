@@ -6,14 +6,6 @@ from ..eco_epics.device import Device
 from slic.core.task import Task
 
 
-_guiTypes = ["xdm"]
-
-
-def _keywordChecker(kw_key_list_tups):
-    for tkw, tkey, tlist in kw_key_list_tups:
-        assert tkey in tlist, "Keyword %s should be one of %s" % (tkw, tlist)
-
-
 class SmarActException(Exception):
     """ raised to indicate a problem with a smartact"""
 
@@ -25,36 +17,6 @@ class SmarActException(Exception):
         return str(self.msg)
 
 
-class SmarAct(Device):
-
-    _extras = {
-        "disabled": "_able.VAL",
-    }
-    _init_list = ("VAL", "DESC", "RTYP")
-    _nonpvs = ("_prefix", "_pvs", "_delim", "_init", "_init_list", "_alias", "_extras")
-
-    def __init__(self, name=None, timeout=3.0, record=None):
-        if name is None:
-            raise SmarActException("must supply SmarAct name")
-
-        if name.endswith(".VAL"):
-            name = name[:-4]
-        if name.endswith("."):
-            name = name[:-1]
-
-        self._prefix = name
-        self._record = record
-        self._callbacks = {}
-
-        device.Device.__init__(self, name, delim=".", attrs=self._init_list, timeout=timeout)
-
-
-#        for key, val in self._extras.items():
-#            pvname = "%s%s" % (name, val)
-#            self.add_pv(pvname, attr=key)
-
-# self.put('disabled', 0)
-
 
 class SmarActRecord:
 
@@ -65,27 +27,27 @@ class SmarActRecord:
         self._hlm = PV(Id + ":HLM")
         self._llm = PV(Id + ":LLM")
         self._status = PV(Id + ":STATUS")
-        self._set_pos = PV(Id+":SET_POS")
+        self._set_pos = PV(Id + ":SET_POS")
         self._stop = PV(Id + ":STOP.PROC")
-        self._hold = PV(Id+":HOLD")
+        self._hold = PV(Id + ":HOLD")
         self._twv = PV(Id + ":TWV")
         self._elog = elog
         self.name = name
-        self.units = self._drive.get("EGU")
+        self.units = PV(Id + ":DRIVE.EGU").get()
 
-    # Conventional methods and properties for all Adjustable objects
     def set_target_value(self, value, hold=False):
-        """ Adjustable convention"""
         mover = lambda: self.move_and_wait(value)
-        return Task(mover, hold=hold, stopper=self._stop.put(1))
+        return Task(mover, hold=hold, stopper=self.stop)
 
     def stop(self):
-        """ Adjustable convention"""
-        self._stop.put(1)
+        try:
+            self._currentChange.stop()
+        except:
+            self._stop.put(1)
 
     def within_limits(self, val):
         """ returns whether a value for a motor is within drive limits"""
-        return val <= self._hlm.get("VAL") and val >= self._llm.get("VAL")
+        return val <= self._hlm.get() and val >= self._llm.get()
 
     def move_and_wait(self, value, checktime=0.1):
         self._drive.put(value)
@@ -93,7 +55,7 @@ class SmarActRecord:
             time.sleep(checktime)
 
     def move(self, val, relative=False, wait=False, timeout=300.0, ignore_limits=False, confirm_move=False):
-        """ moves smaract drive to position
+        """ moves smaract drive to position (emulating pyepics Motor class)
 
         arguments:
         ==========
@@ -114,7 +76,7 @@ class SmarActRecord:
            -4 : move-with-wait finished, soft limit violation seen
            -3 : move-with-wait finished, hard limit violation seen
             0 : move-with-wait finish OK.
-            0 : move-without-wait executed, not cpmfirmed
+            0 : move-without-wait executed, not confirmed
             1 : move-without-wait executed, move confirmed 
             3 : move-without-wait finished, hard limit violation seen
             4 : move-without-wait finished, soft limit violation seen
@@ -131,14 +93,14 @@ class SmarActRecord:
             return NONFLOAT
 
         if relative:
-            val += self._drive.get("VAL")
+            val += self._drive.get()
 
         # Check for limit violations
         if not ignore_limits:
             if not self.within_limits(val):
                 return OUTSIDE_LIMITS
 
-        stat = self._drive.put("VAL", val, wait=wait, timeout=timeout)
+        stat = self._drive.put(val, wait=wait, timeout=timeout)
         if stat is None:
             return UNCONNECTED
 
@@ -146,30 +108,30 @@ class SmarActRecord:
             return TIMEOUT
 
         if 1 == stat:
-            s0 = self._status.get("VAL")
+            s0 = self._status.get()
             s1 = s0
             t0 = time.time()
             t1 = t0 + min(10.0, timeout)  # should be moving by now
-            thold = self._hold.get("VAL") * 0.001 + t0
+            thold = self._hold.get() * 0.001 + t0
             tout = t0 + timeout
             if wait or confirm_move:
                 while time.time() <= thold and s1 == 3:
                     ca.poll(evt=1.0e-2)
-                    s1 = self._status.get("VAL")
+                    s1 = self._status.get()
                 while time.time() <= t1 and s1 == 0:
                     ca.poll(evt=1.0e-2)
-                    s1 = self._status.get("VAL")
+                    s1 = self._status.get()
                 if s1 == 4:
                     if wait:
                         while time.time() <= tout and s1 == 4:
                             ca.poll(evt=1.0e-2)
-                            s1 = self._status.get("VAL")
+                            s1 = self._status.get()
                         if s1 == 3 or s1 == 4:
                             if time.time() > tout:
                                 return TIMEOUT
                             else:
-                                twv = abs(self._twv.get("VAL"))
-                                while s1 == 3 and time.time() <= tout and abs(self._rbv.get("VAL") - val) >= twv:
+                                twv = abs(self._twv.get())
+                                while s1 == 3 and time.time() <= tout and abs(self._rbv.get() - val) >= twv:
                                     ca.poll(evt=1.0e-2)
                                 return DONE_OK
                     else:
@@ -182,53 +144,31 @@ class SmarActRecord:
                 return MOVE_BEGUN
         return UNKNOWN_ERROR
 
-    def get_current_value(self):
-        return self._rbv.get()
-
-    wm = get_current_value
+    def get_current_value(self, readback=True):
+        if readback:
+            return self._rbv.get()
+        else:
+            return self._drive.get()
 
     def set_current_value(self, value):
-        return self._drive.put(value)
-
-    def get_precision(self):
-        """ Adjustable convention"""
-        pass
-
-    def set_precision(self):
-        """ Adjustable convention"""
-        pass
-
-    precision = property(get_precision, set_precision)
-
-    def set_speed(self):
-        """ Adjustable convention"""
-        pass
-
-    def get_speed(self):
-        """ Adjustable convention"""
-        pass
-
-    def set_speedMax(self):
-        """ Adjustable convention"""
-        pass
+        return self._set_pos.put(value)
 
     def is_moving(self):
         pass
 
     def set_limits(self, values, posType="user", relative_to_present=False):
-        """ Adjustable convention"""
+
         if relative_to_present:
             v = self.get_current_value()
             values = [v - values[0], v - values[1]]
-        self._llm.put("VAL", values[0])
-        self._hlm.put("VAL", values[1])
+        self._llm.put(values[0])
+        self._hlm.put(values[1])
 
     def get_limits(self, posType="user"):
-        """ Adjustable convention"""
         return self._llm.get(), self._hlm.get()
 
     def gui(self, guiType="xdm"):
-        """ Adjustable convention"""
+
         cmd = ["caqtdm", "-macro"]
 
         for i in range(len(self.Id) - 1):
@@ -251,10 +191,7 @@ class SmarActRecord:
         return self.get_current_value(*args, **kwargs)
 
     def mvr(self, value, *args, **kwargs):
-        if not self.is_moving():
-            startvalue = self.get_current_value(readback=True, *args, **kwargs)
-        else:
-            startvalue = self.get_current_value(readback=False, *args, **kwargs)
+        startvalue = self.get_current_value(readback=True, *args, **kwargs)
         self._currentChange = self.set_target_value(value + startvalue, *args, **kwargs)
 
     def wait(self):
@@ -263,7 +200,7 @@ class SmarActRecord:
     # return string with motor value as variable representation
     def __str__(self):
         return "SmarAct is at %s" % (self.get_current_value())
-        #return "SmarAct is at %s %s"%(self.wm(),self.units)
+        #return "SmarAct is at %s %s" % (self.get_current_value(), self.units)
 
     def __repr__(self):
         return self.__str__()
@@ -272,32 +209,20 @@ class SmarActRecord:
         self._currentChange = self.set_target_value(value)
 
 
-class SmarActDevice(SmarActRecord):
-
-    def __init__(self, Id, alias_namespace=None):
-        SmarActRecord.__init__(self, Id)
-
-
-#        self.Id = Id
-#
-#        self.x = SmarActRecord(Id+':DRIVE')
-
 
 class SmarActStage:
 
-    def __init__(self, axes, name=None, z_undulator=None, description=None):
-        self._keys = axes.keys()
-        for axis in self._keys:
-            ax = axes[axis]
-            ax = SmarActRecord(ax)
-            self.__dict__[axis] = ax
+    def __init__(self, axes, name=None):
         self.name = name
+        self._keys = axes.keys()
+        for ax_name, ax_id in axes.items():
+            self.__dict__[ax_name] = SmarActRecord(ax_id)
 
     def __str__(self):
-        return "SmarAct positions\n%s" % "\n".join(["%s: %s" % (key, self.__dict__[key].wm()) for key in self._keys])
+        return "SmarAct positions\n%s" % "\n".join(["%s: %s" % (key, self.__dict__[key].get_current_value()) for key in self._keys])
 
     def __repr__(self):
-        return str({key: self.__dict__[key].wm() for key in self._keys})
+        return str({key: self.__dict__[key].get_current_value() for key in self._keys})
 
 
 
