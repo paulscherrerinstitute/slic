@@ -100,8 +100,9 @@ class SmarActRecord(Adjustable):
         self.pvs.hlm.put(high)
 
 
-    def move(self, val, relative=False, wait=False, timeout=300.0, ignore_limits=False, confirm_move=False):
-        """ moves smaract drive to position (emulating pyepics Motor class)
+    def move(self, val, relative=False, wait=False, ignore_limits=False, confirm_move=False, timeout=300.0):
+        """
+        moves SmarAct drive to position (emulating pyepics Motor class)
 
         arguments:
         ==========
@@ -113,19 +114,20 @@ class SmarActRecord(Adjustable):
          timeout        max time for move to complete (in seconds) [300]
 
         return values:
-          -13 : invalid value (cannot convert to float).  Move not attempted.
-          -12 : target value outside soft limits.         Move not attempted.
-          -11 : drive PV is not connected:                Move not attempted.
-           -8 : move started, but timed-out.
-           -7 : move started, timed-out, but appears done.
-           -5 : move started, unexpected return value from PV.put()
-           -4 : move-with-wait finished, soft limit violation seen
-           -3 : move-with-wait finished, hard limit violation seen
-            0 : move-with-wait finish OK.
-            0 : move-without-wait executed, not confirmed
-            1 : move-without-wait executed, move confirmed 
-            3 : move-without-wait finished, hard limit violation seen
-            4 : move-without-wait finished, soft limit violation seen
+        ==============
+         -13 : invalid value (cannot convert to float).  Move not attempted.
+         -12 : target value outside soft limits.         Move not attempted.
+         -11 : drive PV is not connected.                Move not attempted.
+          -8 : move started, but timed-out.
+          -7 : move started, timed-out, but appears done.
+          -5 : move started, unexpected return value from PV.put().
+          -4 : move-with-wait finished, soft limit violation seen.
+          -3 : move-with-wait finished, hard limit violation seen.
+           0 : move-with-wait finish OK.
+           0 : move-without-wait executed, move not confirmed.
+           1 : move-without-wait executed, move confirmed.
+           3 : move-without-wait finished, hard limit violation seen.
+           4 : move-without-wait finished, soft limit violation seen.
 
         """
         NONFLOAT, OUTSIDE_LIMITS, UNCONNECTED = -13, -12, -11
