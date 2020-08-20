@@ -122,20 +122,20 @@ class Motor(Adjustable, SpecConvenienceProgress):
 
     def get_limits(self, pos_type="user"):
         check_pos_type(pos_type)
-        ll_name, hl_name = POS_TYPE_LIMIT_NAMES[pos_type]
-        low_limit  = self._motor.get(ll_name)
-        high_limit = self._motor.get(hl_name)
-        return low_limit, high_limit
+        low_name, high_name = POS_TYPE_LIMIT_NAMES[pos_type]
+        low  = self._motor.get(low_name)
+        high = self._motor.get(high_name)
+        return low, high
 
-    def set_limits(self, low_limit, high_limit, relative_to_current=False, pos_type="user"):
+    def set_limits(self, low, high, relative_to_current=False, pos_type="user"):
         check_pos_type(pos_type)
-        ll_name, hl_name = POS_TYPE_LIMIT_NAMES[pos_type]
+        low_name, high_name = POS_TYPE_LIMIT_NAMES[pos_type]
         if relative_to_current:
             val = self.get_current_value(pos_type=pos_type)
-            low_limit  += val
-            high_limit += val
-        self._motor.put(ll_name, low_limit)
-        self._motor.put(hl_name, high_limit)
+            low  += val
+            high += val
+        self._motor.put(low_name, low)
+        self._motor.put(high_name, high)
 
     def print_limits(self):
         low, high = self.get_limits()
