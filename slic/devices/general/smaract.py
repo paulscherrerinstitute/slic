@@ -1,57 +1,104 @@
-import subprocess
-from epics import PV, ca
 import time
+import subprocess
+from types import SimpleNamespace
+from epics import PV, ca
 
-from slic.core.task import Task
-
-
-class SmarActException(Exception):
-    """ raised to indicate a problem with a smartact"""
-
-    def __init__(self, msg, *args):
-        Exception.__init__(self, *args)
-        self.msg = msg
-
-    def __str__(self):
-        return str(self.msg)
+from slic.core.adjustable import Adjustable, AdjustableError
+from slic.utils import typename
+from slic.utils.printing import printable_dict
+from ..basedevice import BaseDevice
 
 
+class SmarActStage(BaseDevice):
 
-class SmarActRecord:
+    def __init__(self, name=None, **axis_ids):
+        self.name = name
+        self.axis_ids = axis_ids
+
+        self.axes = {}
+        for ax_name, ax_id in axis_ids.items():
+            record_name = f"{name}: {ax_name}"
+            ax = SmarActRecord(ax_id, name=record_name)
+            setattr(self, ax_name, ax)
+            self.axes[ax_name] = ax
+
+
+    def __repr__(self):
+        tname = typename(self)
+        name = self.name
+        head = f"{tname} \"{name}\""
+
+        to_print = {ax_name: ax.get_current_value() for ax_name, ax in self.axes.items()}
+        return printable_dict(to_print, head)
+
+
+
+class SmarActRecord(Adjustable):
 
     def __init__(self, Id, name=None):
+        units = PV(Id + ":DRIVE.EGU").get() #TODO
+        super().__init__(name=name, units=units)
         self.Id = Id
-        self.name = name
-        self._drive = PV(Id + ":DRIVE")
-        self._rbv = PV(Id + ":MOTRBV")
-        self._hlm = PV(Id + ":HLM")
-        self._llm = PV(Id + ":LLM")
-        self._status = PV(Id + ":STATUS")
-        self._set_pos = PV(Id + ":SET_POS")
-        self._stop = PV(Id + ":STOP.PROC")
-        self._hold = PV(Id + ":HOLD")
-        self._twv = PV(Id + ":TWV")
-        self.units = PV(Id + ":DRIVE.EGU").get()
+
+        self.pvs = SimpleNamespace(
+            drive   = PV(Id + ":DRIVE"),
+            rbv     = PV(Id + ":MOTRBV"),
+            hlm     = PV(Id + ":HLM"),
+            llm     = PV(Id + ":LLM"),
+            status  = PV(Id + ":STATUS"),
+            set_pos = PV(Id + ":SET_POS"),
+            stop    = PV(Id + ":STOP.PROC"),
+            hold    = PV(Id + ":HOLD"),
+            twv     = PV(Id + ":TWV")
+        )
+
+
+    def get_current_value(self, readback=True):
+        if readback:
+            return self.pvs.rbv.get()
+        else:
+            return self.pvs.drive.get()
+
+    def reset_current_value_to(self, value):
+        return self.pvs.set_pos.put(value)
 
     def set_target_value(self, value, hold=False):
-        change = lambda: self.move_and_wait(value)
-        return Task(change, hold=hold, stopper=self.stop)
+        change  = lambda: self._move(value)
+        stopper = lambda: self.pvs.stop.put(1)
+        return self._as_task(change, stopper=stopper, hold=hold)
+
+    def _move(self, value, checktime=0.1):
+        self.pvs.drive.put(value)
+        while self.is_moving():
+            time.sleep(checktime)
+
+    def is_moving(self):
+        return self.pvs.status.get() != 0
 
     def stop(self):
         try:
-            self._currentChange.stop()
+            return super().stop()
         except:
-            self._stop.put(1)
+            self.pvs.stop.put(1)
+
 
     def within_limits(self, val):
-        llm = self._llm.get()
-        hlm = self._hlm.get()
+        llm, hlm = self.get_limits()
         return llm <= val <= hlm
 
-    def move_and_wait(self, value, checktime=0.1):
-        self._drive.put(value)
-        while self._status.get() != 0:
-            time.sleep(checktime)
+    def get_limits(self):
+        low_limit  = self.pvs.llm.get()
+        high_limit = self.pvs.hlm.get()
+        return low_limit, high_limit
+
+    def set_limits(self, low_limit, high_limit, relative_to_current=False):
+        if relative_to_current:
+            val = self.get_current_value()
+            low_limit  += val
+            high_limit += val
+        self.pvs.llm.put(low_limit)
+        self.pvs.hlm.put(high_limit)
+
 
     def move(self, val, relative=False, wait=False, timeout=300.0, ignore_limits=False, confirm_move=False):
         """ moves smaract drive to position (emulating pyepics Motor class)
@@ -92,14 +139,14 @@ class SmarActRecord:
             return NONFLOAT
 
         if relative:
-            val += self._drive.get()
+            val += self.pvs.drive.get()
 
         # Check for limit violations
         if not ignore_limits:
             if not self.within_limits(val):
                 return OUTSIDE_LIMITS
 
-        stat = self._drive.put(val, wait=wait, timeout=timeout)
+        stat = self.pvs.drive.put(val, wait=wait, timeout=timeout)
         if stat is None:
             return UNCONNECTED
 
@@ -107,30 +154,30 @@ class SmarActRecord:
             return TIMEOUT
 
         if 1 == stat:
-            s0 = self._status.get()
+            s0 = self.pvs.status.get()
             s1 = s0
             t0 = time.time()
             t1 = t0 + min(10.0, timeout)  # should be moving by now
-            thold = self._hold.get() * 0.001 + t0
+            thold = self.pvs.hold.get() * 0.001 + t0
             tout = t0 + timeout
             if wait or confirm_move:
                 while time.time() <= thold and s1 == 3:
                     ca.poll(evt=1.0e-2)
-                    s1 = self._status.get()
+                    s1 = self.pvs.status.get()
                 while time.time() <= t1 and s1 == 0:
                     ca.poll(evt=1.0e-2)
-                    s1 = self._status.get()
+                    s1 = self.pvs.status.get()
                 if s1 == 4:
                     if wait:
                         while time.time() <= tout and s1 == 4:
                             ca.poll(evt=1.0e-2)
-                            s1 = self._status.get()
+                            s1 = self.pvs.status.get()
                         if s1 == 3 or s1 == 4:
                             if time.time() > tout:
                                 return TIMEOUT
                             else:
-                                twv = abs(self._twv.get())
-                                while s1 == 3 and time.time() <= tout and abs(self._rbv.get() - val) >= twv:
+                                twv = abs(self.pvs.twv.get())
+                                while s1 == 3 and time.time() <= tout and abs(self.pvs.rbv.get() - val) >= twv:
                                     ca.poll(evt=1.0e-2)
                                 return DONE_OK
                     else:
@@ -143,77 +190,16 @@ class SmarActRecord:
                 return MOVE_BEGUN
         return UNKNOWN_ERROR
 
-    def get_current_value(self, readback=True):
-        if readback:
-            return self._rbv.get()
-        else:
-            return self._drive.get()
 
-    def set_current_value(self, value):
-        return self._set_pos.put(value)
-
-    def is_moving(self):
-        pass
-
-    def set_limits(self, values, posType="user", relative_to_present=False):
-
-        if relative_to_present:
-            v = self.get_current_value()
-            values = [v - values[0], v - values[1]]
-        self._llm.put(values[0])
-        self._hlm.put(values[1])
-
-    def get_limits(self, posType="user"):
-        return self._llm.get(), self._hlm.get()
-
-    def gui(self, guiType="xdm"):
-
-        cmd = ["caqtdm", "-macro"]
-
-        for i in range(len(self.Id) - 1):
-            if self.Id[-i - 1].isnumeric() is False:
-                M = self.Id[-i:]
-                P = self.Id[:-i]
-                print(P, M)
-                break
-
-        cmd.append('"P=%s,M=%s"' % (P, M))
-#        #cmd.append('/sf/common/config/qt/motorx_more.ui')
-        cmd.append("ESB_MX_SMARACT_mot_exp.ui")
-#        #os.system(' '.join(cmd))
-        return subprocess.Popen(" ".join(cmd), shell=True)
-
-    def mv(self, value):
-        self._currentChange = self.set_target_value(value)
-
-    def wm(self, *args, **kwargs):
-        return self.get_current_value(*args, **kwargs)
-
-    def mvr(self, value, *args, **kwargs):
-        startvalue = self.get_current_value(readback=True, *args, **kwargs)
-        self._currentChange = self.set_target_value(value + startvalue, *args, **kwargs)
-
-    def wait(self):
-        self._currentChange.wait()
-
-    def __repr__(self):
-        return "SmarAct at %s" % (self.get_current_value())
-
-    def __call__(self, value):
-        self._currentChange = self.set_target_value(value)
+    def gui(self):
+        device, motor = self.Id.split(":")
+        cmd = f'caqtdm -macro "P={device}:,M={motor}" ESB_MX_SMARACT_mot_exp.ui'
+        return subprocess.Popen(cmd, shell=True)
 
 
 
-class SmarActStage:
-
-    def __init__(self, axes, name=None):
-        self.name = name
-        self._keys = axes.keys()
-        for ax_name, ax_id in axes.items():
-            self.__dict__[ax_name] = SmarActRecord(ax_id)
-
-    def __repr__(self):
-        return "SmarAct positions\n%s" % "\n".join(["%s: %s" % (key, self.__dict__[key].get_current_value()) for key in self._keys])
+class SmarActError(AdjustableError):
+    pass
 
 
 
