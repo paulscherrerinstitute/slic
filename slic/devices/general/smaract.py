@@ -41,21 +41,21 @@ class SmarActRecord(Adjustable):
         self.Id = Id
 
         self.pvs = SimpleNamespace(
-            drive   = PV(Id + ":DRIVE"),
-            rbv     = PV(Id + ":MOTRBV"),
-            hlm     = PV(Id + ":HLM"),
-            llm     = PV(Id + ":LLM"),
-            status  = PV(Id + ":STATUS"),
-            set_pos = PV(Id + ":SET_POS"),
-            stop    = PV(Id + ":STOP.PROC"),
-            hold    = PV(Id + ":HOLD"),
-            twv     = PV(Id + ":TWV")
+            drive    = PV(Id + ":DRIVE"),
+            readback = PV(Id + ":MOTRBV"),
+            hlm      = PV(Id + ":HLM"),
+            llm      = PV(Id + ":LLM"),
+            status   = PV(Id + ":STATUS"),
+            set_pos  = PV(Id + ":SET_POS"),
+            stop     = PV(Id + ":STOP.PROC"),
+            hold     = PV(Id + ":HOLD"),
+            twv      = PV(Id + ":TWV")
         )
 
 
     def get_current_value(self, readback=True):
         if readback:
-            return self.pvs.rbv.get()
+            return self.pvs.readback.get()
         else:
             return self.pvs.drive.get()
 
@@ -83,21 +83,21 @@ class SmarActRecord(Adjustable):
 
 
     def within_limits(self, val):
-        llm, hlm = self.get_limits()
-        return llm <= val <= hlm
+        low, high = self.get_limits()
+        return low <= val <= high
 
     def get_limits(self):
-        low_limit  = self.pvs.llm.get()
-        high_limit = self.pvs.hlm.get()
-        return low_limit, high_limit
+        low  = self.pvs.llm.get()
+        high = self.pvs.hlm.get()
+        return low, high
 
-    def set_limits(self, low_limit, high_limit, relative_to_current=False):
+    def set_limits(self, low, high, relative_to_current=False):
         if relative_to_current:
             val = self.get_current_value()
-            low_limit  += val
-            high_limit += val
-        self.pvs.llm.put(low_limit)
-        self.pvs.hlm.put(high_limit)
+            low  += val
+            high += val
+        self.pvs.llm.put(low)
+        self.pvs.hlm.put(high)
 
 
     def move(self, val, relative=False, wait=False, timeout=300.0, ignore_limits=False, confirm_move=False):
@@ -177,7 +177,7 @@ class SmarActRecord(Adjustable):
                                 return TIMEOUT
                             else:
                                 twv = abs(self.pvs.twv.get())
-                                while s1 == 3 and time.time() <= tout and abs(self.pvs.rbv.get() - val) >= twv:
+                                while s1 == 3 and time.time() <= tout and abs(self.pvs.readback.get() - val) >= twv:
                                     ca.poll(evt=1.0e-2)
                                 return DONE_OK
                     else:
