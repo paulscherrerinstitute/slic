@@ -64,7 +64,7 @@ class ETiming(Adjustable):
             tval = self.get_current_value()
         return tval
 
-    def set_current_value(self, value):
+    def reset_current_value_to(self, value):
         self.pvs.setvalue.put(value)
 
     def __repr__(self):
@@ -125,7 +125,7 @@ class LXT(Adjustable):
     def move_sdg1(self, value):
         self.devices.sdg1.move(value)
 
-    def set_current_value(self, value):
+    def reset_current_value_to(self, value):
         self.devices.phase_shifter.set(value)
         self.devices.sdg1.set(-value)
         self.devices.slicer_gate.set(-value)
@@ -160,7 +160,7 @@ class PhaseShifterAramis(Adjustable):
     def is_moving(self):
         raise NotImplementedError
 
-    def set_current_value(self, value, pos_type="user"):
+    def reset_current_value_to(self, value, pos_type="user"):
         check_pos_type(pos_type, {"user"})
         if pos_type == "user":
             return self._phase_shifter.set(value)
