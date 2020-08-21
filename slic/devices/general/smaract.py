@@ -33,7 +33,7 @@ class SmarActStage(BaseDevice):
 
 
 
-class SmarActRecord(Adjustable):
+class SmarActAxis(Adjustable):
 
     def __init__(self, Id, name=None):
         units = PV(Id + ":DRIVE.EGU").get() #TODO
