@@ -18,7 +18,7 @@ class SmarActStage(BaseDevice):
         self.axes = {}
         for ax_name, ax_id in axis_ids.items():
             record_name = f"{name}: {ax_name}"
-            ax = SmarActRecord(ax_id, name=record_name)
+            ax = SmarActAxis(ax_id, name=record_name)
             setattr(self, ax_name, ax)
             self.axes[ax_name] = ax
 

@@ -8,17 +8,17 @@ class XTG:
         self.Id = Id
 
         ### sample smaract motors ###
-        self.sx = SmarActRecord(Id + ":TRX3")
-        self.sy = SmarActRecord(Id + ":TRY3")
+        self.sx = SmarActAxis(Id + ":TRX3")
+        self.sy = SmarActAxis(Id + ":TRY3")
 
         ### grating 1 motors ###
-        self.g1x = SmarActRecord(Id + ":TRX1")
-        self.g1y = SmarActRecord(Id + ":TRY1")
-        self.g1z = SmarActRecord(Id + ":TRZ1")
+        self.g1x = SmarActAxis(Id + ":TRX1")
+        self.g1y = SmarActAxis(Id + ":TRY1")
+        self.g1z = SmarActAxis(Id + ":TRZ1")
         ### grating 2 motors ###
-        self.g2x = SmarActRecord(Id + ":TRX2")
-        self.g2y = SmarActRecord(Id + ":TRY2")
-        self.g2z = SmarActRecord(Id + ":TRZ2")
+        self.g2x = SmarActAxis(Id + ":TRX2")
+        self.g2y = SmarActAxis(Id + ":TRY2")
+        self.g2z = SmarActAxis(Id + ":TRZ2")
 
     def get_adjustable_positions_str(self):
         ostr = "*****SmarAct motor positions******\n"

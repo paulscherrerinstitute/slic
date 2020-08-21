@@ -75,8 +75,8 @@ class Microscope:
 #        self._smaractaxes = {
 #            'gonio': '_xmic_gon',   # will become self.gonio
 #            'rot':   '_xmic_rot'}   # """ self.rot
-        self.gonio = SmarActRecord(gonio) #TODO: can this be None?
-        self.rot = SmarActRecord(rotat) #TODO: can this be None?
+        self.gonio = SmarActAxis(gonio) #TODO: can this be None?
+        self.rot = SmarActAxis(rotat) #TODO: can this be None?
 
     def __str__(self):
         return "Microscope positions\nfocus: %s\nzoom:  %s\ngonio: %s\nrot:   %s" % (self.focus.wm(), self.zoom.wm(), self.gonio.wm(), self.rot.wm())

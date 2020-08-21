@@ -18,7 +18,7 @@ def addMotorToSelf(self, Id=None, name=None):
 
 
 def addSmarActRecordToSelf(self, Id=None, name=None):
-    self.__dict__[name] = SmarActRecord(Id, name=name)
+    self.__dict__[name] = SmarActAxis(Id, name=name)
     self.alias.append(self.__dict__[name].alias)
 
 
