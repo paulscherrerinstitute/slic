@@ -139,8 +139,12 @@ class SmarActRecord(Adjustable):
         EXECUTED       =   0
         CONFIRMED      =   1
 
-        PV_PUT_SUCCESS = 1
-        PV_PUT_TIMEOUT = -1
+        PUT_SUCCESS    =   1
+        PUT_TIMEOUT    =  -1
+
+        STAT_STOPPED   =   0
+        STAT_HOLDING   =   3
+        STAT_TARGETING =   4
 
         try:
             val = float(val)
@@ -154,36 +158,36 @@ class SmarActRecord(Adjustable):
             if not self.within_limits(val):
                 return OUTSIDE_LIMITS
 
-        stat = self.pvs.drive.put(val, wait=wait, timeout=timeout)
+        put_stat = self.pvs.drive.put(val, wait=wait, timeout=timeout)
 
-        if stat is None:
+        if put_stat is None:
             return NOT_CONNECTED
 
-        if wait and stat == PV_PUT_TIMEOUT:
+        if wait and put_stat == PUT_TIMEOUT:
             return TIMEOUT
 
-        if stat != PV_PUT_SUCCESS:
+        if put_stat != PUT_SUCCESS:
             return UNKNOWN_ERROR
 
-        s1 = self.pvs.status.get() #TODO: what do the return values (0, 3, 4) mean?
+        stat = self.pvs.status.get() #TODO: what do the return values (0, 3, 4) mean?
 
         t0 = time.time()
-        thold = t0 + self.pvs.hold.get() * 0.001
-        t1    = t0 + min(timeout, 10.0)  # should be moving by now #TODO: why? what is this doing?
-        tout  = t0 + timeout
+        thold  = t0 + self.pvs.hold.get() * 0.001
+        tstart = t0 + min(timeout, 10)
+        tout   = t0 + timeout
 
         if not wait and not confirm_move:
             return EXECUTED
 
-        while s1 == 3 and time.time() <= thold:
+        while stat == STAT_HOLDING and time.time() <= thold:
             ca.poll(evt=1.0e-2)
-            s1 = self.pvs.status.get()
+            stat = self.pvs.status.get()
 
-        while s1 == 0 and time.time() <= t1:
+        while stat == STAT_STOPPED and time.time() <= tstart:
             ca.poll(evt=1.0e-2)
-            s1 = self.pvs.status.get()
+            stat = self.pvs.status.get()
 
-        if s1 != 4:
+        if stat != STAT_TARGETING:
             if time.time() > tout:
                 return TIMEOUT
             else:
@@ -192,11 +196,11 @@ class SmarActRecord(Adjustable):
         if not wait:
             return CONFIRMED
 
-        while s1 == 4 and time.time() <= tout:
+        while stat == STAT_TARGETING and time.time() <= tout:
             ca.poll(evt=1.0e-2)
-            s1 = self.pvs.status.get()
+            stat = self.pvs.status.get()
 
-        if s1 not in (3, 4):
+        if stat not in (STAT_HOLDING, STAT_TARGETING):
             return UNKNOWN_ERROR
 
         if time.time() > tout:
@@ -205,9 +209,9 @@ class SmarActRecord(Adjustable):
         twv = self.pvs.twv.get()
         twv = abs(twv)
 
-        while s1 == 3 and time.time() <= tout:
+        while stat == STAT_HOLDING and time.time() <= tout:
             ca.poll(evt=1.0e-2)
-            s1 = self.pvs.status.get()
+            stat = self.pvs.status.get()
 
             delta = self.pvs.readback.get() - val
             delta = abs(delta)
