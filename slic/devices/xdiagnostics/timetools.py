@@ -1,6 +1,6 @@
 from slic.devices.general.motor import Motor
 
-#from ..devices_general.smaract import SmarActRecord
+#from ..devices_general.smaract import SmarActAxis
 #from epics import PV
 from ..general.delay_stage import DelayStage
 

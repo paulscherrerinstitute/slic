@@ -2,7 +2,7 @@ from epics import PV
 
 from slic.utils.eco_components.aliases import Alias
 from slic.devices.general.motor import Motor
-from ..general.smaract import SmarActRecord
+from ..general.smaract import SmarActAxis
 from ..general.delay_stage import DelayStage
 from ..general.adjustable import AdjustableVirtual
 
@@ -17,7 +17,7 @@ def addMotorToSelf(self, Id=None, name=None):
     self.alias.append(self.__dict__[name].alias)
 
 
-def addSmarActRecordToSelf(self, Id=None, name=None):
+def addSmarActAxisToSelf(self, Id=None, name=None):
     self.__dict__[name] = SmarActAxis(Id, name=name)
     self.alias.append(self.__dict__[name].alias)
 
@@ -157,9 +157,9 @@ class Laser_Exp:
         # self.compressor = Motor(Id+'-M532:MOT')
 
         # LAM delay stages
-        addSmarActRecordToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
+        addSmarActAxisToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
         addDelayStageToSelf(self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
-        # self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
+        # self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
         addMotorToSelf(self, Id=self.Id + "-M548:MOT", name="_lam_delaystg")
@@ -188,7 +188,7 @@ class Laser_Exp:
 
         for smar_name, smar_address in self.smar_config.items():
             try:
-                addSmarActRecordToSelf(self, Id=(self.IdSA + smar_address), name=smar_name)
+                addSmarActAxisToSelf(self, Id=(self.IdSA + smar_address), name=smar_name)
             except:
                 print("Loading %s SmarAct motor in bernina laser conifg failed") % (smar_name)
 
@@ -254,9 +254,9 @@ class Laser_Exp_old:
         # self.compressor = Motor(Id+'-M532:MOT')
 
         # LAM delay stages
-        addSmarActRecordToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
+        addSmarActAxisToSelf(self, Id="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
         addDelayStageToSelf(self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
-        # self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
+        # self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
         addMotorToSelf(self, Id=self.Id + "-M548:MOT", name="_lam_delaystg")
@@ -279,7 +279,7 @@ class Laser_Exp_old:
 
         for smar_name, smar_address in self.smar_config.items():
             try:
-                addSmarActRecordToSelf(self, Id=(self.IdSA + smar_address), name=smar_name)
+                addSmarActAxisToSelf(self, Id=(self.IdSA + smar_address), name=smar_name)
             except:
                 print("Loading %s SmarAct motor in bernina laser conifg failed") % (smar_name)
 
