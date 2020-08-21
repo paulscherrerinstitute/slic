@@ -169,7 +169,7 @@ class SmarActAxis(Adjustable):
         if put_stat != PUT_SUCCESS:
             return UNKNOWN_ERROR
 
-        stat = self.pvs.status.get() #TODO: what do the return values (0, 3, 4) mean?
+        stat = self.pvs.status.get()
 
         t0 = time.time()
         thold  = t0 + self.pvs.hold.get() * 0.001
