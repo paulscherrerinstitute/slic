@@ -119,77 +119,101 @@ class SmarActRecord(Adjustable):
          -12 : target value outside soft limits.         Move not attempted.
          -11 : drive PV is not connected.                Move not attempted.
           -8 : move started, but timed-out.
-          -7 : move started, timed-out, but appears done.
+        # -7 : move started, timed-out, but appears done.
           -5 : move started, unexpected return value from PV.put().
-          -4 : move-with-wait finished, soft limit violation seen.
-          -3 : move-with-wait finished, hard limit violation seen.
-           0 : move-with-wait finish OK.
+        # -4 : move-with-wait finished, soft limit violation seen.
+        # -3 : move-with-wait finished, hard limit violation seen.
+           0 : move-with-wait finished OK.
            0 : move-without-wait executed, move not confirmed.
            1 : move-without-wait executed, move confirmed.
-           3 : move-without-wait finished, hard limit violation seen.
-           4 : move-without-wait finished, soft limit violation seen.
+        #  3 : move-without-wait finished, hard limit violation seen.
+        #  4 : move-without-wait finished, soft limit violation seen.
 
         """
-        NONFLOAT, OUTSIDE_LIMITS, UNCONNECTED = -13, -12, -11
-        TIMEOUT = -8
-        UNKNOWN_ERROR = -5
-        DONE_OK = 0
-        MOVE_BEGUN, MOVE_BEGUN_CONFIRMED = 0, 1
+        INVALID_VALUE  = -13
+        OUTSIDE_LIMITS = -12
+        NOT_CONNECTED  = -11
+        TIMEOUT        =  -8
+        UNKNOWN_ERROR  =  -5
+        SUCCESS        =   0
+        EXECUTED       =   0
+        CONFIRMED      =   1
+
+        PV_PUT_SUCCESS = 1
+        PV_PUT_TIMEOUT = -1
+
         try:
             val = float(val)
-        except TypeError:
-            return NONFLOAT
+        except Exception:
+            return INVALID_VALUE
 
         if relative:
             val += self.pvs.drive.get()
 
-        # Check for limit violations
         if not ignore_limits:
             if not self.within_limits(val):
                 return OUTSIDE_LIMITS
 
         stat = self.pvs.drive.put(val, wait=wait, timeout=timeout)
-        if stat is None:
-            return UNCONNECTED
 
-        if wait and stat == -1:
+        if stat is None:
+            return NOT_CONNECTED
+
+        if wait and stat == PV_PUT_TIMEOUT:
             return TIMEOUT
 
-        if 1 == stat:
-            s0 = self.pvs.status.get()
-            s1 = s0
-            t0 = time.time()
-            t1 = t0 + min(10.0, timeout)  # should be moving by now
-            thold = self.pvs.hold.get() * 0.001 + t0
-            tout = t0 + timeout
-            if wait or confirm_move:
-                while time.time() <= thold and s1 == 3:
-                    ca.poll(evt=1.0e-2)
-                    s1 = self.pvs.status.get()
-                while time.time() <= t1 and s1 == 0:
-                    ca.poll(evt=1.0e-2)
-                    s1 = self.pvs.status.get()
-                if s1 == 4:
-                    if wait:
-                        while time.time() <= tout and s1 == 4:
-                            ca.poll(evt=1.0e-2)
-                            s1 = self.pvs.status.get()
-                        if s1 == 3 or s1 == 4:
-                            if time.time() > tout:
-                                return TIMEOUT
-                            else:
-                                twv = abs(self.pvs.twv.get())
-                                while s1 == 3 and time.time() <= tout and abs(self.pvs.readback.get() - val) >= twv:
-                                    ca.poll(evt=1.0e-2)
-                                return DONE_OK
-                    else:
-                        return MOVE_BEGUN_CONFIRMED
-                elif time.time() > tout:
-                    return TIMEOUT
-                else:
-                    return UNKNOWN_ERROR
+        if stat != PV_PUT_SUCCESS:
+            return UNKNOWN_ERROR
+
+        s1 = self.pvs.status.get() #TODO: what do the return values (0, 3, 4) mean?
+
+        t0 = time.time()
+        thold = t0 + self.pvs.hold.get() * 0.001
+        t1    = t0 + min(timeout, 10.0)  # should be moving by now #TODO: why? what is this doing?
+        tout  = t0 + timeout
+
+        if not wait and not confirm_move:
+            return EXECUTED
+
+        while s1 == 3 and time.time() <= thold:
+            ca.poll(evt=1.0e-2)
+            s1 = self.pvs.status.get()
+
+        while s1 == 0 and time.time() <= t1:
+            ca.poll(evt=1.0e-2)
+            s1 = self.pvs.status.get()
+
+        if s1 != 4:
+            if time.time() > tout:
+                return TIMEOUT
             else:
-                return MOVE_BEGUN
+                return UNKNOWN_ERROR
+
+        if not wait:
+            return CONFIRMED
+
+        while s1 == 4 and time.time() <= tout:
+            ca.poll(evt=1.0e-2)
+            s1 = self.pvs.status.get()
+
+        if s1 not in (3, 4):
+            return UNKNOWN_ERROR
+
+        if time.time() > tout:
+            return TIMEOUT
+
+        twv = self.pvs.twv.get()
+        twv = abs(twv)
+
+        while s1 == 3 and time.time() <= tout:
+            ca.poll(evt=1.0e-2)
+            s1 = self.pvs.status.get()
+
+            delta = self.pvs.readback.get() - val
+            delta = abs(delta)
+            if delta < twv:
+                return SUCCESS
+
         return UNKNOWN_ERROR
 
 
