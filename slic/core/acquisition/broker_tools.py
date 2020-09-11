@@ -39,11 +39,11 @@ def get_beamline():
 
 @singleton
 class get_current_pulseid():
-    """
-    This is a "pretend function" that tries to use the correct PV to retrieve the PID
-    If the PV cannot connect, a fake PID is returned that is calculated from the time
-    The implementation only does/needs one connection check at the start
-    """
+#    """
+#    This is a "pretend function" that tries to use the correct PV to retrieve the PID
+#    If the PV cannot connect, a fake PID is returned that is calculated from the time
+#    The implementation only does/needs one connection check at the start
+#    """
 
 #    def __init__(self):
 #        self.get = get_fake_current_pulseid
@@ -53,6 +53,13 @@ class get_current_pulseid():
 #            pv = epics.PV(pulseid_pv)
 #            if pv.wait_for_connection():
 #                self.get = pv.get
+
+    """
+    This is a "pretend function" that tries to use the correct PV to retrieve the PID
+    If the PV name is not known, a ValueError is raised
+    If the PV does not connect, a RunTime is raised
+    The implementation only does/needs one connection check at the start
+    """
 
     def __init__(self):
         beamline = get_beamline()
