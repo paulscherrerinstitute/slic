@@ -10,6 +10,8 @@ The beamline codes can be found here:
 
 - [Alvra](https://gitlab.psi.ch/slic/alvra)
 - [Bernina](https://gitlab.psi.ch/slic/bernina)
+- [Maloja](https://gitlab.psi.ch/slic/maloja)
+- [Furka](https://gitlab.psi.ch/slic/furka)
 
 ... with more to come.
 
