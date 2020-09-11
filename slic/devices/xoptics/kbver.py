@@ -15,7 +15,7 @@ class KBver:
         self.bend1 = Motor(Id + ":BU")
         self.bend2 = Motor(Id + ":BD")
 
-        self.mode = PV(Id[:11] + ":MODE").enum_strs[PV(Id[:11] + ":MODE").value]
+#        self.mode = PV(Id[:11] + ":MODE").enum_strs[PV(Id[:11] + ":MODE").value]
 
         #### actual motors ###
         self._Y1 = Motor(Id + ":TY1")
