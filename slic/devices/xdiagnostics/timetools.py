@@ -8,7 +8,7 @@ from ..general.delay_stage import DelayStage
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 from psen_processing import PsenProcessingClient
 from ..loptics.bernina_experiment import DelayTime
-from cam_server import PipelineClient
+from cam_server_client import PipelineClient
 
 
 class SpectralEncoder:
