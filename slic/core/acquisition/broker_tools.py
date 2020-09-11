@@ -51,7 +51,7 @@ class get_current_pulseid():
         pulseid_pv = PULSEID_PVS.get(beamline)
         if pulseid_pv:
             pv = epics.PV(pulseid_pv)
-            if pv.connected:
+            if pv.wait_for_connection():
                 self.get = pv.get
 
     def __call__(self):
