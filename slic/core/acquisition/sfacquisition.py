@@ -24,7 +24,7 @@ class SFAcquisition(BaseAcquisition):
 
         self.default_channels = default_channels
         self.api_address = api_address
-        self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator)
+        self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, client_name="slic")
 
         self.current_task = None
 
