@@ -97,9 +97,10 @@ class BrokerError(Exception):
 
 class BrokerConfig:
 
-    def __init__(self, pgroup, rate_multiplicator=1):
+    def __init__(self, pgroup, rate_multiplicator=1, client_name=None):
         self.pgroup = pgroup
         self.rate_multiplicator = rate_multiplicator #TODO: can we read that from epics?
+        self.client_name = client_name
         self.set(None) #TODO: sensible defaults?
 
     def set(self, output_dir, detectors=None, channels=None, pvs=None, scan_info=None):
@@ -118,6 +119,9 @@ class BrokerConfig:
             "start_pulseid": start_pulseid,
             "stop_pulseid": stop_pulseid
         }
+
+        if self.client_name:
+            config["client_name"] = self.client_name
 
         if self.detectors:
             detectors = {d: {} for d in self.detectors} # currently the dicts are empty, thus allow giving just a list as argument
