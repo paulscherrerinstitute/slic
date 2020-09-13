@@ -9,16 +9,21 @@ from .scaninfo import ScanInfo
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, acquisitions, filename, channels, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
+    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
         self.filename = filename
+
+        self.detectors = detectors #TODO: only for sf_daq (see also in arguments)
         self.channels = channels
+        self.pvs = pvs #TODO: only for sf_daq (see also in arguments)
+
         self.n_pulses_per_step = n_pulses #TODO: to rename or not to rename?
         self.data_base_dir = data_base_dir
 
-        self.scan_info = ScanInfo(filename, scan_info_dir, adjustables, values)
+        self.scan_info       = ScanInfo(filename, scan_info_dir, adjustables, values)
+        self.scan_info_sfdaq = ScanInfo(filename, scan_info_dir, adjustables, values)
 
         self.make_scan_sub_dir = make_scan_sub_dir
         self.condition = condition
@@ -72,6 +77,9 @@ class ScanBackend:
         step_readbacks = get_all_current_values(self.adjustables)
         print("Moved adjustables, starting acquisition")
 
+#TODO: sf_daq needs scan info in advance, filenames are not needed
+        self.scan_info_sfdaq.append(step_values, step_readbacks, None, step_info)
+
         fn = self.get_filename(n_step)
         step_filenames = self.acquire_all(fn)
         print("Acquisition done")
@@ -112,7 +120,10 @@ class ScanBackend:
     def acquire_all(self, filename):
         tasks = []
         for acq in self.acquisitions:
-            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
+#TODO: sf_daq expects scan info in advance, and detectors/bs-channels/PVs separated
+            scan_info = self.scan_info_sfdaq.to_sfdaq_dict()
+            t = acq.acquire(filename, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, wait=False)
+#            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
             tasks.append(t)
 
         self.current_tasks = tasks

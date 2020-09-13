@@ -12,7 +12,7 @@ from .broker_client import BrokerClient
 
 class SFAcquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_channels=None, api_address="http://sf-daq-1:10002", rate_multiplicator=1):
+    def __init__(self, instrument, pgroup, default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq-1:10002", rate_multiplicator=1):
         self.instrument = instrument
         self.pgroup = pgroup
 
@@ -22,27 +22,38 @@ class SFAcquisition(BaseAcquisition):
             default_channel_list = self.paths.default_channel_list
             default_channels = Channels(default_channel_list)
 
+        self.default_detectors = default_detectors
         self.default_channels = default_channels
+        self.default_pvs = default_pvs
+
         self.api_address = api_address
         self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, client_name="slic")
 
         self.current_task = None
 
 
-    def acquire(self, filename, channels=None, n_pulses=100, wait=True):
+    def acquire(self, filename, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, wait=True):
         if not filename or filename == "/dev/null":
             print("Skipping retrieval since no filename was given.")
             return
+
+        if not detectors:
+            print("No detectors specified, using default detector list.")
+            detectors = self.default_detectors
 
         if not channels:
             print("No channels specified, using default channel list.")
             channels = self.default_channels
 
+        if not pvs:
+            print("No PVs specified, using default PV list.")
+            pvs = self.default_pvs
+
         client = self.client
-        client.set_config(n_pulses, filename, channels=channels)
+        client.set_config(n_pulses, filename, detectors=detectors, channels=channels, pvs=pvs, scan_info=scan_info)
 
         def _acquire():
-            run_number = self.client.start()
+            run_number = client.start()
             printable_run_number = str(run_number).zfill(6)
             filename_pattern = self.paths.raw / filename / f"run_{printable_run_number}.*.h5"
             filename_pattern = str(filename_pattern) # json cannot serialize pathlib paths
