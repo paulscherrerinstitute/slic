@@ -41,7 +41,8 @@ class LaserExp(BaseDevice):
         self.compressorDiag_delay = Motor(Id + "-M421:MOT")
 
         # Pump A/C delay stage
-        self.pump_autocorr_delay = DelayStage(Id + "-M444:MOT")
+#        self.pump_autocorr_delay = DelayStage(Id + "-M444:MOT")
+        self.pump_autocorr_delay = Motor(Id + "-M444:MOT")
 
         # Experiment-FEL timing delay stage
         self.pump_toFEL_delay = DelayStage(Id + "-M441:MOT")
@@ -55,8 +56,23 @@ class LaserExp(BaseDevice):
     def __repr__(self):
         to_print = {}
         for key, item in self.__dict__.items():
-            if type(item) in (Motor, DelayStage, PV, ETiming):
-                to_print[key] = item
+            if type(item) not in (Motor, DelayStage, PV, ETiming):
+                continue
+
+            #TODO: clean up
+            def get_value(dev):
+                val = dev.get()
+                units = dev.units
+                return f"{val} {units}"
+
+            if isinstance(item, DelayStage):
+                motor = get_value(item.motor)
+                delay = get_value(item.delay)
+                val = " | ".join((motor, delay))
+            else:
+                val = get_value(item)
+
+            to_print[key] = val
 
         head = "Laser motor positions"
         return printable_dict(to_print, head)
