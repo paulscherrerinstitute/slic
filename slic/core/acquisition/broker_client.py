@@ -7,7 +7,7 @@ from .broker_tools import get_current_pulseid
 
 class BrokerClient:
 
-    def __init__(self, *args, address="http://sf-daq-1:10002", wait_time=0.1, **kwargs):
+    def __init__(self, *args, address="http://sf-daq:10002", wait_time=0.1, **kwargs):
         self.config = BrokerConfig(*args, **kwargs)
         self.address = address
         self.wait_time = wait_time

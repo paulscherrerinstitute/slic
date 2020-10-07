@@ -12,7 +12,7 @@ from .broker_client import BrokerClient
 
 class SFAcquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq-1:10002", rate_multiplicator=1):
+    def __init__(self, instrument, pgroup, default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1):
         self.instrument = instrument
         self.pgroup = pgroup
 
