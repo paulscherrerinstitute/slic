@@ -39,7 +39,7 @@ class Scanner:
 
 
 #TODO: detectors and pvs only for sf_daq
-    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None):
+    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, move_back_to_initial_values="ask"):
         """N-dimensional scan
 
         Parameters:
@@ -61,7 +61,7 @@ class Scanner:
             acquisitions = self.default_acquisitions
 
 #TODO: detectors and pvs only for sf_daq
-        scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition)
+        scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition, move_back_to_initial_values=move_back_to_initial_values)
 
         if start_immediately:
             scan.run(step_info=step_info)

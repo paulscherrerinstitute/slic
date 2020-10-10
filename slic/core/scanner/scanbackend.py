@@ -9,7 +9,7 @@ from .scaninfo import ScanInfo
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition):
+    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, move_back_to_initial_values):
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
@@ -27,6 +27,12 @@ class ScanBackend:
 
         self.make_scan_sub_dir = make_scan_sub_dir
         self.condition = condition
+
+        #TODO: does this make sense?
+        allowed_values = (True, False, "ask")
+        if move_back_to_initial_values not in allowed_values:
+            raise ValueError("{} not in {}".format(move_back_to_initial_values, allowed_values)
+        self.move_back_to_initial_values = move_back_to_initial_values
 
         self.store_initial_values()
 
@@ -48,7 +54,8 @@ class ScanBackend:
                 print(t)
                 print()
 
-        if ask_Yes_no("Move back to initial values"): #TODO: should this be asked or a parameter?
+        #TODO: refactor logic
+        if (self.move_back_to_initial_values == "ask" and ask_Yes_no("Move back to initial values")) or self.move_back_to_initial_values:
             self.change_to_initial_values()
 
 
