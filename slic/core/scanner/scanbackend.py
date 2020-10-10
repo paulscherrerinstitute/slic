@@ -31,7 +31,7 @@ class ScanBackend:
         #TODO: does this make sense?
         allowed_values = (True, False, "ask")
         if move_back_to_initial_values not in allowed_values:
-            raise ValueError("{} not in {}".format(move_back_to_initial_values, allowed_values)
+            raise ValueError("{} not in {}".format(move_back_to_initial_values, allowed_values))
         self.move_back_to_initial_values = move_back_to_initial_values
 
         self.store_initial_values()
