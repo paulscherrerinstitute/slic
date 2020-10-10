@@ -55,7 +55,9 @@ class ScanBackend:
                 print()
 
         #TODO: refactor logic
-        if (self.move_back_to_initial_values == "ask" and ask_Yes_no("Move back to initial values")) or self.move_back_to_initial_values:
+        if (self.move_back_to_initial_values == "ask" and ask_Yes_no("Move back to initial values")):
+            self.change_to_initial_values()
+        elif self.move_back_to_initial_values:
             self.change_to_initial_values()
 
 
