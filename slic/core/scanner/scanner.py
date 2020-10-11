@@ -39,7 +39,7 @@ class Scanner:
 
 
 #TODO: detectors and pvs only for sf_daq
-    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, move_back_to_initial_values=None):
+    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, return_to_initial_values=None):
         """N-dimensional scan
 
         Parameters:
@@ -50,7 +50,7 @@ class Scanner:
             acquisitions (sequence of BaseAcquisitions, optional): List of acquisition objects to acquire from. If empty (default) the default list will be used.
             start_immediately (bool, optional): If True (default), start the scan immediately. If False, the returned scan can be started via its run method.
             step_info: Arbitraty data that is appended to the ScanInfo in each step.
-            move_back_to_initial_values: (bool or None, optional): Move back to initial values after scan. If None (default) ask for user input.
+            return_to_initial_values: (bool or None, optional): Return to initial values after scan. If None (default) ask for user input.
 
         Returns:
             ScanBackend: Scan instance.
@@ -62,7 +62,7 @@ class Scanner:
             acquisitions = self.default_acquisitions
 
 #TODO: detectors and pvs only for sf_daq
-        scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition, move_back_to_initial_values=move_back_to_initial_values)
+        scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition, return_to_initial_values=return_to_initial_values)
 
         if start_immediately:
             scan.run(step_info=step_info)

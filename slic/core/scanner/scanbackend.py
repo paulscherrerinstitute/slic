@@ -10,7 +10,7 @@ from .scaninfo import ScanInfo
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, move_back_to_initial_values):
+    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values):
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
@@ -29,8 +29,8 @@ class ScanBackend:
         self.make_scan_sub_dir = make_scan_sub_dir
         self.condition = condition
 
-        check_trinary(move_back_to_initial_values)
-        self.move_back_to_initial_values = move_back_to_initial_values
+        check_trinary(return_to_initial_values)
+        self.return_to_initial_values = return_to_initial_values
 
         self.store_initial_values()
 
@@ -52,13 +52,13 @@ class ScanBackend:
                 print(t)
                 print()
 
-        move_back = self.move_back_to_initial_values
+        go_back = self.return_to_initial_values
 
-        if move_back is None:
-             move_back = ask_Yes_no("Move back to initial values")
+        if go_back is None:
+             go_back = ask_Yes_no("Return to initial values")
 
-        if move_back:
-            print("Moving back to initial values")
+        if go_back:
+            print("Returning to initial values")
             self.change_to_initial_values()
 
 
