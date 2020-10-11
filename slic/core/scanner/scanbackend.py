@@ -3,6 +3,7 @@ import os
 from slic.utils import make_missing_dir
 from slic.utils.printing import printable_dict
 from slic.utils.ask_yes_no import ask_Yes_no
+from slic.utils.trinary import check_trinary
 
 from .scaninfo import ScanInfo
 
@@ -28,10 +29,7 @@ class ScanBackend:
         self.make_scan_sub_dir = make_scan_sub_dir
         self.condition = condition
 
-        #TODO: does this make sense?
-        allowed_values = (True, False, "ask")
-        if move_back_to_initial_values not in allowed_values:
-            raise ValueError("{} not in {}".format(move_back_to_initial_values, allowed_values))
+        check_trinary(move_back_to_initial_values)
         self.move_back_to_initial_values = move_back_to_initial_values
 
         self.store_initial_values()
@@ -54,10 +52,13 @@ class ScanBackend:
                 print(t)
                 print()
 
-        #TODO: refactor logic
-        if (self.move_back_to_initial_values == "ask" and ask_Yes_no("Move back to initial values")):
-            self.change_to_initial_values()
-        elif self.move_back_to_initial_values:
+        move_back = self.move_back_to_initial_values
+
+        if move_back is None:
+             move_back = ask_Yes_no("Move back to initial values")
+
+        if move_back:
+            print("Moving back to initial values")
             self.change_to_initial_values()
 
 

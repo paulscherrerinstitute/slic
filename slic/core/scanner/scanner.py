@@ -39,7 +39,7 @@ class Scanner:
 
 
 #TODO: detectors and pvs only for sf_daq
-    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, move_back_to_initial_values="ask"):
+    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, move_back_to_initial_values=None):
         """N-dimensional scan
 
         Parameters:
@@ -50,6 +50,7 @@ class Scanner:
             acquisitions (sequence of BaseAcquisitions, optional): List of acquisition objects to acquire from. If empty (default) the default list will be used.
             start_immediately (bool, optional): If True (default), start the scan immediately. If False, the returned scan can be started via its run method.
             step_info: Arbitraty data that is appended to the ScanInfo in each step.
+            move_back_to_initial_values: (bool or None, optional): Move back to initial values after scan. If None (default) ask for user input.
 
         Returns:
             ScanBackend: Scan instance.
