@@ -1,6 +1,6 @@
-from epics import PV
 from slic.core.adjustable import Adjustable
 from slic.devices.general.motor import Motor
+from ..basedevice import BaseDevice
 
 
 SPEED_OF_LIGHT = 299792458 # m/s
@@ -17,14 +17,20 @@ def pos_to_delay(pos):
 
 
 
-class DelayStage:
+class DelayStage(BaseDevice):
 
-    def __init__(self, channel):
-        self.motor = Motor(channel)
+    def __init__(self, name):
+        self.name = name
+        self.motor = Motor(name)
         self.delay = Delay(self.motor)
 
     def __repr__(self):
-        return "{} | {}".format(self.motor, self.delay)
+        devices = (self.motor, self.delay)
+        return " | ".join(repr(d) for d in devices)
+
+    def __str__(self):
+        devices = (self.motor, self.delay)
+        return " | ".join(str(d) for d in devices)
 
     def get(self):
         res = {
