@@ -21,23 +21,24 @@ class DelayStage(BaseDevice):
 
     def __init__(self, name):
         self.name = name
-        self.motor = Motor(name)
-        self.delay = Delay(self.motor)
+
+        self.motor = motor = Motor(name)
+        self.delay = delay = Delay(motor)
+
+        self.devices = {
+            "motor": motor,
+            "delay": delay
+        }
+
 
     def __repr__(self):
-        devices = (self.motor, self.delay)
-        return " | ".join(repr(d) for d in devices)
+        return " | ".join(repr(d) for d in self.devices.values())
 
     def __str__(self):
-        devices = (self.motor, self.delay)
-        return " | ".join(str(d) for d in devices)
+        return " | ".join(str(d) for d in self.devices.values())
 
     def get(self):
-        res = {
-            "motor": self.motor.get_current_value(),
-            "delay": self.delay.get_current_value()
-        }
-        return res
+        return {n: d.get_current_value() for n, d in self.devices.items()}
 
 
 
