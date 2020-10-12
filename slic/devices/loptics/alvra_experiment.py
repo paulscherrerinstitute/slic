@@ -1,7 +1,6 @@
-from slic.utils.pv import PV
-from slic.utils.printing import printable_dict
-
+from slic.core.adjustable import Adjustable, PVAdjustable
 from slic.devices.general.motor import Motor
+from slic.utils.printing import printable_dict
 from ..basedevice import BaseDevice
 from ..general.delay_stage import DelayStage
 from ..timing.lasertiming import ETiming
@@ -15,8 +14,8 @@ class LaserExp(BaseDevice):
         self.z_undulator = 122
 
         # Laser repetition rate
-        self.repRate = PV("SIN-TIMAST-TMA:Evt-20-Freq-I")
-        self.darkRate = PV("SIN-TIMAST-TMA:Evt-23-Freq-I")
+        self.repRate = PVAdjustable("SIN-TIMAST-TMA:Evt-20-Freq-I")
+        self.darkRate = PVAdjustable("SIN-TIMAST-TMA:Evt-23-Freq-I")
 
         # Waveplates
         self.wpTopas = Motor(Id + "-M442:MOT")
@@ -53,26 +52,13 @@ class LaserExp(BaseDevice):
         # Globi electronic timing PV from Edwin
         self.eTiming = ETiming(Id + "-eTiming")
 
+
     def __repr__(self):
         to_print = {}
         for key, item in self.__dict__.items():
-            if type(item) not in (Motor, DelayStage, PV, ETiming):
+            if not isinstance(item, (Adjustable, BaseDevice)):
                 continue
-
-            #TODO: clean up
-            def get_value(dev):
-                val = dev.get()
-                units = dev.units
-                return f"{val} {units}"
-
-            if isinstance(item, DelayStage):
-                motor = get_value(item.motor)
-                delay = get_value(item.delay)
-                val = " | ".join((motor, delay))
-            else:
-                val = get_value(item)
-
-            to_print[key] = val
+            to_print[key] = str(item)
 
         head = "Laser motor positions"
         return printable_dict(to_print, head)
