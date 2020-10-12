@@ -43,15 +43,22 @@ class Adjustable(BaseAdjustable, SpecConvenience):
 
 
     def __repr__(self):
+        name  = self._printable_name()
+        value = self._printable_value()
+        return f"{name} at {value}"
+
+    def __str__(self):
+        return self._printable_value()
+
+    def _printable_name(self):
         tname = typename(self)
         name = self.name
-        units = self.units
+        return f"{tname} \"{name}\"" if name is not None else tname
+
+    def _printable_value(self):
         value = self.get_current_value()
-
-        name  = f"{tname} \"{name}\"" if name  is not None else tname
-        value = f"{value} {units}"    if units is not None else value
-
-        return f"{name} at {value}"
+        units = self.units
+        return f"{value} {units}" if units is not None else str(value)
 
 
 
