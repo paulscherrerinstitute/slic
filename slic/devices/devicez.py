@@ -8,7 +8,7 @@ def read_z_from_channel(chan):
         return None
 
 
-class Device:
+class DeviceZ:
 
     def __init__(self, channel, description=None, z_undulator=None):
         self.channel = channel
