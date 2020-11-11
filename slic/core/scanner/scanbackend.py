@@ -94,11 +94,15 @@ class ScanBackend:
         step_filenames = self.acquire_all(fn)
         print("Acquisition done")
 
-        self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
+#TODO: sf_daq writes scan info to /raw -> stop writing it to /res
+#        self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
+        self.scan_info.append(step_values, step_readbacks, step_filenames, step_info)
 
 
     def create_output_dirs(self):
-        make_missing_dir(self.scan_info.base_dir)
+        pass
+#TODO: sf_daq writes scan info to /raw -> stop writing it to /res
+#        make_missing_dir(self.scan_info.base_dir)
 
 #TODO: cannot do this anymore for sf_daq, but need it for other methods...
 #        for acq in self.acquisitions:
