@@ -56,7 +56,7 @@ class ETiming(Adjustable):
 
     def is_moving(self):
         waiting = self.pvs.waiting.get()
-        return bool(waiting)
+        return not bool(waiting)
 
     def wait_for_valid_value(self):
         tval = np.nan
