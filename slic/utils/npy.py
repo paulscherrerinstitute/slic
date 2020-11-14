@@ -1,5 +1,22 @@
 import numpy as np
 
+from .utils import iround
+
+
+def nice_linspace(start, end, num, **kwargs):
+    return np.linspace(start, end, num + 1, **kwargs)
+
+
+def nice_arange(start, stop, step=1, endpoint=True, **kwargs):
+    start = istep(start, step)
+    stop  = istep(stop, step)
+    if endpoint:
+        stop += 1
+    return step * np.arange(start, stop, **kwargs)
+
+def istep(val, step):
+    return iround(val / step)
+
 
 def within(val, vmin, vmax):
     vmin, vmax = sorted((vmin, vmax))

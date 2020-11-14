@@ -16,4 +16,8 @@ def zero_pad(i, n):
     return str(i).zfill(n)
 
 
+def iround(val):
+    return int(round(val))
+
+
 
