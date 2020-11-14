@@ -1,3 +1,5 @@
+import numpy as np
+
 from slic.core.adjustable import DummyAdjustable
 from slic.utils import typename, nice_linspace, nice_arange
 
@@ -66,6 +68,39 @@ class Scanner:
 
         self.current_scan = scan
         return scan
+
+
+    def scan1D(self, adjustable, start_pos, end_pos, step_size, *args, **kwargs):
+        """One-dimensional scan
+
+        Parameters:
+            adjustable (BaseAdjustable): Adjustable to scan
+            start_pos (number): Starting position
+            end_pos (number): End position
+            step_size (number): Size of each step
+            args: are forwarded to make_scan()
+            kwargs: are forwarded to make_scan()
+
+        Returns:
+            ScanBackend: Scan instance
+        """
+        adjustables = [adjustable]
+
+        positions = nice_arange(start_pos, end_pos, step_size)
+        positions = transpose(positions)
+
+        return self.make_scan(adjustables, positions, *args, **kwargs)
+
+
+    def scan2D(self, adjustable0, start0_pos, end0_pos, step_size0, adjustable1, start1_pos, end1_pos, step_size1, *args, **kwargs):
+        adjustables = [adjustable0, adjustable1]
+
+        positions0 = nice_arange(start0_pos, end0_pos, step_size0)
+        positions1 = nice_arange(start1_pos, end1_pos, step_size1)
+
+        positions = make_2D_pairs(positions0, positions1)
+
+        return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
     def ascan(self, adjustable, start_pos, end_pos, n_intervals, *args, **kwargs):
@@ -143,6 +178,13 @@ class Scanner:
 
 def transpose(*args):
     return list(zip(*args))
+
+def make_2D_pairs(x, y):
+    x_grid, y_grid = np.meshgrid(x, y)
+    x_flat = x_grid.T.ravel()
+    y_flat = y_grid.T.ravel()
+    pairs = np.vstack((x_flat, y_flat)).T
+    return pairs
 
 
 
