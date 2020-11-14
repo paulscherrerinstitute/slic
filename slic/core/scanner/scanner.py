@@ -1,14 +1,11 @@
-import numpy as np
-
 from slic.core.adjustable import DummyAdjustable
-from slic.utils import typename
+from slic.utils import typename, nice_linspace, nice_arange
 
 from .scanbackend import ScanBackend
 from .runname import RunFilenameGenerator
 
 
-def make_positions(start, end, n):
-    return np.linspace(start, end, n + 1)
+make_positions = nice_linspace
 
 
 class Scanner:
