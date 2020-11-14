@@ -92,13 +92,32 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
-    def scan2D(self, adjustable0, start0_pos, end0_pos, step_size0, adjustable1, start1_pos, end1_pos, step_size1, *args, **kwargs):
-        adjustables = [adjustable0, adjustable1]
+    def scan2D(self, adjustable1, start_pos1, end_pos1, step_size1, adjustable2, start_pos2, end_pos2, step_size2, *args, **kwargs):
+        """Two-dimensional scan
 
-        positions0 = nice_arange(start0_pos, end0_pos, step_size0)
-        positions1 = nice_arange(start1_pos, end1_pos, step_size1)
+        Parameters:
+            adjustable1 (BaseAdjustable): First Adjustable to scan
+            start_pos1 (number): Starting position of first Adjustable
+            end_pos1 (number): End position of first Adjustable
+            step_size1 (number): Size of each step for first Adjustable
 
-        positions = make_2D_pairs(positions0, positions1)
+            adjustable2 (BaseAdjustable): Second Adjustable to scan
+            start_pos2 (number): Starting position of second Adjustable
+            end_pos2 (number): End position of second Adjustable
+            step_size2 (number): Size of each step for second Adjustable
+
+            args: are forwarded to make_scan()
+            kwargs: are forwarded to make_scan()
+
+        Returns:
+            ScanBackend: Scan instance
+        """
+        adjustables = [adjustable1, adjustable2]
+
+        positions1 = nice_arange(start_pos1, end_pos1, step_size1)
+        positions2 = nice_arange(start_pos2, end_pos2, step_size2)
+
+        positions = make_2D_pairs(positions1, positions2)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -125,12 +144,12 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
-    def a2scan(self, adjustable0, start0_pos, end0_pos, adjustable1, start1_pos, end1_pos, n_intervals, *args, **kwargs):
-        adjustables = [adjustable0, adjustable1]
+    def a2scan(self, adjustable1, start_pos1, end_pos1, adjustable2, start_pos2, end_pos2, n_intervals, *args, **kwargs):
+        adjustables = [adjustable1, adjustable2]
 
-        positions0 = make_positions(start0_pos, end0_pos, n_intervals)
-        positions1 = make_positions(start1_pos, end1_pos, n_intervals)
-        positions = transpose(positions0, positions1)
+        positions1 = make_positions(start_pos1, end_pos1, n_intervals)
+        positions2 = make_positions(start_pos2, end_pos2, n_intervals)
+        positions = transpose(positions1, positions2)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -153,10 +172,10 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
-    def a2scan_list(self, adjustable0, positions0, adjustable1, positions1, *args, **kwargs):
-        adjustables = [adjustable0, adjustable1]
+    def a2scan_list(self, adjustable1, positions1, adjustable2, positions2, *args, **kwargs):
+        adjustables = [adjustable1, adjustable2]
 
-        positions = transpose(positions0, positions1)
+        positions = transpose(positions1, positions2)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
