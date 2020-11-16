@@ -188,6 +188,7 @@ class ScanPanel(wx.Panel):
         return_to_initial_values = self.cb_return.GetValue()
 
         self.scanner.scan1D(adjustable, float(start_pos), float(end_pos), float(step_size), int(n_pulses), filename, return_to_initial_values)
+        self.on_change_adj(None)
 
 
     def _get_adj(self):
