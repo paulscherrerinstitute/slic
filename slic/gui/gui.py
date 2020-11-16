@@ -116,7 +116,7 @@ class StaticPanel(wx.Panel):
         n_pulses = self.le_npulses.GetValue()
         filename = self.le_fname.GetValue()
 
-        self.acquisition.acquire(filename, int(n_pulses))
+        self.acquisition.acquire(filename, n_pulses=int(n_pulses))
 
 
 
@@ -187,7 +187,7 @@ class ScanPanel(wx.Panel):
         filename = self.le_fname.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scanner.scan1D(adjustable, float(start_pos), float(end_pos), float(step_size), int(n_pulses), filename, return_to_initial_values)
+        self.scanner.scan1D(adjustable, float(start_pos), float(end_pos), float(step_size), int(n_pulses), filename, return_to_initial_values=return_to_initial_values)
         self.on_change_adj(None)
 
 
