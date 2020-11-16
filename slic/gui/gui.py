@@ -136,15 +136,19 @@ class ScanPanel(wx.Panel):
         self.scanner = scanner
 
         # widgets:
+        self.st_adj = st_adj = wx.StaticText(self, label="")
+
         adjs_instances = instances(Adjustable)
         self.adjs = adjs = {i.name : i for i in adjs_instances}
         adjs_name = tuple(adjs.keys())
         self.cb_adjs = cb_adjs = wx.ComboBox(self, choices=adjs_name)
         cb_adjs.SetSelection(0)
+        self.on_change_adj(None) # update static text with default selection
+        cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
         self.le_start = le_start = LabeledEntry(self, label="Start", value="0")
         self.le_stop  = le_stop  = LabeledEntry(self, label="Stop",  value="10")
-        self.le_step  = le_step  = LabeledEntry(self, label="Step Size",  value="1")
+        self.le_step  = le_step  = LabeledEntry(self, label="Step Size",  value="0.1")
 
         self.cb_return = cb_return = wx.CheckBox(self, label="Return to initial value")
         cb_return.SetValue(True)
@@ -161,14 +165,19 @@ class ScanPanel(wx.Panel):
         hb_pos.Add(le_stop)
         hb_pos.Add(le_step)
 
-        widgets = (cb_adjs, hb_pos, cb_return, le_npulses, le_fname, btn_go)
+        widgets = (cb_adjs, st_adj, hb_pos, cb_return, le_npulses, le_fname, btn_go)
         make_filled_vbox(self, widgets)
+
+
+    def on_change_adj(self, event):
+        print("change adjustable", event)
+        adjustable = self._get_adj()
+        self.st_adj.SetLabel(repr(adjustable))
 
 
     def on_go(self, event):
         print("scan", event)
-        adj_name = self.cb_adjs.GetStringSelection()
-        adjustable = self.adjs[adj_name]
+        adjustable = self._get_adj()
 
         start_pos = self.le_start.GetValue()
         end_pos   = self.le_stop.GetValue()
@@ -179,6 +188,12 @@ class ScanPanel(wx.Panel):
         return_to_initial_values = self.cb_return.GetValue()
 
         self.scanner.scan1D(adjustable, float(start_pos), float(end_pos), float(step_size), int(n_pulses), filename, return_to_initial_values)
+
+
+    def _get_adj(self):
+        adj_name = self.cb_adjs.GetStringSelection()
+        adjustable = self.adjs[adj_name]
+        return adjustable
 
 
 
