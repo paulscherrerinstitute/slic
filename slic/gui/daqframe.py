@@ -26,8 +26,9 @@ class DAQFrame(wx.Frame):
         notebook.SetSelection(last_page)
 
         # make sure the window is large enough
-        panel_main.Fit()
-        self.SetSizerAndFit(panel_main.sizer)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(panel_main)
+        self.SetSizerAndFit(sizer)
 
 
 
