@@ -2,12 +2,14 @@ import wx
 
 from .daqpanels import ConfigPanel, StaticPanel, ScanPanel
 from .widgets import NotebookPanel
+from .icon import get_wx_icon
 
 
 class DAQFrame(wx.Frame):
 
     def __init__(self, scanner, title="Neat DAQ"):
         wx.Frame.__init__(self, None, title=title)#, size=(350,200))
+        self.SetIcon(get_wx_icon())
 
         acquisition = scanner.default_acquisitions[0] #TODO loop!
 
