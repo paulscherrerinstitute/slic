@@ -39,7 +39,7 @@ class Acquisition(BaseAcquisition):
         if not can_create_file(filename):
             return
 
-        if not channels:
+        if channels is None:
             print("No channels specified, using default channel list.")
             channels = self.default_channels
 

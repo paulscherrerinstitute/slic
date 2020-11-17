@@ -50,7 +50,7 @@ class DIAAcquisition(BaseAcquisition):
         else:
             filename = "/dev/null"
 
-        if not channels:
+        if channels is None:
             print("No channels specified, using default channel list.")
             channels = self.default_channels
 

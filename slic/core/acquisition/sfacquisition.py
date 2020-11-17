@@ -37,15 +37,15 @@ class SFAcquisition(BaseAcquisition):
             print("Skipping retrieval since no filename was given.")
             return
 
-        if not detectors:
+        if detectors is None:
             print("No detectors specified, using default detector list.")
             detectors = self.default_detectors
 
-        if not channels:
+        if channels is None:
             print("No channels specified, using default channel list.")
             channels = self.default_channels
 
-        if not pvs:
+        if pvs is None:
             print("No PVs specified, using default PV list.")
             pvs = self.default_pvs
 
