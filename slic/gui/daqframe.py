@@ -22,8 +22,7 @@ class DAQFrame(wx.Frame):
         notebook.AddPage(panel_static, "Static")
         notebook.AddPage(panel_scan, "Scan")
 
-        last_page = notebook.GetPageCount() - 1 # start on last page (Scan)
-        notebook.SetSelection(last_page)
+        panel_main.SetSelection(-1) # start on last page (Scan)
 
         # make sure the window is large enough
         sizer = wx.BoxSizer(wx.VERTICAL)

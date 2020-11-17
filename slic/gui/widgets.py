@@ -26,6 +26,12 @@ class NotebookPanel(wx.Panel): #TODO: This needs work
         sizer.Add(notebook)
         self.SetSizer(sizer)
 
+    def SetSelection(self, num):
+        nb = self.notebook
+        ntotal = nb.GetPageCount()
+        num %= ntotal # allow counting from the back using negative numbers
+        nb.SetSelection(num)
+
 #    def __getattr__(self, name):
 #        return getattr(self.notebook, name)
 
