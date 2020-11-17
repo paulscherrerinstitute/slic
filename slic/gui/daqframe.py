@@ -6,7 +6,7 @@ from .widgets import NotebookPanel
 
 class DAQFrame(wx.Frame):
 
-    def __init__(self, scanner, title="Fun Control"):
+    def __init__(self, scanner, title="Neat DAQ"):
         wx.Frame.__init__(self, None, title=title)#, size=(350,200))
 
         acquisition = scanner.default_acquisitions[0] #TODO loop!
