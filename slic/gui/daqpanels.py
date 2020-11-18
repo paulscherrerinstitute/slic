@@ -4,6 +4,7 @@ import wx
 from .widgets import TwoButtons, LabeledEntry, make_filled_vbox, make_filled_hbox
 
 from slic.core.adjustable import Adjustable
+from slic.utils.printing import format_header, itemize #TODO: replace with dialog
 from slic.utils.registry import instances
 from slic.utils import nice_arange
 
@@ -18,6 +19,10 @@ class ConfigPanel(wx.Panel):
         instrument = acquisition.instrument
         pgroup = acquisition.pgroup
 
+        self.chans_det = acquisition.default_detectors
+        self.chans_bsc = acquisition.default_channels
+        self.chans_pvs = acquisition.default_pvs
+
         # widgets:
         header = repr(acquisition) + ":"
         st_acquisition = wx.StaticText(self, label=header)
@@ -25,19 +30,41 @@ class ConfigPanel(wx.Panel):
         font.SetUnderlined(True)
         st_acquisition.SetFont(font)
 
+        btn_chans_det = wx.Button(self, label="Detectors")
+        btn_chans_bsc = wx.Button(self, label="BS Channels")
+        btn_chans_pvs = wx.Button(self, label="PVs")
+
+        btn_chans_det.Bind(wx.EVT_BUTTON, self.on_chans_det)
+        btn_chans_bsc.Bind(wx.EVT_BUTTON, self.on_chans_bsc)
+        btn_chans_pvs.Bind(wx.EVT_BUTTON, self.on_chans_pvs)
+
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument)
         le_pgroup     = LabeledEntry(self, label="pgroup", value=pgroup)
+
+        btn_update = wx.Button(self, label="Update!")
 
         #TODO: disabled until working
         le_instrument.Disable()
         le_pgroup.Disable()
-
-        btn_update = wx.Button(self, label="Update!")
+        btn_update.Disable()
 
         # sizers:
-        widgets = (st_acquisition, le_instrument, le_pgroup, btn_update)
+        widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
+        hb_chans = make_filled_hbox(widgets)
+
+        widgets = (st_acquisition, hb_chans, le_instrument, le_pgroup, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
+
+
+    def on_chans_det(self, event):
+        print_list("Detectors", self.chans_det)
+
+    def on_chans_bsc(self, event):
+        print_list("BS Channels", self.chans_bsc)
+
+    def on_chans_pvs(self, event):
+        print_list("PVs", self.chans_pvs)
 
 
 
@@ -218,6 +245,12 @@ def run(fn): # TODO
     executor = ThreadPoolExecutor(max_workers=1)
     executor.submit(fn)
     executor.shutdown(wait=False)
+
+
+def print_list(header, seq): #TODO: replace with dialog
+    print()
+    print(format_header(header))
+    print(itemize(seq))
 
 
 
