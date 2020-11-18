@@ -34,6 +34,7 @@ class ScanBackend:
 
         self.store_initial_values()
 
+        self.running = False
         self.current_tasks = []
 
 
@@ -67,7 +68,10 @@ class ScanBackend:
 
         values = self.values
         ntotal = len(values)
+        self.running = True
         for n, val in enumerate(values):
+            if not self.running:
+                break
             print("Scan step {} of {}".format(n, ntotal))
             do_step(n, val, step_info=step_info)
 
@@ -160,6 +164,7 @@ class ScanBackend:
         set_all_target_values_and_wait(self.adjustables, self.initial_values)
 
     def stop(self):
+        self.running = False
         stop_all(self.current_tasks)
 
 
