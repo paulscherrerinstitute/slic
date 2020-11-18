@@ -11,6 +11,11 @@ class FakeAcquisition(BaseAcquisition):
     def __init__(self, instrument, pgroup):
         self.instrument = instrument
         self.pgroup = pgroup
+
+        self.default_detectors = [f"JF{i}" for i in range(2)]
+        self.default_channels  = [f"CH{i}" for i in range(100)]
+        self.default_pvs       = [f"PV{i}" for i in range(10)]
+
         self._stop()
 
 
