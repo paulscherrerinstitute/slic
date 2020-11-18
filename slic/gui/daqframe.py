@@ -28,7 +28,7 @@ class DAQFrame(wx.Frame):
 
         # make sure the window is large enough
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(panel_main)
+        sizer.Add(panel_main, proportion=1, flag=wx.EXPAND)
         self.SetSizerAndFit(sizer)
 
 

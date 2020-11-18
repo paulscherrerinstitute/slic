@@ -11,8 +11,8 @@ class TwoButtons(wx.BoxSizer):
 
         btn2.Disable()
 
-        self.Add(btn1, 1)
-        self.Add(btn2, 0)
+        self.Add(btn1, proportion=1)
+        self.Add(btn2, proportion=0)
 
 
     def Bind1(self, event, handler, *args, **kwargs):
@@ -68,7 +68,7 @@ class NotebookPanel(wx.Panel): #TODO: This needs work
         wx.Panel.__init__(self, *args, **kwargs)
         self.notebook = notebook = wx.Notebook(self)
         self.sizer = sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(notebook)
+        sizer.Add(notebook, proportion=1, flag=wx.EXPAND)
         self.SetSizer(sizer)
 
     def SetSelection(self, num):
@@ -82,19 +82,21 @@ class NotebookPanel(wx.Panel): #TODO: This needs work
 
 
 
-def make_filled_vbox(widgets, flag=wx.ALL|wx.EXPAND, border=0):
-    return make_filled_box(wx.VERTICAL, widgets, flag=flag, border=border)
+def make_filled_vbox(widgets, flag=wx.ALL|wx.EXPAND, border=0, stretch=True):
+    return make_filled_box(wx.VERTICAL, widgets, 0, flag, border, stretch)
 
-def make_filled_hbox(widgets, flag=wx.ALL|wx.EXPAND, border=0):
-    return make_filled_box(wx.HORIZONTAL, widgets, flag=flag, border=border)
+def make_filled_hbox(widgets, flag=wx.ALL|wx.EXPAND, border=0, stretch=False):
+    return make_filled_box(wx.HORIZONTAL, widgets, 1, flag, border, stretch)
 
 
-def make_filled_box(orient, widgets, flag, border):
+def make_filled_box(orient, widgets, proportion, flag, border, stretch):
     box = wx.BoxSizer(orient)
 
-    box.AddStretchSpacer()
+    if stretch:
+        box.AddStretchSpacer()
+
     for i in widgets:
-        box.Add(i, flag=flag, border=border)
+        box.Add(i, proportion=proportion, flag=flag, border=border)
 
     return box
 
