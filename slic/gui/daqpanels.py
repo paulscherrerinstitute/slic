@@ -1,6 +1,7 @@
+from concurrent.futures import ThreadPoolExecutor
 import wx
 
-from .widgets import LabeledEntry, make_filled_vbox
+from .widgets import TwoButtons, LabeledEntry, make_filled_vbox
 
 from slic.core.adjustable import Adjustable
 from slic.utils.registry import instances
@@ -49,13 +50,15 @@ class StaticPanel(wx.Panel):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         self.acquisition = acquisition
+        self.task = None
 
         # widgets:
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
-        btn_go = wx.Button(self, label="Go!")
-        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+        btn_go = TwoButtons(self)
+        btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
+        btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
         widgets = (le_npulses, le_fname, btn_go)
@@ -64,10 +67,29 @@ class StaticPanel(wx.Panel):
 
     def on_go(self, event):
         print("static", event)
+
+        if self.task:
+            return
+
         n_pulses = self.le_npulses.GetValue()
         filename = self.le_fname.GetValue()
 
-        self.acquisition.acquire(filename, n_pulses=int(n_pulses))
+        self.task = self.acquisition.acquire(filename, n_pulses=int(n_pulses), wait=False)
+
+        def wait():
+            print("start", self.task)
+            self.task.wait()
+            print("done", self.task)
+            self.task = None
+
+        run(wait)
+
+
+    def on_stop(self, event):
+        print("stop", self.task)
+        if self.task:
+            self.task.stop()
+            self.task = None
 
 
 
@@ -85,6 +107,7 @@ class ScanPanel(wx.Panel):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         self.scanner = scanner
+        self.scan = None
 
         # widgets:
         self.st_adj = st_adj = wx.StaticText(self, label="")
@@ -107,8 +130,9 @@ class ScanPanel(wx.Panel):
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename",  value="test")
 
-        btn_go = wx.Button(self, label="Go!")
-        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+        btn_go = TwoButtons(self)
+        btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
+        btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
         hb_pos = wx.BoxSizer(wx.HORIZONTAL)
@@ -128,6 +152,10 @@ class ScanPanel(wx.Panel):
 
     def on_go(self, event):
         print("scan", event)
+
+        if self.scan:
+            return
+
         adjustable = self._get_adj()
 
         start_pos = self.le_start.GetValue()
@@ -138,14 +166,35 @@ class ScanPanel(wx.Panel):
         filename = self.le_fname.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scanner.scan1D(adjustable, float(start_pos), float(end_pos), float(step_size), int(n_pulses), filename, return_to_initial_values=return_to_initial_values)
-        self.on_change_adj(None)
+        self.scan = self.scanner.scan1D(adjustable, float(start_pos), float(end_pos), float(step_size), int(n_pulses), filename, return_to_initial_values=return_to_initial_values, start_immediately=False)
+
+        def wait():
+            self.scan.run()
+            self.scan = None
+#            self.on_change_adj(None) # cannot change widget from thread, post event instead:
+            evt = wx.PyCommandEvent(wx.EVT_COMBOBOX.typeId, self.cb_adjs.GetId())
+            wx.PostEvent(self.cb_adjs, evt)
+
+        run(wait)
+
+
+    def on_stop(self, event):
+        if self.scan:
+            self.scan.stop()
+            self.scan = None
 
 
     def _get_adj(self):
         adj_name = self.cb_adjs.GetStringSelection()
         adjustable = self.adjs[adj_name]
         return adjustable
+
+
+
+def run(fn): # TODO
+    executor = ThreadPoolExecutor(max_workers=1)
+    executor.submit(fn)
+    executor.shutdown(wait=False)
 
 
 
