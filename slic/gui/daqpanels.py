@@ -36,7 +36,7 @@ class ConfigPanel(wx.Panel):
 
         # sizers:
         widgets = (st_acquisition, le_instrument, le_pgroup, btn_update)
-        vbox = make_filled_vbox(widgets)
+        vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
 
@@ -64,7 +64,7 @@ class StaticPanel(wx.Panel):
 
         # sizers:
         widgets = (le_npulses, le_fname, btn_go)
-        vbox = make_filled_vbox(widgets)
+        vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
 
