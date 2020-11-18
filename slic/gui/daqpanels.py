@@ -56,7 +56,7 @@ class StaticPanel(wx.Panel):
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
-        btn_go = TwoButtons(self)
+        self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
@@ -81,6 +81,8 @@ class StaticPanel(wx.Panel):
             self.task.wait()
             print("done", self.task)
             self.task = None
+            evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn2.GetId())
+            wx.PostEvent(self.btn_go.btn2, evt)
 
         run(wait)
 
@@ -130,7 +132,7 @@ class ScanPanel(wx.Panel):
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename",  value="test")
 
-        btn_go = TwoButtons(self)
+        self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
@@ -174,6 +176,8 @@ class ScanPanel(wx.Panel):
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
             evt = wx.PyCommandEvent(wx.EVT_COMBOBOX.typeId, self.cb_adjs.GetId())
             wx.PostEvent(self.cb_adjs, evt)
+            evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn2.GetId())
+            wx.PostEvent(self.btn_go.btn2, evt)
 
         run(wait)
 
