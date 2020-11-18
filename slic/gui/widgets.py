@@ -1,6 +1,46 @@
 import wx
 
 
+class TwoButtons(wx.BoxSizer):
+
+    def __init__(self, parent, id=wx.ID_ANY, label1="Go!", label2="Stop!"):
+        super().__init__(wx.HORIZONTAL)
+
+        self.btn1 = btn1 = wx.Button(parent, label=label1)
+        self.btn2 = btn2 = wx.Button(parent, label=label2)
+
+        btn2.Disable()
+
+        self.Add(btn1, 1)
+        self.Add(btn2, 0)
+
+
+    def Bind1(self, event, handler, *args, **kwargs):
+        def wrapped(*args, **kwargs):
+            self.Disable1()
+            return handler(*args, **kwargs)
+        self.btn1.Bind(event, wrapped, *args, **kwargs)
+
+    def Bind2(self, event, handler, *args, **kwargs):
+        def wrapped(*args, **kwargs):
+            self.Disable2()
+            return handler(*args, **kwargs)
+        self.btn2.Bind(event, wrapped, *args, **kwargs)
+
+
+    def Enable1(self):
+        self.btn1.Enable()
+        self.btn2.Disable()
+
+    def Disable1(self):
+        self.btn1.Disable()
+        self.btn2.Enable()
+
+    Enable2 = Disable1
+    Disable2 = Enable1
+
+
+
 class LabeledEntry(wx.BoxSizer):
 
     def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
