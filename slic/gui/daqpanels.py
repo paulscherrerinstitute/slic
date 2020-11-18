@@ -1,10 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor
 import wx
 
-from .widgets import TwoButtons, LabeledEntry, make_filled_vbox
+from .widgets import TwoButtons, LabeledEntry, make_filled_vbox, make_filled_hbox
 
 from slic.core.adjustable import Adjustable
 from slic.utils.registry import instances
+from slic.utils import nice_arange
 
 
 class ConfigPanel(wx.Panel):
@@ -28,14 +29,15 @@ class ConfigPanel(wx.Panel):
         le_pgroup     = LabeledEntry(self, label="pgroup", value=pgroup)
 
         #TODO: disabled until working
-        le_instrument.text.Disable()
-        le_pgroup.text.Disable()
+        le_instrument.Disable()
+        le_pgroup.Disable()
 
         btn_update = wx.Button(self, label="Update!")
 
         # sizers:
         widgets = (st_acquisition, le_instrument, le_pgroup, btn_update)
-        make_filled_vbox(self, widgets)
+        vbox = make_filled_vbox(widgets)
+        self.SetSizerAndFit(vbox)
 
 
 
@@ -62,7 +64,8 @@ class StaticPanel(wx.Panel):
 
         # sizers:
         widgets = (le_npulses, le_fname, btn_go)
-        make_filled_vbox(self, widgets)
+        vbox = make_filled_vbox(widgets)
+        self.SetSizerAndFit(vbox)
 
 
     def on_go(self, event):
@@ -122,28 +125,40 @@ class ScanPanel(wx.Panel):
         self.on_change_adj(None) # update static text with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
-        self.le_start = le_start = LabeledEntry(self, label="Start", value="0")
-        self.le_stop  = le_stop  = LabeledEntry(self, label="Stop",  value="10")
-        self.le_step  = le_step  = LabeledEntry(self, label="Step Size",  value="0.1")
+        self.le_start  = le_start  = LabeledEntry(self, label="Start",     value="0")
+        self.le_stop   = le_stop   = LabeledEntry(self, label="Stop",      value="10")
+        self.le_step   = le_step   = LabeledEntry(self, label="Step Size", value="0.1")
+        self.le_nsteps = le_nsteps = LabeledEntry(self, label="#Steps")
+
+        le_nsteps.Disable()
+        self.on_change_pos(None) # update #Steps
+
+        for le in (le_start, le_stop, le_step):
+            le.Bind(wx.EVT_TEXT, self.on_change_pos)
 
         self.cb_return = cb_return = wx.CheckBox(self, label="Return to initial value")
         cb_return.SetValue(True)
 
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
-        self.le_fname   = le_fname   = LabeledEntry(self, label="Filename",  value="test")
+        self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        hb_pos = wx.BoxSizer(wx.HORIZONTAL)
-        hb_pos.Add(le_start)
-        hb_pos.Add(le_stop)
-        hb_pos.Add(le_step)
+        widgets = (le_start, le_stop, le_step, le_nsteps)
+        hb_pos = make_filled_hbox(widgets)
 
         widgets = (cb_adjs, st_adj, hb_pos, cb_return, le_npulses, le_fname, btn_go)
-        make_filled_vbox(self, widgets)
+        vbox = make_filled_vbox(widgets, border=10)
+        self.SetSizerAndFit(vbox)
+
+
+    def on_change_pos(self, event):
+        start_pos, end_pos, step_size = self._get_pos()
+        nsteps = str(len(nice_arange(start_pos, end_pos, step_size)))
+        self.le_nsteps.SetValue(nsteps)
 
 
     def on_change_adj(self, event):
@@ -160,15 +175,13 @@ class ScanPanel(wx.Panel):
 
         adjustable = self._get_adj()
 
-        start_pos = self.le_start.GetValue()
-        end_pos   = self.le_stop.GetValue()
-        step_size = self.le_step.GetValue()
+        start_pos, end_pos, step_size = self._get_pos()
 
         n_pulses = self.le_npulses.GetValue()
         filename = self.le_fname.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan1D(adjustable, float(start_pos), float(end_pos), float(step_size), int(n_pulses), filename, return_to_initial_values=return_to_initial_values, start_immediately=False)
+        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, int(n_pulses), filename, return_to_initial_values=return_to_initial_values, start_immediately=False)
 
         def wait():
             self.scan.run()
@@ -192,6 +205,12 @@ class ScanPanel(wx.Panel):
         adj_name = self.cb_adjs.GetStringSelection()
         adjustable = self.adjs[adj_name]
         return adjustable
+
+    def _get_pos(self):
+        start_pos = self.le_start.GetValue()
+        end_pos   = self.le_stop.GetValue()
+        step_size = self.le_step.GetValue()
+        return float(start_pos), float(end_pos), float(step_size)
 
 
 

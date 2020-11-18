@@ -49,13 +49,16 @@ class LabeledEntry(wx.BoxSizer):
         super().__init__(wx.VERTICAL)
 
         self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = wx.TextCtrl(parent, value=value)
+        self.text  = text  = wx.TextCtrl(parent, value=value, style=wx.TE_RIGHT)
 
         self.Add(label, flag=wx.EXPAND)
-        self.Add(text, flag=wx.EXPAND)
+        self.Add(text,  flag=wx.EXPAND)
 
     def GetValue(self):
         return self.text.GetValue()
+
+    def __getattr__(self, name):
+        return getattr(self.text, name)
 
 
 
@@ -79,14 +82,21 @@ class NotebookPanel(wx.Panel): #TODO: This needs work
 
 
 
-def make_filled_vbox(parent, widgets):
-    vbox = wx.BoxSizer(wx.VERTICAL)
+def make_filled_vbox(widgets, flag=wx.ALL|wx.EXPAND, border=0):
+    return make_filled_box(wx.VERTICAL, widgets, flag=flag, border=border)
 
-    vbox.AddStretchSpacer()
+def make_filled_hbox(widgets, flag=wx.ALL|wx.EXPAND, border=0):
+    return make_filled_box(wx.HORIZONTAL, widgets, flag=flag, border=border)
+
+
+def make_filled_box(orient, widgets, flag, border):
+    box = wx.BoxSizer(orient)
+
+    box.AddStretchSpacer()
     for i in widgets:
-        vbox.Add(i, flag=wx.ALL|wx.EXPAND, border=10)
+        box.Add(i, flag=flag, border=border)
 
-    parent.SetSizerAndFit(vbox)
+    return box
 
 
 
