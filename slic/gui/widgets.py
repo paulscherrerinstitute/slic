@@ -29,10 +29,12 @@ class TwoButtons(wx.BoxSizer):
 
 
     def Enable1(self):
+        self.btn2.SetBackgroundColour(wx.NullColour)
         self.btn1.Enable()
         self.btn2.Disable()
 
     def Disable1(self):
+        self.btn2.SetBackgroundColour(wx.Colour(164, 36, 23))
         self.btn1.Disable()
         self.btn2.Enable()
 
