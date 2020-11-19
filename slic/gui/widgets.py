@@ -33,7 +33,7 @@ class ListDisplay(wx.ListBox):
 
     def __init__(self, parent, sequence):
         wx.ListBox.__init__(self, parent)
-        sequence = sorted(str(i) for i in sequence)
+        sequence = sorted(set(str(i) for i in sequence))
         self.InsertItems(sequence, 0)
 
 
