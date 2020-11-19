@@ -1,10 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
 import wx
 
-from .widgets import TwoButtons, LabeledEntry, make_filled_vbox, make_filled_hbox
+from .widgets import show_list, TwoButtons, LabeledEntry, make_filled_vbox, make_filled_hbox
 
 from slic.core.adjustable import Adjustable
-from slic.utils.printing import format_header, itemize #TODO: replace with dialog
 from slic.utils.registry import instances
 from slic.utils import nice_arange
 
@@ -62,13 +61,13 @@ class ConfigPanel(wx.Panel):
 
 
     def on_chans_det(self, event):
-        print_list("Detectors", self.chans_det)
+        show_list("Detectors", self.chans_det)
 
     def on_chans_bsc(self, event):
-        print_list("BS Channels", self.chans_bsc)
+        show_list("BS Channels", self.chans_bsc)
 
     def on_chans_pvs(self, event):
-        print_list("PVs", self.chans_pvs)
+        show_list("PVs", self.chans_pvs)
 
 
 
@@ -249,12 +248,6 @@ def run(fn): # TODO
     executor = ThreadPoolExecutor(max_workers=1)
     executor.submit(fn)
     executor.shutdown(wait=False)
-
-
-def print_list(header, seq): #TODO: replace with dialog
-    print()
-    print(format_header(header))
-    print(itemize(seq))
 
 
 
