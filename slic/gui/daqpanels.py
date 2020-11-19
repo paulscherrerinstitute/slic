@@ -19,9 +19,9 @@ class ConfigPanel(wx.Panel):
         instrument = acquisition.instrument
         pgroup = acquisition.pgroup
 
-        self.chans_det = acquisition.default_detectors
-        self.chans_bsc = acquisition.default_channels
-        self.chans_pvs = acquisition.default_pvs
+        self.chans_det = chans_det = acquisition.default_detectors
+        self.chans_bsc = chans_bsc = acquisition.default_channels
+        self.chans_pvs = chans_pvs = acquisition.default_pvs
 
         # widgets:
         header = repr(acquisition) + ":"
@@ -37,6 +37,10 @@ class ConfigPanel(wx.Panel):
         btn_chans_det.Bind(wx.EVT_BUTTON, self.on_chans_det)
         btn_chans_bsc.Bind(wx.EVT_BUTTON, self.on_chans_bsc)
         btn_chans_pvs.Bind(wx.EVT_BUTTON, self.on_chans_pvs)
+
+        if not chans_det: btn_chans_det.Disable()
+        if not chans_bsc: btn_chans_bsc.Disable()
+        if not chans_pvs: btn_chans_pvs.Disable()
 
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument)
         le_pgroup     = LabeledEntry(self, label="pgroup", value=pgroup)
