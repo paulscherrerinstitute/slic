@@ -11,7 +11,7 @@ def show_list(*args, **kwargs):
 class ListDialog(wx.Dialog):
 
     def __init__(self, title, sequence):
-        wx.Dialog.__init__(self, None, title=title)
+        wx.Dialog.__init__(self, None, title=title, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
 
         nentries = len(sequence)
         header = f"{nentries} entries"
@@ -20,8 +20,11 @@ class ListDialog(wx.Dialog):
         ld_sequence = ListDisplay(self, sequence)
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
 
-        widgets = (st_header, ld_sequence, std_dlg_btn_sizer)
-        vbox = make_filled_vbox(widgets, flag=wx.ALL|wx.CENTER, border=10)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(st_header, flag=wx.ALL|wx.CENTER, border=10)
+        vbox.Add(ld_sequence, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
+        vbox.Add(std_dlg_btn_sizer, flag=wx.ALL|wx.CENTER, border=10)
+
         self.SetSizerAndFit(vbox)
 
 
@@ -116,11 +119,11 @@ class NotebookPanel(wx.Panel): #TODO: This needs work
 
 
 
-def make_filled_vbox(widgets, flag=wx.ALL|wx.EXPAND, border=0, stretch=True):
-    return make_filled_box(wx.VERTICAL, widgets, 0, flag, border, stretch)
+def make_filled_vbox(widgets, proportion=0, flag=wx.ALL|wx.EXPAND, border=0, stretch=True):
+    return make_filled_box(wx.VERTICAL, widgets, proportion, flag, border, stretch)
 
-def make_filled_hbox(widgets, flag=wx.ALL|wx.EXPAND, border=0, stretch=False):
-    return make_filled_box(wx.HORIZONTAL, widgets, 1, flag, border, stretch)
+def make_filled_hbox(widgets, proportion=1, flag=wx.ALL|wx.EXPAND, border=0, stretch=False):
+    return make_filled_box(wx.HORIZONTAL, widgets, proportion, flag, border, stretch)
 
 
 def make_filled_box(orient, widgets, proportion, flag, border, stretch):
