@@ -1,6 +1,40 @@
 import wx
 
 
+def show_list(*args, **kwargs):
+    dlg = ListDialog(*args, **kwargs)
+    dlg.ShowModal()
+    dlg.Destroy()
+
+
+
+class ListDialog(wx.Dialog):
+
+    def __init__(self, title, sequence):
+        wx.Dialog.__init__(self, None, title=title)
+
+        nentries = len(sequence)
+        header = f"{nentries} entries"
+
+        st_header = wx.StaticText(self, label=header)
+        ld_sequence = ListDisplay(self, sequence)
+        std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
+
+        widgets = (st_header, ld_sequence, std_dlg_btn_sizer)
+        vbox = make_filled_vbox(widgets, flag=wx.ALL|wx.CENTER, border=10)
+        self.SetSizerAndFit(vbox)
+
+
+
+class ListDisplay(wx.ListBox):
+
+    def __init__(self, parent, sequence):
+        wx.ListBox.__init__(self, parent)
+        sequence = [str(i) for i in sequence]
+        self.InsertItems(sequence, 0)
+
+
+
 class TwoButtons(wx.BoxSizer):
 
     def __init__(self, parent, id=wx.ID_ANY, label1="Go!", label2="Stop!"):
