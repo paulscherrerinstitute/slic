@@ -81,6 +81,10 @@ class Motor(Adjustable, SpecConvenienceProgress):
     def set_target_value(self, value, hold=False, check_limits=True, show_progress=False):
         ignore_limits = not check_limits
 
+        low, high = self.get_limits()
+        if low == high == 0:
+            ignore_limits = True
+
         if not show_progress:
             def change():
                 self._move(value, ignore_limits=ignore_limits, wait=True)
