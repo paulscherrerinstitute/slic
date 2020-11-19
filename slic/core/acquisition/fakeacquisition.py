@@ -1,3 +1,4 @@
+import random
 from time import sleep
 
 from slic.core.task import DAQTask
@@ -12,9 +13,9 @@ class FakeAcquisition(BaseAcquisition):
         self.instrument = instrument
         self.pgroup = pgroup
 
-        self.default_detectors = [f"JFJFJFJFJFJFJFJFJFJF{i}" for i in range(2)]
-        self.default_channels  = [f"CHCHCHCHCH{i}" for i in range(100)]
-        self.default_pvs       = [f"PVPV{i}" for i in range(10)]
+        self.default_detectors = shuffle([f"JFJFJFJFJFJFJFJFJFJF{i}" for i in range(2)])
+        self.default_channels  = shuffle([f"CHCHCHCHCH{i}" for i in range(100)])
+        self.default_pvs       = shuffle([f"PVPV{i}" for i in range(10)])
 
         self._stop()
 
@@ -50,6 +51,12 @@ class FakeAcquisition(BaseAcquisition):
 
     def __repr__(self):
         return typename(self)
+
+
+
+def shuffle(seq):
+    random.shuffle(seq)
+    return seq
 
 
 
