@@ -142,8 +142,6 @@ class LabeledEntry(wx.BoxSizer):
         self.Add(label, flag=wx.EXPAND)
         self.Add(text,  flag=wx.EXPAND)
 
-    def GetValue(self):
-        return self.text.GetValue()
 
     def __getattr__(self, name):
         return getattr(self.text, name)
