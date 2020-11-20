@@ -70,7 +70,7 @@ class Scanner:
         return scan
 
 
-    def scan1D(self, adjustable, start_pos, end_pos, step_size, *args, **kwargs):
+    def scan1D(self, adjustable, start_pos, end_pos, step_size, *args, relative=False, **kwargs):
         """One-dimensional scan
 
         Parameters:
@@ -78,6 +78,7 @@ class Scanner:
             start_pos (number): Starting position
             end_pos (number): End position
             step_size (number): Size of each step
+            relative (bool, optional): Positions relative to current position of adjustable (in contrast to absolute)
             args: are forwarded to make_scan()
             kwargs: are forwarded to make_scan()
 
@@ -86,13 +87,18 @@ class Scanner:
         """
         adjustables = [adjustable]
 
+        if relative:
+            current = adjustable.get_current_value()
+            start_pos += current
+            end_pos   += current
+
         positions = nice_arange(start_pos, end_pos, step_size)
         positions = transpose(positions)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
-    def scan2D(self, adjustable1, start_pos1, end_pos1, step_size1, adjustable2, start_pos2, end_pos2, step_size2, *args, **kwargs):
+    def scan2D(self, adjustable1, start_pos1, end_pos1, step_size1, adjustable2, start_pos2, end_pos2, step_size2, *args, relative1=False, relative2=False, **kwargs):
         """Two-dimensional scan
 
         Parameters:
@@ -100,11 +106,13 @@ class Scanner:
             start_pos1 (number): Starting position of first Adjustable
             end_pos1 (number): End position of first Adjustable
             step_size1 (number): Size of each step for first Adjustable
+            relative1 (bool, optional): Positions relative to current position of adjustable1 (in contrast to absolute)
 
             adjustable2 (BaseAdjustable): Second Adjustable to scan
             start_pos2 (number): Starting position of second Adjustable
             end_pos2 (number): End position of second Adjustable
             step_size2 (number): Size of each step for second Adjustable
+            relative2 (bool, optional): Positions relative to current position of adjustable2 (in contrast to absolute)
 
             args: are forwarded to make_scan()
             kwargs: are forwarded to make_scan()
@@ -113,6 +121,16 @@ class Scanner:
             ScanBackend: Scan instance
         """
         adjustables = [adjustable1, adjustable2]
+
+        if relative1:
+            current1 = adjustable1.get_current_value()
+            start_pos1 += current1
+            end_pos1   += current1
+
+        if relative2:
+            current2 = adjustable2.get_current_value()
+            start_pos2 += current1
+            end_pos2   += current1
 
         positions1 = nice_arange(start_pos1, end_pos1, step_size1)
         positions2 = nice_arange(start_pos2, end_pos2, step_size2)
