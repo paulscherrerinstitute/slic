@@ -150,11 +150,7 @@ class ScanPanel(wx.Panel):
         # widgets:
         self.st_adj = st_adj = wx.StaticText(self, label="")
 
-        adjs_instances = instances(Adjustable)
-        self.adjs = adjs = {i.name : i for i in adjs_instances}
-        adjs_name = tuple(adjs.keys())
-        self.cb_adjs = cb_adjs = wx.ComboBox(self, choices=adjs_name)
-        cb_adjs.SetSelection(0)
+        self.cb_adjs = cb_adjs = AdjustableComboBox(self)
         self.on_change_adj(None) # update static text with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
@@ -202,7 +198,7 @@ class ScanPanel(wx.Panel):
 
     def on_change_adj(self, event):
         print("change adjustable", event)
-        adjustable = self._get_adj()
+        adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
 
 
@@ -212,7 +208,7 @@ class ScanPanel(wx.Panel):
         if self.scan:
             return
 
-        adjustable = self._get_adj()
+        adjustable = self.cb_adjs.get()
 
         start_pos, end_pos, step_size = self._get_pos()
 
@@ -241,16 +237,52 @@ class ScanPanel(wx.Panel):
             self.scan = None
 
 
-    def _get_adj(self):
-        adj_name = self.cb_adjs.GetStringSelection()
-        adjustable = self.adjs[adj_name]
-        return adjustable
-
     def _get_pos(self):
         start_pos = self.le_start.GetValue()
         end_pos   = self.le_stop.GetValue()
         step_size = self.le_step.GetValue()
         return float(start_pos), float(end_pos), float(step_size)
+
+
+
+class TweakPanel(wx.Panel):
+
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        # widgets:
+        self.st_adj = st_adj = wx.StaticText(self, label="")
+
+        self.cb_adjs = cb_adjs = AdjustableComboBox(self)
+        self.on_change_adj(None) # update static text with default selection
+        cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
+
+        # sizers:
+        widgets = (cb_adjs, st_adj)
+        vbox = make_filled_vbox(widgets, border=10)
+        self.SetSizerAndFit(vbox)
+
+
+    def on_change_adj(self, event):
+        print("change adjustable", event)
+        adjustable = self.cb_adjs.get()
+        self.st_adj.SetLabel(repr(adjustable))
+
+
+
+class AdjustableComboBox(wx.ComboBox):
+
+    def __init__(self, parent):
+        adjs_instances = instances(Adjustable)
+        self.adjs = adjs = {i.name : i for i in adjs_instances}
+        adjs_name = tuple(sorted(adjs.keys()))
+        wx.ComboBox.__init__(self, parent, choices=adjs_name)
+        self.SetSelection(0)
+
+    def get(self):
+        adj_name = self.GetStringSelection()
+        adjustable = self.adjs[adj_name]
+        return adjustable
 
 
 
