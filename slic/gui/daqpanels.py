@@ -1,9 +1,10 @@
 from concurrent.futures import ThreadPoolExecutor
 import wx
 
-from .widgets import show_list, TwoButtons, LabeledEntry, make_filled_vbox, make_filled_hbox
+from .widgets import show_list, show_two_lists, TwoButtons, LabeledEntry, make_filled_vbox, make_filled_hbox
 
 from slic.core.adjustable import Adjustable
+from slic.core.acquisition.bschannels import BSChannels
 from slic.utils.registry import instances
 from slic.utils import nice_arange
 
@@ -64,7 +65,9 @@ class ConfigPanel(wx.Panel):
         show_list("Detectors", self.chans_det)
 
     def on_chans_bsc(self, event):
-        show_list("BS Channels", self.chans_bsc)
+        chans = BSChannels(self.chans_bsc)
+        status = chans.status()
+        show_two_lists("BS Channels", status["online"], status["offline"])
 
     def on_chans_pvs(self, event):
         show_list("PVs", self.chans_pvs)

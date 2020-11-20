@@ -6,6 +6,11 @@ def show_list(*args, **kwargs):
     dlg.ShowModal()
     dlg.Destroy()
 
+def show_two_lists(*args, **kwargs):
+    dlg = DoubleListDialog(*args, **kwargs)
+    dlg.ShowModal()
+    dlg.Destroy()
+
 
 
 class ListDialog(wx.Dialog):
@@ -20,9 +25,55 @@ class ListDialog(wx.Dialog):
         ld_sequence = ListDisplay(self, sequence)
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
 
+        ld_sequence.Bind(wx.EVT_LISTBOX_DCLICK, self.on_copy)
+
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(st_header, flag=wx.ALL|wx.CENTER, border=10)
         vbox.Add(ld_sequence, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
+        vbox.Add(std_dlg_btn_sizer, flag=wx.ALL|wx.CENTER, border=10)
+
+        self.SetSizerAndFit(vbox)
+
+
+    def on_copy(self, event):
+#        val = self.ld_sequence.GetStringSelection()
+        obj = event.GetEventObject()
+        val = obj.GetStringSelection()
+        print(val)
+        copy_to_clipboard(val)
+
+    def __getattr__(self, name):
+        return getattr(self.ld_sequence, name)
+
+
+
+class DoubleListDialog(ListDialog):
+
+    def __init__(self, title, sequence1, sequence2):
+        wx.Dialog.__init__(self, None, title=title, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+
+        nentries1 = len(sequence1)
+        header1 = f"{nentries1} entries online"
+
+        nentries2 = len(sequence2)
+        header2 = f"{nentries2} entries offline"
+
+        st_header1 = wx.StaticText(self, label=header1)
+        ld_sequence1 = ListDisplay(self, sequence1)
+
+        st_header2 = wx.StaticText(self, label=header2)
+        ld_sequence2 = ListDisplay(self, sequence2)
+
+        std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
+
+        ld_sequence1.Bind(wx.EVT_LISTBOX_DCLICK, self.on_copy)
+        ld_sequence2.Bind(wx.EVT_LISTBOX_DCLICK, self.on_copy)
+
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(st_header1, flag=wx.ALL|wx.CENTER, border=10)
+        vbox.Add(ld_sequence1, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
+        vbox.Add(st_header2, flag=wx.ALL|wx.CENTER, border=10)
+        vbox.Add(ld_sequence2, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
         vbox.Add(std_dlg_btn_sizer, flag=wx.ALL|wx.CENTER, border=10)
 
         self.SetSizerAndFit(vbox)
@@ -136,6 +187,15 @@ def make_filled_box(orient, widgets, proportion, flag, border, stretch):
         box.Add(i, proportion=proportion, flag=flag, border=border)
 
     return box
+
+
+
+def copy_to_clipboard(val):
+    clipdata = wx.TextDataObject()
+    clipdata.SetText(val)
+    wx.TheClipboard.Open()
+    wx.TheClipboard.SetData(clipdata)
+    wx.TheClipboard.Close()
 
 
 
