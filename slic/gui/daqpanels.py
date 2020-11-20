@@ -67,7 +67,7 @@ class ConfigPanel(wx.Panel):
     def on_chans_bsc(self, event):
         chans = BSChannels(self.chans_bsc)
         status = chans.status()
-        show_two_lists("BS Channels", status["online"], status["offline"])
+        show_two_lists("BS Channels", status["online"], status["offline"], header1="channels online", header2="channels offline")
 
     def on_chans_pvs(self, event):
         show_list("PVs", self.chans_pvs)
