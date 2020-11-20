@@ -102,8 +102,6 @@ class StaticPanel(wx.Panel):
 
 
     def on_go(self, event):
-        print("static", event)
-
         if self.task:
             return
 
@@ -152,7 +150,8 @@ class ScanPanel(wx.Panel):
 
         self.cb_adjs = cb_adjs = AdjustableComboBox(self)
         self.on_change_adj(None) # update static text with default selection
-        cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
+        cb_adjs.Bind(wx.EVT_COMBOBOX,   self.on_change_adj)
+        cb_adjs.Bind(wx.EVT_TEXT_ENTER, self.on_change_adj)
 
         self.le_start  = le_start  = LabeledEntry(self, label="Start",     value=0)
         self.le_stop   = le_stop   = LabeledEntry(self, label="Stop",      value=10)
@@ -197,14 +196,11 @@ class ScanPanel(wx.Panel):
 
 
     def on_change_adj(self, event):
-        print("change adjustable", event)
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
 
 
     def on_go(self, event):
-        print("scan", event)
-
         if self.scan:
             return
 
@@ -262,8 +258,14 @@ class TweakPanel(wx.Panel):
 
         lte = LabeledTweakEntry(self, label="Relative", value=0.01)
 
-        btn_go = wx.Button(self, label="Go!")
-        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+        self.btn_go = btn_go = TwoButtons(self)
+        btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
+        btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
+
+        #TODO: disabled until working
+        lte.Disable()
+        le_abs.Disable()
+        btn_go.Disable()
 
         # sizers:
         widgets = (cb_adjs, st_adj, STRETCH, lte, le_abs, btn_go)
@@ -272,7 +274,6 @@ class TweakPanel(wx.Panel):
 
 
     def on_change_adj(self, event):
-        print("change adjustable", event)
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
         adjustable = self.cb_adjs.get()
@@ -281,7 +282,10 @@ class TweakPanel(wx.Panel):
 
 
     def on_go(self, event):
-        print("move", event)
+        print("move started", event)
+
+    def on_stop(self, event):
+        print("move stopped", event)
 
 
 
@@ -293,7 +297,7 @@ class AdjustableComboBox(wx.ComboBox):
         adjs_instances = instances(Adjustable)
         self.adjs = adjs = {i.name : i for i in adjs_instances}
         adjs_name = tuple(sorted(adjs.keys()))
-        wx.ComboBox.__init__(self, parent, choices=adjs_name)
+        wx.ComboBox.__init__(self, parent, choices=adjs_name, style=wx.CB_READONLY|wx.TE_PROCESS_ENTER)
         self.SetSelection(0)
 
     def get(self):

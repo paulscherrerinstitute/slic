@@ -137,8 +137,8 @@ class LabeledTweakEntry(wx.BoxSizer):
         self.label = label = wx.StaticText(parent, label=label)
         self.text  = text  = wx.TextCtrl(parent, value=value, style=wx.TE_RIGHT)
 
-        btn_left  = wx.Button(parent, label="<<")
-        btn_right = wx.Button(parent, label=">>")
+        self.btn_left  = btn_left  = wx.Button(parent, label="<<")
+        self.btn_right = btn_right = wx.Button(parent, label=">>")
 
         hb_tweak = wx.BoxSizer(wx.HORIZONTAL)
         hb_tweak.Add(btn_left)
@@ -147,6 +147,12 @@ class LabeledTweakEntry(wx.BoxSizer):
 
         self.Add(label, flag=wx.EXPAND)
         self.Add(hb_tweak,  flag=wx.EXPAND)
+
+
+    def Disable(self):
+        self.text.Disable()
+        self.btn_left.Disable()
+        self.btn_right.Disable()
 
 
     def __getattr__(self, name):
