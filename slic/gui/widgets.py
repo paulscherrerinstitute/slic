@@ -1,6 +1,9 @@
 import wx
 
 
+STRETCH = None
+
+
 def show_list(*args, **kwargs):
     dlg = ListDialog(*args, **kwargs)
     dlg.ShowModal()
@@ -192,21 +195,21 @@ class NotebookPanel(wx.Panel): #TODO: This needs work
 
 
 
-def make_filled_vbox(widgets, proportion=0, flag=wx.ALL|wx.EXPAND, border=0, stretch=True):
-    return make_filled_box(wx.VERTICAL, widgets, proportion, flag, border, stretch)
+def make_filled_vbox(widgets, proportion=0, flag=wx.ALL|wx.EXPAND, border=0):
+    return make_filled_box(wx.VERTICAL, widgets, proportion, flag, border)
 
-def make_filled_hbox(widgets, proportion=1, flag=wx.ALL|wx.EXPAND, border=0, stretch=False):
-    return make_filled_box(wx.HORIZONTAL, widgets, proportion, flag, border, stretch)
+def make_filled_hbox(widgets, proportion=1, flag=wx.ALL|wx.EXPAND, border=0):
+    return make_filled_box(wx.HORIZONTAL, widgets, proportion, flag, border)
 
 
-def make_filled_box(orient, widgets, proportion, flag, border, stretch):
+def make_filled_box(orient, widgets, proportion, flag, border):
     box = wx.BoxSizer(orient)
 
-    if stretch:
-        box.AddStretchSpacer()
-
     for i in widgets:
-        box.Add(i, proportion=proportion, flag=flag, border=border)
+        if i is STRETCH:
+            box.AddStretchSpacer()
+        else:
+            box.Add(i, proportion=proportion, flag=flag, border=border)
 
     return box
 

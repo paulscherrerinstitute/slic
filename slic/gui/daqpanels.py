@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import wx
 
-from .widgets import show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, make_filled_vbox, make_filled_hbox
+from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, make_filled_vbox, make_filled_hbox
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -56,7 +56,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (st_acquisition, hb_chans, le_instrument, le_pgroup, btn_update)
+        widgets = (STRETCH, st_acquisition, hb_chans, le_instrument, le_pgroup, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -96,7 +96,7 @@ class StaticPanel(wx.Panel):
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (le_npulses, le_fname, btn_go)
+        widgets = (STRETCH, le_npulses, le_fname, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -165,7 +165,7 @@ class ScanPanel(wx.Panel):
         for le in (le_start, le_stop, le_step):
             le.Bind(wx.EVT_TEXT, self.on_change_pos)
 
-        self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative positions")
+        self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative to current position")
         self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")
 
         cb_relative.SetValue(False)
@@ -183,9 +183,9 @@ class ScanPanel(wx.Panel):
         hb_pos = make_filled_hbox(widgets)
 
         widgets = (cb_relative, cb_return)
-        hb_cbs = make_filled_hbox(widgets)
+        hb_cbs = make_filled_vbox(widgets)
 
-        widgets = (cb_adjs, st_adj, hb_pos, hb_cbs, le_npulses, le_fname, btn_go)
+        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, hb_cbs, le_npulses, le_fname, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -255,18 +255,18 @@ class TweakPanel(wx.Panel):
         # widgets:
         self.st_adj  = st_adj  = wx.StaticText(self)
         self.cb_adjs = cb_adjs = AdjustableComboBox(self)
-        self.le_abs  = le_abs  = LabeledEntry(self, label="Absolute Position")
+        self.le_abs  = le_abs  = LabeledEntry(self, label="Absolute")
 
         self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
-        lte = LabeledTweakEntry(self, label="Relative pos", value=0.01)
+        lte = LabeledTweakEntry(self, label="Relative", value=0.01)
 
         btn_go = wx.Button(self, label="Go!")
         btn_go.Bind(wx.EVT_BUTTON, self.on_go)
 
         # sizers:
-        widgets = (cb_adjs, st_adj, lte, le_abs, btn_go)
+        widgets = (cb_adjs, st_adj, STRETCH, lte, le_abs, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
