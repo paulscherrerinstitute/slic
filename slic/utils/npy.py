@@ -8,6 +8,9 @@ def nice_linspace(start, end, num, **kwargs):
 
 
 def nice_arange(start, stop, step=1, endpoint=True, **kwargs):
+    step = np.abs(step)
+    if start > stop:
+        step *= -1
     start = istep(start, step)
     stop  = istep(stop, step)
     if endpoint:
