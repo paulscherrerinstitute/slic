@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import wx
 
-from .widgets import show_list, show_two_lists, TwoButtons, LabeledEntry, make_filled_vbox, make_filled_hbox
+from .widgets import show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, make_filled_vbox, make_filled_hbox
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -148,15 +148,15 @@ class ScanPanel(wx.Panel):
         self.scan = None
 
         # widgets:
-        self.st_adj = st_adj = wx.StaticText(self, label="")
+        self.st_adj = st_adj = wx.StaticText(self)
 
         self.cb_adjs = cb_adjs = AdjustableComboBox(self)
         self.on_change_adj(None) # update static text with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
-        self.le_start  = le_start  = LabeledEntry(self, label="Start",     value="0")
-        self.le_stop   = le_stop   = LabeledEntry(self, label="Stop",      value="10")
-        self.le_step   = le_step   = LabeledEntry(self, label="Step Size", value="0.1")
+        self.le_start  = le_start  = LabeledEntry(self, label="Start",     value=0)
+        self.le_stop   = le_stop   = LabeledEntry(self, label="Stop",      value=10)
+        self.le_step   = le_step   = LabeledEntry(self, label="Step Size", value=0.1)
         self.le_nsteps = le_nsteps = LabeledEntry(self, label="#Steps")
 
         le_nsteps.Disable()
@@ -171,7 +171,7 @@ class ScanPanel(wx.Panel):
         cb_relative.SetValue(False)
         cb_return.SetValue(True)
 
-        self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
+        self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value=100)
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
         self.btn_go = btn_go = TwoButtons(self)
@@ -245,20 +245,28 @@ class ScanPanel(wx.Panel):
 
 
 
+
+
 class TweakPanel(wx.Panel):
 
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         # widgets:
-        self.st_adj = st_adj = wx.StaticText(self, label="")
-
+        self.st_adj  = st_adj  = wx.StaticText(self)
         self.cb_adjs = cb_adjs = AdjustableComboBox(self)
-        self.on_change_adj(None) # update static text with default selection
+        self.le_abs  = le_abs  = LabeledEntry(self, label="Absolute Position")
+
+        self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
+        lte = LabeledTweakEntry(self, label="Relative pos", value=0.01)
+
+        btn_go = wx.Button(self, label="Go!")
+        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+
         # sizers:
-        widgets = (cb_adjs, st_adj)
+        widgets = (cb_adjs, st_adj, lte, le_abs, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -267,6 +275,15 @@ class TweakPanel(wx.Panel):
         print("change adjustable", event)
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
+        adjustable = self.cb_adjs.get()
+        value = adjustable.get_current_value()
+        self.le_abs.SetValue(str(value))
+
+
+    def on_go(self, event):
+        print("move", event)
+
+
 
 
 

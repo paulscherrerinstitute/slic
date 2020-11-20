@@ -122,10 +122,43 @@ class TwoButtons(wx.BoxSizer):
 
 
 
+
+
+class LabeledTweakEntry(wx.BoxSizer):
+
+    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
+        super().__init__(wx.VERTICAL)
+
+        value = str(value)
+
+        self.label = label = wx.StaticText(parent, label=label)
+        self.text  = text  = wx.TextCtrl(parent, value=value, style=wx.TE_RIGHT)
+
+        btn_left  = wx.Button(parent, label="<<")
+        btn_right = wx.Button(parent, label=">>")
+
+        hb_tweak = wx.BoxSizer(wx.HORIZONTAL)
+        hb_tweak.Add(btn_left)
+        hb_tweak.Add(btn_right)
+        hb_tweak.Add(text, proportion=1, flag=wx.ALL|wx.EXPAND)
+
+        self.Add(label, flag=wx.EXPAND)
+        self.Add(hb_tweak,  flag=wx.EXPAND)
+
+
+    def __getattr__(self, name):
+        return getattr(self.text, name)
+
+
+
+
+
 class LabeledEntry(wx.BoxSizer):
 
     def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
         super().__init__(wx.VERTICAL)
+
+        value = str(value)
 
         self.label = label = wx.StaticText(parent, label=label)
         self.text  = text  = wx.TextCtrl(parent, value=value, style=wx.TE_RIGHT)
