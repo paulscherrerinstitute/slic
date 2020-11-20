@@ -169,7 +169,10 @@ class ScanPanel(wx.Panel):
         for le in (le_start, le_stop, le_step):
             le.Bind(wx.EVT_TEXT, self.on_change_pos)
 
-        self.cb_return = cb_return = wx.CheckBox(self, label="Return to initial value")
+        self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative positions")
+        self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")
+
+        cb_relative.SetValue(False)
         cb_return.SetValue(True)
 
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
@@ -183,7 +186,10 @@ class ScanPanel(wx.Panel):
         widgets = (le_start, le_stop, le_step, le_nsteps)
         hb_pos = make_filled_hbox(widgets)
 
-        widgets = (cb_adjs, st_adj, hb_pos, cb_return, le_npulses, le_fname, btn_go)
+        widgets = (cb_relative, cb_return)
+        hb_cbs = make_filled_hbox(widgets)
+
+        widgets = (cb_adjs, st_adj, hb_pos, hb_cbs, le_npulses, le_fname, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -212,9 +218,10 @@ class ScanPanel(wx.Panel):
 
         n_pulses = self.le_npulses.GetValue()
         filename = self.le_fname.GetValue()
+        relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, int(n_pulses), filename, return_to_initial_values=return_to_initial_values, start_immediately=False)
+        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, int(n_pulses), filename, relative=relative, return_to_initial_values=return_to_initial_values, start_immediately=False)
 
         def wait():
             self.scan.run()
