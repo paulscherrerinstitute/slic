@@ -72,7 +72,7 @@ class ScanBackend:
         for n, val in enumerate(values):
             if not self.running:
                 break
-            print("Scan step {} of {}".format(n, ntotal))
+            print("Scan step {} of {}".format(n+1, ntotal))
             do_step(n, val, step_info=step_info)
 
         print("All scan steps done")
