@@ -141,22 +141,26 @@ class LabeledTweakEntry(wx.BoxSizer):
         self.label = label = wx.StaticText(parent, label=label)
         self.text  = text  = wx.TextCtrl(parent, value=value, style=wx.TE_RIGHT)
 
-        self.btn_left  = btn_left  = wx.Button(parent, label="<<")
-        self.btn_right = btn_right = wx.Button(parent, label=">>")
+        self.btn_left  = btn_left  = wx.Button(parent, label="<")
+        self.btn_right = btn_right = wx.Button(parent, label=">")
 
-        hb_tweak = wx.BoxSizer(wx.HORIZONTAL)
-        hb_tweak.Add(btn_left)
-        hb_tweak.Add(btn_right)
-        hb_tweak.Add(text, proportion=1, flag=wx.ALL|wx.EXPAND)
+        self.btn_ff_left  = btn_ff_left  = wx.Button(parent, label="<<")
+        self.btn_ff_right = btn_ff_right = wx.Button(parent, label=">>")
 
-        self.Add(label, flag=wx.EXPAND)
-        self.Add(hb_tweak,  flag=wx.EXPAND)
+        widgets = (btn_ff_left, btn_left, btn_right, btn_ff_right)
+        hb_tweak = make_filled_hbox(widgets)
+
+        self.Add(label,    flag=wx.EXPAND)
+        self.Add(text,     flag=wx.EXPAND)
+        self.Add(hb_tweak, flag=wx.EXPAND|wx.TOP, border=10)
 
 
     def Disable(self):
         self.text.Disable()
         self.btn_left.Disable()
         self.btn_right.Disable()
+        self.btn_ff_left.Disable()
+        self.btn_ff_right.Disable()
 
 
     def __getattr__(self, name):

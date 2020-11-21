@@ -251,12 +251,14 @@ class TweakPanel(wx.Panel):
         # widgets:
         self.st_adj  = st_adj  = wx.StaticText(self)
         self.cb_adjs = cb_adjs = AdjustableComboBox(self)
-        self.le_abs  = le_abs  = LabeledEntry(self, label="Absolute")
+        self.le_abs  = le_abs  = LabeledEntry(self, label="Absolute Position")
 
         self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
-        lte = LabeledTweakEntry(self, label="Relative", value=0.01)
+        lte = LabeledTweakEntry(self, label="Relative Step", value=0.01)
+        lte.btn_left.Bind(wx.EVT_BUTTON,  self.on_left)
+        lte.btn_right.Bind(wx.EVT_BUTTON, self.on_right)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
@@ -286,6 +288,18 @@ class TweakPanel(wx.Panel):
 
     def on_stop(self, event):
         print("move stopped", event)
+
+    def on_left(self, event):
+        print("step left", event)
+
+    def on_right(self, event):
+        print("step right", event)
+
+    def on_ff_left(self, event):
+        print("fast forward left", event)
+
+    def on_ff_right(self, event):
+        print("fast forward right", event)
 
 
 
