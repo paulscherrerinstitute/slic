@@ -259,6 +259,11 @@ class TweakPanel(wx.Panel):
         lte.btn_ff_left.Bind(wx.EVT_BUTTON,  self.on_ff_left)
         lte.btn_ff_right.Bind(wx.EVT_BUTTON, self.on_ff_right)
 
+        lte.btn_left.SetToolTip(wx.ToolTip("-1 step"))
+        lte.btn_right.SetToolTip(wx.ToolTip("+1 step"))
+        lte.btn_ff_left.SetToolTip(wx.ToolTip("-10 steps"))
+        lte.btn_ff_right.SetToolTip(wx.ToolTip("+10 steps"))
+
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
