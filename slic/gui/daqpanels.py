@@ -241,12 +241,12 @@ class ScanPanel(wx.Panel):
 
 
 
-
-
 class TweakPanel(wx.Panel):
 
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        self.task = None
 
         # widgets:
         self.st_adj  = st_adj  = wx.StaticText(self)
@@ -256,18 +256,15 @@ class TweakPanel(wx.Panel):
         self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
-        lte = LabeledTweakEntry(self, label="Relative Step", value=0.01)
-        lte.btn_left.Bind(wx.EVT_BUTTON,  self.on_left)
-        lte.btn_right.Bind(wx.EVT_BUTTON, self.on_right)
+        self.lte = lte = LabeledTweakEntry(self, label="Relative Step", value=0.01)
+        lte.btn_left.Bind(wx.EVT_BUTTON,     self.on_left)
+        lte.btn_right.Bind(wx.EVT_BUTTON,    self.on_right)
+        lte.btn_ff_left.Bind(wx.EVT_BUTTON,  self.on_ff_left)
+        lte.btn_ff_right.Bind(wx.EVT_BUTTON, self.on_ff_right)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
-
-        #TODO: disabled until working
-        lte.Disable()
-        le_abs.Disable()
-        btn_go.Disable()
 
         # sizers:
         widgets = (cb_adjs, st_adj, STRETCH, lte, le_abs, btn_go)
@@ -278,30 +275,74 @@ class TweakPanel(wx.Panel):
     def on_change_adj(self, event):
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
-        adjustable = self.cb_adjs.get()
+
         value = adjustable.get_current_value()
         self.le_abs.SetValue(str(value))
 
 
     def on_go(self, event):
         print("move started", event)
+        if self.task:
+            return
+
+        target = self.le_abs.GetValue()
+        target = float(target)
+
+        adj = self.cb_adjs.get()
+        self.task = adj.set_target_value(target)
+
+        def wait():
+            print("start", self.task)
+            self.task.wait()
+            print("done", self.task)
+            self.task = None
+#            self.on_change_adj(None) # cannot change widget from thread, post event instead:
+            evt = wx.PyCommandEvent(wx.EVT_COMBOBOX.typeId, self.cb_adjs.GetId())
+            wx.PostEvent(self.cb_adjs, evt)
+            evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn2.GetId())
+            wx.PostEvent(self.btn_go.btn2, evt)
+
+        run(wait)
+
 
     def on_stop(self, event):
-        print("move stopped", event)
+        print("move stopped", self.task)
+        if self.task:
+            self.task.stop()
+            self.task = None
+
 
     def on_left(self, event):
         print("step left", event)
+        self._move_delta(-1)
 
     def on_right(self, event):
         print("step right", event)
+        self._move_delta(+1)
 
     def on_ff_left(self, event):
         print("fast forward left", event)
+        self._move_delta(-10)
 
     def on_ff_right(self, event):
         print("fast forward right", event)
+        self._move_delta(+10)
 
 
+    def _move_delta(self, direction):
+        print("move delta", direction)
+        adj = self.cb_adjs.get()
+        current = adj.get_current_value()
+
+        delta = self.lte.GetValue()
+        delta = float(delta)
+
+        target = current + direction * delta
+        target = str(target)
+
+        self.le_abs.SetValue(target)
+        evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn1.GetId())
+        wx.PostEvent(self.btn_go.btn1, evt)
 
 
 
