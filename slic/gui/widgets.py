@@ -129,8 +129,6 @@ class TwoButtons(wx.BoxSizer):
 
 
 
-
-
 class LabeledTweakEntry(wx.BoxSizer):
 
     def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
@@ -165,8 +163,6 @@ class LabeledTweakEntry(wx.BoxSizer):
 
     def __getattr__(self, name):
         return getattr(self.text, name)
-
-
 
 
 
