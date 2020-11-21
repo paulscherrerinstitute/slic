@@ -237,4 +237,9 @@ def copy_to_clipboard(val):
     wx.TheClipboard.Close()
 
 
+def post_event(event, source):
+    evt = wx.PyCommandEvent(event.typeId, source.GetId())
+    wx.PostEvent(source, evt)
+
+
 

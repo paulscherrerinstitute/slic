@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import wx
 
-from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, make_filled_vbox, make_filled_hbox
+from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, make_filled_vbox, make_filled_hbox, post_event
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -115,8 +115,7 @@ class StaticPanel(wx.Panel):
             self.task.wait()
             print("done", self.task)
             self.task = None
-            evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn2.GetId())
-            wx.PostEvent(self.btn_go.btn2, evt)
+            post_event(wx.EVT_BUTTON, self.btn_go.btn2)
 
         run(wait)
 
@@ -219,10 +218,8 @@ class ScanPanel(wx.Panel):
             self.scan.run()
             self.scan = None
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
-            evt = wx.PyCommandEvent(wx.EVT_COMBOBOX.typeId, self.cb_adjs.GetId())
-            wx.PostEvent(self.cb_adjs, evt)
-            evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn2.GetId())
-            wx.PostEvent(self.btn_go.btn2, evt)
+            post_event(wx.EVT_COMBOBOX, self.cb_adjs)
+            post_event(wx.EVT_BUTTON,   self.btn_go.btn2)
 
         run(wait)
 
@@ -297,10 +294,8 @@ class TweakPanel(wx.Panel):
             print("done", self.task)
             self.task = None
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
-            evt = wx.PyCommandEvent(wx.EVT_COMBOBOX.typeId, self.cb_adjs.GetId())
-            wx.PostEvent(self.cb_adjs, evt)
-            evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn2.GetId())
-            wx.PostEvent(self.btn_go.btn2, evt)
+            post_event(wx.EVT_COMBOBOX, self.cb_adjs)
+            post_event(wx.EVT_BUTTON,   self.btn_go.btn2)
 
         run(wait)
 
@@ -341,8 +336,7 @@ class TweakPanel(wx.Panel):
         target = str(target)
 
         self.le_abs.SetValue(target)
-        evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.btn_go.btn1.GetId())
-        wx.PostEvent(self.btn_go.btn1, evt)
+        post_event(wx.EVT_BUTTON, self.btn_go.btn1)
 
 
 
