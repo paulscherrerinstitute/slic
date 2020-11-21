@@ -25,6 +25,12 @@ class Adjustable(BaseAdjustable, SpecConvenience):
             return self.current_task.stop()
 
 
+    def tweak(self, delta, *args, **kwargs):
+        value = self.get_current_value()
+        value += delta
+        return self.set_target_value(value, *args, **kwargs)
+
+
     def __call__(self, value=None):
         if value is not None:
             return self.set_target_value(value)
