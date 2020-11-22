@@ -22,7 +22,8 @@ def istep(val, step):
 
 
 def within(val, vmin, vmax):
-    vmin, vmax = sorted((vmin, vmax))
+    if vmin is not None and vmax is not None:
+        vmin, vmax = sorted((vmin, vmax))
     left  = True if vmin is None else (vmin <= val) #TODO: equal?
     right = True if vmax is None else (val < vmax)  #TODO: equal?
     return (left & right) # & works for regular Python booleans and numpy arrays
