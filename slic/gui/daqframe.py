@@ -12,13 +12,14 @@ class DAQFrame(wx.Frame):
         self.SetIcon(get_wx_icon())
 
         acquisition = scanner.default_acquisitions[0] #TODO loop!
+        instrument = acquisition.instrument
 
         panel_main = NotebookPanel(self)
         notebook = panel_main.notebook
 
         panel_config = ConfigPanel(notebook, acquisition)
-        panel_static = StaticPanel(notebook, acquisition)
-        panel_scan   = ScanPanel(notebook, scanner)
+        panel_static = StaticPanel(notebook, acquisition, instrument)
+        panel_scan   = ScanPanel(notebook, scanner, instrument)
         panel_tweak  = TweakPanel(notebook)
 
         notebook.AddPage(panel_config, "Config")

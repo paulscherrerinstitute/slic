@@ -7,8 +7,11 @@ from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTwea
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
 from slic.utils.registry import instances
-from slic.utils import nice_arange
+from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_beamline, get_pvname_reprate
+
+
+NOMINAL_REPRATE = 100 # Hz
 
 
 class ConfigPanel(wx.Panel):
@@ -88,7 +91,7 @@ class StaticPanel(wx.Panel):
     # n_pulses=100
     # wait=True
 
-    def __init__(self, parent, acquisition, *args, **kwargs):
+    def __init__(self, parent, acquisition, instrument, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         self.acquisition = acquisition
@@ -98,12 +101,15 @@ class StaticPanel(wx.Panel):
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
+        pvname_reprate = get_pvname_reprate(instrument)
+        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_npulses)
+
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (STRETCH, le_npulses, le_fname, btn_go)
+        widgets = (STRETCH, le_npulses, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -112,10 +118,15 @@ class StaticPanel(wx.Panel):
         if self.task:
             return
 
-        n_pulses = self.le_npulses.GetValue()
         filename = self.le_fname.GetValue()
 
-        self.task = self.acquisition.acquire(filename, n_pulses=int(n_pulses), wait=False)
+        n_pulses = self.le_npulses.GetValue()
+        n_pulses = int(n_pulses)
+
+        rate = self.eta.value
+        n_pulses = correct_n_pulses(rate, n_pulses)
+
+        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, wait=False)
 
         def wait():
             print("start", self.task)
@@ -145,7 +156,7 @@ class ScanPanel(wx.Panel):
     # start_immediately=True, step_info=None
     # return_to_initial_values=None
 
-    def __init__(self, parent, scanner, *args, **kwargs):
+    def __init__(self, parent, scanner, instrument, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         self.scanner = scanner
@@ -179,6 +190,9 @@ class ScanPanel(wx.Panel):
         self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value=100)
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
+        pvname_reprate = get_pvname_reprate(instrument)
+        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_nsteps, le_npulses)
+
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
@@ -190,7 +204,7 @@ class ScanPanel(wx.Panel):
         widgets = (cb_relative, cb_return)
         hb_cbs = make_filled_vbox(widgets)
 
-        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, hb_cbs, le_npulses, le_fname, btn_go)
+        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, hb_cbs, le_npulses, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -214,12 +228,18 @@ class ScanPanel(wx.Panel):
 
         start_pos, end_pos, step_size = self._get_pos()
 
-        n_pulses = self.le_npulses.GetValue()
         filename = self.le_fname.GetValue()
+
+        n_pulses = self.le_npulses.GetValue()
+        n_pulses = int(n_pulses)
+
+        rate = self.eta.value
+        n_pulses = correct_n_pulses(rate, n_pulses)
+
         relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, int(n_pulses), filename, relative=relative, return_to_initial_values=return_to_initial_values, start_immediately=False)
+        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, n_pulses, filename, relative=relative, return_to_initial_values=return_to_initial_values, start_immediately=False)
 
         def wait():
             self.scan.run()
@@ -415,10 +435,50 @@ class PVDisplay(wx.BoxSizer):
 
 
 
+
+class ETADisplay(PVDisplay):
+
+    def __init__(self, parent, label, pvname, *textctrls, **kwargs):
+        self.textctrls = textctrls #TODO why does only this order work?
+
+        super().__init__(parent, label, pvname, **kwargs)
+
+        for tc in textctrls:
+            tc.Bind(wx.EVT_TEXT, self.update)
+
+
+    def update(self, event):
+        factor = 1
+        for tc in self.textctrls:
+            val = tc.GetValue()
+            val = int(val)
+            factor *= val
+
+        rate = self.value
+        assert self.units == "Hz"
+
+        if rate != 0:
+            secs = factor / rate
+
+        secs = readable_seconds(secs)
+        self.st_value.SetLabel(secs)
+
+
+
+
 def run(fn): # TODO
     executor = ThreadPoolExecutor(max_workers=1)
     executor.submit(fn)
     executor.shutdown(wait=False)
+
+
+
+def correct_n_pulses(rate, n_pulses):
+    multiplier = NOMINAL_REPRATE / rate
+    n_pulses *= multiplier
+    n_pulses = int(n_pulses)
+    print(f"rate={rate}, multiplier={multiplier}, n_pulses={n_pulses}")
+    return n_pulses
 
 
 
