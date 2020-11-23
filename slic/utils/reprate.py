@@ -33,27 +33,20 @@ BEAMLINE_TO_PVNAME_REPRATE = {
 
 
 def get_pvname_reprate(instrument=None, beamline=None):
-#    print("get_pvname_reprate", instrument, beamline)
     if beamline is None:
         beamline = get_beamline(instrument)
     return BEAMLINE_TO_PVNAME_REPRATE.get(beamline)
 
 def get_beamline(instrument=None):
-#    print("get_beamline", instrument)
     if instrument is None:
         instrument = infer_beamline()
     return INSTRUMENT_TO_BEAMLINE.get(instrument)
 
 def infer_beamline():
-#    print("infer_beamline")
     hname = socket.gethostname()
     ip = socket.gethostbyname(hname)
     key = ip[:11]
-    print(IP_TO_INSTRUMENT.get(key))
     return IP_TO_INSTRUMENT.get(key)
-
-
-
 
 
 
@@ -90,9 +83,10 @@ class RepRateMonitor:
 
 
     def __repr__(self):
-        name = self.name
+        name  = self.name
         value = self.value
-        return f"{name}: {value}"
+        units = self.units
+        return f"{name}: {value} {units}"
 
 
 
