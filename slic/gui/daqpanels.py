@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+import epics
 import wx
 
 from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, make_filled_vbox, make_filled_hbox, post_event
@@ -376,6 +377,7 @@ class PVDisplay(wx.BoxSizer):
         def on_value_change(value=None, units=None, **kwargs):
             self.value = value
             self.units = units
+            wx.CallAfter(self.update, None) # thread safe widget update
 
         pv.add_callback(callback=on_value_change)
 
@@ -386,10 +388,6 @@ class PVDisplay(wx.BoxSizer):
         self.Add(st_value, 1, flag=wx.EXPAND)
 
         self.update(None)
-
-        self.timer = wx.Timer(parent)
-        parent.Bind(wx.EVT_TIMER, self.update, self.timer)
-        self.timer.Start(1000)
 
         self.st_value.Bind(wx.EVT_WINDOW_DESTROY, self.on_destroy)
 
