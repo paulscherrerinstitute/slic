@@ -361,6 +361,56 @@ class AdjustableComboBox(wx.ComboBox):
 
 
 
+class PVDisplay(wx.BoxSizer):
+
+    def __init__(self, parent, label, pvname, id=wx.ID_ANY):
+        super().__init__(wx.HORIZONTAL)
+
+        if not label.endswith(":"):
+            label += ":"
+
+        self.pv = pv = epics.get_pv(pvname)
+        self.value = pv.value
+        self.units = pv.units
+
+        def on_value_change(value=None, units=None, **kwargs):
+            self.value = value
+            self.units = units
+
+        pv.add_callback(callback=on_value_change)
+
+        self.st_label = st_label = wx.StaticText(parent, label=label)
+        self.st_value = st_value = wx.StaticText(parent, label="")
+
+        self.Add(st_label, 1, flag=wx.EXPAND)
+        self.Add(st_value, 1, flag=wx.EXPAND)
+
+        self.update(None)
+
+        self.timer = wx.Timer(parent)
+        parent.Bind(wx.EVT_TIMER, self.update, self.timer)
+        self.timer.Start(1000)
+
+        self.st_value.Bind(wx.EVT_WINDOW_DESTROY, self.on_destroy)
+
+
+    def update(self, event):
+        value = self.value
+        units = self.units
+
+        value = str(value)
+        if units:
+            value = f"{value} {units}"
+
+        self.st_value.SetLabel(value)
+
+
+    def on_destroy(self, event):
+        self.pv.disconnect()
+        event.Skip()
+
+
+
 def run(fn): # TODO
     executor = ThreadPoolExecutor(max_workers=1)
     executor.submit(fn)
