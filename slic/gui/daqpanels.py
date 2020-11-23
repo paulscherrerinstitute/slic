@@ -8,6 +8,7 @@ from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
 from slic.utils.registry import instances
 from slic.utils import nice_arange
+from slic.utils.reprate import get_beamline, get_pvname_reprate
 
 
 class ConfigPanel(wx.Panel):
@@ -25,6 +26,11 @@ class ConfigPanel(wx.Panel):
         self.chans_pvs = chans_pvs = acquisition.default_pvs
 
         # widgets:
+        beamline = get_beamline(instrument)
+        pvname_reprate = get_pvname_reprate(beamline=beamline)
+        beamline = beamline.capitalize()
+        pvd_reprate = PVDisplay(self, f"{beamline} Rep. Rate:", pvname_reprate)
+
         header = repr(acquisition) + ":"
         st_acquisition = wx.StaticText(self, label=header)
         font = st_acquisition.GetFont()
@@ -57,7 +63,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (STRETCH, st_acquisition, hb_chans, le_instrument, le_pgroup, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, le_instrument, le_pgroup, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
