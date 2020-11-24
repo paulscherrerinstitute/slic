@@ -31,7 +31,7 @@ class ConfigPanel(wx.Panel):
         # widgets:
         beamline = get_beamline(instrument)
         pvname_reprate = get_pvname_reprate(beamline=beamline)
-        beamline = beamline.capitalize()
+        beamline = str(beamline).capitalize() #TODO
         pvd_reprate = PVDisplay(self, f"{beamline} Rep. Rate:", pvname_reprate)
 
         header = repr(acquisition) + ":"
@@ -393,6 +393,9 @@ class PVDisplay(wx.BoxSizer):
     def __init__(self, parent, label, pvname, id=wx.ID_ANY):
         super().__init__(wx.HORIZONTAL)
 
+        if pvname is None: #TODO
+            return
+
         if not label.endswith(":"):
             label += ":"
 
@@ -457,6 +460,7 @@ class ETADisplay(PVDisplay):
         rate = self.value
         assert self.units == "Hz"
 
+        secs = 0 #TODO
         if rate != 0:
             secs = factor / rate
 
