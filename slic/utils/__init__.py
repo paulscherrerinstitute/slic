@@ -3,6 +3,7 @@ from .utils import *
 from .channels import Channels
 from .config import Config
 from .elog import Elog
+from .eval import arithmetic_eval
 from .ipy import devices
 from .json import json_save, json_load
 from .npy import nice_linspace, nice_arange, fraction_to_percentage, within, within_fraction, get_dtype, get_shape, is_array
