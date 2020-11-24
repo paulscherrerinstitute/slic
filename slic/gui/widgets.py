@@ -209,14 +209,19 @@ class LabeledMathEntry(wx.BoxSizer): #TODO: largely copy ofLabeledEntry
 class MathEntry(wx.TextCtrl):
 
     def __init__(self, *args, **kwargs):
-
         if "style" in kwargs:
             kwargs["style"] |= wx.TE_PROCESS_ENTER
         else:
             kwargs["style"] = wx.TE_PROCESS_ENTER
 
         wx.TextCtrl.__init__(self, *args, **kwargs)
+
+        self._alarm = False
+        self._last_good_value = self.GetValue()
+
         self.Bind(wx.EVT_TEXT_ENTER, self.on_enter)
+        self.Bind(wx.EVT_KEY_UP, self.on_escape)
+
 
     def SetValue(self, val):
         val = str(val)
@@ -240,15 +245,29 @@ class MathEntry(wx.TextCtrl):
             self.SetInsertionPointEnd()
         else:
             self.SetValue(val)
+            self._last_good_value = val
 
         event.Skip()
 
 
+    def on_escape(self, event):
+        code = event.GetKeyCode()
+        if code != wx.WXK_ESCAPE:
+            event.Skip()
+            return
+
+        if self._alarm:
+            self.SetValue(self._last_good_value)
+            self._unset_alarm()
+
+
     def _set_alarm(self, msg):
+        self._alarm = True
         self.SetToolTip(msg)
         self.SetForegroundColour(wx.RED)
 
     def _unset_alarm(self):
+        self._alarm = False
         self.SetToolTip(None)
         self.SetForegroundColour(wx.NullColour)
 
