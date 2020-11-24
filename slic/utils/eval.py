@@ -47,3 +47,11 @@ class ArithmeticEvalError(Exception):
 
 
 
+#TODO:
+#print like SyntaxError:
+#    "something with an error here"
+#                             ^
+#this needs full string and offset of current node within full string stored
+
+
+
