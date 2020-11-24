@@ -13,6 +13,7 @@ class DummyAdjustable(Adjustable):
     def set_target_value(self, value, hold=False):
         def change():
             self._current_value = value
+            print(repr(self))
         return self._as_task(change, hold=hold)
 
     def is_moving(self):
