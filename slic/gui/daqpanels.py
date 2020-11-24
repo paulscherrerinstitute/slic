@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import epics
 import wx
 
-from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, make_filled_vbox, make_filled_hbox, post_event
+from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, make_filled_vbox, make_filled_hbox, post_event
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -98,7 +98,7 @@ class StaticPanel(wx.Panel):
         self.task = None
 
         # widgets:
-        self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value="100")
+        self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value="100")
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
@@ -170,9 +170,9 @@ class ScanPanel(wx.Panel):
         cb_adjs.Bind(wx.EVT_COMBOBOX,   self.on_change_adj)
         cb_adjs.Bind(wx.EVT_TEXT_ENTER, self.on_change_adj)
 
-        self.le_start  = le_start  = LabeledEntry(self, label="Start",     value=0)
-        self.le_stop   = le_stop   = LabeledEntry(self, label="Stop",      value=10)
-        self.le_step   = le_step   = LabeledEntry(self, label="Step Size", value=0.1)
+        self.le_start  = le_start  = LabeledMathEntry(self, label="Start",     value=0)
+        self.le_stop   = le_stop   = LabeledMathEntry(self, label="Stop",      value=10)
+        self.le_step   = le_step   = LabeledMathEntry(self, label="Step Size", value=0.1)
         self.le_nsteps = le_nsteps = LabeledEntry(self, label="#Steps")
 
         le_nsteps.Disable()
@@ -187,7 +187,7 @@ class ScanPanel(wx.Panel):
         cb_relative.SetValue(False)
         cb_return.SetValue(True)
 
-        self.le_npulses = le_npulses = LabeledEntry(self, label="#Pulses",  value=100)
+        self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value=100)
         self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
@@ -275,7 +275,7 @@ class TweakPanel(wx.Panel):
         # widgets:
         self.st_adj  = st_adj  = wx.StaticText(self)
         self.cb_adjs = cb_adjs = AdjustableComboBox(self)
-        self.le_abs  = le_abs  = LabeledEntry(self, label="Absolute Position")
+        self.le_abs  = le_abs  = LabeledMathEntry(self, label="Absolute Position")
 
         self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
