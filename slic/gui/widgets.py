@@ -1,5 +1,7 @@
 import wx
 
+from slic.utils import arithmetic_eval
+
 
 STRETCH = None
 
@@ -182,6 +184,48 @@ class LabeledEntry(wx.BoxSizer):
 
     def __getattr__(self, name):
         return getattr(self.text, name)
+
+
+
+class MathEntry(wx.TextCtrl):
+
+    def __init__(self, *args, **kwargs):
+        wx.TextCtrl.__init__(self, *args, style=wx.TE_PROCESS_ENTER, **kwargs)
+        self.Bind(wx.EVT_TEXT_ENTER, self.on_enter)
+
+    def SetValue(self, val):
+        val = str(val)
+        super().SetValue(val)
+
+
+    def on_enter(self, event):
+        val = self.GetValue()
+
+        self._unset_alarm()
+
+        try:
+            val = arithmetic_eval(val)
+        except SyntaxError as e:
+            msg = e.args[0]
+            self._set_alarm(msg)
+            self.SetInsertionPoint(e.offset)
+        except Exception as e:
+            msg = str(e)
+            self._set_alarm(msg)
+            self.SetInsertionPointEnd()
+        else:
+            self.SetValue(val)
+
+        event.Skip()
+
+
+    def _set_alarm(self, msg):
+        self.SetToolTip(msg)
+        self.SetForegroundColour(wx.RED)
+
+    def _unset_alarm(self):
+        self.SetToolTip(None)
+        self.SetForegroundColour(wx.NullColour)
 
 
 
