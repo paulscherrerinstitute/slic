@@ -139,7 +139,7 @@ class LabeledTweakEntry(wx.BoxSizer):
         value = str(value)
 
         self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = wx.TextCtrl(parent, value=value, style=wx.TE_RIGHT)
+        self.text  = text  = MathEntry(parent, value=value, style=wx.TE_RIGHT)
 
         self.btn_left  = btn_left  = wx.Button(parent, label="<")
         self.btn_right = btn_right = wx.Button(parent, label=">")
@@ -187,10 +187,35 @@ class LabeledEntry(wx.BoxSizer):
 
 
 
+class LabeledMathEntry(wx.BoxSizer): #TODO: largely copy ofLabeledEntry
+
+    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
+        super().__init__(wx.VERTICAL)
+
+        value = str(value)
+
+        self.label = label = wx.StaticText(parent, label=label)
+        self.text  = text  = MathEntry(parent, value=value, style=wx.TE_RIGHT)
+
+        self.Add(label, flag=wx.EXPAND)
+        self.Add(text,  flag=wx.EXPAND)
+
+
+    def __getattr__(self, name):
+        return getattr(self.text, name)
+
+
+
 class MathEntry(wx.TextCtrl):
 
     def __init__(self, *args, **kwargs):
-        wx.TextCtrl.__init__(self, *args, style=wx.TE_PROCESS_ENTER, **kwargs)
+
+        if "style" in kwargs:
+            kwargs["style"] |= wx.TE_PROCESS_ENTER
+        else:
+            kwargs["style"] = wx.TE_PROCESS_ENTER
+
+        wx.TextCtrl.__init__(self, *args, **kwargs)
         self.Bind(wx.EVT_TEXT_ENTER, self.on_enter)
 
     def SetValue(self, val):
