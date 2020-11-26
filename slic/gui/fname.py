@@ -57,6 +57,7 @@ def increase_maintaining_width(num):
 def decrease_maintaining_width(num):
     length = len(num)
     num = int(num) - 1
+    num = max(num, 1) #TODO clamp decrease at 1? or 0? or allow negative numbers?
     num = str(num).zfill(length)
     return num
 
