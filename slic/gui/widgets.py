@@ -2,8 +2,15 @@ import wx
 
 from slic.utils import arithmetic_eval
 
+from .fname import increase, decrease
+
 
 STRETCH = None
+
+ADJUSTMENTS = {
+    wx.WXK_UP: increase,
+    wx.WXK_DOWN: decrease
+}
 
 
 def show_list(*args, **kwargs):
@@ -270,6 +277,35 @@ class MathEntry(wx.TextCtrl):
         self._alarm = False
         self.SetToolTip(None)
         self.SetForegroundColour(wx.NullColour)
+
+
+
+class FilenameEntry(wx.TextCtrl):
+
+    def __init__(self, *args, **kwargs):
+        if "style" in kwargs:
+            kwargs["style"] |= wx.TE_RIGHT
+        else:
+            kwargs["style"] = wx.TE_RIGHT
+
+        super().__init__(*args, **kwargs)
+
+        self.Bind(wx.EVT_KEY_DOWN, self.on_key_press)
+
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+        if key in ADJUSTMENTS:
+            adjust = ADJUSTMENTS[key]
+            self._update_value(adjust)
+        else:
+            event.Skip()
+
+    def _update_value(self, adjust):
+        val = self.GetValue()
+        val = adjust(val)
+        self.SetValue(val)
+        self.SetInsertionPointEnd()
 
 
 
