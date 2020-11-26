@@ -194,7 +194,7 @@ class LabeledEntry(wx.BoxSizer):
 
 
 
-class LabeledMathEntry(wx.BoxSizer): #TODO: largely copy ofLabeledEntry
+class LabeledMathEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
 
     def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
         super().__init__(wx.VERTICAL)
@@ -277,6 +277,25 @@ class MathEntry(wx.TextCtrl):
         self._alarm = False
         self.SetToolTip(None)
         self.SetForegroundColour(wx.NullColour)
+
+
+
+class LabeledFilenameEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
+
+    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
+        super().__init__(wx.VERTICAL)
+
+        value = str(value)
+
+        self.label = label = wx.StaticText(parent, label=label)
+        self.text  = text  = FilenameEntry(parent, value=value, style=wx.TE_RIGHT)
+
+        self.Add(label, flag=wx.EXPAND)
+        self.Add(text,  flag=wx.EXPAND)
+
+
+    def __getattr__(self, name):
+        return getattr(self.text, name)
 
 
 
