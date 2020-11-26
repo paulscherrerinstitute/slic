@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import epics
 import wx
 
-from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, make_filled_vbox, make_filled_hbox, post_event
+from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -99,7 +99,7 @@ class StaticPanel(wx.Panel):
 
         # widgets:
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value="100")
-        self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
+        self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
         self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_npulses)
@@ -188,7 +188,7 @@ class ScanPanel(wx.Panel):
         cb_return.SetValue(True)
 
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value=100)
-        self.le_fname   = le_fname   = LabeledEntry(self, label="Filename", value="test")
+        self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
         self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_nsteps, le_npulses)
