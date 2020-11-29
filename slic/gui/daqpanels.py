@@ -211,8 +211,10 @@ class ScanPanel(wx.Panel):
 
     def on_change_pos(self, event):
         start_pos, end_pos, step_size = self._get_pos()
-        nsteps = str(len(nice_arange(start_pos, end_pos, step_size)))
-        self.le_nsteps.SetValue(nsteps)
+        steps = nice_arange(start_pos, end_pos, step_size)
+        nsteps = len(steps)
+        self.le_nsteps.SetToolTip(str(steps))
+        self.le_nsteps.SetValue(str(nsteps))
 
 
     def on_change_adj(self, event):
