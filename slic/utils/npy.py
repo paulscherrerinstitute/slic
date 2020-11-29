@@ -3,7 +3,7 @@ import numpy as np
 from .utils import iround
 
 
-def nice_arange(start, stop, step=1, endpoint=True, **kwargs):
+def nice_arange(start, stop, step=1, **kwargs):
     start, stop, step = normalize_direction(start, stop, step)
 
     delta = stop - start
