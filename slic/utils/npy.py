@@ -3,22 +3,48 @@ import numpy as np
 from .utils import iround
 
 
-def nice_linspace(start, end, num, **kwargs):
-    return np.linspace(start, end, num + 1, **kwargs)
-
-
 def nice_arange(start, stop, step=1, endpoint=True, **kwargs):
-    step = np.abs(step)
-    if start > stop:
-        step *= -1
+    start, stop, step = normalize_direction(start, stop, step)
+
+    delta = stop - start
+    num = delta / step
+    num = int(round(np.abs(num)))
+
+    return nice_linspace(start, stop, num, **kwargs)
+
+
+def nice_linspace(start, stop, num, **kwargs):
+    return np.linspace(start, stop, num + 1, **kwargs)
+
+
+def nice_steps(start, stop, step=1, endpoint=True, **kwargs):
+    start, stop, step = normalize_direction(start, stop, step)
+
     start = istep(start, step)
     stop  = istep(stop, step)
+
     if endpoint:
         stop += 1
+
     return step * np.arange(start, stop, **kwargs)
+
+
+def normalize_direction(start, stop, step):
+    sign = np.sign(step)
+    step = np.abs(step)
+
+    if sign == -1:
+        start, stop = stop, start
+
+    if start > stop:
+        step *= -1
+
+    return start, stop, step
+
 
 def istep(val, step):
     return iround(val / step)
+
 
 
 def within(val, vmin, vmax):
