@@ -320,17 +320,13 @@ class TweakPanel(wx.Panel):
 #        vbox = make_filled_vbox(widgets, border=10)
 
         #TODO:
-        vbox = wx.BoxSizer(wx.VERTICAL)
-
         widgets = (cb_adjs, st_adj)
-        for i in widgets:
-            vbox.Add(i, proportion=0, flag=wx.ALL|wx.EXPAND, border=10)
+        vbox = make_filled_vbox(widgets, border=10)
 
         vbox.Add(lc_log, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
 
         widgets = (lte, le_abs, btn_go)
-        for i in widgets:
-            vbox.Add(i, proportion=0, flag=wx.ALL|wx.EXPAND, border=10)
+        vbox = make_filled_vbox(widgets, border=10, box=vbox)
         #TODO.
 
         self.SetSizerAndFit(vbox)
