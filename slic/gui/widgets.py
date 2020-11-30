@@ -389,15 +389,16 @@ class NotebookPanel(wx.Panel): #TODO: This needs work
 
 
 
-def make_filled_vbox(widgets, proportion=0, flag=wx.ALL|wx.EXPAND, border=0):
-    return make_filled_box(wx.VERTICAL, widgets, proportion, flag, border)
+def make_filled_vbox(widgets, proportion=0, flag=wx.ALL|wx.EXPAND, border=0, box=None):
+    return make_filled_box(wx.VERTICAL, widgets, proportion, flag, border, box)
 
-def make_filled_hbox(widgets, proportion=1, flag=wx.ALL|wx.EXPAND, border=0):
-    return make_filled_box(wx.HORIZONTAL, widgets, proportion, flag, border)
+def make_filled_hbox(widgets, proportion=1, flag=wx.ALL|wx.EXPAND, border=0, box=None):
+    return make_filled_box(wx.HORIZONTAL, widgets, proportion, flag, border, box)
 
 
-def make_filled_box(orient, widgets, proportion, flag, border):
-    box = wx.BoxSizer(orient)
+def make_filled_box(orient, widgets, proportion, flag, border, box):
+    if box is None:
+        box = wx.BoxSizer(orient)
 
     for i in widgets:
         if i is STRETCH:
