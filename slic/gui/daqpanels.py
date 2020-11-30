@@ -1,8 +1,9 @@
+from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import epics
 import wx
 
-from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
+from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -12,6 +13,20 @@ from slic.utils.reprate import get_beamline, get_pvname_reprate
 
 
 NOMINAL_REPRATE = 100 # Hz
+
+TWEAK_OPERATIONS = {
+    -10: "<<",
+     -1: "<",
+     +1: ">",
+    +10: ">>"
+}
+
+TWEAK_COLORS = {
+    -10: "#fab74a",
+     -1: "#fdd99d",
+     +1: "#dcf0a8",
+    +10: "#b8e05b"
+}
 
 
 class ConfigPanel(wx.Panel):
@@ -282,6 +297,9 @@ class TweakPanel(wx.Panel):
         self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
+        cols = ("Timestamp", "Adjustable", "Operation", "Delta", "Readback")
+        self.lc_log = lc_log = AutoWidthListCtrl(self, cols, style=wx.LC_REPORT)
+
         self.lte = lte = LabeledTweakEntry(self, label="Relative Step", value=0.01)
         lte.btn_left.Bind(wx.EVT_BUTTON,     self.on_left)
         lte.btn_right.Bind(wx.EVT_BUTTON,    self.on_right)
@@ -298,8 +316,23 @@ class TweakPanel(wx.Panel):
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (cb_adjs, st_adj, STRETCH, lte, le_abs, btn_go)
-        vbox = make_filled_vbox(widgets, border=10)
+#        widgets = (cb_adjs, st_adj, lc_log, lte, le_abs, btn_go)
+#        vbox = make_filled_vbox(widgets, border=10)
+
+        #TODO:
+        vbox = wx.BoxSizer(wx.VERTICAL)
+
+        widgets = (cb_adjs, st_adj)
+        for i in widgets:
+            vbox.Add(i, proportion=0, flag=wx.ALL|wx.EXPAND, border=10)
+
+        vbox.Add(lc_log, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
+
+        widgets = (lte, le_abs, btn_go)
+        for i in widgets:
+            vbox.Add(i, proportion=0, flag=wx.ALL|wx.EXPAND, border=10)
+        #TODO.
+
         self.SetSizerAndFit(vbox)
 
 
@@ -366,11 +399,25 @@ class TweakPanel(wx.Panel):
         delta = self.lte.GetValue()
         delta = float(delta)
 
-        target = current + direction * delta
+        delta *= direction
+
+        target = current + delta
         target = str(target)
 
         self.le_abs.SetValue(target)
         post_event(wx.EVT_BUTTON, self.btn_go.btn1)
+
+        def update_log():
+            timestamp = datetime.now()
+            adjname = adj.name
+            operation = TWEAK_OPERATIONS.get(direction, direction)
+            delta_pm = "{:+g}".format(delta)
+            readback = adj.get_current_value()
+            entry = (timestamp, adjname, operation, delta_pm, readback)
+            color = TWEAK_COLORS.get(direction)
+            self.lc_log.Prepend(entry, color=color)
+
+        wx.CallAfter(update_log)
 
 
 
