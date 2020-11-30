@@ -1,4 +1,5 @@
 import wx
+import wx.lib.mixins.listctrl as listmix
 
 from slic.utils import arithmetic_eval
 
@@ -89,6 +90,46 @@ class ListDisplay(wx.ListBox):
         val = self.GetStringSelection()
         print(val)
         copy_to_clipboard(val)
+
+
+
+class AutoWidthListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin):
+
+    def __init__(self, parent, columns, *args, **kwargs):
+        wx.ListCtrl.__init__(self, parent, *args, **kwargs)
+
+        for c in columns:
+            self.AppendColumn(c, width=wx.LIST_AUTOSIZE_USEHEADER)
+
+        listmix.ListCtrlAutoWidthMixin.__init__(self)
+
+
+    def Append(self, *args, color=None, **kwargs):
+        index = wx.ListCtrl.Append(self, *args, **kwargs)
+        self.apply_color(index, color)
+        self.autosize()
+        return index
+
+    def Prepend(self, *args, **kwargs):
+        return self.Insert(0, *args, **kwargs)
+
+    def Insert(self, index, entry, color=None):
+        self.InsertItem(index, "")
+        for i, v in enumerate(entry):
+            self.SetItem(index, i, str(v))
+        self.apply_color(index, color)
+        self.autosize()
+        return index
+
+    def apply_color(self, index, color):
+        if color is not None:
+            self.SetItemBackgroundColour(index, color)
+
+    def autosize(self):
+        ncol = self.GetColumnCount()
+        ncol -= 1 # do not set last col as it is handled by ListCtrlAutoWidthMixin
+        for i in range(ncol):
+            self.SetColumnWidth(i, wx.LIST_AUTOSIZE_USEHEADER)
 
 
 
