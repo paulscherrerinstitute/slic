@@ -6,7 +6,9 @@ from slic.utils import arithmetic_eval
 from .fname import increase, decrease
 
 
-STRETCH = None
+class EXPANDING: pass
+class STRETCH: pass
+
 
 ADJUSTMENTS = {
     wx.WXK_UP: increase,
@@ -400,11 +402,24 @@ def make_filled_box(orient, widgets, proportion, flag, border, box):
     if box is None:
         box = wx.BoxSizer(orient)
 
+    OTHER_PROP = {
+        0: 1,
+        1: 0
+    }
+
+    expand = False
+
     for i in widgets:
         if i is STRETCH:
             box.AddStretchSpacer()
+        elif i is EXPANDING:
+            expand = True # store for (and then apply to) next widget
         else:
-            box.Add(i, proportion=proportion, flag=flag, border=border)
+            prop = proportion
+            if expand:
+                expand = False # apply only once
+                prop = OTHER_PROP[prop] # other proportion makes widget expanding
+            box.Add(i, proportion=prop, flag=flag, border=border)
 
     return box
 
