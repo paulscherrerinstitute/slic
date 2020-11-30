@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import epics
 import wx
 
-from .widgets import STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl
+from .widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -316,19 +316,8 @@ class TweakPanel(wx.Panel):
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-#        widgets = (cb_adjs, st_adj, lc_log, lte, le_abs, btn_go)
-#        vbox = make_filled_vbox(widgets, border=10)
-
-        #TODO:
-        widgets = (cb_adjs, st_adj)
+        widgets = (cb_adjs, st_adj, EXPANDING, lc_log, lte, le_abs, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
-
-        vbox.Add(lc_log, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
-
-        widgets = (lte, le_abs, btn_go)
-        vbox = make_filled_vbox(widgets, border=10, box=vbox)
-        #TODO.
-
         self.SetSizerAndFit(vbox)
 
 
