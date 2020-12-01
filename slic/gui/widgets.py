@@ -137,6 +137,22 @@ class AutoWidthListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin):
             self.SetColumnWidth(i, wx.LIST_AUTOSIZE_USEHEADER)
 
 
+    def GetItemsText(self, col=None):
+        res = []
+        nitems = self.GetItemCount()
+        for i in range(nitems):
+            if col is not None:
+                line = self.GetItemText(i, col)
+            else:
+                line = []
+                ncol = self.GetColumnCount()
+                for c in range(ncol):
+                    x = self.GetItemText(i, c)
+                    line.append(x)
+            res.append(line)
+        return res
+
+
 
 class TwoButtons(wx.BoxSizer):
 
