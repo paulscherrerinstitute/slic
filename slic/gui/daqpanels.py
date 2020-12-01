@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import epics
@@ -423,9 +424,11 @@ class TweakPanel(wx.Panel):
 
         items = list(zip(*items))
 
+        adjname_column = 1
         timestamp_column = 0
         readback_column = 4
 
+        ns = items[adjname_column]
         xs = items[timestamp_column]
         ys = items[readback_column]
 
@@ -433,8 +436,16 @@ class TweakPanel(wx.Panel):
         xs = [datetime.strptime(x, date_fmt) for x in xs]
         ys = [float(y) for y in ys]
 
+        res = defaultdict(list)
+        for n, x, y in zip(ns, xs, ys):
+            res[n].append((x, y))
+
         dlg = PlotDialog("Tweak History")
-        dlg.plot.step(xs, ys, ".-")
+        for n in sorted(res):
+            xs, ys = zip(*res[n])
+            dlg.plot.step(xs, ys, ".-", label=n)
+
+        dlg.plot.legend()
         dlg.plot.figure.autofmt_xdate()
         dlg.ShowModal()
         dlg.Destroy()
