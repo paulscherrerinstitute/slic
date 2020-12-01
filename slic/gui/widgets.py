@@ -6,6 +6,9 @@ from slic.utils import arithmetic_eval
 from .fname import increase, decrease
 
 
+WX_DEFAULT_RESIZABLE_DIALOG_STYLE = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MINIMIZE_BOX|wx.MAXIMIZE_BOX
+
+
 class EXPANDING: pass
 class STRETCH: pass
 
@@ -31,7 +34,7 @@ def show_two_lists(*args, **kwargs):
 class ListDialog(wx.Dialog):
 
     def __init__(self, title, sequence, header="entries"):
-        wx.Dialog.__init__(self, None, title=title, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
         hld = HeaderedListDisplay(self, sequence)
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
@@ -47,7 +50,7 @@ class ListDialog(wx.Dialog):
 class DoubleListDialog(ListDialog):
 
     def __init__(self, title, sequence1, sequence2, header1="entries", header2="entries"):
-        wx.Dialog.__init__(self, None, title=title, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
         hld1 = HeaderedListDisplay(self, sequence1, header=header1)
         hld2 = HeaderedListDisplay(self, sequence2, header=header2)
