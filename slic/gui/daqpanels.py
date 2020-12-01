@@ -4,6 +4,7 @@ import epics
 import wx
 
 from .widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl
+from .plotwidgets import PlotDialog
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
@@ -300,6 +301,7 @@ class TweakPanel(wx.Panel):
         cols = ("Timestamp", "Adjustable", "Operation", "Delta", "Readback")
         self.lc_log = lc_log = AutoWidthListCtrl(self, cols, style=wx.LC_REPORT)
         self.lc_log.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.on_double_click_log_entry)
+        self.lc_log.Bind(wx.EVT_LIST_COL_CLICK, self.on_click_header)
 
         self.lte = lte = LabeledTweakEntry(self, label="Relative Step", value=0.01)
         lte.btn_left.Bind(wx.EVT_BUTTON,     self.on_left)
@@ -411,6 +413,29 @@ class TweakPanel(wx.Panel):
         readback_column = 4
         value = self.lc_log.GetItemText(index, readback_column)
         self.le_abs.SetValue(value)
+
+
+    def on_click_header(self, event):
+        items = self.lc_log.GetItemsText()
+        if not items:
+            return
+
+        items = list(zip(*items))
+
+        timestamp_column = 0
+        readback_column = 4
+
+        xs = items[timestamp_column]
+        ys = items[readback_column]
+
+        date_fmt = "%Y-%m-%d %H:%M:%S.%f"
+        xs = [datetime.strptime(x, date_fmt) for x in xs]
+        ys = [float(y) for y in ys]
+
+        dlg = PlotDialog("Tweak History", "step", xs, ys, ".-")
+        dlg.plot.figure.autofmt_xdate()
+        dlg.ShowModal()
+        dlg.Destroy()
 
 
 
