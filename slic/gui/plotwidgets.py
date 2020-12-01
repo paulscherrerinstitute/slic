@@ -13,19 +13,16 @@ from .widgets import WX_DEFAULT_RESIZABLE_DIALOG_STYLE
 
 class PlotDialog(wx.Dialog):
 
-    def __init__(self, title, method, *args, **kwargs):
+    def __init__(self, title):
         wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
         self.plot = plot = PlotPanel(self)
-        method = getattr(plot, method)
-        method(*args, **kwargs)
-        plot.draw()
 
         self.status_bar = status_bar = wx.StatusBar(self)
         status_bar.SetFieldsCount(3) # toolbar help, x, y
 
         self.Bind(wx.EVT_TOOL_ENTER, self.update_statusbar_help)
-        self.plot.canvas.mpl_connect("motion_notify_event", self.update_statusbar_coord)
+        plot.canvas.mpl_connect("motion_notify_event", self.update_statusbar_coord)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(plot,       proportion=1, flag=wx.ALL|wx.EXPAND, border=0)
@@ -33,6 +30,10 @@ class PlotDialog(wx.Dialog):
 
         self.SetSizerAndFit(vbox)
 
+
+    def ShowModal(self):
+        self.plot.draw()
+        wx.Dialog.ShowModal(self)
 
     def GetStatusBar(self):
         return self.status_bar

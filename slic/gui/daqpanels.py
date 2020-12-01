@@ -433,7 +433,8 @@ class TweakPanel(wx.Panel):
         xs = [datetime.strptime(x, date_fmt) for x in xs]
         ys = [float(y) for y in ys]
 
-        dlg = PlotDialog("Tweak History", "step", xs, ys, ".-")
+        dlg = PlotDialog("Tweak History")
+        dlg.plot.step(xs, ys, ".-")
         dlg.plot.figure.autofmt_xdate()
         dlg.ShowModal()
         dlg.Destroy()
