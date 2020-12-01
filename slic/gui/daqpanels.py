@@ -299,6 +299,7 @@ class TweakPanel(wx.Panel):
 
         cols = ("Timestamp", "Adjustable", "Operation", "Delta", "Readback")
         self.lc_log = lc_log = AutoWidthListCtrl(self, cols, style=wx.LC_REPORT)
+        self.lc_log.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.on_double_click_log_entry)
 
         self.lte = lte = LabeledTweakEntry(self, label="Relative Step", value=0.01)
         lte.btn_left.Bind(wx.EVT_BUTTON,     self.on_left)
@@ -403,6 +404,13 @@ class TweakPanel(wx.Panel):
             self.lc_log.Prepend(entry, color=color)
 
         wx.CallAfter(update_log)
+
+
+    def on_double_click_log_entry(self, event):
+        index = event.GetIndex()
+        readback_column = 4
+        value = self.lc_log.GetItemText(index, readback_column)
+        self.le_abs.SetValue(value)
 
 
 
