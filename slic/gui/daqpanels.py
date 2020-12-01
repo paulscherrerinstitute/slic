@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import epics
 import wx
 
-from .widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl
+from .widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl, copy_to_clipboard
 from .plotwidgets import PlotDialog
 
 from slic.core.adjustable import Adjustable
@@ -413,6 +413,7 @@ class TweakPanel(wx.Panel):
         readback_column = 4
         value = self.lc_log.GetItemText(index, readback_column)
         self.le_abs.SetValue(value)
+        copy_to_clipboard(value)
 
 
     def on_click_header(self, event):
