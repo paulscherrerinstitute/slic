@@ -68,11 +68,21 @@ class SmarActAxis(Adjustable):
         stopper = lambda: self.pvs.stop.put(1)
         return self._as_task(change, stopper=stopper, hold=hold)
 
-    def _move(self, value, checktime=0.1):
+
+    def _move(self, value, checktime=0.1, timeout=60):
+        timeout += time.time()
+
         self.pvs.drive.put(value)
-        time.sleep(checktime)
+
+        while not self.is_moving():
+            time.sleep(checktime)
+            if time.time() >= timeout:
+                tname = typename(self)
+                raise SmarActError(f"starting to move {tname} \"{self.name}\" to {value} {self.units} timed out")
+
         while self.is_moving():
             time.sleep(checktime)
+
 
     def is_moving(self):
         """
