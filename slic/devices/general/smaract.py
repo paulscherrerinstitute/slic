@@ -70,10 +70,22 @@ class SmarActAxis(Adjustable):
 
     def _move(self, value, checktime=0.1):
         self.pvs.drive.put(value)
+        time.sleep(checktime)
         while self.is_moving():
             time.sleep(checktime)
 
     def is_moving(self):
+        """
+        0 : Stopped
+        1 : Stepping
+        2 : Scanning
+        3 : Holding
+        4 : Targeting
+        5 : Move Delay
+        6 : Calibrating
+        7 : Finding Ref
+        8 : Locked
+        """
         return self.pvs.status.get() != 0
 
     def stop(self):
