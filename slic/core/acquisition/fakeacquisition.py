@@ -1,5 +1,6 @@
 import random
 from time import sleep
+from tqdm import trange
 
 from slic.core.task import DAQTask
 from slic.utils import typename
@@ -26,12 +27,12 @@ class FakeAcquisition(BaseAcquisition):
             args = (filename, n_pulses)
             args = ", ".join(repr(i) for i in args)
             print("acquire({})".format(args))
+            print(f"acquire to {filename}:")
             self.running = True
-            for i in range(n_pulses):
+            for i in trange(n_pulses):
                 if not self.running:
                     break
-                print(f"acquire to {filename}: pulse {i}")
-                sleep(0.1)
+                sleep(1/100)
 
         task = DAQTask(_acquire, stopper=self._stop, filename=filename, hold=False)
         self.current_task = task
