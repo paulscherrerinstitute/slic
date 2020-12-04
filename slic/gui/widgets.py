@@ -4,6 +4,7 @@ import wx.lib.mixins.listctrl as listmix
 from slic.utils import arithmetic_eval
 
 from .fname import increase, decrease
+from .helper import exception_to_warning
 
 
 WX_DEFAULT_RESIZABLE_DIALOG_STYLE = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MINIMIZE_BOX|wx.MAXIMIZE_BOX
@@ -171,13 +172,21 @@ class TwoButtons(wx.BoxSizer):
     def Bind1(self, event, handler, *args, **kwargs):
         def wrapped(*args, **kwargs):
             self.Disable1()
-            return handler(*args, **kwargs)
+            try:
+                return handler(*args, **kwargs)
+            except Exception as e:
+                exception_to_warning(e, stacklevel=2)
+                post_event(wx.EVT_BUTTON, self.btn2)
         self.btn1.Bind(event, wrapped, *args, **kwargs)
 
     def Bind2(self, event, handler, *args, **kwargs):
         def wrapped(*args, **kwargs):
             self.Disable2()
-            return handler(*args, **kwargs)
+            try:
+                return handler(*args, **kwargs)
+            except Exception as e:
+                exception_to_warning(e, stacklevel=2)
+#                post_event(wx.EVT_BUTTON, self.btn1) # better not press start again if stop crashed
         self.btn2.Bind(event, wrapped, *args, **kwargs)
 
 
