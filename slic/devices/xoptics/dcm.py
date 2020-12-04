@@ -8,37 +8,19 @@ from slic.devices.general.motor import Motor
 from ..device import Device
 
 
-class EcolEnergy:
+class DoubleCrystalMono(Device):
 
-    def __init__(self, Id, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
-        self.Id = Id
-        self.setter = PV(val)
-        self.readback = PV(rb)
-        self.dmov = PV(dmov)
-        self.done = False
+    def __init__(self, Id, **kwargs):
+        super().__init__(Id, **kwargs)
 
-    def get_current_value(self):
-        return self.readback.get()
+        self.theta  = Motor(Id + ":RX12")
+        self.x      = Motor(Id + ":TX12")
+        self.gap    = Motor(Id + ":T2")
+        self.roll1  = Motor(Id + ":RZ1")
+        self.roll2  = Motor(Id + ":RZ2")
+        self.pitch2 = Motor(Id + ":RX2")
 
-    def move_and_wait(self, value, checktime=0.01, precision=2):
-        curr = self.setter.get()
-        while abs(curr - value) > 0.1:
-            curr = self.setter.get()
-            self.setter.put(curr + np.sign(value - curr) * 0.1)
-            sleep(0.3)
-
-        self.setter.put(value)
-        while abs(self.get_current_value() - value) > precision:
-            sleep(checktime)
-        while not self.dmov.get():
-            # print(self.dmov.get())
-            sleep(checktime)
-
-    def set_target_value(self, value, hold=False):
-        changer = lambda: self.move_and_wait(value)
-        return Task(changer, hold=hold)
-
-
+        self.energy = DoubleCrystalMonoEnergy(Id)
 
 
 
@@ -106,21 +88,35 @@ class DoubleCrystalMonoEnergy(Adjustable):
 
 
 
-class DoubleCrystalMono(Device):
+class EcolEnergy:
 
-    def __init__(self, Id, **kwargs):
-        super().__init__(Id, **kwargs)
+    def __init__(self, Id, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
+        self.Id = Id
+        self.setter = PV(val)
+        self.readback = PV(rb)
+        self.dmov = PV(dmov)
+        self.done = False
 
-        self.theta  = Motor(Id + ":RX12")
-        self.x      = Motor(Id + ":TX12")
-        self.gap    = Motor(Id + ":T2")
-        self.roll1  = Motor(Id + ":RZ1")
-        self.roll2  = Motor(Id + ":RZ2")
-        self.pitch2 = Motor(Id + ":RX2")
+    def get_current_value(self):
+        return self.readback.get()
 
-        self.energy = DoubleCrystalMonoEnergy(Id)
+    def move_and_wait(self, value, checktime=0.01, precision=2):
+        curr = self.setter.get()
+        while abs(curr - value) > 0.1:
+            curr = self.setter.get()
+            self.setter.put(curr + np.sign(value - curr) * 0.1)
+            sleep(0.3)
 
+        self.setter.put(value)
+        while abs(self.get_current_value() - value) > precision:
+            sleep(checktime)
+        while not self.dmov.get():
+            # print(self.dmov.get())
+            sleep(checktime)
 
+    def set_target_value(self, value, hold=False):
+        changer = lambda: self.move_and_wait(value)
+        return Task(changer, hold=hold)
 
 
 
@@ -153,6 +149,7 @@ class MonoEcolEnergy:
 
     def calcEcol(self, eV):
         return (eV - self.offset["dcm"]) * self.MeVperEV + self.offset["ecol"]
+
 
 
 class AlvraDCM_FEL:
