@@ -222,8 +222,5 @@ class AlvraDCM_FEL:
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold)
 
-    def __repr__(self):
-        return self.__str__()
-
 
 
