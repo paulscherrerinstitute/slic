@@ -2,9 +2,10 @@ from time import sleep
 import numpy as np
 from epics import PV
 
-from ..basedevice import BaseDevice
+from slic.core.adjustable import Adjustable
 from slic.devices.general.motor import Motor
 from slic.core.task import Task
+from ..device import Device
 
 
 class EcolEnergy:
@@ -38,24 +39,19 @@ class EcolEnergy:
         return Task(changer, hold=hold)
 
 
-class Double_Crystal_Mono(BaseDevice):
 
-    def __init__(self, Id, z_undulator=None, description=None):
-        self.Id = Id
-        self.z_undulator = z_undulator
-        self.description = description
 
-        self.theta = Motor(Id + ":RX12")
-        self.x = Motor(Id + ":TX12")
-        self.gap = Motor(Id + ":T2")
-        self.roll1 = Motor(Id + ":RZ1")
-        self.roll2 = Motor(Id + ":RZ2")
-        self.pitch2 = Motor(Id + ":RX2")
+
+class DoubleCrystalMonoEnergy(Adjustable):
+
+    def __init__(self, Id):
+        super().__init__(Id)
 
         self.energy_rbk = PV(Id + ":ENERGY")
         self.energy_sp = PV(Id + ":ENERGY_SP")
-        self.moving = PV(Id + ":MOVING")
+        self._moving = PV(Id + ":MOVING")
         self._stop = PV(Id + ":STOP.PROC")
+
 
     def move_and_wait(self, value, checktime=0.01, precision=0.5):
         self.energy_sp.put(value)
@@ -83,7 +79,7 @@ class Double_Crystal_Mono(BaseDevice):
         self.energy_sp.put(value)
 
     def is_moving(self):
-        inmotion = int(self.moving.get())
+        inmotion = int(self._moving.get())
         return not bool(inmotion)
 
     # spec-inspired convenience methods
@@ -103,21 +99,29 @@ class Double_Crystal_Mono(BaseDevice):
     def wait(self):
         self._currentChange.wait()
 
-    def __str__(self):
-        s = "**Double crystal monochromator**\n\n"
-        motors = "theta gap x roll1 roll2 pitch2".split()
-        for motor in motors:
-            s += " - %s = %.4f\n" % (motor, getattr(self, motor).wm())
-        pvs = "energy_rbk".split()
-        for pv in pvs:
-            s += " - %s = %.4f\n" % (pv, getattr(self, pv).value)
-        return s
-
-    def __repr__(self):
-        return self.__str__()
-
     def __call__(self, value):
         self._currentChange = self.set_target_value(value)
+
+
+
+
+
+class DoubleCrystalMono(Device):
+
+    def __init__(self, Id, **kwargs):
+        super().__init__(Id, **kwargs)
+
+        self.theta = Motor(Id + ":RX12")
+        self.x = Motor(Id + ":TX12")
+        self.gap = Motor(Id + ":T2")
+        self.roll1 = Motor(Id + ":RZ1")
+        self.roll2 = Motor(Id + ":RZ2")
+        self.pitch2 = Motor(Id + ":RX2")
+
+        self.energy = DoubleCrystalMonoEnergy(Id)
+
+
+
 
 
 class MonoEcolEnergy:
