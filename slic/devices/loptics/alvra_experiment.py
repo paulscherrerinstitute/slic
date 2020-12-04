@@ -1,17 +1,15 @@
-from slic.core.adjustable import Adjustable, PVAdjustable
+from slic.core.adjustable import PVAdjustable
 from slic.devices.general.motor import Motor
-from slic.utils.printing import printable_dict
-from ..basedevice import BaseDevice
+from ..device import Device
 from ..general.delay_stage import DelayStage
 from ..timing.lasertiming import ETiming
 
 
-class LaserExp(BaseDevice):
-    """Experiment laser hardware"""
+class LaserExp(Device):
 
     def __init__(self):
-        self.Id = Id = "SLAAR11-LMOT"
-        self.z_undulator = 122
+        Id = "SLAAR11-LMOT"
+        super().__init__(Id, "Experiment laser hardware", "Laser motor positions", 122)
 
         # Laser repetition rate
         self.repRate = PVAdjustable("SIN-TIMAST-TMA:Evt-20-Freq-I")
@@ -51,17 +49,6 @@ class LaserExp(BaseDevice):
 
         # Globi electronic timing PV from Edwin
         self.eTiming = ETiming(Id + "-eTiming")
-
-
-    def __repr__(self):
-        to_print = {}
-        for key, item in self.__dict__.items():
-            if not isinstance(item, (Adjustable, BaseDevice)):
-                continue
-            to_print[key] = str(item)
-
-        head = "Laser motor positions"
-        return printable_dict(to_print, head)
 
 
 
