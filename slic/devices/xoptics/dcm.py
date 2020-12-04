@@ -30,7 +30,7 @@ class Double_Crystal_Mono_AramisMacro:
 
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
-        return Task(hold=hold, stopper=self.stop)
+        return Task(changer, hold=hold, stopper=self.stop)
 
     def stop(self):
         self._stop.put(1)
