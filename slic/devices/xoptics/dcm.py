@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 from time import sleep
 import numpy as np
 from epics import PV
@@ -43,13 +44,34 @@ class EcolEnergy:
 
 class DoubleCrystalMonoEnergy(Adjustable):
 
-    def __init__(self, Id):
-        super().__init__(Id)
+    def __init__(self, Id, name=None):
+        pvname_setvalue = Id + ":ENERGY"
+        pvname_readback = Id + ":ENERGY_SP"
+        pvname_moving   = Id + ":MOVING"
+        pvname_stop     = Id + ":STOP.PROC"
 
-        self.energy_rbk = PV(Id + ":ENERGY")
-        self.energy_sp = PV(Id + ":ENERGY_SP")
-        self._moving = PV(Id + ":MOVING")
-        self._stop = PV(Id + ":STOP.PROC")
+        pv_setvalue = PV(pvname_setvalue)
+        pv_readback = PV(pvname_readback)
+        pv_moving   = PV(pvname_moving)
+        pv_stop     = PV(pvname_stop)
+
+        name = name or Id
+        units = pv_readback.units
+        super().__init__(name=name, units=units)
+
+        self.pvnames = SimpleNamespace(
+            setvalue = pvname_setvalue,
+            readback = pvname_readback,
+            moving   = pvname_moving,
+            stop     = pvname_stop
+        )
+
+        self.pvs = SimpleNamespace(
+            setvalue = pv_setvalue,
+            readback = pv_readback,
+            moving   = pv_moving,
+            stop     = pv_stop
+        )
 
 
     def move_and_wait(self, value, checktime=0.01, precision=0.5):
@@ -62,10 +84,10 @@ class DoubleCrystalMonoEnergy(Adjustable):
         return self._as_task(changer, hold=hold, stopper=self.stop)
 
     def stop(self):
-        self._stop.put(1)
+        self.pvs.stop.put(1)
 
     def get_current_value(self):
-        return self.energy_rbk.get()
+        return self.pvs.readback.get()
 
     def wait_for_valid_value(self):
         val = np.nan
@@ -74,11 +96,11 @@ class DoubleCrystalMonoEnergy(Adjustable):
         return val
 
     def set_current_value(self, value):
-        self.energy_sp.put(value)
+        self.pvs.setvalue.put(value)
 
     def is_moving(self):
-        inmotion = int(self._moving.get())
-        return not bool(inmotion)
+        done = self.pvs.moving.get()
+        return not bool(done)
 
 
 
