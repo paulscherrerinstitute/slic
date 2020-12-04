@@ -111,11 +111,11 @@ class DoubleCrystalMono(Device):
     def __init__(self, Id, **kwargs):
         super().__init__(Id, **kwargs)
 
-        self.theta = Motor(Id + ":RX12")
-        self.x = Motor(Id + ":TX12")
-        self.gap = Motor(Id + ":T2")
-        self.roll1 = Motor(Id + ":RZ1")
-        self.roll2 = Motor(Id + ":RZ2")
+        self.theta  = Motor(Id + ":RX12")
+        self.x      = Motor(Id + ":TX12")
+        self.gap    = Motor(Id + ":T2")
+        self.roll1  = Motor(Id + ":RZ1")
+        self.roll2  = Motor(Id + ":RZ2")
         self.pitch2 = Motor(Id + ":RX2")
 
         self.energy = DoubleCrystalMonoEnergy(Id)
@@ -129,7 +129,7 @@ class MonoEcolEnergy:
     def __init__(self, Id):
         self.Id = Id
         self.name = "energy_collimator"
-        self.dcm = Double_Crystal_Mono(Id)
+        self.dcm = DoubleCrystalMono(Id)
         self.ecol = EcolEnergy("ecol_dummy")
         self.offset = None
         self.MeVperEV = 0.78333
