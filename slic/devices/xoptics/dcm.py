@@ -74,20 +74,20 @@ class DoubleCrystalMonoEnergy(Adjustable):
         )
 
 
-    def move_and_wait(self, value, checktime=0.01, precision=0.5):
-        self.set_current_value(value)
-        while abs(self.wait_for_valid_value() - value) > precision:
-            sleep(checktime)
+    def get_current_value(self):
+        return self.pvs.readback.get()
+
+    def set_current_value(self, value):
+        self.pvs.setvalue.put(value)
 
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
         return self._as_task(changer, hold=hold, stopper=self.stop)
 
-    def stop(self):
-        self.pvs.stop.put(1)
-
-    def get_current_value(self):
-        return self.pvs.readback.get()
+    def move_and_wait(self, value, checktime=0.01, precision=0.5):
+        self.set_current_value(value)
+        while abs(self.wait_for_valid_value() - value) > precision:
+            sleep(checktime)
 
     def wait_for_valid_value(self):
         val = np.nan
@@ -95,12 +95,12 @@ class DoubleCrystalMonoEnergy(Adjustable):
             val = self.get_current_value()
         return val
 
-    def set_current_value(self, value):
-        self.pvs.setvalue.put(value)
-
     def is_moving(self):
         done = self.pvs.moving.get()
         return not bool(done)
+
+    def stop(self):
+        self.pvs.stop.put(1)
 
 
 
