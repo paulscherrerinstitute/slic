@@ -4,7 +4,6 @@ from epics import PV
 
 from slic.core.adjustable import Adjustable
 from slic.devices.general.motor import Motor
-from slic.core.task import Task
 from ..device import Device
 
 
@@ -54,26 +53,25 @@ class DoubleCrystalMonoEnergy(Adjustable):
 
 
     def move_and_wait(self, value, checktime=0.01, precision=0.5):
-        self.energy_sp.put(value)
+        self.set_current_value(value)
         while abs(self.wait_for_valid_value() - value) > precision:
             sleep(checktime)
 
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
-        return Task(changer, hold=hold, stopper=self.stop)
+        return self._as_task(changer, hold=hold, stopper=self.stop)
 
     def stop(self):
         self._stop.put(1)
 
     def get_current_value(self):
-        currentenergy = self.energy_rbk.get()
-        return currentenergy
+        return self.energy_rbk.get()
 
     def wait_for_valid_value(self):
-        tval = np.nan
-        while not np.isfinite(tval):
-            tval = self.energy_rbk.get()
-        return tval
+        val = np.nan
+        while not np.isfinite(val):
+            val = self.get_current_value()
+        return val
 
     def set_current_value(self, value):
         self.energy_sp.put(value)
@@ -81,26 +79,6 @@ class DoubleCrystalMonoEnergy(Adjustable):
     def is_moving(self):
         inmotion = int(self._moving.get())
         return not bool(inmotion)
-
-    # spec-inspired convenience methods
-    def mv(self, value):
-        self._currentChange = self.set_target_value(value)
-
-    def wm(self, *args, **kwargs):
-        return self.get_current_value(*args, **kwargs)
-
-    def mvr(self, value, *args, **kwargs):
-        if not self.is_moving():
-            startvalue = self.get_current_value(*args, **kwargs)
-        else:
-            startvalue = self.get_current_value(*args, **kwargs)
-        self._currentChange = self.set_target_value(value + startvalue, *args, **kwargs)
-
-    def wait(self):
-        self._currentChange.wait()
-
-    def __call__(self, value):
-        self._currentChange = self.set_target_value(value)
 
 
 
