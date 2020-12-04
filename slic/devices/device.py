@@ -9,7 +9,7 @@ class Device(BaseDevice):
         self.Id = Id
         self.name = name
         self.description = description
-        self.z_undulator = z_undulator
+        self.z_undulator = decide_z(Id, z_undulator)
 
 
     def __repr__(self):
@@ -21,6 +21,20 @@ class Device(BaseDevice):
 
         head = self.description or self.name or self.Id
         return printable_dict(to_print, head)
+
+
+
+def decide_z(chan, z):
+    return z if z is not None else read_z_from_channel(chan)
+
+
+def read_z_from_channel(chan):
+    chan = chan.split(":")[0]
+    z = chan[-3:]
+    try:
+        return int(z)
+    except ValueError:
+        return None
 
 
 
