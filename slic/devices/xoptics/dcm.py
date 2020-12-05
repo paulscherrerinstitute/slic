@@ -212,7 +212,7 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
 
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
-        return Task(changer, hold=hold)
+        return self._as_task(changer, hold=hold, stopper=self.stop)
 
     def move_and_wait(self, value, wait_time=0.1):
         self.enable_coupling()
