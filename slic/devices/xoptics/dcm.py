@@ -3,7 +3,7 @@ from time import sleep
 import numpy as np
 from epics import PV
 
-from slic.core.adjustable import Adjustable
+from slic.core.adjustable import Adjustable, PVAdjustable, PVEnumAdjustable
 from slic.devices.general.motor import Motor
 from ..device import Device
 
@@ -66,10 +66,10 @@ class DoubleCrystalMonoEnergy(Adjustable):
         changer = lambda: self.move_and_wait(value)
         return self._as_task(changer, hold=hold, stopper=self.stop)
 
-    def move_and_wait(self, value, checktime=0.01, precision=0.5):
+    def move_and_wait(self, value, wait_time=0.01, accuracy=0.5):
         self.set_current_value(value)
-        while abs(self.wait_for_valid_value() - value) > precision:
-            sleep(checktime)
+        while abs(self.wait_for_valid_value() - value) > accuracy:
+            sleep(wait_time)
 
     def wait_for_valid_value(self):
         val = np.nan
@@ -100,7 +100,7 @@ class EcolEnergy:
     def get_current_value(self):
         return self.readback.get()
 
-    def move_and_wait(self, value, checktime=0.01, precision=2):
+    def move_and_wait(self, value, wait_time=0.01, accuracy=2):
         curr = self.setter.get()
         while abs(curr - value) > 0.1:
             curr = self.setter.get()
@@ -108,11 +108,11 @@ class EcolEnergy:
             sleep(0.3)
 
         self.setter.put(value)
-        while abs(self.get_current_value() - value) > precision:
-            sleep(checktime)
+        while abs(self.get_current_value() - value) > accuracy:
+            sleep(wait_time)
         while not self.dmov.get():
             # print(self.dmov.get())
-            sleep(checktime)
+            sleep(wait_time)
 
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
@@ -152,75 +152,87 @@ class MonoEcolEnergy:
 
 
 
-class AlvraDCM_FEL:
 
-    def __init__(self, Id):
-        self.Id = Id
-        self.name = "Alvra DCM monochromator coupled to FEL beam"
-#        self.IOCstatus = PV('ALVRA:running')                            # bool 0 running, 1 not running
-        self.photCalib1      = PV("SGE-OP2E-ARAMIS:PH2E_X1")            # photon energy calibration low calibration point
-        self.photCalib2      = PV("SGE-OP2E-ARAMIS:PH2E_X2")            # photon energy calibration high calibration point
-        self.ebeamCalib1     = PV("SGE-OP2E-ARAMIS:PH2E_Y1")            # electron energy calibration low calibration point
-        self.ebeamCalib2     = PV("SGE-OP2E-ARAMIS:PH2E_Y2")            # electron energy calibration high calibration point
-        self._FELcoupling    = PV("SGE-OP2E-ARAMIS:MODE_SP")            # string "Off" or "e-beam"
-        self.ebeamEnergySP   = PV("SGE-OP2E-ARAMIS:E_ENERGY_SP")        # float MeV
-        self._energyChanging = PV("SGE-OP2E-ARAMIS:MOVING")             # PV telling you something related to the energy is changing
-        self.ebeamEnergy     = PV("SARCL02-MBND100:P-READ")             # float MeV/c
-        self.dcmMoving       = PV("SAROP11-ODCM105:MOVING")             # DCM moving field
-        self.dcmStop         = PV("SAROP11-ODCM105:STOP.PROC")          # stop the DCM motors
-        self._setEnergy      = PV("SAROP11-ARAMIS:ENERGY_SP_USER")      # float eV
-        self._getEnergy      = PV("SAROP11-ARAMIS:ENERGY")              # float eV
-        self._alvraMode      = PV("SAROP11-ARAMIS:MODE")                # string Aramis SAROP11 mode
-        self.ebeamOK         = PV("SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK")  # is ebeam no longer changing
 
-    def __str__(self):
-#        ioc = self.IOCstatus.get()
-#        if ioc == 0:
-#            iocStr = "Soft IOC running"
-#        else:
-#            iocStr = "Soft IOC not running"
-        FELcouplingStr  = self._FELcoupling.get(as_string=True)
-        alvraModeStr    = self._alvraMode.get(as_string=True)
-        currEnergy      = self._getEnergy.get()
-        currebeamEnergy = self.ebeamEnergy.get()
-        photCalib1Str   = self.photCalib1.get()
-        photCalib2Str   = self.photCalib2.get()
-        ebeamCalib1Str  = self.ebeamCalib1.get()
-        ebeamCalib2Str  = self.ebeamCalib2.get()
+class CoupledDoubleCrystalMono(Device):
 
-        s = "**Alvra DCM-FEL status**\n\n"
-#        print('%s'%iocStr)
-#        print('FEL coupling %s'%FELcouplingStr)
-#        print('Alvra beamline mode %s'%alvraModeStr)
-#        print('Photon energy (eV) %'%currEnergy)
-#        s += '%s\n'%iocStr
-        s += "FEL coupling: %s\n" % FELcouplingStr
-        s += "Alvra beamline mode: %s\n" % alvraModeStr
-        s += "Photon energy: %.2f eV\n" % currEnergy
-        s += "Electron energy: %.2f MeV\n" % currebeamEnergy
-        s += "Calibration set points:\n"
-        s += "   Low: Photon %.2f keV, Electron %.2f MeV\n" % (photCalib1Str, ebeamCalib1Str)
-        s += "   High: Photon %.2f keV, Electron %.2f MeV\n" % (photCalib2Str, ebeamCalib2Str)
-        return s
+    def __init__(self, Id, name="Alvra DCM coupled to FEL energy", **kwargs):
+        super().__init__(Id, name=name, **kwargs)
+
+        self.alvraMode   = PVEnumAdjustable("SAROP11-ARAMIS:MODE")
+        self.FELcoupling = PVEnumAdjustable("SGE-OP2E-ARAMIS:MODE_SP")
+
+        self.ebeamEnergy     = PVAdjustable("SARCL02-MBND100:P-READ")
+        self.ebeamEnergySP   = PVAdjustable("SGE-OP2E-ARAMIS:E_ENERGY_SP")
+        self.photonCalibLow  = PVAdjustable("SGE-OP2E-ARAMIS:PH2E_X1")
+        self.photonCalibHigh = PVAdjustable("SGE-OP2E-ARAMIS:PH2E_X2")
+        self.ebeamCalibLow   = PVAdjustable("SGE-OP2E-ARAMIS:PH2E_Y1")
+        self.ebeamCalibHigh  = PVAdjustable("SGE-OP2E-ARAMIS:PH2E_Y2")
+        self.dcmMoving       = PVAdjustable("SAROP11-ODCM105:MOVING")
+        self.dcmStop         = PVAdjustable("SAROP11-ODCM105:STOP.PROC")
+
+        self.energy = CoupledDoubleCrystalMonoEnergy(Id, name=name)
+
+
+
+class CoupledDoubleCrystalMonoEnergy(Adjustable):
+
+    def __init__(self, Id, name=None):
+        pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP_USER"
+        pvname_readback = "SAROP11-ARAMIS:ENERGY"
+        pvname_moving   = "SGE-OP2E-ARAMIS:MOVING"
+        pvname_coupling = "SGE-OP2E-ARAMIS:MODE_SP"
+
+        pv_setvalue = PV(pvname_setvalue)
+        pv_readback = PV(pvname_readback)
+        pv_moving   = PV(pvname_moving)
+        pv_coupling = PV(pvname_coupling)
+
+        name = name or Id
+        units = pv_readback.units
+        super().__init__(name=name, units=units)
+
+        self.pvnames = SimpleNamespace(
+            setvalue = pvname_setvalue,
+            readback = pvname_readback,
+            moving   = pvname_moving,
+            coupling = pvname_coupling
+        )
+
+        self.pvs = SimpleNamespace(
+            setvalue = pv_setvalue,
+            readback = pv_readback,
+            moving   = pv_moving,
+            coupling = pv_coupling
+        )
+
 
     def get_current_value(self):
-        return self._getEnergy.get()
-
-    def move_and_wait(self, value, checktime=0.1, precision=0.5):
-        self._FELcoupling.put(1)  # ensure the FEL coupling is turned on
-        self._setEnergy.put(value)
-#        while self.ebeamOK.get()==0:
-#            sleep(checktime)
-#        while abs(self.ebeamEnergy.get()-self.ebeamEnergySP.get())>precision:
-#            sleep(checktime)
-#        while self.dcmMoving.get()==1:
-#            sleep(checktime)
-        while self._energyChanging == 1:
-            sleep(checktime)
+        return self.pvs.readback.get()
 
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
         return Task(changer, hold=hold)
+
+    def move_and_wait(self, value, wait_time=0.1):
+        self.enable_coupling()
+        self.pvs.setvalue.put(value)
+        while self.is_moving():
+            sleep(wait_time)
+
+    def is_moving(self):
+        done = self.pvs.moving.get()
+        return not bool(done)
+
+    def enable_coupling(self):
+        self.pvs.coupling.put(1)
+
+    def disable_coupling(self):
+        self.pvs.coupling.put(0)
+
+    @property
+    def coupling(self):
+        return self.pvs.coupling.get(as_string=True)
 
 
 
