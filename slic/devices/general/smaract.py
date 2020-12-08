@@ -1,12 +1,26 @@
 import time
 import subprocess
 from types import SimpleNamespace
+from enum import IntEnum
 from epics import PV, ca
 
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.utils import typename
 from slic.utils.printing import printable_dict
 from ..basedevice import BaseDevice
+
+
+class Status(IntEnum):
+    STOPPED     = 0
+    STEPPING    = 1
+    SCANNING    = 2
+    HOLDING     = 3
+    TARGETING   = 4
+    MOVE_DELAY  = 5
+    CALIBRATING = 6
+    FINDING_REF = 7
+    LOCKED      = 8
+
 
 
 class SmarActStage(BaseDevice):
@@ -87,7 +101,7 @@ class SmarActAxis(Adjustable):
 
         # wait for move done
         while self._move_requested and self.is_moving():
-            if self.pvs.status.get() == 3: # holding == arrived at target!
+            if self.is_holding(): # holding == arrived at target!
                 break
             time.sleep(checktime)
 
@@ -100,18 +114,14 @@ class SmarActAxis(Adjustable):
 
 
     def is_moving(self):
-        """
-        0 : Stopped
-        1 : Stepping
-        2 : Scanning
-        3 : Holding
-        4 : Targeting
-        5 : Move Delay
-        6 : Calibrating
-        7 : Finding Ref
-        8 : Locked
-        """
-        return self.pvs.status.get() != 0
+        return self.status != Status.STOPPED
+
+    def is_holding(self):
+        return self.status == Status.HOLDING
+
+    @property
+    def status(self):
+        return self.pvs.status.get()
 
 
     def stop(self):
@@ -181,10 +191,6 @@ class SmarActAxis(Adjustable):
         PUT_SUCCESS    =   1
         PUT_TIMEOUT    =  -1
 
-        STAT_STOPPED   =   0
-        STAT_HOLDING   =   3
-        STAT_TARGETING =   4
-
         try:
             val = float(val)
         except Exception:
@@ -208,7 +214,7 @@ class SmarActAxis(Adjustable):
         if put_stat != PUT_SUCCESS:
             return UNKNOWN_ERROR
 
-        stat = self.pvs.status.get()
+        stat = self.status
 
         t0 = time.time()
         thold  = t0 + self.pvs.hold.get() * 0.001
@@ -218,15 +224,15 @@ class SmarActAxis(Adjustable):
         if not wait and not confirm_move:
             return EXECUTED
 
-        while stat == STAT_HOLDING and time.time() <= thold:
+        while stat == Status.HOLDING and time.time() <= thold:
             ca.poll(evt=1.0e-2)
-            stat = self.pvs.status.get()
+            stat = self.status
 
-        while stat == STAT_STOPPED and time.time() <= tstart:
+        while stat == Status.STOPPED and time.time() <= tstart:
             ca.poll(evt=1.0e-2)
-            stat = self.pvs.status.get()
+            stat = self.status
 
-        if stat != STAT_TARGETING:
+        if stat != Status.TARGETING:
             if time.time() > tout:
                 return TIMEOUT
             else:
@@ -235,11 +241,11 @@ class SmarActAxis(Adjustable):
         if not wait:
             return CONFIRMED
 
-        while stat == STAT_TARGETING and time.time() <= tout:
+        while stat == Status.TARGETING and time.time() <= tout:
             ca.poll(evt=1.0e-2)
-            stat = self.pvs.status.get()
+            stat = self.status
 
-        if stat not in (STAT_HOLDING, STAT_TARGETING):
+        if stat not in (Status.HOLDING, Status.TARGETING):
             return UNKNOWN_ERROR
 
         if time.time() > tout:
@@ -248,9 +254,9 @@ class SmarActAxis(Adjustable):
         twv = self.pvs.twv.get()
         twv = abs(twv)
 
-        while stat == STAT_HOLDING and time.time() <= tout:
+        while stat == Status.HOLDING and time.time() <= tout:
             ca.poll(evt=1.0e-2)
-            stat = self.pvs.status.get()
+            stat = self.status
 
             delta = self.pvs.readback.get() - val
             delta = abs(delta)
