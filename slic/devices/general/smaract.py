@@ -41,6 +41,8 @@ class SmarActAxis(Adjustable):
         super().__init__(name=name, units=units)
         self.Id = Id
 
+        self._move_requested = False
+
         self.pvs = SimpleNamespace(
             drive    = PV(Id + ":DRIVE"),
             readback = PV(Id + ":MOTRBV"),
@@ -65,23 +67,36 @@ class SmarActAxis(Adjustable):
 
     def set_target_value(self, value, hold=False):
         change  = lambda: self._move(value)
-        stopper = lambda: self.pvs.stop.put(1)
+        stopper = lambda: self._stop()
         return self._as_task(change, stopper=stopper, hold=hold)
 
 
     def _move(self, value, checktime=0.1, timeout=60):
         timeout += time.time()
 
-        self.pvs.drive.put(value)
+        self._move_requested = True
+        self.pvs.drive.put(value, wait=True)
 
-        while not self.is_moving():
+        # wait for start
+        while self._move_requested and not self.is_moving():
             time.sleep(checktime)
             if time.time() >= timeout:
                 tname = typename(self)
+                self._stop()
                 raise SmarActError(f"starting to move {tname} \"{self.name}\" to {value} {self.units} timed out")
 
-        while self.is_moving():
+        # wait for move done
+        while self._move_requested and self.is_moving():
+            if self.pvs.status.get() == 3: # holding == arrived at target!
+                break
             time.sleep(checktime)
+
+        self._move_requested = False
+
+
+    def _stop(self):
+        self._move_requested = False
+        self.pvs.stop.put(1, wait=True)
 
 
     def is_moving(self):
@@ -98,11 +113,12 @@ class SmarActAxis(Adjustable):
         """
         return self.pvs.status.get() != 0
 
+
     def stop(self):
         try:
             return super().stop()
         except:
-            self.pvs.stop.put(1)
+            self._stop()
 
 
     def within_limits(self, val):
