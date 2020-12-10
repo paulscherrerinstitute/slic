@@ -13,12 +13,7 @@ class Device(BaseDevice):
 
 
     def __repr__(self):
-        to_print = {}
-        for key, item in self.__dict__.items():
-            if not isinstance(item, (Adjustable, Device)):
-                continue
-            to_print[key] = str(item)
-
+        to_print = recursive_adjustables(self)
         head = self.description or self.name or self.Id
         return printable_dict(to_print, head)
 
@@ -35,6 +30,23 @@ def read_z_from_channel(chan):
         return int(z)
     except ValueError:
         return None
+
+
+def recursive_adjustables(dev, base_key=None):
+    base_key = base_key or []
+
+    res = {}
+    for key, item in dev.__dict__.items():
+        combined_keys = base_key + [key]
+
+        if isinstance(item, Adjustable):
+            this_key = ".".join(combined_keys)
+            res[this_key] = str(item)
+        elif isinstance(item, Device):
+            deeper_res = recursive_adjustables(item, combined_keys)
+            res.update(deeper_res)
+
+    return res
 
 
 
