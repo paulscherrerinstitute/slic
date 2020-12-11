@@ -87,7 +87,8 @@ class ListDisplay(wx.ListBox):
     def __init__(self, parent, sequence):
         wx.ListBox.__init__(self, parent)
         sequence = sorted(set(str(i) for i in sequence))
-        self.InsertItems(sequence, 0)
+        if sequence:
+            self.InsertItems(sequence, 0)
 
         self.Bind(wx.EVT_LISTBOX_DCLICK, self.on_copy)
 
