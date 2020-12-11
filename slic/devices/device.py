@@ -1,3 +1,4 @@
+from warnings import warn
 from slic.core.adjustable import Adjustable
 from slic.utils.printing import printable_dict
 from .basedevice import BaseDevice
@@ -32,18 +33,25 @@ def read_z_from_channel(chan):
         return None
 
 
-def recursive_adjustables(dev, base_key=None):
-    base_key = base_key or []
+def recursive_adjustables(dev, base_keys=None, seen_devs=None):
+    base_keys = base_keys or []
+    seen_devs = seen_devs or {}
 
     res = {}
     for key, item in dev.__dict__.items():
-        combined_keys = base_key + [key]
+        combined_keys = base_keys + [key]
+        this_key = ".".join(combined_keys)
 
         if isinstance(item, Adjustable):
-            this_key = ".".join(combined_keys)
             res[this_key] = str(item)
         elif isinstance(item, Device):
-            deeper_res = recursive_adjustables(item, combined_keys)
+            item_id = id(item)
+            if item_id in seen_devs:
+                seen_key = seen_devs[item_id]
+                warn(f"Recursive Device: {this_key} == {seen_key}", stacklevel=2)
+                continue
+            seen_devs[item_id] = this_key
+            deeper_res = recursive_adjustables(item, combined_keys, seen_devs)
             res.update(deeper_res)
 
     return res
