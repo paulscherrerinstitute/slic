@@ -80,12 +80,11 @@ class SmarActAxis(Adjustable):
         return self.pvs.set_pos.put(value)
 
     def set_target_value(self, value, hold=False):
-        change  = lambda: self._move(value)
-        stopper = lambda: self._stop()
-        return self._as_task(change, stopper=stopper, hold=hold)
+        change = lambda: self._move(value)
+        return self._as_task(change, stopper=self._stop, hold=hold)
 
 
-    def _move(self, value, checktime=0.1, timeout=60):
+    def _move(self, value, wait_time=0.1, timeout=60):
         timeout += time.time()
 
         self._move_requested = True
@@ -93,7 +92,7 @@ class SmarActAxis(Adjustable):
 
         # wait for start
         while self._move_requested and not self.is_moving():
-            time.sleep(checktime)
+            time.sleep(wait_time)
             if time.time() >= timeout:
                 tname = typename(self)
                 self._stop()
@@ -103,7 +102,7 @@ class SmarActAxis(Adjustable):
         while self._move_requested and self.is_moving():
             if self.is_holding(): # holding == arrived at target!
                 break
-            time.sleep(checktime)
+            time.sleep(wait_time)
 
         self._move_requested = False
 

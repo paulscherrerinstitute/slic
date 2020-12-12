@@ -48,11 +48,11 @@ class ETiming(Adjustable):
         change = lambda: self.put_and_wait(value)
         return self._as_task(change, hold=hold)
 
-    def put_and_wait(self, value, checktime=0.01):
+    def put_and_wait(self, value, wait_time=0.01):
         self.pvs.setvalue.put(value)
         sleep(0.2)
         while self.is_moving():
-            sleep(checktime)
+            sleep(wait_time)
 
     def is_moving(self):
         waiting = self.pvs.waiting.get()
