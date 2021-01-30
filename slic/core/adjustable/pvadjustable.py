@@ -66,7 +66,6 @@ class PVAdjustable(Adjustable):
 
         # wait for start
         while self._change_requested and not self._is_close() and not self.is_moving():
-            print(self._change_requested, self.is_moving())
             time.sleep(wait_time)
             if time.time() >= timeout:
                 self._stop()
