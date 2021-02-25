@@ -129,8 +129,8 @@ class Scanner:
 
         if relative2:
             current2 = adjustable2.get_current_value()
-            start_pos2 += current1
-            end_pos2   += current1
+            start_pos2 += current2
+            end_pos2   += current2
 
         positions1 = nice_arange(start_pos1, end_pos1, step_size1)
         positions2 = nice_arange(start_pos2, end_pos2, step_size2)
