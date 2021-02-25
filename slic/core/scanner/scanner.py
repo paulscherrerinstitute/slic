@@ -221,7 +221,7 @@ def make_2D_pairs(x, y):
     x_flat = x_grid.T.ravel()
     y_flat = y_grid.T.ravel()
     pairs = np.vstack((x_flat, y_flat)).T
-    return pairs
+    return pairs.tolist()
 
 
 
