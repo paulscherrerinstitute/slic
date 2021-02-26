@@ -15,6 +15,10 @@ class NumpyJSONEncoder(json.JSONEncoder):
 
 
 
+def json_validate(obj):
+    return json.loads(json.dumps(obj, cls=NumpyJSONEncoder))
+
+
 def json_save(what, filename, *args, indent=4, sort_keys=True, cls=NumpyJSONEncoder, **kwargs):
     with open(filename, "w") as f:
         json.dump(what, f, *args, indent=indent, sort_keys=sort_keys, cls=cls, **kwargs)

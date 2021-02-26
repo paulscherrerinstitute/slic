@@ -4,7 +4,7 @@ from time import sleep
 from tqdm import tqdm
 import numpy as np
 
-from slic.utils.json import NumpyJSONEncoder
+from slic.utils.json import json_validate
 
 from .broker_tools import get_current_pulseid
 
@@ -80,13 +80,9 @@ def retrieve(address, *args, **kwargs):
 
 
 def post_request(requrl, params, timeout=10):
-    params = validate_params(params)
+    params = json_validate(params)
     response = requests.post(requrl, json=params, timeout=timeout).json()
     return validate_response(response)
-
-
-def validate_params(params):
-    return json.loads(json.dumps(params, cls=NumpyJSONEncoder))
 
 
 def validate_response(resp):
