@@ -5,16 +5,12 @@ import numpy as np
 class NumpyJSONEncoder(json.JSONEncoder):
 
     def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, (np.complexfloating, complex)): # also cover complex builtin
-            return {"real": obj.real, "imag": obj.imag}
-        elif isinstance(obj, np.bool_):
-            return bool(obj)
-        elif isinstance(obj, np.ndarray):
+        if isinstance(obj, np.ndarray):
             return obj.tolist()
+        elif isinstance(obj, np.generic): # covers all numpy scalars
+            return obj.item()
+        elif isinstance(obj, complex): # covers builtin complex
+            return {"real": obj.real, "imag": obj.imag}
         return super().default(obj)
 
 
