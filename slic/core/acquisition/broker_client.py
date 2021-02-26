@@ -1,7 +1,10 @@
 import requests
+import json
 from time import sleep
 from tqdm import tqdm
 import numpy as np
+
+from slic.utils.json import NumpyJSONEncoder
 
 from .broker_tools import get_current_pulseid
 
@@ -83,15 +86,7 @@ def post_request(requrl, params, timeout=10):
 
 
 def validate_params(params):
-    res = {}
-    for k, v in params.items():
-        if isinstance(v, dict):
-            v = validate_params(v)
-        elif isinstance(v, np.ndarray):
-            v = v.tolist()
-            print(f"converted {k} = {v} from numpy array to list")
-        res[k] = v
-    return res
+    return json.loads(json.dumps(params, cls=NumpyJSONEncoder))
 
 
 def validate_response(resp):
