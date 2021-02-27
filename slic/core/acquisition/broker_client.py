@@ -128,8 +128,10 @@ class BrokerConfig:
         if self.client_name:
             config["client_name"] = self.client_name
 
-        if self.detectors:
-            detectors = {d: {} for d in self.detectors} # currently the dicts are empty, thus allow giving just a list as argument
+        detectors = self.detectors
+        if detectors:
+            if isinstance(detectors, list):
+                detectors = {d: {} for d in detectors} # currently the dicts are empty, thus allow giving just a list as argument
             config["detectors"] = detectors
 
         if self.channels:
