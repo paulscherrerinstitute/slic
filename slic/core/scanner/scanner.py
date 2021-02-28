@@ -48,7 +48,7 @@ class Scanner:
             channels (sequence of strings, optional): List of channels to acquire. If None (default), the default lists of the acquisitions will be used.
             acquisitions (sequence of BaseAcquisitions, optional): List of acquisition objects to acquire from. If empty (default) the default list will be used.
             start_immediately (bool, optional): If True (default), start the scan immediately. If False, the returned scan can be started via its run method.
-            step_info: Arbitraty data that is appended to the ScanInfo in each step.
+            step_info: Arbitrary data that is appended to the ScanInfo in each step.
             return_to_initial_values: (bool or None, optional): Return to initial values after scan. If None (default) ask for user input.
 
         Returns:
