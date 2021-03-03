@@ -43,7 +43,7 @@ class ScanBackend:
         self.create_output_dirs()
 
         try:
-            self.scan_loop(step_info=None)
+            self.scan_loop(step_info=step_info)
         except KeyboardInterrupt:
             print() # print new line after ^C
             self.stop()
