@@ -10,7 +10,7 @@ from .scaninfo import ScanInfo
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values):
+    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values, repeat):
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
@@ -32,6 +32,8 @@ class ScanBackend:
         check_trinary(return_to_initial_values)
         self.return_to_initial_values = return_to_initial_values
 
+        self.repeat = repeat
+
         self.store_initial_values()
 
         self.running = False
@@ -42,8 +44,12 @@ class ScanBackend:
         self.store_initial_values()
         self.create_output_dirs()
 
+        #TODO which test? None for infinite? 0?
+        scan_loop = self.repeated_scan_loop if self.repeat > 1 else self.scan_loop
+
         try:
-            self.scan_loop(step_info=step_info)
+            self.running = True #TODO: need to set this True here now
+            scan_loop(step_info=step_info)
         except KeyboardInterrupt:
             print() # print new line after ^C
             self.stop()
@@ -63,12 +69,27 @@ class ScanBackend:
             self.change_to_initial_values()
 
 
+    def repeated_scan_loop(self, step_info=None):
+        base_fname = self.filename
+
+        nreps = self.repeat
+        for i in range(nreps):
+            if not self.running:
+                break
+            print("Repetition {} of {}".format(i+1, nreps))
+            self.filename = f"{base_fname}_{i+1:03}" #TODO: this needs work!
+            print("File:", self.filename)
+            self.scan_loop(step_info=step_info)
+
+        self.filename = base_fname
+
+
     def scan_loop(self, step_info=None):
         do_step = self.do_checked_step if self.condition else self.do_step
 
         values = self.values
         ntotal = len(values)
-        self.running = True
+#        self.running = True #TODO: with repeat, this cannot be set here anymore
         for n, val in enumerate(values):
             if not self.running:
                 break
