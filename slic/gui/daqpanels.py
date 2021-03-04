@@ -205,6 +205,7 @@ class ScanPanel(wx.Panel):
         cb_return.SetValue(True)
 
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value=100)
+        self.le_nrepeat = le_nrepeat = LabeledMathEntry(self, label="#Repetitions",  value=1)
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
@@ -221,7 +222,7 @@ class ScanPanel(wx.Panel):
         widgets = (cb_relative, cb_return)
         hb_cbs = make_filled_vbox(widgets)
 
-        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, hb_cbs, le_npulses, le_fname, eta, btn_go)
+        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, hb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -252,13 +253,16 @@ class ScanPanel(wx.Panel):
         n_pulses = self.le_npulses.GetValue()
         n_pulses = int(n_pulses)
 
+        n_repeat = self.le_nrepeat.GetValue()
+        n_repeat = int(n_repeat)
+
         rate = self.eta.value
         n_pulses = correct_n_pulses(rate, n_pulses)
 
         relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, n_pulses, filename, relative=relative, return_to_initial_values=return_to_initial_values, start_immediately=False)
+        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, n_pulses, filename, relative=relative, return_to_initial_values=return_to_initial_values, repeat=n_repeat, start_immediately=False)
 
         def wait():
             self.scan.run()
