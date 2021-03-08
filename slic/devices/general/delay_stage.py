@@ -46,7 +46,7 @@ class Delay(Adjustable):
 
     def __init__(self, motor, name=None, units="sec"):
         self._motor = motor
-        name = name or motor.name
+        name = name or motor.name + " as delay"
         super().__init__(name=name, units=units)
         self.pvname = motor.pvname
         self.offset_pos = 0
