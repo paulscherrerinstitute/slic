@@ -10,8 +10,8 @@ from ..device import Device
 
 class DoubleCrystalMono(Device):
 
-    def __init__(self, Id, **kwargs):
-        super().__init__(Id, **kwargs)
+    def __init__(self, Id, name="Alvra DCM", **kwargs):
+        super().__init__(Id, name=name, **kwargs)
 
         self.theta  = Motor(Id + ":RX12")
         self.x      = Motor(Id + ":TX12")
@@ -20,7 +20,7 @@ class DoubleCrystalMono(Device):
         self.roll2  = Motor(Id + ":RZ2")
         self.pitch2 = Motor(Id + ":RX2")
 
-        self.energy = DoubleCrystalMonoEnergy(Id)
+        self.energy = DoubleCrystalMonoEnergy(Id, name=name)
 
 
 
