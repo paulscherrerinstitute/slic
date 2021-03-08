@@ -228,11 +228,17 @@ class ScanPanel(wx.Panel):
 
 
     def on_change_pos(self, event):
-        start_pos, end_pos, step_size = self._get_pos()
-        steps = nice_arange(start_pos, end_pos, step_size)
-        nsteps = len(steps)
-        self.le_nsteps.SetToolTip(str(steps))
-        self.le_nsteps.SetValue(str(nsteps))
+        try:
+            start_pos, end_pos, step_size = self._get_pos()
+        except ValueError:
+            nsteps = ""
+            tooltip = "Start, Stop and Step Size need to be floats!"
+        else:
+            steps = nice_arange(start_pos, end_pos, step_size)
+            nsteps = str(len(steps))
+            tooltip = str(steps)
+        self.le_nsteps.SetValue(nsteps)
+        self.le_nsteps.SetToolTip(tooltip)
 
 
     def on_change_adj(self, event):
@@ -477,22 +483,8 @@ class PVDisplay(wx.BoxSizer):
     def __init__(self, parent, label, pvname, id=wx.ID_ANY):
         super().__init__(wx.HORIZONTAL)
 
-        if pvname is None: #TODO
-            return
-
         if not label.endswith(":"):
             label += ":"
-
-        self.pv = pv = epics.get_pv(pvname)
-        self.value = pv.value
-        self.units = pv.units
-
-        def on_value_change(value=None, units=None, **kwargs):
-            self.value = value
-            self.units = units
-            wx.CallAfter(self.update, None) # thread safe widget update
-
-        pv.add_callback(callback=on_value_change)
 
         self.st_label = st_label = wx.StaticText(parent, label=label)
         self.st_value = st_value = wx.StaticText(parent, label="")
@@ -500,7 +492,23 @@ class PVDisplay(wx.BoxSizer):
         self.Add(st_label, 1, flag=wx.EXPAND)
         self.Add(st_value, 1, flag=wx.EXPAND)
 
+        self.pv = self.value = self.units = None
         self.update(None)
+
+        if pvname is None:
+            return # cannot create PV, thus stop early
+
+        self.pv = pv = epics.get_pv(pvname)
+        self.value = pv.value
+        self.units = pv.units
+        self.update(None)
+
+        def on_value_change(value=None, units=None, **kwargs):
+            self.value = value
+            self.units = units
+            wx.CallAfter(self.update, None) # thread safe widget update
+
+        pv.add_callback(callback=on_value_change)
 
         self.st_value.Bind(wx.EVT_WINDOW_DESTROY, self.on_destroy)
 
@@ -517,6 +525,7 @@ class PVDisplay(wx.BoxSizer):
 
 
     def on_destroy(self, event):
+        self.pv.clear_callbacks()
         self.pv.disconnect()
         event.Skip()
 
@@ -538,19 +547,33 @@ class ETADisplay(PVDisplay):
         factor = 1
         for tc in self.textctrls:
             val = tc.GetValue()
-            val = int(val)
+            try:
+                val = int(val)
+            except ValueError:
+                # if any of the values is missing, cannot calculate factor
+                factor = None
+                break
             factor *= val
 
-        rate = self.value
-        assert self.units == "Hz"
+        if self.pv is None:
+            rate = 0
+            units = "Hz"
+        else:
+            rate = self.value
+            units = self.units
 
-        secs = 0 #TODO
-        if rate != 0:
+        assert units == "Hz"
+
+        if rate == 0 or factor is None:
+            secs = "∞"
+            tooltip = "Consider getting a cup of coffee ..."
+        else:
             secs = factor / rate
+            tooltip = str(secs)
+            secs = readable_seconds(secs)
 
-        secs = readable_seconds(secs)
         self.st_value.SetLabel(secs)
-
+        self.st_value.SetToolTip(tooltip)
 
 
 
