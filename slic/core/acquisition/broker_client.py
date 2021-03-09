@@ -130,8 +130,7 @@ class BrokerConfig:
 
         detectors = self.detectors
         if detectors:
-            if isinstance(detectors, list):
-                detectors = {d: {} for d in detectors} # currently the dicts are empty, thus allow giving just a list as argument
+            detectors = flatten_detectors(detectors)
             config["detectors"] = detectors
 
         if self.channels:
@@ -161,6 +160,37 @@ def split_channels(channels):
             bsread_channels.append(c)
 
     return bsread_channels, camera_channels
+
+
+
+def flatten_detectors(dets):
+    if isinstance(dets, dict):
+        return harmonize_detector_dict(dets)
+
+    if isinstance(dets, (list, tuple)):
+        res = {}
+        for d in dets:
+            if isinstance(d, dict):
+                d = harmonize_detector_dict(d)
+                res.update(d)
+            elif isinstance(d, str):
+                res[d] = {} # defaults via empty dict
+            else:
+                raise ValueError(f"Cannot interpret \"{d}\" as detector")
+        return res
+
+    raise ValueError(f"Cannot interpret \"{dets}\" as detector(s)")
+
+
+def harmonize_detector_dict(d):
+    if "name" in d:
+        name = d["name"]
+        d = {
+            name: {
+                k: v for k, v in d.items() if k != "name"
+            }
+        }
+    return d
 
 
 
