@@ -187,6 +187,11 @@ class ScanPanel(wx.Panel):
         cb_adjs.Bind(wx.EVT_COMBOBOX,   self.on_change_adj)
         cb_adjs.Bind(wx.EVT_TEXT_ENTER, self.on_change_adj)
 
+        #TODO: Just a workaround
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
+        self.timer.Start(2500)
+
         self.le_start  = le_start  = LabeledMathEntry(self, label="Start",     value=0)
         self.le_stop   = le_stop   = LabeledMathEntry(self, label="Stop",      value=10)
         self.le_step   = le_step   = LabeledMathEntry(self, label="Step Size", value=0.1)
@@ -308,6 +313,11 @@ class TweakPanel(wx.Panel):
 
         self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
+
+        #TODO: Just a workaround
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
+        self.timer.Start(2500)
 
         cols = ("Timestamp", "Adjustable", "Operation", "Delta", "Readback")
         self.lc_log = lc_log = AutoWidthListCtrl(self, cols, style=wx.LC_REPORT)
