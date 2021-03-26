@@ -7,7 +7,7 @@ from slic.utils import typename
 
 class PVAdjustable(Adjustable):
 
-    def __init__(self, pvname_setvalue, pvname_readback=None, pvname_stop=None, pvname_done_moving=None, pvname_moving=None, accuracy=None, name=None):
+    def __init__(self, pvname_setvalue, pvname_readback=None, pvname_stop=None, pvname_done_moving=None, pvname_moving=None, accuracy=None, active_move=False, name=None):
         pv_setvalue = PV(pvname_setvalue)
         pv_readback = PV(pvname_readback) if pvname_readback else pv_setvalue
 
@@ -16,6 +16,7 @@ class PVAdjustable(Adjustable):
         super().__init__(name=name, units=units)
 
         self.accuracy = accuracy
+        self.active_move = active_move
         self._change_requested = False
 
         self.pvnames = SimpleNamespace(
@@ -67,6 +68,8 @@ class PVAdjustable(Adjustable):
         # wait for start
         while self._change_requested and not self._is_close() and not self.is_moving():
             time.sleep(wait_time)
+            if self.active_move:
+                self.pvs.setvalue.put(value)
             if time.time() >= timeout:
                 self._stop()
                 tname = typename(self)
@@ -75,6 +78,12 @@ class PVAdjustable(Adjustable):
         # wait for move done
         while self._change_requested and self.is_moving():
             time.sleep(wait_time)
+            if self.active_move:
+                self.pvs.setvalue.put(value)
+            if time.time() >= timeout:
+                self._stop()
+                tname = typename(self)
+                raise AdjustableError(f"waiting for move done {tname} \"{self.name}\" to {value} {self.units} timed out")
 
         self._change_requested = False
 
