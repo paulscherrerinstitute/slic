@@ -398,6 +398,9 @@ class FilenameEntry(wx.TextCtrl):
         self.SetValue(val)
         self.SetInsertionPointEnd()
 
+    def GetValue(self):
+        return super().GetValue().strip()
+
 
 
 class NotebookPanel(wx.Panel): #TODO: This needs work
