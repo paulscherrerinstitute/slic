@@ -77,7 +77,8 @@ class ScanBackend:
             if not self.running:
                 break
             print("Repetition {} of {}".format(i+1, nreps))
-            self.filename = f"{base_fname}_{i+1:03}" #TODO: this needs work!
+            fn = f"{base_fname}_{i+1:03}"
+            self.filename = self.scan_info_sfdaq.filename_base = fn #TODO: this needs work!
             print("File:", self.filename)
             self.scan_loop(step_info=step_info)
 
