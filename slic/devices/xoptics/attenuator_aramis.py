@@ -49,7 +49,7 @@ class AttenuatorAramis(Adjustable):
             self.set_transmission(value)
             sleep(sleeptime)
 
-        return Task(changer, hold=hold)
+        return self._as_task(changer, hold=hold)
 
 
     def get_status(self):
@@ -58,9 +58,9 @@ class AttenuatorAramis(Adjustable):
         return s_str, s_int
 
     def __repr__(self):
-        t = self.get_transmission()
-        s = "1st harm. transmission = %g\n" % t[0]
-        s += "3rd harm. transmission = %g\n" % t[1]
+        t = self.get_transmission(verbose=False)
+        s = "1st harm. transmission\t=  %g\n" % t[0]
+        s += "3rd harm. transmission\t=  %g\n" % t[1]
         s += "Targets in beam:\n"
         s += "%s" % self.get_status()[0]
         return s
