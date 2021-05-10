@@ -1,6 +1,6 @@
-from slic.devices.general.motor import Motor
 from epics import PV
 from time import sleep
+from slic.devices.general.motor import Motor
 from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
 
@@ -9,19 +9,21 @@ class AttenuatorAramis:
 
     def __init__(self, Id, E_min=1500, sleeptime=1, name=None, set_limits=[-52, 2], pulse_picker=None):
         self.Id = Id
+        self._pv_status_str = PV(Id + ":MOT2TRANS.VALD")
+        self._pv_status_int = PV(Id + ":IDX_RB")
         self.E_min = E_min
-        self._pv_status_str = PV(self.Id + ":MOT2TRANS.VALD")
-        self._pv_status_int = PV(self.Id + ":IDX_RB")
         self._sleeptime = sleeptime
         self.name = name
         self.alias = Alias(name)
         self.pulse_picker = pulse_picker
+
         self.motors = [Motor(f"{self.Id}:MOTOR_{n+1}", name=f"motor{n+1}") for n in range(6)]
         for n, mot in enumerate(self.motors):
             self.__dict__[f"motor_{n+1}"] = mot
             self.alias.append(mot.alias)
             if set_limits:
                 mot.set_limits(*set_limits)
+
 
     def updateE(self, energy=None):
         while not energy:
@@ -33,7 +35,6 @@ class AttenuatorAramis:
                 sleep(self._sleeptime)
         PV(self.Id + ":ENERGY").put(energy)
         print("Set energy to %s eV" % energy)
-        return
 
     def set_transmission(self, value, energy=None):
         self.updateE(energy)
@@ -58,6 +59,7 @@ class AttenuatorAramis:
     def get_current_value(self, *args, **kwargs):
         return self.get_transmission(*args, verbose=False, **kwargs)[0]
 
+
     def set_target_value(self, value, sleeptime=10, hold=False):
         def changer():
             self.set_transmission(value)
@@ -66,6 +68,7 @@ class AttenuatorAramis:
                 self.pulse_picker.open()
 
         return Task(changer, hold=hold)
+
 
     def get_status(self):
         s_str = self._pv_status_str.get(as_string=True)
