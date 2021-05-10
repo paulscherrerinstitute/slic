@@ -235,9 +235,11 @@ class ScanPanel(wx.Panel):
     def on_change_pos(self, event):
         try:
             start_pos, end_pos, step_size = self._get_pos()
+            if step_size == 0:
+                raise ValueError
         except ValueError:
             nsteps = ""
-            tooltip = "Start, Stop and Step Size need to be floats!"
+            tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
         else:
             steps = nice_arange(start_pos, end_pos, step_size)
             nsteps = str(len(steps))
