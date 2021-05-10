@@ -1,10 +1,15 @@
 from epics import PV
+from slic.core.adjustable import Adjustable
 
 
-class AttenuatorAramis:
+class AttenuatorAramis(Adjustable):
 
-    def __init__(self, Id, z_undulator=None, description=None):
+    def __init__(self, Id, z_undulator=None, description=None, name="Attenuator Aramis"):
         self.Id = Id
+
+        name = name or Id
+        super().__init__(name=name, units=None)
+
         self._pv_status_str = PV(Id + ":MOT2TRANS.VALD")
         self._pv_status_int = PV(Id + ":IDX_RB")
 
@@ -62,6 +67,10 @@ class AttenuatorAramis:
 
     def __call__(self, *args, **kwargs):
         self.set_transmission(*args, **kwargs)
+
+
+    def is_moving(self):
+        raise NotImplementedError
 
 
 
