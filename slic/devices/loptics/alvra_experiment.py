@@ -20,9 +20,9 @@ class LaserExp(Device):
         self.wpHarmonics = Motor(Id + "-M432:MOT")
 
         # Delay stages
-        self.pumpTopas_delay = DelayStage(Id + "-M451:MOTOR_1")
-        self.pumpHarmonics_delay = DelayStage(Id + "-M453:MOTOR_1")
-        self.globalglobi_delay = DelayStage(Id + "-M452:MOTOR_1")
+        self.pumpTopas_delay = DelayStage(Id + "-M451:MOTOR_1", "Delay Pump Topas")
+        self.pumpHarmonics_delay = DelayStage(Id + "-M453:MOTOR_1", "Delay Pump Harmonics")
+        self.globalglobi_delay = DelayStage(Id + "-M452:MOTOR_1", "Delay Global Globi")
 
         # PALM delay stages
         self.palm_delay = DelayStage(Id + "-M423:MOT")
@@ -37,9 +37,8 @@ class LaserExp(Device):
         # Experimental compressor delay stage
         self.compressorDiag_delay = Motor(Id + "-M421:MOT")
 
-        # Pump A/C delay stage
-#        self.pump_autocorr_delay = DelayStage(Id + "-M444:MOT")
-        self.pump_autocorr_delay = Motor(Id + "-M444:MOT")
+        # variable OD filter
+        self.vODfilter = Motor(Id + "-M444:MOT", "Variable OD Filter")
 
         # Experiment-FEL timing delay stage
         self.pump_toFEL_delay = DelayStage(Id + "-M441:MOT")
