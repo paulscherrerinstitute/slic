@@ -9,9 +9,9 @@ class Huber:
         self.Id = Id
 
         ### Huber sample stages ###
-        self.x = Motor(Id + ":MOTOR_X1")
-        self.y = Motor(Id + ":MOTOR_Y1")
-        self.z = Motor(Id + ":MOTOR_Z1")
+        self.x = Motor(Id + ":MOTOR_X1", "Prime Sample X Manipulator")
+        self.y = Motor(Id + ":MOTOR_Y1", "Prime Sample Y Manipulator")
+        self.z = Motor(Id + ":MOTOR_Z1", "Prime Sample Z Manipulator")
 
     def __str__(self):
         return "Huber Sample Stage %s\nx: %s mm\ny: %s mm\nz: %s mm" % (self.Id, self.x.wm(), self.y.wm(), self.z.wm())
