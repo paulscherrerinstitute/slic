@@ -316,9 +316,8 @@ class TweakPanel(wx.Panel):
         self.on_change_adj(None) # update static text and entry with default selection
         cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
 
-        #TODO: Just a workaround
         self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
+        self.Bind(wx.EVT_TIMER, self.on_update_adj, self.timer)
         self.timer.Start(2500)
 
         cols = ("Timestamp", "Adjustable", "Operation", "Delta", "Readback")
@@ -348,9 +347,17 @@ class TweakPanel(wx.Panel):
 
 
     def on_change_adj(self, event):
+        self.on_update_adj(event)
+        self.on_update_abs(event)
+
+
+    def on_update_adj(self, event):
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
 
+
+    def on_update_abs(self, event):
+        adjustable = self.cb_adjs.get()
         value = adjustable.get_current_value()
         self.le_abs.SetValue(str(value))
 
