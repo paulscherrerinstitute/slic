@@ -1,11 +1,13 @@
 from slic.core.adjustable import Adjustable
 from slic.devices.general.motor import Motor
-from ..basedevice import BaseDevice
+from ..device import Device
 
 
 SPEED_OF_LIGHT = 299792458 # m/s
+BACK_AND_FORTH = 2
 CONVERSION_FACTOR_METER_TO_MILLIMETER = 1e3
-CONVERSION_FACTOR_DELAY_TO_POS = SPEED_OF_LIGHT * CONVERSION_FACTOR_METER_TO_MILLIMETER / 2 # back and forth
+CONVERSION_FACTOR_SECOND_TO_FEMTOSECOND = 1e15
+CONVERSION_FACTOR_DELAY_TO_POS = SPEED_OF_LIGHT * CONVERSION_FACTOR_METER_TO_MILLIMETER / CONVERSION_FACTOR_SECOND_TO_FEMTOSECOND / BACK_AND_FORTH
 CONVERSION_FACTOR_POS_TO_DELAY = 1 / CONVERSION_FACTOR_DELAY_TO_POS
 
 
@@ -17,12 +19,13 @@ def pos_to_delay(pos):
 
 
 
-class DelayStage(BaseDevice):
+class DelayStage(Device):
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, Id, name=None):
+        self.Id = Id
+        self.name = name = name or Id
 
-        self.motor = motor = Motor(name)
+        self.motor = motor = Motor(Id, name)
         self.delay = delay = Delay(motor)
 
         self.devices = {
@@ -44,7 +47,7 @@ class DelayStage(BaseDevice):
 
 class Delay(Adjustable):
 
-    def __init__(self, motor, name=None, units="sec"):
+    def __init__(self, motor, name=None, units="fs"):
         self._motor = motor
         name = name or motor.name + " as delay"
         super().__init__(name=name, units=units)
