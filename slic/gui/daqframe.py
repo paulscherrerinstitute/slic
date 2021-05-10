@@ -3,6 +3,7 @@ import wx
 from .daqpanels import ConfigPanel, StaticPanel, ScanPanel, TweakPanel
 from .widgets import NotebookPanel
 from .icon import get_wx_icon
+from .persist import load, store
 
 
 class DAQFrame(wx.Frame):
@@ -33,6 +34,21 @@ class DAQFrame(wx.Frame):
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(panel_main, proportion=1, flag=wx.EXPAND)
         self.SetSizerAndFit(sizer)
+
+        try:
+            load(".neatdaq", self)
+        except Exception as e:
+            en = type(e).__name__
+            print(f"skipped persist load as it caused: {en}: {e}")
+
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
+
+    def on_close(self, event):
+        try: # make sure the close event fires
+            store(".neatdaq", self)
+        finally:
+            event.Skip()
 
 
 
