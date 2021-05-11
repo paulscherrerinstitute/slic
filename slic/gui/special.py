@@ -1,10 +1,14 @@
 import wx
 
-from .daqpanels import AdjustableComboBox, ETADisplay
-from .widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH
+from .daqpanels import AdjustableComboBox, ETADisplay, correct_n_pulses, run, post_event
+from .widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
 
 from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_pvname_reprate
+
+
+class ValueEntry(wx.TextCtrl):
+    pass
 
 
 class SpecialScanPanel(wx.Panel):
@@ -27,21 +31,16 @@ class SpecialScanPanel(wx.Panel):
         self.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
         self.timer.Start(2500) #TODO: make configurable
 
-        self.le_start  = le_start  = LabeledMathEntry(self, label="Start",     value=0)
-        self.le_stop   = le_stop   = LabeledMathEntry(self, label="Stop",      value=10)
-        self.le_step   = le_step   = LabeledMathEntry(self, label="Step Size", value=0.1)
+        self.le_values = le_values = ValueEntry(self, value="", style=wx.TE_MULTILINE)
         self.le_nsteps = le_nsteps = LabeledEntry(self, label="#Steps")
 
         le_nsteps.Disable()
-        self.on_change_pos(None) # update #Steps
+        self.on_change_values(None) # update #Steps
 
-        for le in (le_start, le_stop, le_step):
-            le.Bind(wx.EVT_TEXT, self.on_change_pos)
+        le_values.Bind(wx.EVT_TEXT, self.on_change_values)
 
-        self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative to current position")
         self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")
 
-        cb_relative.SetValue(False)
         cb_return.SetValue(True)
 
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value=100)
@@ -56,27 +55,27 @@ class SpecialScanPanel(wx.Panel):
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (le_start, le_stop, le_step, le_nsteps)
+        hb_values = wx.BoxSizer()
+        hb_values.Add(le_values, 1, wx.EXPAND)
+
+        widgets = (STRETCH, STRETCH, STRETCH, le_nsteps)
         hb_pos = make_filled_hbox(widgets)
 
-        widgets = (cb_relative, cb_return)
+        widgets = (STRETCH, cb_return)
         hb_cbs = make_filled_vbox(widgets)
 
-        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, hb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
+        widgets = (cb_adjs, st_adj, EXPANDING, hb_values, hb_pos, hb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
 
-    def on_change_pos(self, event):
+    def on_change_values(self, event):
         try:
-            start_pos, end_pos, step_size = self._get_pos()
-            if step_size == 0:
-                raise ValueError
-        except ValueError:
+            steps = self._get_values()
+        except ValueError as e:
             nsteps = ""
-            tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
+            tooltip = str(e)
         else:
-            steps = nice_arange(start_pos, end_pos, step_size)
             nsteps = str(len(steps))
             tooltip = str(steps)
         self.le_nsteps.SetValue(nsteps)
@@ -94,7 +93,7 @@ class SpecialScanPanel(wx.Panel):
 
         adjustable = self.cb_adjs.get()
 
-        start_pos, end_pos, step_size = self._get_pos()
+        steps = self._get_values()
 
         filename = self.le_fname.GetValue()
 
@@ -107,10 +106,9 @@ class SpecialScanPanel(wx.Panel):
         rate = self.eta.value
         n_pulses = correct_n_pulses(rate, n_pulses)
 
-        relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, n_pulses, filename, relative=relative, return_to_initial_values=return_to_initial_values, repeat=n_repeat, start_immediately=False)
+        self.scan = self.scanner.ascan_list(adjustable, steps, n_pulses, filename, return_to_initial_values=return_to_initial_values, repeat=n_repeat, start_immediately=False)
 
         def wait():
             self.scan.run()
@@ -128,11 +126,11 @@ class SpecialScanPanel(wx.Panel):
             self.scan = None
 
 
-    def _get_pos(self):
-        start_pos = self.le_start.GetValue()
-        end_pos   = self.le_stop.GetValue()
-        step_size = self.le_step.GetValue()
-        return float(start_pos), float(end_pos), float(step_size)
+    def _get_values(self):
+        values = self.le_values.GetValue()
+        values = values.replace(",", " ").split()
+        values = [float(v) for v in values]
+        return values
 
 
 

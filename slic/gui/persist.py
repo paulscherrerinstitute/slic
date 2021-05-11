@@ -1,10 +1,12 @@
 from pathlib import Path
 from slic.gui import widgets as ws
+from slic.gui.special import ValueEntry
 
 
 PERSISTABLE_WIDGETS = (
     ws.MathEntry,
-    ws.FilenameEntry
+    ws.FilenameEntry,
+    ValueEntry
 )
 
 
