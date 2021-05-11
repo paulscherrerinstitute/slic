@@ -1,3 +1,4 @@
+import numpy as np
 import wx
 
 from .daqpanels import AdjustableComboBox, ETADisplay, correct_n_pulses, run, post_event
@@ -39,8 +40,10 @@ class SpecialScanPanel(wx.Panel):
 
         le_values.Bind(wx.EVT_TEXT, self.on_change_values)
 
+        self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative to current position")
         self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")
 
+        cb_relative.SetValue(False)
         cb_return.SetValue(True)
 
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value=100)
@@ -61,7 +64,7 @@ class SpecialScanPanel(wx.Panel):
         widgets = (STRETCH, STRETCH, STRETCH, le_nsteps)
         hb_pos = make_filled_hbox(widgets)
 
-        widgets = (STRETCH, cb_return)
+        widgets = (cb_relative, cb_return)
         hb_cbs = make_filled_vbox(widgets)
 
         widgets = (cb_adjs, st_adj, EXPANDING, hb_values, hb_pos, hb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
@@ -106,6 +109,11 @@ class SpecialScanPanel(wx.Panel):
         rate = self.eta.value
         n_pulses = correct_n_pulses(rate, n_pulses)
 
+        relative = self.cb_relative.GetValue()
+        if relative:
+            current = adjustable.get_current_value()
+            steps += current
+
         return_to_initial_values = self.cb_return.GetValue()
 
         self.scan = self.scanner.ascan_list(adjustable, steps, n_pulses, filename, return_to_initial_values=return_to_initial_values, repeat=n_repeat, start_immediately=False)
@@ -130,6 +138,7 @@ class SpecialScanPanel(wx.Panel):
         values = self.le_values.GetValue()
         values = values.replace(",", " ").split()
         values = [float(v) for v in values]
+        values = np.array(values)
         return values
 
 
