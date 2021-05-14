@@ -216,9 +216,10 @@ class LabeledTweakEntry(wx.BoxSizer):
         super().__init__(wx.VERTICAL)
 
         value = str(value)
+        name = label
 
         self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = MathEntry(parent, value=value, style=wx.TE_RIGHT)
+        self.text  = text  = MathEntry(parent, value=value, name=name, style=wx.TE_RIGHT)
 
         self.btn_left  = btn_left  = wx.Button(parent, label="<")
         self.btn_right = btn_right = wx.Button(parent, label=">")
@@ -253,9 +254,10 @@ class LabeledEntry(wx.BoxSizer):
         super().__init__(wx.VERTICAL)
 
         value = str(value)
+        name = label
 
         self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = wx.TextCtrl(parent, value=value, style=wx.TE_RIGHT)
+        self.text  = text  = wx.TextCtrl(parent, value=value, name=name, style=wx.TE_RIGHT)
 
         self.Add(label, flag=wx.EXPAND)
         self.Add(text,  flag=wx.EXPAND)
@@ -272,9 +274,10 @@ class LabeledMathEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
         super().__init__(wx.VERTICAL)
 
         value = str(value)
+        name = label
 
         self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = MathEntry(parent, value=value, style=wx.TE_RIGHT)
+        self.text  = text  = MathEntry(parent, value=value, name=name, style=wx.TE_RIGHT)
 
         self.Add(label, flag=wx.EXPAND)
         self.Add(text,  flag=wx.EXPAND)
@@ -358,9 +361,10 @@ class LabeledFilenameEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
         super().__init__(wx.VERTICAL)
 
         value = str(value)
+        name = label
 
         self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = FilenameEntry(parent, value=value, style=wx.TE_RIGHT)
+        self.text  = text  = FilenameEntry(parent, value=value, name=name, style=wx.TE_RIGHT)
 
         self.Add(label, flag=wx.EXPAND)
         self.Add(text,  flag=wx.EXPAND)
