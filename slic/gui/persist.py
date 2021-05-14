@@ -1,4 +1,5 @@
 from pathlib import Path
+from slic.utils import json_save, json_load
 from slic.gui import widgets as ws
 from slic.gui.special import ValueEntry
 
@@ -19,15 +20,15 @@ class Persistence:
         home = Path.home()
         self.fname = home / fname
         self.managed = managed
-        self.values = []
+        self.values = {}
 
 
     def store(self):
         self._get()
-        list_store(self.fname, self.values)
+        json_save(self.values, self.fname)
 
     def load(self):
-        self.values = list_load(self.fname)
+        self.values = json_load(self.fname)
         self._set()
 
 
@@ -35,16 +36,20 @@ class Persistence:
         children = self.get_good_children()
         for child in children:
             value = child.GetValue()
-            self.values.append(value)
+            name = get_long_name(child)
+#            print(name, value, sep="\t")
+            self.values[name] = value
 
     def _set(self):
         children = self.get_good_children()
-        nchildren = len(children)
-        nvalues = len(self.values)
-        if nchildren != nvalues:
-            raise ValueError(f"got {nchildren} widgets vs. {nvalues} values mismatch")
-        for child, value in zip(children, self.values):
-            child.SetValue(value)
+        for child in children:
+            name = get_long_name(child)
+            try:
+                value = self.values[name]
+            except KeyError:
+                print(f"Warning: cannot load previous value for: {name}")
+            else:
+                child.SetValue(value)
 
 
     def get_good_children(self):
@@ -64,20 +69,22 @@ def recurse(obj):
         yield obj
 
 
-def list_store(fname, values):
-    print("store to", fname)
-    with open(fname, "w") as f:
-        for v in values:
-            f.write(f"{v}\n")
 
-def list_load(fname):
-    print("load from", fname)
-    values = []
-    with open(fname, "r") as f:
-        for line in f:
-            value = line.strip()
-            values.append(value)
-    return values
+def get_long_name(obj):
+    lineage = get_lineage(obj)
+    names = [g.GetName() for g in lineage]
+    name = "\\".join(escape_backslash(n) for n in reversed(names))
+    return name
+
+def get_lineage(obj):
+    lineage = []
+    while obj:
+        lineage.append(obj)
+        obj = obj.GetParent()
+    return lineage
+
+def escape_backslash(s):
+    return repr(s)[1:-1]
 
 
 
