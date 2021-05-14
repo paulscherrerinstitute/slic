@@ -1,16 +1,18 @@
 from pathlib import Path
-from slic.utils import json_save, json_load
+from slic.utils import typename, json_save, json_load
 from slic.gui import widgets as ws
 from slic.gui.special import ValueEntry
 
 
-def save(*args):
-    p = Persistence(*args)
-    p.save()
-
-def load(*args):
-    p = Persistence(*args)
-    p.load()
+def skip_on_error(f):
+    def wrapper(*args, **kwargs):
+        try:
+            f(*args, **kwargs)
+        except Exception as e:
+            fn = f.__name__
+            en = typename(e)
+            print(f"skipped persist {fn} as it caused: {en}: {e}")
+    return wrapper
 
 
 
@@ -21,10 +23,12 @@ class Persistence:
         self.fname = home / fname
         self.managed = managed
 
+    @skip_on_error
     def save(self):
         values = get_values(self.managed)
         json_save(values, self.fname)
 
+    @skip_on_error
     def load(self):
         values = json_load(self.fname)
         set_values(values, self.managed)
