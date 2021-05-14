@@ -20,46 +20,42 @@ class Persistence:
         home = Path.home()
         self.fname = home / fname
         self.managed = managed
-        self.values = {}
-
 
     def store(self):
-        self._get()
-        json_save(self.values, self.fname)
+        values = get_values(self.managed)
+        json_save(values, self.fname)
 
     def load(self):
-        self.values = json_load(self.fname)
-        self._set()
-
-
-    def _get(self):
-        children = self.get_good_children()
-        for child in children:
-            value = child.GetValue()
-            name = get_long_name(child)
-#            print(name, value, sep="\t")
-            self.values[name] = value
-
-    def _set(self):
-        children = self.get_good_children()
-        for child in children:
-            name = get_long_name(child)
-            try:
-                value = self.values[name]
-            except KeyError:
-                print(f"Warning: cannot load previous value for: {name}")
-            else:
-                child.SetValue(value)
-
-
-    def get_good_children(self):
-        return list(c for c in recurse(self.managed) if isinstance(c, ws.PersistableWidget))
+        values = json_load(self.fname)
+        set_values(values, self.managed)
 
 
 
-def recurse_all(objs):
-    for obj in objs:
-        yield from recurse(obj)
+def get_values(obj):
+    values = {}
+    children = get_good_children(obj)
+    for child in children:
+        value = child.GetValue()
+        name = get_long_name(child)
+#        print(name, value, sep="\t")
+        values[name] = value
+    return values
+
+def set_values(values, obj):
+    children = get_good_children(obj)
+    for child in children:
+        name = get_long_name(child)
+        try:
+            value = values[name]
+        except KeyError:
+            print(f"Warning: no previous value for: {name}")
+        else:
+            child.SetValue(value)
+
+
+
+def get_good_children(obj):
+    return [c for c in recurse(obj) if isinstance(c, ws.PersistableWidget)]
 
 def recurse(obj):
     children = obj.GetChildren()
@@ -67,6 +63,10 @@ def recurse(obj):
         yield from recurse_all(children)
     else:
         yield obj
+
+def recurse_all(objs):
+    for obj in objs:
+        yield from recurse(obj)
 
 
 
