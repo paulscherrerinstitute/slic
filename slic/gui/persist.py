@@ -3,13 +3,6 @@ from slic.gui import widgets as ws
 from slic.gui.special import ValueEntry
 
 
-PERSISTABLE_WIDGETS = (
-    ws.MathEntry,
-    ws.FilenameEntry,
-    ValueEntry
-)
-
-
 def store(*args):
     p = Persistence(*args)
     p.store()
@@ -55,7 +48,7 @@ class Persistence:
 
 
     def get_good_children(self):
-        return list(c for c in recurse(self.managed) if isinstance(c, PERSISTABLE_WIDGETS))
+        return list(c for c in recurse(self.managed) if isinstance(c, ws.PersistableWidget))
 
 
 

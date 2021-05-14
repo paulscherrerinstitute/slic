@@ -2,13 +2,13 @@ import numpy as np
 import wx
 
 from .daqpanels import AdjustableComboBox, ETADisplay, correct_n_pulses, run, post_event
-from .widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
+from .widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING, PersistableWidget
 
 from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_pvname_reprate
 
 
-class ValueEntry(wx.TextCtrl):
+class ValueEntry(wx.TextCtrl, PersistableWidget):
     pass
 
 

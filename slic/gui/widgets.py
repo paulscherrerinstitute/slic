@@ -7,6 +7,12 @@ from .fname import increase, decrease
 from .helper import exception_to_warning
 
 
+
+class PersistableWidget:
+    pass
+
+
+
 WX_DEFAULT_RESIZABLE_DIALOG_STYLE = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MINIMIZE_BOX|wx.MAXIMIZE_BOX
 
 
@@ -288,7 +294,7 @@ class LabeledMathEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
 
 
 
-class MathEntry(wx.TextCtrl):
+class MathEntry(wx.TextCtrl, PersistableWidget):
 
     def __init__(self, *args, **kwargs):
         if "style" in kwargs:
@@ -375,7 +381,7 @@ class LabeledFilenameEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
 
 
 
-class FilenameEntry(wx.TextCtrl):
+class FilenameEntry(wx.TextCtrl, PersistableWidget):
 
     def __init__(self, *args, **kwargs):
         if "style" in kwargs:
