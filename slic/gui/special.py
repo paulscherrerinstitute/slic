@@ -8,8 +8,36 @@ from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_pvname_reprate
 
 
+class LabeledValueEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
+
+    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
+        super().__init__(wx.VERTICAL)
+
+        value = str(value)
+        name = label
+
+        self.label = label = wx.StaticText(parent, label=label)
+        self.text  = text  = ValueEntry(parent, value=value, name=name)
+
+        self.Add(label, flag=wx.EXPAND)
+        self.Add(text,  flag=wx.EXPAND, proportion=1)
+
+
+    def __getattr__(self, name):
+        return getattr(self.text, name)
+
+
+
 class ValueEntry(wx.TextCtrl, PersistableWidget):
-    pass
+
+    def __init__(self, *args, **kwargs):
+        if "style" in kwargs:
+            kwargs["style"] |= wx.TE_MULTILINE
+        else:
+            kwargs["style"] = wx.TE_MULTILINE
+
+        super().__init__(*args, **kwargs)
+
 
 
 class SpecialScanPanel(wx.Panel):
@@ -32,7 +60,7 @@ class SpecialScanPanel(wx.Panel):
         self.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
         self.timer.Start(2500) #TODO: make configurable
 
-        self.le_values = le_values = ValueEntry(self, value="", style=wx.TE_MULTILINE)
+        self.le_values = le_values = LabeledValueEntry(self, label="Values")
         self.le_nsteps = le_nsteps = LabeledEntry(self, label="#Steps")
 
         le_nsteps.Disable()
