@@ -4,9 +4,9 @@ from slic.gui import widgets as ws
 from slic.gui.special import ValueEntry
 
 
-def store(*args):
+def save(*args):
     p = Persistence(*args)
-    p.store()
+    p.save()
 
 def load(*args):
     p = Persistence(*args)
@@ -21,7 +21,7 @@ class Persistence:
         self.fname = home / fname
         self.managed = managed
 
-    def store(self):
+    def save(self):
         values = get_values(self.managed)
         json_save(values, self.fname)
 
