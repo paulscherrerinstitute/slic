@@ -403,23 +403,26 @@ class FilenameEntry(wx.TextCtrl):
 
 
 
-class NotebookPanel(wx.Panel): #TODO: This needs work
+class MainPanel(wx.Panel): #TODO: This still needs work
 
-    def __init__(self, *args, **kwargs):
-        wx.Panel.__init__(self, *args, **kwargs)
-        self.notebook = notebook = wx.Notebook(self)
+    def wrap(self, inner):
         self.sizer = sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(notebook, proportion=1, flag=wx.EXPAND)
+        sizer.Add(inner, proportion=1, flag=wx.EXPAND)
         self.SetSizer(sizer)
 
-    def SetSelection(self, num):
-        nb = self.notebook
-        ntotal = nb.GetPageCount()
-        num %= ntotal # allow counting from the back using negative numbers
-        nb.SetSelection(num)
 
-#    def __getattr__(self, name):
-#        return getattr(self.notebook, name)
+
+class NotebookDX(wx.Notebook):
+
+    def SetSelection(self, num):
+        ntotal = super().GetPageCount()
+        num %= ntotal # allow counting from the back using negative numbers
+        super().SetSelection(num)
+
+    def AddPage(self, panel, name=None, **kwargs):
+        if name is None:
+            name = panel.GetName()
+        super().AddPage(panel, name, **kwargs)
 
 
 
