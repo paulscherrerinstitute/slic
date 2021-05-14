@@ -4,7 +4,7 @@ from .daqpanels import ConfigPanel, StaticPanel, ScanPanel, TweakPanel
 from .special import SpecialScanPanel
 from .widgets import MainPanel, NotebookDX
 from .icon import get_wx_icon
-from .persist import load, store
+from .persist import load, save
 
 
 class DAQFrame(wx.Frame):
@@ -50,7 +50,7 @@ class DAQFrame(wx.Frame):
 
     def on_close(self, event):
         try: # make sure the close event fires
-            store(".neatdaq", self)
+            save(".neatdaq", self)
         finally:
             event.Skip()
 
