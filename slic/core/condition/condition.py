@@ -58,16 +58,23 @@ class Condition(BaseCondition):
         vmin = self.vmin
         vmax = self.vmax
         required_fraction = self.required_fraction
+        data = self.data
 
-        fraction = within_fraction(self.data, vmin, vmax)
+        ndata = len(data) or "no(!)"
+        print(f"Waited for {self.wait_time} seconds and collected {ndata} data points.")
+
+        if not data:
+            print("Is the source alive?")
+            return False
+
+        fraction = within_fraction(data, vmin, vmax)
         result = (fraction >= required_fraction)
 
         status = "happy" if result else "unhappy"
         percentage = fraction_to_percentage(fraction)
         required_percentage = fraction_to_percentage(required_fraction)
 
-        msg = "Condition {}: {}% within limits [{}, {}), required was {}%.".format(status, percentage, vmin, vmax, required_percentage)
-        print(msg)
+        print(f"Condition {status}: {percentage}% within limits [{vmin}, {vmax}), required was {required_percentage}%.")
 
         return result
 
@@ -79,11 +86,11 @@ class Condition(BaseCondition):
         while not self.long_check():
             was_ever_unhappy = True
             delta_t = time() - time_start
-            print(f"Condition is unhappy, waiting for OK conditions since {delta_t:5.1f} seconds.")
+            print(f"Condition is unhappy, waiting for OK conditions since {delta_t:.1f} seconds.")
 
         if was_ever_unhappy:
             delta_t = time() - time_start
-            print(f"Condition was unhappy, waited for {delta_t:5.1f} seconds.")
+            print(f"Condition was unhappy, waited for {delta_t:.1f} seconds.")
 
         self.clear_and_start_counting()
 
@@ -102,7 +109,7 @@ class Condition(BaseCondition):
     def __repr__(self):
         name = typename(self)
         status = "happy" if self.check() else "unhappy"
-        return "{}: {}".format(name, status) #TODO
+        return f"{name}: {status}" #TODO
 
 
 
