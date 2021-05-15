@@ -10,6 +10,11 @@ BIN_OPS = {
     ast.Mod:  operator.mod
 }
 
+UNARY_OPS = {
+    ast.UAdd: operator.pos,
+    ast.USub: operator.neg
+}
+
 
 def forgiving_eval(value):
     try:
@@ -36,6 +41,11 @@ def ast_node_eval(node):
         left  = ast_node_eval(node.left)
         right = ast_node_eval(node.right)
         return op(left, right)
+    elif isinstance(node, ast.UnaryOp):
+        op_type = type(node.op)
+        op = UNARY_OPS[op_type]
+        operand = ast_node_eval(node.operand)
+        return op(operand)
     else:
         type_name = type(node).__name__
         raise ArithmeticEvalError("Unsupported node type {}".format(type_name))
