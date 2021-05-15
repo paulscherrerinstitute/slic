@@ -5,7 +5,7 @@ from .condition import Condition
 
 class ValueCondition(Condition):
 
-    def __init__(self, get_value, *args, check_time, **kwargs):
+    def __init__(self, get_value, check_time, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.get_value = get_value
         self.check_time = check_time
