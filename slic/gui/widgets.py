@@ -1,7 +1,7 @@
 import wx
 import wx.lib.mixins.listctrl as listmix
 
-from slic.utils import arithmetic_eval
+from slic.utils import arithmetic_eval, typename
 
 from .fname import increase, decrease
 from .helper import exception_to_warning
@@ -324,11 +324,14 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
         try:
             val = arithmetic_eval(val)
         except SyntaxError as e:
+            en = typename(e)
             msg = e.args[0]
+            msg = f"{en}: {msg}"
             self._set_alarm(msg)
             self.SetInsertionPoint(e.offset)
         except Exception as e:
-            msg = str(e)
+            en = typename(e)
+            msg = f"{en}: {e}"
             self._set_alarm(msg)
             self.SetInsertionPointEnd()
         else:
