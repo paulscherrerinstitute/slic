@@ -1,6 +1,8 @@
 import ast
 import operator
 
+from .utils import typename
+
 
 BIN_OPS = {
     ast.Add:  operator.add,
@@ -36,20 +38,29 @@ def ast_node_eval(node):
     elif isinstance(node, ast.Num):
         return node.n
     elif isinstance(node, ast.BinOp):
-        op_type = type(node.op)
-        op = BIN_OPS[op_type]
+        op = get_operator(node, BIN_OPS)
         left  = ast_node_eval(node.left)
         right = ast_node_eval(node.right)
         return op(left, right)
     elif isinstance(node, ast.UnaryOp):
-        op_type = type(node.op)
-        op = UNARY_OPS[op_type]
+        op = get_operator(node, UNARY_OPS)
         operand = ast_node_eval(node.operand)
         return op(operand)
     else:
-        type_name = type(node).__name__
-        raise ArithmeticEvalError("Unsupported node type {}".format(type_name))
+        tn = typename(node)
+        raise ArithmeticEvalError(f"Unsupported node type {tn}")
 
+
+def get_operator(node, ops):
+    op_type = type(node.op)
+    try:
+        op = ops[op_type]
+    except KeyError as e:
+        nn = typename(node)
+        on = typename(node.op)
+        raise ArithmeticEvalError(f"Unsupported {nn} {on}") from e
+    else:
+        return op
 
 
 class ArithmeticEvalError(Exception):
