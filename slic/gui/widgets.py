@@ -441,6 +441,22 @@ class NotebookDX(wx.Notebook):
 
 
 
+class ContainsTextCompleter(wx.TextCompleterSimple):
+
+    def __init__(self, choices, separator):
+        super().__init__()
+        self.choices = choices
+        self.separator = separator
+
+    def GetCompletions(self, prefix):
+        if not prefix:
+            return []
+        res = (string for string in self.choices if prefix in string)
+        res = (prefix + self.separator + match for match in res)
+        return tuple(res)
+
+
+
 class FuzzyTextCompleter(wx.TextCompleterSimple):
 
     def __init__(self, choices, separator, limit=20, score_threshold=0):
