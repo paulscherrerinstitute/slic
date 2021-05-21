@@ -451,7 +451,7 @@ class ContainsTextCompleter(wx.TextCompleterSimple):
     def GetCompletions(self, prefix):
         if not prefix:
             return []
-        res = (string for string in self.choices if prefix in string)
+        res = (string for string in self.choices if prefix.lower() in string.lower())
         res = (prefix + self.separator + match for match in res)
         return tuple(res)
 
