@@ -1,6 +1,8 @@
 import wx
 import wx.lib.mixins.listctrl as listmix
 
+from fuzzywuzzy import process #TODO make this only optional?
+
 from slic.utils import arithmetic_eval, typename
 
 from .fname import increase, decrease
@@ -436,6 +438,25 @@ class NotebookDX(wx.Notebook):
         if name is None:
             name = panel.GetName()
         super().AddPage(panel, name, **kwargs)
+
+
+
+class FuzzyTextCompleter(wx.TextCompleterSimple):
+
+    def __init__(self, choices, separator, limit=20, score_threshold=0):
+        super().__init__()
+        self.choices = choices
+        self.separator = separator
+        self.limit = limit
+        self.score_threshold = score_threshold
+
+    def GetCompletions(self, prefix):
+        if not prefix:
+            return []
+        res = process.extract(prefix, self.choices, limit=self.limit)
+        res = (match for match, score in res if score > self.score_threshold)
+        res = (prefix + self.separator + match for match in res)
+        return tuple(res)
 
 
 

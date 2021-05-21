@@ -5,6 +5,7 @@ import epics
 import wx
 
 from .widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl, copy_to_clipboard
+from .widgets import FuzzyTextCompleter
 from .plotwidgets import PlotDialog
 
 from slic.core.adjustable import Adjustable
@@ -488,7 +489,8 @@ class AdjustableComboBox(wx.ComboBox):
         adjs_name = tuple(sorted(adjs.keys()))
         wx.ComboBox.__init__(self, parent, choices=adjs_name, style=wx.TE_PROCESS_ENTER)
         self.SetSelection(0)
-        self.AutoComplete(adjs_name)
+#        self.AutoComplete(adjs_name) #TODO: make this selectable?
+        self.AutoComplete(FuzzyTextCompleter(adjs_name, " → "))
         self.Bind(wx.EVT_TEXT, self.on_text)
 
     def get(self):
@@ -498,9 +500,12 @@ class AdjustableComboBox(wx.ComboBox):
 
     def on_text(self, event):
         value = self.GetValue()
+        value = value.split(" → ", 1)[-1] # remove prefix (prefix is needed by AutoComplete)
         success = self.SetStringSelection(value)
         if success:
             post_event(wx.EVT_COMBOBOX, self)
+        event.Skip() # needed for custom TextCompleter to trigger
+
 
 
 class PVDisplay(wx.BoxSizer):
