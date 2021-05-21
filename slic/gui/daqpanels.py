@@ -486,14 +486,21 @@ class AdjustableComboBox(wx.ComboBox):
         adjs_instances = instances(Adjustable)
         self.adjs = adjs = {i.name : i for i in adjs_instances}
         adjs_name = tuple(sorted(adjs.keys()))
-        wx.ComboBox.__init__(self, parent, choices=adjs_name, style=wx.CB_READONLY|wx.TE_PROCESS_ENTER)
+        wx.ComboBox.__init__(self, parent, choices=adjs_name, style=wx.TE_PROCESS_ENTER)
         self.SetSelection(0)
+        self.AutoComplete(adjs_name)
+        self.Bind(wx.EVT_TEXT, self.on_text)
 
     def get(self):
         adj_name = self.GetStringSelection()
-        adjustable = self.adjs[adj_name]
+        adjustable = self.adjs.get(adj_name)
         return adjustable
 
+    def on_text(self, event):
+        value = self.GetValue()
+        success = self.SetStringSelection(value)
+        if success:
+            post_event(wx.EVT_COMBOBOX, self)
 
 
 class PVDisplay(wx.BoxSizer):
