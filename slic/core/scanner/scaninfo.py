@@ -65,16 +65,16 @@ class ScanInfo:
         last_readbacks = readbacks[-1] if readbacks else None
 
         scan_info_dict = {
-            "scan_name":             scan_name,
+            "scan_name":            scan_name,
 
-            "motors_name":           self.names,
-            "motors_pv_name":        self.ids,
-            "motors_offset":         offsets,
-            "motors_coefficient":    coefficients,
+            "name":                 self.names,
+            "Id":                   self.ids,
+            "offset":               offsets,
+            "conversion_factor":    coefficients,
 
-            "motors_value":          last_values,
-            "motors_readback_value": last_readbacks,
-            "motors_readback_raw":   last_readbacks #TODO
+            "scan_values":          last_values,
+            "scan_readbacks":       last_readbacks,
+            "scan_readbacks_raw":   last_readbacks #TODO
         }
         return scan_info_dict
 
