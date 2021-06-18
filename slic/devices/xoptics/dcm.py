@@ -27,10 +27,10 @@ class DoubleCrystalMono(Device):
 class DoubleCrystalMonoEnergy(Adjustable):
 
     def __init__(self, Id, name=None):
-        pvname_setvalue = Id + ":ENERGY"
-        pvname_readback = Id + ":ENERGY_SP"
-        pvname_moving   = Id + ":MOVING"
-        pvname_stop     = Id + ":STOP.PROC"
+        pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP"
+        pvname_readback = "SAROP11-ARAMIS:ENERGY"
+        pvname_moving   = "SAROP11-ODCM105:MOVING"
+        pvname_stop     = "SAROP11-ODCM105:STOP.PROC"
 
         pv_setvalue = PV(pvname_setvalue)
         pv_readback = PV(pvname_readback)
@@ -61,15 +61,18 @@ class DoubleCrystalMonoEnergy(Adjustable):
 
     def set_current_value(self, value):
         self.pvs.setvalue.put(value)
+        sleep(3)
 
     def set_target_value(self, value, hold=False):
         changer = lambda: self.move_and_wait(value)
         return self._as_task(changer, hold=hold, stopper=self.stop)
 
-    def move_and_wait(self, value, wait_time=0.01, accuracy=0.5):
+    def move_and_wait(self, value, wait_time=0.1):
         self.set_current_value(value)
-        while abs(self.wait_for_valid_value() - value) > accuracy:
+#        while abs(self.wait_for_valid_value() - value) > accuracy:
+        while self.is_moving():
             sleep(wait_time)
+
 
     def wait_for_valid_value(self):
         val = np.nan
@@ -78,8 +81,8 @@ class DoubleCrystalMonoEnergy(Adjustable):
         return val
 
     def is_moving(self):
-        done = self.pvs.moving.get()
-        return not bool(done)
+        moving = self.pvs.moving.get()
+        return bool(moving)
 
     def stop(self):
         self.pvs.stop.put(1)
@@ -178,9 +181,10 @@ class CoupledDoubleCrystalMono(Device):
 class CoupledDoubleCrystalMonoEnergy(Adjustable):
 
     def __init__(self, Id, name=None):
-        pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP_USER"
+        pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP"
         pvname_readback = "SAROP11-ARAMIS:ENERGY"
-        pvname_moving   = "SGE-OP2E-ARAMIS:MOVING"
+#        pvname_moving   = "SGE-OP2E-ARAMIS:MOVING" #TODO: this seems broken?
+        pvname_moving   = "SAROP11-ODCM105:MOVING"
         pvname_coupling = "SGE-OP2E-ARAMIS:MODE_SP"
 
         pv_setvalue = PV(pvname_setvalue)
@@ -217,12 +221,13 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
     def move_and_wait(self, value, wait_time=0.1):
         self.enable_coupling()
         self.pvs.setvalue.put(value)
+        sleep(3)
         while self.is_moving():
             sleep(wait_time)
 
     def is_moving(self):
-        done = self.pvs.moving.get()
-        return not bool(done)
+        moving = self.pvs.moving.get()
+        return bool(moving)
 
     def enable_coupling(self):
         self.pvs.coupling.put(1)
