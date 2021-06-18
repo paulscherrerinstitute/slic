@@ -5,13 +5,13 @@ from ..general.smaract import SmarActAxis
 
 class Huber:
 
-    def __init__(self, Id, alias_namespace=None, z_undulator=None, description=None):
+    def __init__(self, Id, alias_namespace=None, z_undulator=None, description=None, name="Prime Sample Manipulator"):
         self.Id = Id
 
         ### Huber sample stages ###
-        self.x = Motor(Id + ":MOTOR_X1", "Prime Sample X Manipulator")
-        self.y = Motor(Id + ":MOTOR_Y1", "Prime Sample Y Manipulator")
-        self.z = Motor(Id + ":MOTOR_Z1", "Prime Sample Z Manipulator")
+        self.x = Motor(Id + ":MOTOR_X1", name + " X")
+        self.y = Motor(Id + ":MOTOR_Y1", name + " Y")
+        self.z = Motor(Id + ":MOTOR_Z1", name + " Z")
 
     def __str__(self):
         return "Huber Sample Stage %s\nx: %s mm\ny: %s mm\nz: %s mm" % (self.Id, self.x.wm(), self.y.wm(), self.z.wm())
