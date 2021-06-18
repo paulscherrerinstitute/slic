@@ -241,3 +241,112 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
 
 
 
+class CoupledDoubleCrystalMonoEnergyWithTimeCorrection(Adjustable):
+
+    def __init__(self, Id="CDCMEWTC", name="Alvra DCM coupled to FEL energy with time correction", limit_low=None, limit_high=None):
+        self.limit_low = limit_low
+        self.limit_high = limit_high
+
+        pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP" #_USER" #TODO: where did the _USER go?
+        pvname_readback = "SAROP11-ARAMIS:ENERGY"
+#        pvname_moving   = "SGE-OP2E-ARAMIS:MOVING"
+        pvname_moving   = "SAROP11-ODCM105:MOVING"
+        pvname_coupling = "SGE-OP2E-ARAMIS:MODE_SP"
+
+        pv_setvalue = PV(pvname_setvalue)
+        pv_readback = PV(pvname_readback)
+        pv_moving   = PV(pvname_moving)
+        pv_coupling = PV(pvname_coupling)
+
+        self.timing = Motor("SLAAR11-LMOT-M452:MOTOR_1")
+        self.electron_energy_rb = PV("SARCL02-MBND100:P-READ")
+        self.electron_energy_sv = PV("SGE-OP2E-ARAMIS:E_ENERGY_SP")
+
+        name = name or Id
+        units = pv_readback.units
+        super().__init__(name=name, units=units)
+
+        self.pvnames = SimpleNamespace(
+            setvalue = pvname_setvalue,
+            readback = pvname_readback,
+            moving   = pvname_moving,
+            coupling = pvname_coupling
+        )
+
+        self.pvs = SimpleNamespace(
+            setvalue = pv_setvalue,
+            readback = pv_readback,
+            moving   = pv_moving,
+            coupling = pv_coupling
+        )
+
+
+    def get_current_value(self):
+        return self.pvs.readback.get()
+
+    def set_target_value(self, value, hold=False):
+        ll = self.limit_low
+        if ll is not None:
+            if value < ll:
+                msg = f"requested value is outside the allowed range: {value} < {ll}"
+                print(msg)
+                raise KeyboardInterrupt(msg)
+        lh = self.limit_high
+        if lh is not None:
+            if value > lh:
+                msg = f"requested value is outside the allowed range: {value} > {lh}"
+                print(msg)
+                raise KeyboardInterrupt(msg)
+        changer = lambda: self.move_and_wait(value)
+        return self._as_task(changer, hold=hold, stopper=self.stop)
+
+
+    def move_and_wait(self, value, wait_time=0.1):
+        self.enable_coupling()
+
+        current_energy = self.get_current_value()
+        delta_energy = value - current_energy
+
+        timing = self.timing
+        current_delay = timing.get_current_value()
+        delta_delay = convert_E_to_distance(delta_energy)
+        target_delay = current_delay + delta_delay
+
+        print(f"Energy = {current_energy} -> delta = {delta_energy} -> {value}")
+        print(f"Delay  = {current_delay}  -> delta = {delta_delay}  -> {target_delay}")
+
+        timing.set_target_value(target_delay).wait()
+
+        self.pvs.setvalue.put(value)
+        sleep(3) # wait so that the set value has changed
+
+        print("start waiting for DCM")
+        while self.is_moving(): #TODO: moving PV seems broken
+            sleep(wait_time)
+        print("start waiting for electron beam")
+        while abs(self.electron_energy_rb.get() - self.electron_energy_sv.get()) > 0.25:
+            sleep(wait_time)
+        sleep(wait_time)
+
+
+    def is_moving(self):
+        moving = self.pvs.moving.get()
+        return bool(moving)
+
+    def enable_coupling(self):
+        self.pvs.coupling.put(1)
+
+    def disable_coupling(self):
+        self.pvs.coupling.put(0)
+
+    @property
+    def coupling(self):
+        return self.pvs.coupling.get(as_string=True)
+
+
+
+def convert_E_to_distance(E):
+    return 0.0061869 * E
+
+
+
