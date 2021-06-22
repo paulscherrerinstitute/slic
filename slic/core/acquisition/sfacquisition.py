@@ -12,9 +12,10 @@ from .broker_client import BrokerClient
 
 class SFAcquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1):
+    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1):
         self.instrument = instrument
         self.pgroup = pgroup
+        self.default_data_base_dir = default_data_base_dir
 
         self.paths = SwissFELPaths(instrument, pgroup)
 
@@ -32,10 +33,16 @@ class SFAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, wait=True):
+    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, wait=True):
         if not filename or filename == "/dev/null":
             print("Skipping retrieval since no filename was given.")
             return
+
+        if data_base_dir is None:
+            print("No base directory specified, using default base directory.")
+            data_base_dir = self.default_data_base_dir
+
+        filename = os.path.join(data_base_dir, filename)
 
         if detectors is None:
             print("No detectors specified, using default detector list.")

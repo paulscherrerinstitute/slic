@@ -145,7 +145,10 @@ class ScanBackend:
 
 
     def get_filename(self, istep):
-        filename = os.path.join(self.data_base_dir, self.filename)
+        filename = self.filename
+
+#TODO: data_base_dir is now prepended in SFAcquisition.acquire ... needs to be generalized
+#        filename = os.path.join(self.data_base_dir, self.filename)
 
 #TODO: no settable file names in sf_daq, but need it for other methods...
 #        if self.make_scan_sub_dir:
@@ -162,7 +165,8 @@ class ScanBackend:
         for acq in self.acquisitions:
 #TODO: sf_daq expects scan info in advance, and detectors/bs-channels/PVs separated
             scan_info = self.scan_info_sfdaq.to_sfdaq_dict()
-            t = acq.acquire(filename, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, wait=False)
+            #TODO: data_base_dir needs to be added to general Acquisition
+            t = acq.acquire(filename, data_base_dir=self.data_base_dir, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, wait=False)
 #            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
             tasks.append(t)
 
@@ -172,6 +176,7 @@ class ScanBackend:
         filenames = []
         for t in tasks:
             filenames.extend(t.filenames)
+            print(t)
 
         return filenames #TODO: returning this is weird
 
