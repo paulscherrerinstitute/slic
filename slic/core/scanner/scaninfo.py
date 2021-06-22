@@ -11,9 +11,10 @@ class ScanInfo:
         self.filename = os.path.join(base_dir, filename_base)
         self.filename += suffix
 
-        self.names = names = [ta.name if hasattr(ta, "name") else "noName" for ta in adjustables] #TODO else None?
-        self.ids   = ids =   [ta.Id   if hasattr(ta, "Id")   else "noId"   for ta in adjustables]
-        self.parameters = {"name": names, "Id": ids}
+        self.names = names = [ta.name  if hasattr(ta, "name")  else "noName"  for ta in adjustables] #TODO else None?
+        self.ids   = ids =   [ta.Id    if hasattr(ta, "Id")    else "noId"    for ta in adjustables]
+        self.units = units = [ta.units if hasattr(ta, "units") else "noUnits" for ta in adjustables]
+        self.parameters = {"name": names, "Id": ids, "units": units}
 
         self.values_all = values
 
@@ -69,6 +70,7 @@ class ScanInfo:
 
             "name":                 self.names,
             "Id":                   self.ids,
+            "units":                self.units,
             "offset":               offsets,
             "conversion_factor":    coefficients,
 
