@@ -69,7 +69,7 @@ class PVAdjustable(Adjustable):
         while self._change_requested and not self._is_close() and not self.is_moving():
             time.sleep(wait_time)
             if self.active_move:
-                self.pvs.setvalue.put(value)
+                self.pvs.setvalue.put(value, wait=True, use_complete=True)
             if time.time() >= timeout:
                 self._stop()
                 tname = typename(self)
@@ -79,7 +79,7 @@ class PVAdjustable(Adjustable):
         while self._change_requested and self.is_moving():
             time.sleep(wait_time)
             if self.active_move:
-                self.pvs.setvalue.put(value)
+                self.pvs.setvalue.put(value, wait=True, use_complete=True)
             if time.time() >= timeout:
                 self._stop()
                 tname = typename(self)
