@@ -50,7 +50,7 @@ class ConfigPanel(wx.Panel):
         beamline = get_beamline(instrument)
         pvname_reprate = get_pvname_reprate(beamline=beamline)
         beamline = str(beamline).capitalize() #TODO
-        pvd_reprate = PVDisplay(self, f"{beamline} Rep. Rate:", pvname_reprate)
+        self.pvd_reprate = pvd_reprate = PVDisplay(self, f"{beamline} Rep. Rate:", pvname_reprate)
 
         header = repr(acquisition) + ":"
         st_acquisition = wx.StaticText(self, label=header)
@@ -70,6 +70,11 @@ class ConfigPanel(wx.Panel):
         if not chans_bsc: btn_chans_bsc.Disable()
         if not chans_pvs: btn_chans_pvs.Disable()
 
+        btn_take_pedestal = wx.Button(self, label="Take Pedestal!")
+        btn_take_pedestal.Bind(wx.EVT_BUTTON, self.on_take_pedestal)
+
+        if not chans_det: btn_take_pedestal.Disable()
+
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument)
         le_pgroup     = LabeledEntry(self, label="pgroup", value=pgroup)
 
@@ -84,7 +89,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, le_instrument, le_pgroup, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -99,6 +104,9 @@ class ConfigPanel(wx.Panel):
 
     def on_chans_pvs(self, event):
         show_list("PVs", self.chans_pvs)
+
+    def on_take_pedestal(self, event):
+        self.acquisition.client.take_pedestal(self.chans_det, self.pvd_reprate.value)
 
 
 

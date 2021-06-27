@@ -1,7 +1,10 @@
 import requests
 import json
+from glob import glob
 from time import sleep
 from tqdm import tqdm
+from yaspin import yaspin
+from yaspin.spinners import Spinners
 import numpy as np
 
 from slic.utils.json import json_validate
@@ -69,6 +72,85 @@ class BrokerClient:
         if self.running:
             return "running"
         return "idle"
+
+
+    #TODO: this needs work
+    def take_pedestal(self, detectors, rate):
+        n_pulses = 5000 # this is a constant on the broker side
+        self.set_config(n_pulses, "JF_pedestals", detectors=detectors)
+
+        current_pulseid = get_current_pulseid()
+#        rate_multiplicator = self.config.rate_multiplicator
+        rate_multiplicator = int(round(100. / rate))
+        rate_multiplicator = 1 #TODO: WHY???
+        print(f"using rate multiplicator {rate_multiplicator}")
+
+        start_pulseid, stop_pulseid = aligned_pids(current_pulseid, n_pulses, rate_multiplicator)
+        params = self.get_config(start_pulseid, stop_pulseid)
+
+        params["rate_multiplicator"] = rate_multiplicator
+
+        trigger_pedestal_gain_switching(self.address, params, n_pulses)
+        print("trigger file saving")
+        run_number = retrieve(self.address, params) #TODO: store in self.run_number?
+        print(f"saving run {run_number}")
+
+        pgroup = self.config.pgroup
+        padded_run_number = str(run_number).zfill(6)
+        fnames_raw = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.h5"     for det in detectors]
+        fnames_res = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.res.h5" for det in detectors]
+        print(fnames_raw)
+        print(fnames_res)
+
+        with yaspin(Spinners.clock, text="elapsed time: raw files", timer=True) as sp:
+            while True:
+                all_exists = all(bool(glob(fn)) for fn in fnames_raw)
+                if all_exists:
+                    break
+                sleep(10)
+            sp.ok("✅")
+
+        with yaspin(Spinners.clock, text="elapsed time: res files", timer=True) as sp:
+            while True:
+                all_exists = all(bool(glob(fn)) for fn in fnames_res)
+                if all_exists:
+                    break
+                sleep(10)
+            sp.ok("✅")
+
+        print("done :)")
+        return run_number
+
+
+
+#TODO: this needs work
+def trigger_pedestal_gain_switching(address, config, n_pulses):
+    print(config)
+    detectors = config.get("detectors")
+    if not detectors:
+        raise ValueError(f"Need at least one detector to take pedestal (got: {detectors})")
+
+    params = {
+#        "directory_name": "JF_pedestals"
+    }
+
+    items_to_copy = ("detectors", "directory_name", "client_name", "pgroup", "start_pulseid", "rate_multiplicator")
+    for key in items_to_copy:
+        params[key] = config[key]
+
+    timeout = 10
+    #TODO: why is the lengthened timeout needed?
+    rate_multiplicator = config.get("rate_multiplicator", 1)
+    timeout += n_pulses / 100 * rate_multiplicator
+
+    requrl = address.rstrip("/") + "/take_pedestal"
+    print("posting:", requrl, params)
+    response = post_request(requrl, params, timeout)
+    print("done, got:", response)
+
+    print(f"waiting for {timeout} seconds")
+    tqdm_sleep(timeout)
+    return response
 
 
 
@@ -235,6 +317,13 @@ def clamp(val, vmin, vmax):
     val = max(val, vmin)
     val = min(val, vmax)
     return val
+
+
+
+def tqdm_sleep(seconds, ndiv=100):
+    delta = seconds / float(ndiv)
+    for _ in tqdm(range(ndiv)):
+        sleep(delta)
 
 
 
