@@ -120,6 +120,7 @@ class PVAdjustable(Adjustable):
             readback = self.pvs.readback.get()
             delta = abs(setvalue - readback)
             return (delta <= self.accuracy)
+        return True
 
 
     def stop(self):
