@@ -6,6 +6,7 @@ from slic.core.task import DAQTask
 
 from .baseacquisition import BaseAcquisition
 from .sfpaths import SwissFELPaths
+from .bschannels import BSChannels
 
 from .broker_client import BrokerClient
 
@@ -48,13 +49,16 @@ class SFAcquisition(BaseAcquisition):
             print("No detectors specified, using default detector list.")
             detectors = self.default_detectors
 
+        if pvs is None:
+            print("No PVs specified, using default PV list.")
+            pvs = self.default_pvs
+
         if channels is None:
             print("No channels specified, using default channel list.")
             channels = self.default_channels
 
-        if pvs is None:
-            print("No PVs specified, using default PV list.")
-            pvs = self.default_pvs
+        bschs = BSChannels(channels)
+        bschs.check()
 
         client = self.client
         client.set_config(n_pulses, filename, detectors=detectors, channels=channels, pvs=pvs, scan_info=scan_info)
