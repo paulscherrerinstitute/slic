@@ -4,6 +4,13 @@ from slic.utils.printing import format_header, itemize
 from slic.utils.channels import parse_channel_list_file
 
 
+import colorama
+
+COLOR_GOOD  = colorama.Fore.GREEN
+COLOR_BAD   = colorama.Fore.RED + colorama.Style.BRIGHT
+COLOR_RESET = colorama.Fore.RESET
+
+
 class BSChannels:
 
     def __init__(self, channels):
@@ -30,18 +37,20 @@ class BSChannels:
 
     def check(self, print_online=False, print_offline=True):
         status = self.status()
+        online = status["online"]
+        offline = status["offline"]
 
-        if print_online:
-            online = status["online"]
+        if print_online and online:
+            print(COLOR_GOOD, end="")
             print(format_header("Online Channels"))
             print(itemize(online))
-            print()
+            print(COLOR_RESET)
 
-        if print_offline:
-            offline = status["offline"]
+        if print_offline and offline:
+            print(COLOR_BAD, end="")
             print(format_header("Offline Channels"))
             print(itemize(offline))
-            print()
+            print(COLOR_RESET)
 
 
     @property
