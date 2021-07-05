@@ -5,16 +5,19 @@ import epics
 from slic.utils import singleton
 
 
+#TODO: these should probably move to different IOCs
 PULSEID_PVS = {
     "alvra"  : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
     "bernina": "SLAAR21-LTIM01-EVR0:RX-PULSEID",
     "maloja" : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
+    "furka":   "SLAAR11-LTIM01-EVR0:RX-PULSEID"
 }
 
 IP_TO_BEAMLINE = {
     "129.129.242": "alvra",
     "129.129.243": "bernina",
-    "129.129.246": "maloja"
+    "129.129.246": "maloja",
+    "129.129.247": "furka"
 }
 
 
