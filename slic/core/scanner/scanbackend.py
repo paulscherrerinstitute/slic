@@ -5,7 +5,20 @@ from slic.utils.printing import printable_dict
 from slic.utils.ask_yes_no import ask_Yes_no
 from slic.utils.trinary import check_trinary
 
+from .runname import RunFilenameGenerator
 from .scaninfo import ScanInfo
+
+
+#SFDAQ: these are used for treating sf_daq differently
+from slic.core.acquisition import SFAcquisition
+from slic.core.acquisition.fakeacquisition import FakeAcquisition
+
+def is_sfdaq(acq):
+    return isinstance(acq, (SFAcquisition, FakeAcquisition))
+
+def is_only_sfdaq(acquisitions):
+    return all(is_sfdaq(acq) for acq in acquisitions)
+
 
 
 class ScanBackend:
@@ -14,17 +27,20 @@ class ScanBackend:
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
-        self.filename = filename
+        self.filename_sfdaq = filename_sfdaq = filename
 
-        self.detectors = detectors #TODO: only for sf_daq (see also in arguments)
+        filename_generator = RunFilenameGenerator(scan_info_dir)
+        self.filename = filename = filename_generator.get_next_run_filename(filename)
+
+        self.detectors = detectors #SFDAQ: only for sf_daq (see also in arguments)
         self.channels = channels
-        self.pvs = pvs #TODO: only for sf_daq (see also in arguments)
+        self.pvs = pvs #SFDAQ: only for sf_daq (see also in arguments)
 
         self.n_pulses_per_step = n_pulses #TODO: to rename or not to rename?
         self.data_base_dir = data_base_dir
 
-        self.scan_info       = ScanInfo(filename, scan_info_dir, adjustables, values)
-        self.scan_info_sfdaq = ScanInfo(filename, scan_info_dir, adjustables, values)
+        self.scan_info       = ScanInfo(filename,       scan_info_dir, adjustables, values)
+        self.scan_info_sfdaq = ScanInfo(filename_sfdaq, scan_info_dir, adjustables, values)
 
         self.make_scan_sub_dir = make_scan_sub_dir
         self.condition = condition
@@ -48,7 +64,7 @@ class ScanBackend:
         scan_loop = self.repeated_scan_loop if self.repeat > 1 else self.scan_loop
 
         try:
-            self.running = True #TODO: need to set this True here now
+            self.running = True
             scan_loop(step_info=step_info)
         except KeyboardInterrupt:
             print() # print new line after ^C
@@ -78,7 +94,7 @@ class ScanBackend:
                 break
             print("Repetition {} of {}".format(i+1, nreps))
             fn = f"{base_fname}_{i+1:03}"
-            self.filename = self.scan_info_sfdaq.filename_base = fn #TODO: this needs work!
+            self.filename = self.scan_info_sfdaq.filename_base = fn #SFDAQ: this needs work!
             print("File:", self.filename)
             self.scan_loop(step_info=step_info)
 
@@ -90,7 +106,6 @@ class ScanBackend:
 
         values = self.values
         ntotal = len(values)
-#        self.running = True #TODO: with repeat, this cannot be set here anymore
         for n, val in enumerate(values):
             if not self.running:
                 break
@@ -113,60 +128,66 @@ class ScanBackend:
         step_readbacks = get_all_current_values(self.adjustables)
         print("Moved adjustables, starting acquisition")
 
-#TODO: sf_daq needs scan info in advance, filenames are not needed
+        #SFDAQ: sf_daq needs scan info in advance, filenames are not needed
         self.scan_info_sfdaq.append(step_values, step_readbacks, None, step_info)
 
         fn = self.get_filename(n_step)
         step_filenames = self.acquire_all(fn)
         print("Acquisition done")
 
-#TODO: sf_daq writes scan info to /raw -> stop writing it to /res
-#        self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
-        self.scan_info.append(step_values, step_readbacks, step_filenames, step_info)
+        if is_only_sfdaq(self.acquisitions):
+            #SFDAQ: sf_daq writes scan info to /raw -> skip writing it to /res
+            self.scan_info.append(step_values, step_readbacks, step_filenames, step_info)
+        else:
+            #SFDAQ: if any others, also write scan info to /res
+            self.scan_info.update(step_values, step_readbacks, step_filenames, step_info)
 
 
     def create_output_dirs(self):
-        pass
-#TODO: sf_daq writes scan info to /raw -> stop writing it to /res
-#        make_missing_dir(self.scan_info.base_dir)
+        if not is_only_sfdaq(self.acquisitions):
+            #SFDAQ: if any others, prepare writing scan info to /res
+            make_missing_dir(self.scan_info.base_dir)
 
-#TODO: cannot do this anymore for sf_daq, but need it for other methods...
-#        for acq in self.acquisitions:
-#            default_dir = acq.default_dir
-#            if default_dir is None:
-#                continue
-#            data_dir = os.path.join(default_dir, self.data_base_dir)
+        for acq in self.acquisitions:
+            if is_sfdaq(acq):
+                #SFDAQ: not needed for sf_daq, but for other methods...
+                continue
 
-#            if self.make_scan_sub_dir:
-#                filebase = os.path.basename(self.filename)
-#                data_dir = os.path.join(data_dir, filebase)
+            default_dir = acq.default_dir
+            if default_dir is None:
+                continue
 
-#            make_missing_dir(data_dir)
+            data_dir = os.path.join(default_dir, self.data_base_dir)
+
+            if self.make_scan_sub_dir:
+                filebase = os.path.basename(self.filename)
+                data_dir = os.path.join(data_dir, filebase)
+
+            make_missing_dir(data_dir)
 
 
     def get_filename(self, istep):
+        #SFDAQ: the modifed filename is not used for sf_daq
         filename = self.filename
 
-#TODO: data_base_dir is now prepended in SFAcquisition.acquire ... needs to be generalized
-#        filename = os.path.join(self.data_base_dir, self.filename)
+        if self.make_scan_sub_dir:
+            filebase = os.path.basename(self.filename)
+            filename = os.path.join(filename, filebase)
 
-#TODO: no settable file names in sf_daq, but need it for other methods...
-#        if self.make_scan_sub_dir:
-#            filebase = os.path.basename(self.filename)
-#            filename = os.path.join(filename, filebase)
-
-#TODO: sf_daq counts runs
-#        filename += "_step{:04d}".format(istep)
+        filename += "_step{:04d}".format(istep)
         return filename
 
 
     def acquire_all(self, filename):
         tasks = []
         for acq in self.acquisitions:
-#TODO: sf_daq expects scan info in advance, and detectors/bs-channels/PVs separated
-            scan_info = self.scan_info_sfdaq.to_sfdaq_dict()
-            t = acq.acquire(filename, data_base_dir=self.data_base_dir, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, wait=False)
-#            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
+            if is_sfdaq(acq):
+                #SFDAQ: sf_daq expects scan info in advance, detectors/bs-channels/PVs separated, raw filename without counters
+                scan_info = self.scan_info_sfdaq.to_sfdaq_dict()
+                t = acq.acquire(self.filename_sfdaq, data_base_dir=self.data_base_dir, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, wait=False)
+            else:
+                #SFDAQ: others do not expect scan info at all, expect only one type of channels, filename (which is optional) is used verbatim, i.e., needs to have counters and scan sub dir
+                t = acq.acquire(filename=filename, data_base_dir=self.data_base_dir, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
             tasks.append(t)
 
         self.current_tasks = tasks

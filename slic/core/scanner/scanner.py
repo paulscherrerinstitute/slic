@@ -4,7 +4,6 @@ from slic.core.adjustable import DummyAdjustable
 from slic.utils import typename, nice_linspace, nice_arange
 
 from .scanbackend import ScanBackend
-from .runname import RunFilenameGenerator
 
 
 make_positions = nice_linspace
@@ -17,7 +16,7 @@ class Scanner:
     Each method returns a ScanBackend instance, which contains the actual scan logic.
     """
 
-    def __init__(self, data_base_dir="scan_data", scan_info_dir="", default_acquisitions=(), condition=None, make_scan_sub_dir=True):
+    def __init__(self, data_base_dir="scan_data", scan_info_dir="scan_info", default_acquisitions=(), condition=None, make_scan_sub_dir=True):
         """
         Parameters:
             data_base_dir (string, optional): Subfolder to collect scan data in. Will be appended to the acquisitions' default_dir.
@@ -32,12 +31,10 @@ class Scanner:
         self.condition = condition
         self.make_scan_sub_dir = make_scan_sub_dir
 
-        self.filename_generator = RunFilenameGenerator(scan_info_dir)
-
         self.current_scan = None
 
 
-#TODO: detectors and pvs only for sf_daq
+    #SFDAQ: detectors and pvs only for sf_daq
     def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, return_to_initial_values=None, repeat=1):
         """N-dimensional scan
 
@@ -55,13 +52,10 @@ class Scanner:
         Returns:
             ScanBackend: Scan instance.
         """
-#TODO: sf_daq counts runs
-#        filename = self.filename_generator.get_next_run_filename(filename)
-
         if not acquisitions:
             acquisitions = self.default_acquisitions
 
-#TODO: detectors and pvs only for sf_daq
+        #SFDAQ: detectors and pvs only for sf_daq
         scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition, return_to_initial_values=return_to_initial_values, repeat=repeat)
 
         if start_immediately:
