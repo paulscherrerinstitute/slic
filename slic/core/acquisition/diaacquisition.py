@@ -14,9 +14,10 @@ from .pedestals import find_last_pedestal, take_pedestal
 
 class DIAAcquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_channels=None, default_dir=None, api_address=None):
+    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_channels=None, default_dir=None, api_address=None):
         self.instrument = instrument
         self.pgroup = pgroup
+        self.default_data_base_dir = default_data_base_dir
 
         self.config = DIAConfig(instrument, pgroup)
         self.paths = SwissFELPaths(instrument, pgroup)
@@ -40,15 +41,21 @@ class DIAAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False, wait=True):
-        if filename:
+    def acquire(self, filename=None, data_base_dir=None, channels=None, n_pulses=100, use_default_dir=True, is_HG0=False, wait=True):
+        if not filename:
+            filename = "/dev/null"
+        else:
+            if data_base_dir is None:
+                print("No base directory specified, using default base directory.")
+                data_base_dir = self.default_data_base_dir
+            filename = os.path.join(data_base_dir, filename)
+
             if use_default_dir:
                 filename = os.path.join(self.default_dir, filename)
+
             filenames = self.make_all_filenames(filename)
             if not can_create_all_files(filenames):
                 return
-        else:
-            filename = "/dev/null"
 
         if channels is None:
             print("No channels specified, using default channel list.")
