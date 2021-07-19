@@ -26,6 +26,7 @@ class Acquisition(BaseAcquisition):
 
         self.default_channels = default_channels
         self.default_dir = default_dir
+        self.default_data_base_dir = default_data_base_dir
 
         self.current_task = None
 
