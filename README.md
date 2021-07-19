@@ -21,6 +21,7 @@ The core library contains
 
 - **scanner** — Class collecting several types of scans, e.g., along different numbers of axes. Scans are performed by alternatingly changing one or more **adjustables** and performing a static recording via one or more **acquisition** objects. Optionally, each step can be tested by a **condition**. Besides, a generator for run names/numbers and a class to hold meta information about a scan is included. 
 - **acquisition** — Classes for static recording via several means available at SwissFEL. Specifically, the following packages are wrapped for a common interface:
+  - [sf_daq](https://github.com/paulscherrerinstitute/sf_daq_broker) via a standalone [BrokerClient](slic/core/acquisition/broker_client.py#L15)
   - [bsread](https://github.com/paulscherrerinstitute/bsread_python)
   - [DataAPI](https://github.com/paulscherrerinstitute/data_api_python)
   - [DIA (Detector integration API)](https://github.com/paulscherrerinstitute/sf_dia)
