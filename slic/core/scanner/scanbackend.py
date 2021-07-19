@@ -165,7 +165,6 @@ class ScanBackend:
         for acq in self.acquisitions:
 #TODO: sf_daq expects scan info in advance, and detectors/bs-channels/PVs separated
             scan_info = self.scan_info_sfdaq.to_sfdaq_dict()
-            #TODO: data_base_dir needs to be added to general Acquisition
             t = acq.acquire(filename, data_base_dir=self.data_base_dir, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, wait=False)
 #            t = acq.acquire(filename=filename, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
             tasks.append(t)
