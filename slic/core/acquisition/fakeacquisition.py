@@ -1,3 +1,4 @@
+import os
 import random
 from time import sleep
 from tqdm import trange
@@ -14,6 +15,8 @@ class FakeAcquisition(BaseAcquisition):
         self.instrument = instrument
         self.pgroup = pgroup
 
+        self.default_data_base_dir = "static_data"
+
         self.default_detectors = shuffle([f"JFJFJFJFJFJFJFJFJFJF{i}" for i in range(2)])
         self.default_channels  = shuffle([f"CHCHCHCHCH{i}" for i in range(100)])
         self.default_pvs       = shuffle([f"PVPV{i}" for i in range(10)])
@@ -21,13 +24,18 @@ class FakeAcquisition(BaseAcquisition):
         self._stop()
 
 
-    def acquire(self, filename, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, wait=True):
+    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, wait=True):
+        if data_base_dir is None:
+            print("No base directory specified, using default base directory.")
+            data_base_dir = self.default_data_base_dir
+
+        filename = os.path.join(data_base_dir, filename)
 
         def _acquire():
             args = (filename, n_pulses)
             args = ", ".join(repr(i) for i in args)
             print("acquire({})".format(args))
-            print(f"acquire to {filename}:")
+            print(f"fake acquire to {filename}:")
             self.running = True
             for i in trange(n_pulses):
                 if not self.running:

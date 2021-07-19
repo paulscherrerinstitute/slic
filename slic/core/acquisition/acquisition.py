@@ -11,7 +11,7 @@ from .sfpaths import SwissFELPaths
 
 class Acquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_channels=None, default_dir=None):
+    def __init__(self, instrument, pgroup, default_channels=None, default_dir=None, default_data_base_dir="static_data"):
         self.instrument = instrument
         self.pgroup = pgroup
 
@@ -30,7 +30,14 @@ class Acquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename=None, channels=None, use_default_dir=True, wait=True, **kwargs):
+    def acquire(self, filename=None, channels=None, use_default_dir=True, data_base_dir=None, wait=True, **kwargs):
+        if data_base_dir is None:
+            print("No base directory specified, using default base directory.")
+            data_base_dir = self.default_data_base_dir
+
+        if filename:
+            filename = os.path.join(data_base_dir, filename)
+
         if filename and use_default_dir:
             filename = os.path.join(self.default_dir, filename)
 
