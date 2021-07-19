@@ -27,8 +27,11 @@ class ScanBackend:
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
+
+        #SFDAQ: sf_daq takes the raw filename
         self.filename_sfdaq = filename_sfdaq = filename
 
+        #SFDAQ: others use the modified filename
         filename_generator = RunFilenameGenerator(scan_info_dir)
         self.filename = filename = filename_generator.get_next_run_filename(filename)
 
@@ -167,7 +170,7 @@ class ScanBackend:
 
 
     def get_filename(self, istep):
-        #SFDAQ: the modifed filename is not used for sf_daq
+        #SFDAQ: the modified filename is not used for sf_daq
         filename = self.filename
 
         if self.make_scan_sub_dir:
