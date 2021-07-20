@@ -44,12 +44,15 @@ A `Device` (cf. also in the [overview scheme](#overview)) is a collection of sev
 
 ## slic.gui
 
+One of the goals of the "library-first" approach of _slic_ is to provide means for creating "disposable GUIs", meaning that a new GUI for a specific experiment can be created quickly relying on a solid library in the backend and giving free choice over the GUI toolkit used. Therefore, the experiment control and DAQ library is cleanly separated from the GUI code, and the interfaces are clearly defined.
+
+_slic_ comes with an example GUI (written in [wxPython](https://wxpython.org/)) built on top:
+
 <img src="../../wikis/uploads/c8d3dfeb2d159b18c2a97db6793442cd/config.png" width="33%" />
 <img src="../../wikis/uploads/0c58450f1e18d134910e786fe1c33f65/scan.png"   width="33%" />
 <img src="../../wikis/uploads/75845df3a2e3e7019f048c37b3cf7684/tweak.png"  width="33%" />
 
-
-TBD
+In order to further the "disposable GUIs" concept, this GUI is very modular: Tabs can be enabled or disabled upon instantiation. Each tab interfaces a single feature of _slic_ (Static → `Acquisition.acquire()`, Scan → `Scanner.scan1D()`, Tweak → `Adjustable.set_target_value()`). The wx built-ins are extended by several widgets specific to experiment control (numeral input boxes are calculators, which perform simple math in enter press; filename boxes increment a counter at the end when pressing up; etc.), which can be re-used easily.
 
 
 ## slic.utils
