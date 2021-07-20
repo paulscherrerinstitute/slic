@@ -44,6 +44,11 @@ A `Device` (cf. also in the [overview scheme](#overview)) is a collection of sev
 
 ## slic.gui
 
+<img src="../../wikis/uploads/c8d3dfeb2d159b18c2a97db6793442cd/config.png" width="33%" />
+<img src="../../wikis/uploads/0c58450f1e18d134910e786fe1c33f65/scan.png"   width="33%" />
+<img src="../../wikis/uploads/75845df3a2e3e7019f048c37b3cf7684/tweak.png"  width="33%" />
+
+
 TBD
 
 
