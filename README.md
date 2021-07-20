@@ -4,7 +4,7 @@ slic is a python library providing a toolbox for creating control environments a
 
 slic is a re-write/re-factor of [eco](https://github.com/paulscherrerinstitute/eco) with the aim to increase maintainability and allow easier scaling to many beamlines. The main goal was a clear separation between, on the one hand, the DAQ/scanning library and the library of general-purpose devices and, on the other hand, the beamline codes. This allows the different parts to move at different paces as well as giving a clear border between working and in-development code: New ideas and features can be build for an individual beamline, only when they are ready to be used they are generalized and moved into the library shared among the beamlines.
 
-slic consists of a _core_ library for static recording and scans as well as a _devices_ library containing classes that represent physical devices. As work-in-progress, the core library has seen most changes so far while the devices have not been worked on as much.
+slic consists of a _core_ library for static recording and scans as well as a _devices_ library containing classes that represent physical devices. As work-in-progress, the core library has seen most changes so far while the devices have not been worked on as much. Furthermore, there's a GUI frontend built on top of slic as backend included.
 
 The beamline codes can be found here:
 
@@ -40,6 +40,11 @@ The core library contains
 Collection of (mostly) well-defined and generalized devices used at SwissFEL.
 
 A `Device` (cf. also in the [overview scheme](#overview)) is a collection of several `Adjustables` and/or other `Devices` optionally with added methods and functionality. Again, a nicely readable `__repr__` is provided. The main goal is to provide folder-like namespaces to organize adjustables in meaningful hardware abstractions and allow for better discoverabilty, e.g., via ipython's autocomplete. A simple interface is the `SimpleDevice`, which combines the `Device` class with [types.SimpleNamespace](https://docs.python.org/3/library/types.html#types.SimpleNamespace).
+
+
+## slic.gui
+
+TBD
 
 
 ## slic.utils
