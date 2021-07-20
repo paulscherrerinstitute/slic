@@ -52,7 +52,13 @@ _slic_ comes with an example GUI (written in [wxPython](https://wxpython.org/)) 
 <img src="../../wikis/uploads/0c58450f1e18d134910e786fe1c33f65/scan.png"   width="33%" />
 <img src="../../wikis/uploads/75845df3a2e3e7019f048c37b3cf7684/tweak.png"  width="33%" />
 
-In order to further the "disposable GUIs" concept, this GUI is very modular: Tabs can be enabled or disabled upon instantiation. Each tab interfaces a single feature of _slic_ (Static → `Acquisition.acquire()`, Scan → `Scanner.scan1D()`, Tweak → `Adjustable.set_target_value()`). The wx built-ins are extended by several widgets specific to experiment control (numeral input boxes are calculators, which perform simple math on enter press; filename boxes increment a counter at the end when pressing up; etc.), which can be re-used easily.
+In order to further the "disposable GUIs" concept, this GUI is very modular: Tabs can be enabled or disabled upon instantiation. Each tab interfaces a single feature of _slic_:
+
+- Static → `Acquisition.acquire()`
+- Scan → `Scanner.scan1D()`
+- Tweak → `Adjustable.set_target_value()`
+
+Additionally, the wx built-ins are extended by several widgets specific to experiment control (numeral input boxes are calculators, which perform simple math on enter press; filename boxes increment a counter at the end when pressing up; etc.), which can be re-used easily.
 
 
 ## slic.utils
