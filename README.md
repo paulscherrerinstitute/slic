@@ -19,20 +19,28 @@ The beamline codes can be found here:
 
 The core library contains 
 
-- **scanner** — Class collecting several types of scans, e.g., along different numbers of axes. Scans are performed by alternatingly changing one or more **adjustables** and performing a static recording via one or more **acquisition** objects. Optionally, each step can be tested by a **condition**. Besides, a generator for run names/numbers and a class to hold meta information about a scan is included. 
+- **scanner** — `Scanner` class collecting several types of scans, e.g., along different numbers of axes. Scans are performed by alternatingly changing one or more `Adjustables` and performing a static recording via one or more `Acquisition` objects. Optionally, each step can be tested by a `Condition`. Besides, a generator for run names/numbers and a class to hold meta information about a scan is included. 
 - **acquisition** — Classes for static recording via several means available at SwissFEL. Specifically, the following packages are wrapped for a common interface:
   - [sf_daq](https://github.com/paulscherrerinstitute/sf_daq_broker) (via a standalone [BrokerClient](slic/core/acquisition/broker_client.py#L15))
   - [bsread](https://github.com/paulscherrerinstitute/bsread_python)
   - [DataAPI](https://github.com/paulscherrerinstitute/data_api_python)
   - [DIA (Detector integration API)](https://github.com/paulscherrerinstitute/sf_dia)
   - [epics PVs](https://github.com/pyepics/pyepics#pv-object-oriented-ca-interface)
-- **adjustable** — ABC for physical/virtual devices that can be moved or otherwise adjusted. A generic class is also provided, which turns a getter/setter pair into an adjustable.
+- **adjustable** — ABC for physical/virtual devices that can be moved or otherwise adjusted. The `PVAdjustable` class handles interaction with the typical set of epics PV defining a device (set value, readback, moving status). A generic class is also provided, which turns a getter/setter pair into an adjustable.
 - **condition** — Classes that collect statistics over a given time window and test whether a value was in a specified range often enough. This allows to define what conditions are considered good enough for a recording.
 - **task** — Simplifying wrappers for python's [threading.Thread](https://docs.python.org/3/library/threading.html#threading.Thread), which allow return values and forward exceptions raised within a thread to the calling scope. A nicer `__repr__` makes tasks easier to use in ipython. More specific tasks are also available: the DAQTask can hold information about the files it is writing, and the Loop comes in two variants (infinite and with time out) that both call a function repeatedly.
 
+### Overview: Interactions of these building blocks:
+
+<img src="../../wikis/uploads/a1234d21f423ee8f072b28e108f9792b/drawing.png" width="50%" />
+
+
 ## slic.devices
 
-TBD
+Collection of (mostly) well-defined and generalized devices used at SwissFEL.
+
+A `Device` (cf. also in the [overview scheme](#overview)) is a collection of several `Adjustables` and/or other `Devices` optionally with added methods and functionality. Again, a nicely readable `__repr__` is provided.
+
 
 ## slic.utils
 
