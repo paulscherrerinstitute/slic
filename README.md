@@ -39,7 +39,7 @@ The core library contains
 
 Collection of (mostly) well-defined and generalized devices used at SwissFEL.
 
-A `Device` (cf. also in the [overview scheme](#overview)) is a collection of several `Adjustables` and/or other `Devices` optionally with added methods and functionality. Again, a nicely readable `__repr__` is provided.
+A `Device` (cf. also in the [overview scheme](#overview)) is a collection of several `Adjustables` and/or other `Devices` optionally with added methods and functionality. Again, a nicely readable `__repr__` is provided. The main goal is to provide folder-like namespaces to organize adjustables in meaningful hardware abstractions and allow for better discoverabilty, e.g., via ipython's autocomplete. A simple interface is the `SimpleDevice`, which combines the `Device` class with [types.SimpleNamespace](https://docs.python.org/3/library/types.html#types.SimpleNamespace).
 
 
 ## slic.utils
