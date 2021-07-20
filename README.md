@@ -1,10 +1,10 @@
 # SwissFEL Library for Instrument Control
 
-slic is a python library providing a toolbox for creating control environments as well as writing automation scripts or control GUIs for experiments.
+_slic_ is a python library providing a toolbox for creating control environments as well as writing automation scripts or control GUIs for experiments.
 
-slic is a re-write/re-factor of [eco](https://github.com/paulscherrerinstitute/eco) with the aim to increase maintainability and allow easier scaling to many beamlines. The main goal was a clear separation between, on the one hand, the DAQ/scanning library and the library of general-purpose devices and, on the other hand, the beamline codes. This allows the different parts to move at different paces as well as giving a clear border between working and in-development code: New ideas and features can be build for an individual beamline, only when they are ready to be used they are generalized and moved into the library shared among the beamlines.
+_slic_ is a re-write/re-factor of [_eco_](https://github.com/paulscherrerinstitute/eco) with the aim to increase maintainability and allow easier scaling to many beamlines. The main goal was a clear separation between, on the one hand, the DAQ/scanning library and the library of general-purpose devices and, on the other hand, the beamline codes. This allows the different parts to move at different paces as well as giving a clear border between working and in-development code: New ideas and features can be build for an individual beamline, only when they are ready to be used they are generalized and moved into the library shared among the beamlines.
 
-slic consists of a _core_ library for static recording and scans as well as a _devices_ library containing classes that represent physical devices. As work-in-progress, the core library has seen most changes so far while the devices have not been worked on as much. Furthermore, there's a GUI frontend built on top of slic as backend included.
+_slic_ consists of a [core](#sliccore) library for static recording and scans as well as a [devices](#slicdevices) library containing classes that represent physical devices. As work-in-progress, the core library has seen most changes so far while the devices have not been worked on as much. Furthermore, there's a [GUI](#slicgui) frontend built on top of _slic_ as backend included.
 
 The beamline codes can be found here:
 
@@ -61,7 +61,7 @@ Collection of utility functions and classes that are used throughout both of the
 
 #### Installation
 
-The latest slic release is available via [conda](https://docs.conda.io/en/latest/) from the PSI channel. You may **either** create a new dedicated environment
+The latest _slic_ release is available via [conda](https://docs.conda.io/en/latest/) from the PSI channel. You may **either** create a new dedicated environment
 
 ```bash
 conda create -c paulscherrerinstitute -n slic slic
@@ -164,15 +164,15 @@ This assumes that both repos have been cloned into the same folder, and that the
 
 ## Differences to eco
 
-While many concepts and ideas are inherited from eco, slic differs in several key aspects:
+While many concepts and ideas are inherited from _eco_, _slic_ differs in several key aspects:
 
-eco is meant to run within ipython, in fact it starts its own ipython shell upon start-up, providing a control environment for experiments. It does so by parsing a dictionary of "eco components" and creating objects from those.
+_eco_ is meant to run within ipython, in fact it starts its own ipython shell upon start-up, providing a control environment for experiments. It does so by parsing a dictionary of "eco components" and creating objects from those.
 
-slic, as the "l" suggests, is meant to be used as a library from a script that may be running in, e.g., ipython, the regular python interpreter or jupyter. A specific beamline script running in an interactive ipython shell provides an environment identical to eco by importing and instantiating classes from slic.
+_slic_, as the "_l_" suggests, is meant to be used as a library from a script that may be running in, e.g., ipython, the regular python interpreter or jupyter. A specific beamline script running in an interactive ipython shell provides an environment identical to eco by importing and instantiating classes from _slic_.
 
 Conventions are formalized by ABCs (Abstract Base Classes) in order to provide immediate error messages for incomplete new (sub-)classes. True to python's duck typing, the actual library does not enforce the use of the ABCs, they are merely meant as help for writing new sub-classes.
 
-slic is based on code from the two actively used eco forks:
+_slic_ is based on code from the two actively used _eco_ forks:
 
 - [Alvra](https://git.psi.ch/swissfel/eco) (only visible from within the PSI network)
 - [Bernina](https://github.com/paulscherrerinstitute/eco/tree/bernina-op)
