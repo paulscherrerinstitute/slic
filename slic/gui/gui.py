@@ -9,8 +9,10 @@ class GUI:
         self.args = args
         self.kwargs = kwargs
 
-    def __call__(self):
-        run(*self.args, **self.kwargs)
+    def __call__(self, **kwargs):
+        combined_kwargs = self.kwargs.copy()
+        combined_kwargs.update(kwargs)
+        run(*self.args, **combined_kwargs)
 
 
 
