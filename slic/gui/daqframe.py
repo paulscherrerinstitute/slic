@@ -9,7 +9,7 @@ from .persist import Persistence
 
 class DAQFrame(wx.Frame):
 
-    def __init__(self, scanner, title="Neat DAQ", show_static=True, show_scan=True, show_spec=False):
+    def __init__(self, scanner, title="Neat DAQ", show_static=True, show_scan=True, show_spec=False, show_tweak=True, show_goto=False):
         wx.Frame.__init__(self, None, title=title)#, size=(350,200))
         self.SetIcon(get_wx_icon())
 
@@ -31,10 +31,13 @@ class DAQFrame(wx.Frame):
         if show_static: notebook.AddPage(panel_static)
         if show_scan:   notebook.AddPage(panel_scan)
         if show_spec:   notebook.AddPage(panel_spec)
-        notebook.AddPage(panel_tweak)
-        notebook.AddPage(panel_goto)
+        if show_tweak:  notebook.AddPage(panel_tweak)
+        if show_goto:   notebook.AddPage(panel_goto)
 
-        notebook.SetSelection(-3) #TODO
+        if   show_spec:   notebook.SelectPage(panel_spec)
+        elif show_scan:   notebook.SelectPage(panel_scan)
+        elif show_static: notebook.SelectPage(panel_static)
+        else:             notebook.SelectPage(panel_config)
 
         # make sure the window is large enough
         sizer = wx.BoxSizer(wx.VERTICAL)
