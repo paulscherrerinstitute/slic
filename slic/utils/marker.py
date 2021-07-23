@@ -34,6 +34,10 @@ class Marker(Registry):
         return res
 
 
+    def __call__(self, *args, **kwargs):
+        return self.goto(*args, **kwargs)
+
+
     def goto(self, hold=False):
         print(f"Going to \"{self.name}\"")
         return self.adj.set_target_value(self.value, hold=hold)
