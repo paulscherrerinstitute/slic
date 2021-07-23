@@ -9,15 +9,19 @@ class Marker(Registry):
         if value is None:
             value = adj.get_current_value()
 
+        #TODO: maybe name should be mandatory?
+        if name is None:
+            printable_value = format_value(value, adj.units)
+            name = f"{adj.name} at {printable_value}"
+
         self.adj = adj
         self.value = value
-        self.name = name or repr(adj) #TODO: maybe name should be mandatory
+        self.name = name
 
 
     def __repr__(self):
         tn = typename(self)
-        name = self.name
-        desc = tn if name is None else f"{tn} \"{name}\""
+        desc = f"{tn} \"{self.name}\""
 
         marked_value = self.value
         current_value = self.adj.get_current_value()
@@ -45,12 +49,15 @@ def format_value(value, units):
 class markers:
 
     def __repr__(self):
-        ms = {m.name: m for m in instances(Marker)}
+        ms = self._get()
         return printable_dict(ms)
 
     def __getitem__(self, key):
-        ms = {m.name: m for m in instances(Marker)}
+        ms = self._get()
         return ms[key]
+
+    def _get(self):
+        return {m.name: m for m in instances(Marker)}
 
 
 
