@@ -439,6 +439,10 @@ class NotebookDX(wx.Notebook):
             name = panel.GetName()
         super().AddPage(panel, name, **kwargs)
 
+    def SelectPage(self, panel):
+        index = self.FindPage(panel)
+        self.SetSelection(index)
+
 
 
 class ContainsTextCompleter(wx.TextCompleterSimple):
