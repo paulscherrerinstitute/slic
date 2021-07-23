@@ -13,6 +13,7 @@ from slic.core.acquisition.bschannels import BSChannels
 from slic.utils.registry import instances
 from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_beamline, get_pvname_reprate
+from slic.utils import Marker 
 
 
 NOMINAL_REPRATE = 100 # Hz
@@ -486,6 +487,74 @@ class TweakPanel(wx.Panel):
         dlg.plot.figure.autofmt_xdate()
         dlg.ShowModal()
         dlg.Destroy()
+
+
+
+class GoToPanel(wx.Panel):
+
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+#        btn_add = wx.Button(self, label="Add")
+#        btn_add.Bind(wx.EVT_BUTTON, self.on_click_add)
+
+        st_name     = wx.StaticText(self, label="Name")
+        st_pv       = wx.StaticText(self, label="PV")
+        st_value    = wx.StaticText(self, label="Value")
+        st_go_dummy = wx.StaticText(self, label="", size=(100, -1))
+
+        widgets = (st_name, st_pv, st_value)
+        labels = make_filled_hbox(widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
+        labels.Add(st_go_dummy, 0, wx.LEFT|wx.EXPAND, 10)
+
+        markers = sorted(instances(Marker), key=lambda x: repr(x))
+
+#        widgets = (btn_add, labels)
+        widgets = [labels] + [GoToLine(self, m) for m in markers]
+        self.vbox = vbox = make_filled_vbox(widgets, border=10)
+        self.SetSizerAndFit(vbox)
+
+#        self.on_click_add(None)
+
+
+#    def on_click_add(self, event):
+#        new = GoToLine(self)
+#        self.vbox.Add(new, 0, wx.ALL|wx.EXPAND, 10)
+#        self.vbox.Layout()
+#        self.Fit()
+
+
+
+class GoToLine(wx.BoxSizer):
+
+    def __init__(self, parent, marker, id=wx.ID_ANY):
+        super().__init__(wx.HORIZONTAL)
+
+        self.marker = marker
+
+        self.tc_name  = tc_name  = wx.TextCtrl(parent, value=marker.name)
+        self.tc_pv    = tc_pv    = wx.TextCtrl(parent, value=marker.adj.name) #AdjustableComboBox(parent)
+        self.tc_value = tc_value = wx.TextCtrl(parent, value=str(marker.value))
+
+#        tc_name.SetHint("Name / Description")
+#        tc_pv.SetHint("PV Name")
+#        tc_value.SetHint("Value")
+
+        tc_name.Disable()
+        tc_pv.Disable()
+        tc_value.Disable()
+
+        self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
+        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+
+        self.Add(tc_name,  1)
+        self.Add(tc_pv,    1)
+        self.Add(tc_value, 1)
+        self.Add(btn_go,   0, wx.LEFT|wx.EXPAND, 10)
+
+
+    def on_go(self, _event):
+        self.marker.goto()
 
 
 

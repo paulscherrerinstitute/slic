@@ -1,6 +1,6 @@
 import wx
 
-from .daqpanels import ConfigPanel, StaticPanel, ScanPanel, TweakPanel
+from .daqpanels import ConfigPanel, StaticPanel, ScanPanel, TweakPanel, GoToPanel
 from .special import SpecialScanPanel
 from .widgets import MainPanel, NotebookDX
 from .icon import get_wx_icon
@@ -25,14 +25,16 @@ class DAQFrame(wx.Frame):
         panel_scan   = ScanPanel(notebook, scanner, instrument, name="Scan")
         panel_spec   = SpecialScanPanel(notebook, scanner, instrument, name="Special")
         panel_tweak  = TweakPanel(notebook, name="Tweak")
+        panel_goto   = GoToPanel(notebook, name="GoTo")
 
         notebook.AddPage(panel_config)
         if show_static: notebook.AddPage(panel_static)
         if show_scan:   notebook.AddPage(panel_scan)
         if show_spec:   notebook.AddPage(panel_spec)
         notebook.AddPage(panel_tweak)
+        notebook.AddPage(panel_goto)
 
-        notebook.SetSelection(-2) # start on second to last page (Scan or Special)
+        notebook.SetSelection(-3) #TODO
 
         # make sure the window is large enough
         sizer = wx.BoxSizer(wx.VERTICAL)
