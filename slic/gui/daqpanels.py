@@ -13,7 +13,7 @@ from slic.core.acquisition.bschannels import BSChannels
 from slic.utils.registry import instances
 from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_beamline, get_pvname_reprate
-from slic.utils import Marker 
+from slic.utils import Marker, Shortcut 
 
 
 NOMINAL_REPRATE = 100 # Hz
@@ -507,10 +507,14 @@ class GoToPanel(wx.Panel):
         labels = make_filled_hbox(widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
         labels.Add(st_go_dummy, 0, wx.LEFT|wx.EXPAND, 10)
 
-        markers = sorted(instances(Marker), key=lambda x: repr(x))
+        markers   = sorted(instances(Marker),   key=lambda x: repr(x))
+        shortcuts = sorted(instances(Shortcut), key=lambda x: repr(x))
 
 #        widgets = (btn_add, labels)
-        widgets = [labels] + [GoToLine(self, m) for m in markers]
+        widgets = [labels]
+        widgets += [MarkerGoToLine(self, m)   for m in markers]
+        widgets += [ShortcutGoToLine(self, s) for s in shortcuts]
+
         self.vbox = vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -525,7 +529,7 @@ class GoToPanel(wx.Panel):
 
 
 
-class GoToLine(wx.BoxSizer):
+class MarkerGoToLine(wx.BoxSizer):
 
     def __init__(self, parent, marker, id=wx.ID_ANY):
         super().__init__(wx.HORIZONTAL)
@@ -555,6 +559,29 @@ class GoToLine(wx.BoxSizer):
 
     def on_go(self, _event):
         self.marker.goto()
+
+
+
+class ShortcutGoToLine(wx.BoxSizer):
+
+    def __init__(self, parent, shortcut, id=wx.ID_ANY):
+        super().__init__(wx.HORIZONTAL)
+
+        self.shortcut = shortcut
+
+        self.tc_name  = tc_name  = wx.TextCtrl(parent, value=shortcut.name)
+
+        tc_name.Disable()
+
+        self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
+        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+
+        self.Add(tc_name,  1)
+        self.Add(btn_go,   0, wx.LEFT|wx.EXPAND, 10)
+
+
+    def on_go(self, _event):
+        self.shortcut.run()
 
 
 
