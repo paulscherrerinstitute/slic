@@ -1,3 +1,5 @@
+import inspect
+
 from slic.core.task import Task
 from .utils import typename, singleton
 from .registry import Registry, instances
@@ -26,6 +28,11 @@ class Shortcut(Registry):
         return Task(self.func, hold=hold)
 
     __call__ = run
+
+
+    @property
+    def source(self):
+        return inspect.getsource(self.func).strip()
 
 
 
