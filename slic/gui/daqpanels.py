@@ -501,6 +501,16 @@ class GoToPanel(wx.Panel):
 #        btn_add = wx.Button(self, label="Add")
 #        btn_add.Bind(wx.EVT_BUTTON, self.on_click_add)
 
+        if not markers and not shortcuts:
+            msg = "There is neither Marker nor Shortcut defined.\nBoth can be imported from slic.utils ..."
+            st_msg = wx.StaticText(self, label=msg, style=wx.ALIGN_CENTRE_HORIZONTAL)
+            widgets = (st_msg,)
+            centered_box = make_filled_hbox((st_msg,), flag = wx.CENTER)
+            widgets = (STRETCH, centered_box, STRETCH)
+            vbox = make_filled_vbox(widgets, flag = wx.CENTER)
+            self.SetSizerAndFit(vbox)
+            return
+
         widgets = []
 
         if markers:
@@ -516,9 +526,9 @@ class GoToPanel(wx.Panel):
             widgets.append(labels)
             widgets += [MarkerGoToLine(self, m)   for m in markers]
 
-            if shortcuts:
-                sep = wx.StaticLine(self)
-                widgets.append(sep)
+        if markers and shortcuts:
+            sl_sep = wx.StaticLine(self)
+            widgets.append(sl_sep)
 
         if shortcuts:
             st_name     = wx.StaticText(self, label="Name")
@@ -586,17 +596,15 @@ class ShortcutGoToLine(wx.BoxSizer):
 
         self.shortcut = shortcut
 
-        self.tc_name  = tc_name  = wx.TextCtrl(parent, value=shortcut.name)
-
+        self.tc_name = tc_name = wx.TextCtrl(parent, value=shortcut.name)
         tc_name.Disable()
-
         tc_name.SetToolTip(shortcut.source)
 
         self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
         btn_go.Bind(wx.EVT_BUTTON, self.on_go)
 
-        self.Add(tc_name,  1)
-        self.Add(btn_go,   0, wx.LEFT|wx.EXPAND, 10)
+        self.Add(tc_name, 1)
+        self.Add(btn_go,  0, wx.LEFT|wx.EXPAND, 10)
 
 
     def on_go(self, _event):
