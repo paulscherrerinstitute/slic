@@ -495,26 +495,43 @@ class GoToPanel(wx.Panel):
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-#        btn_add = wx.Button(self, label="Add")
-#        btn_add.Bind(wx.EVT_BUTTON, self.on_click_add)
-
-        st_name     = wx.StaticText(self, label="Name")
-        st_pv       = wx.StaticText(self, label="PV")
-        st_value    = wx.StaticText(self, label="Value")
-        st_go_dummy = wx.StaticText(self, label="", size=(100, -1))
-
-        widgets = (st_name, st_pv, st_value)
-        labels = make_filled_hbox(widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
-        labels.Add(st_go_dummy, 0, wx.LEFT|wx.EXPAND, 10)
-
         markers   = sorted(instances(Marker),   key=lambda x: repr(x))
         shortcuts = sorted(instances(Shortcut), key=lambda x: repr(x))
 
-#        widgets = (btn_add, labels)
-        widgets = [labels]
-        widgets += [MarkerGoToLine(self, m)   for m in markers]
-        widgets += [ShortcutGoToLine(self, s) for s in shortcuts]
+#        btn_add = wx.Button(self, label="Add")
+#        btn_add.Bind(wx.EVT_BUTTON, self.on_click_add)
 
+        widgets = []
+
+        if markers:
+            st_name     = wx.StaticText(self, label="Name")
+            st_pv       = wx.StaticText(self, label="Adjustable")
+            st_value    = wx.StaticText(self, label="Value")
+            st_go_dummy = wx.StaticText(self, label="", size=(100, -1))
+
+            label_widgets = (st_name, st_pv, st_value)
+            labels = make_filled_hbox(label_widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
+            labels.Add(st_go_dummy, 0, wx.LEFT|wx.EXPAND, 10)
+
+            widgets.append(labels)
+            widgets += [MarkerGoToLine(self, m)   for m in markers]
+
+            if shortcuts:
+                sep = wx.StaticLine(self)
+                widgets.append(sep)
+
+        if shortcuts:
+            st_name     = wx.StaticText(self, label="Name")
+            st_go_dummy = wx.StaticText(self, label="", size=(100, -1))
+
+            label_widgets = (st_name,)
+            labels = make_filled_hbox(label_widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
+            labels.Add(st_go_dummy, 0, wx.LEFT|wx.EXPAND, 10)
+
+            widgets.append(labels)
+            widgets += [ShortcutGoToLine(self, s) for s in shortcuts]
+
+#        widgets = (btn_add, labels)
         self.vbox = vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -572,6 +589,8 @@ class ShortcutGoToLine(wx.BoxSizer):
         self.tc_name  = tc_name  = wx.TextCtrl(parent, value=shortcut.name)
 
         tc_name.Disable()
+
+        tc_name.SetToolTip(shortcut.source)
 
         self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
         btn_go.Bind(wx.EVT_BUTTON, self.on_go)
