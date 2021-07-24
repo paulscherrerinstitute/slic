@@ -12,5 +12,6 @@ from .path import can_create_all_files, can_create_file, glob_files, make_missin
 from .pv import PV
 from .readable import readable_seconds
 from .screenshot import Screenshot
+from .shortcut import Shortcut, shortcuts, as_shortcut
 
 
