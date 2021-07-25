@@ -15,6 +15,8 @@ The beamline codes can be found here:
 
 ... with more to come.
 
+Please click [here](READMORE.md) for some FAQs.
+
 ## slic.core
 
 The core library contains 
