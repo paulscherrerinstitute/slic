@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from slic.utils.printing import format_header, itemize
-from slic.utils.channels import parse_channel_list_file
+from slic.utils.channels import load_channels
 
 
 import colorama
@@ -21,7 +21,7 @@ class Channels(list, ABC):
 
     @classmethod
     def from_file(cls, fname):
-        channels = parse_channel_list_file(fname)
+        channels = load_channels(fname)
         return cls(*channels)
 
     def __repr__(self):
