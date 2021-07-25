@@ -10,6 +10,7 @@ from .plotwidgets import PlotDialog
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition.bschannels import BSChannels
+from slic.core.acquisition.pvchannels import PVChannels
 from slic.utils.registry import instances
 from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_beamline, get_pvname_reprate
@@ -99,12 +100,14 @@ class ConfigPanel(wx.Panel):
         show_list("Detectors", self.chans_det)
 
     def on_chans_bsc(self, event):
-        chans = BSChannels(self.chans_bsc)
-        status = chans.status()
-        show_two_lists("BS Channels", status["online"], status["offline"], header1="channels online", header2="channels offline")
+        chans = BSChannels(*self.chans_bsc)
+        online, offline = chans.status
+        show_two_lists("BS Channels", online, offline, header1="channels online", header2="channels offline")
 
     def on_chans_pvs(self, event):
-        show_list("PVs", self.chans_pvs)
+        chans = PVChannels(*self.chans_pvs)
+        online, offline = chans.status
+        show_two_lists("PVs", online, offline, header1="channels online", header2="channels offline")
 
     def on_take_pedestal(self, event):
         self.acquisition.client.take_pedestal(self.chans_det, self.pvd_reprate.value)
