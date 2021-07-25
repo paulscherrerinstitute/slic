@@ -13,11 +13,12 @@ class PVChannels(Channels):
 
 
 def check_status(channels, timeout=None):
-    pvs = [epics.get_pv(ch) for ch in set(channels)]
+    channels = sorted(channels)
+    pvs = [epics.get_pv(ch) for ch in channels]
     states = [pv.wait_for_connection(timeout=timeout) for pv in pvs]
 
-    online  = sorted(ch for ch, connected in zip(channels, states) if connected)
-    offline = sorted(ch for ch, connected in zip(channels, states) if not connected)
+    online  = set(ch for ch, connected in zip(channels, states) if connected)
+    offline = set(ch for ch, connected in zip(channels, states) if not connected)
     return online, offline
 
 
