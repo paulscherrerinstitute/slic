@@ -1,104 +1,45 @@
 from bsread.avail import dispatcher
 
 from slic.utils.printing import format_header, itemize
-from slic.utils.channels import parse_channel_list_file
+
+from .channels import Channels, Status
 
 
-import colorama
+class BSChannels(Channels):
 
-COLOR_GOOD  = colorama.Fore.GREEN
-COLOR_BAD   = colorama.Fore.RED + colorama.Style.BRIGHT
-COLOR_RESET = colorama.Fore.RESET
+    def get_status(self):
+        return check_status(self)
 
-
-class BSChannels:
-
-    def __init__(self, channels):
-        self.channels = channels
-
-
-    @classmethod
-    def from_file(cls, fname):
-        channels = parse_channel_list_file(fname)
-        return cls(channels)
-
-
-    def cleanup(self):
-        status = self.status()
-        online = status["online"]
-        offline = status["offline"]
-
-        if offline:
-            self.channels = online
-            print("Removed offline channels:")
-            print(itemize(offline))
-            print("(Note: The channels have not been deleted from the respective config file.)")
-
-
-    def check(self, print_online=False, print_offline=True):
-        status = self.status()
-        online = status["online"]
-        offline = status["offline"]
-
-        if print_online and online:
-            print(COLOR_GOOD, end="")
-            print(format_header("Online Channels"))
-            print(itemize(online))
-            print(COLOR_RESET)
-
-        if print_offline and offline:
-            print(COLOR_BAD, end="")
-            print(format_header("Offline Channels"))
-            print(itemize(offline))
-            print(COLOR_RESET)
-
-
-    @property
-    def online(self):
-        status = self.status()
-        return status["online"]
-
-    @property
-    def offline(self):
-        status = self.status()
-        return status["offline"]
-
-
-    def status(self):
-        channels = self.channels
-        channels = set(channels)
-
-        available = bs_avail()
-
-        online  = channels.intersection(available)
-        offline = channels.difference(available)
-
-        online  = sorted(online)
-        offline = sorted(offline)
-
-        status = dict(online=online, offline=offline)
-        return status
-
-
-    def avail(self, search=None): #TODO: not a method
-        available_channels_names = bs_avail()
-
-        if search:
-            search = search.lower()
-            available_channels_names = set(i for i in available_channels_names if search in i.lower())
-
-        available_channels_names = sorted(available_channels_names)
-        print(itemize(available_channels_names))
-
-
-    def __repr__(self):
-        return itemize(self.channels)
+    @staticmethod
+    def avail(search=None):
+        available = bs_avail(search=search)
+        print(format_header("Available Channels"))
+        print(itemize(sorted(available)))
 
 
 
-def bs_avail():
+def check_status(channels):
+    channels = set(channels)
+    available = bs_all_avail()
+
+    online  = channels.intersection(available)
+    offline = channels.difference(available)
+    return online, offline
+
+
+def bs_avail(search=None):
+    available = bs_all_avail()
+
+    if search:
+        search = search.lower()
+        available = set(i for i in available if search in i.lower())
+
+    return available
+
+
+def bs_all_avail():
     available_channels = dispatcher.get_current_channels()
-    available_channels_names = set(i['name'] for i in available_channels)
+    available_channels_names = set(i["name"] for i in available_channels)
     return available_channels_names
 
 
