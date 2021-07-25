@@ -5,4 +5,7 @@ from .diaacquisition import DIAAcquisition
 from .sfacquisition import SFAcquisition
 from .pvacquisition import PVAcquisition
 
+from .bschannels import BSChannels
+from .pvchannels import PVChannels
+
 
