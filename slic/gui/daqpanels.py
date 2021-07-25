@@ -9,8 +9,7 @@ from .widgets import ContainsTextCompleter, FuzzyTextCompleter
 from .plotwidgets import PlotDialog
 
 from slic.core.adjustable import Adjustable
-from slic.core.acquisition.bschannels import BSChannels
-from slic.core.acquisition.pvchannels import PVChannels
+from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.registry import instances
 from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_beamline, get_pvname_reprate
