@@ -3,7 +3,7 @@ from datetime import datetime
 import wx
 
 from ..widgets import EXPANDING, TwoButtons, LabeledTweakEntry, LabeledMathEntry, make_filled_vbox, post_event, AutoWidthListCtrl, copy_to_clipboard
-from ..widgets.plotwidgets import PlotDialog
+from ..widgets.plotting import PlotDialog
 from .tools import AdjustableComboBox, run
 
 
