@@ -3,7 +3,8 @@ import wx
 
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING, PersistableWidget
+from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
+from ..persist import PersistableWidget
 from .tools import AdjustableComboBox, ETADisplay, correct_n_pulses, run, post_event
 
 

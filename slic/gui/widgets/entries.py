@@ -2,7 +2,8 @@ import wx
 
 from slic.utils import arithmetic_eval, typename
 
-from .tools import ADJUSTMENTS, PersistableWidget, make_filled_hbox
+from .tools import ADJUSTMENTS, make_filled_hbox
+from ..persist import PersistableWidget
 
 
 class LabeledTweakEntry(wx.BoxSizer):

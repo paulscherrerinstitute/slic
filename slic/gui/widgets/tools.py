@@ -6,10 +6,6 @@ from .fname import increase, decrease
 WX_DEFAULT_RESIZABLE_DIALOG_STYLE = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MINIMIZE_BOX|wx.MAXIMIZE_BOX
 
 
-class PersistableWidget:
-    pass
-
-
 class EXPANDING: pass
 class STRETCH: pass
 

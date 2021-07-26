@@ -1,6 +1,5 @@
 from pathlib import Path
 from slic.utils import typename, json_save, json_load
-from slic.gui import widgets as ws
 
 
 def skip_on_error(f):
@@ -12,6 +11,11 @@ def skip_on_error(f):
             en = typename(e)
             print(f"skipped persist {fn} as it caused: {en}: {e}")
     return wrapper
+
+
+
+class PersistableWidget:
+    pass
 
 
 
@@ -58,7 +62,7 @@ def set_values(values, obj):
 
 
 def get_good_children(obj):
-    return [c for c in recurse(obj) if isinstance(c, ws.PersistableWidget)]
+    return [c for c in recurse(obj) if isinstance(c, PersistableWidget)]
 
 def recurse(obj):
     children = obj.GetChildren()
