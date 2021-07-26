@@ -1,6 +1,6 @@
 import wx
 
-from .helper import exception_to_warning
+from .exc2warn import exception_to_warning
 from .tools import post_event
 
 
