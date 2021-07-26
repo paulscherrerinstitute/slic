@@ -1,4 +1,4 @@
-# Everything you always wanted to know about slic (but were afraid to ask)
+# Everything you always wanted to know about *slic* (but were afraid to ask)
 
 ## How do I add a new device?
 
@@ -33,7 +33,7 @@ laser_delay = PVAdjustable("SPOES10-LASER:SETVALUE", "SATES20-LASER:READBACK", "
 
 ### Adding a device "from scratch"
 
-In case none of the already available adjustables fits the new device, a new implementation still does **not** have to be from scratch. slic provides help to ease the task.
+In case none of the already available adjustables fits the new device, a new implementation still does **not** have to be from scratch. *slic* provides help to ease the task.
 
 #### ... using inheritance
 
@@ -119,7 +119,7 @@ mot = GenericAdjustable(move_motor_to, where_is_motor)
 
 ### How do I combine adjustables to more complex devices?
 
-For this, slic provides the `Device` class. The easiest way to use it is via the `SimpleDevice` class:
+For this, *slic* provides the `Device` class. The easiest way to use it is via the `SimpleDevice` class:
 
 ```python
 from slic.devices.simpledevice import SimpleDevice
@@ -227,7 +227,7 @@ scan = Scanner(default_acquisitions=[daq], condition=check_intensity)
 scan.condition = None
 ```
 
-If the device starts to behave correctly again, the change is easily reverted (without restarting slic):
+If the device starts to behave correctly again, the change is easily reverted (without restarting ipython):
 
 ```python
 scan.condition = check_intensity
@@ -237,23 +237,23 @@ scan.condition = check_intensity
 
 Both, BS channels and PVs may – for various reason – disappear from the archiver/data buffer, which then leads to them not being written to file.
 
-You can check which channels are currently on the default lists in the *Config* tab of the GUI. There are three buttons for the three types of channels we have: BS channels, PVs and (Jungfrau) detectors. For the first two, **the online/offline status can be seen in the dialog that is opened by the respective button**. For BS channels, this status is queried from the "dispatcher". For PVs, a direct connection test is made from the console you are running slic on. Detectors currently cannot be queried for their status.
+You can check which channels are currently on the default lists in the *Config* tab of the GUI. There are three buttons for the three types of channels we have: BS channels, PVs and (Jungfrau) detectors. For the first two, **the online/offline status can be seen in the dialog that is opened by the respective button**. For BS channels, this status is queried from the "dispatcher". For PVs, a direct connection test is made from the console you are running *slic* on. Detectors currently cannot be queried for their status.
 
 ## Why does my scan not scan where I thought it would scan?
 
 Did you accidentally enable/disable the "Relative to current position" checkbox in the GUI?
 
-## It's slic, alright. But is it slick?
+## It's *slic*, alright. But is it slick?
 
 Of course!
 
-slic is designed to be a light-weight, easy to use framework enabling the user to achieve a desired goal – be it a GUI for running experiments, a scripted measurement automation, etc. – in contrast to imposing a specific workflow.
+*slic* is designed to be a light-weight, easy to use framework enabling the user to achieve a desired goal – be it a GUI for running experiments, a scripted measurement automation, etc. – in contrast to imposing a specific workflow.
 
-slic embraces Python as fully as possible: The code is pythonic, and sticks to [PEP8](https://www.python.org/dev/peps/pep-0008/) and [PEP20](https://www.python.org/dev/peps/pep-0020/). There is no magic or guessing (except for the very few cases where it makes sense and there *is* a bit of [magic](slic/utils/registry.py) ;-) ). There are no scattered config files to edit, everything is simple and straight forward Python code giving you proper error messages.
+*slic* embraces Python as fully as possible: The code is pythonic, and sticks to [PEP8](https://www.python.org/dev/peps/pep-0008/) and [PEP20](https://www.python.org/dev/peps/pep-0020/). There is no magic or guessing (except for the very few cases where it makes sense and there *is* a bit of [magic](slic/utils/registry.py) ;-) ). There are no scattered config files to edit, everything is simple and straight forward Python code giving you proper error messages.
 
 There are, on purpose, only few levels of abstraction: Scannable hardware becomes a single-axis `Adjustable`, which may be combined into `Devices` for better discoverability and structure. DAQ methods are unified into `Acquisition` objects adhering to a minimal `acquire` logic. The `Scanner` uses these adjustables and acquisitions to perform any type of scan, which may be arbitrarily customized by providing values to move to if the default ranges if values are not sufficient.
 
-The GUI built on top of slic is not containing any DAQ/controls code itself, instead it interfaces one slic function per tab: *Static* uses `Acquisition.acquire()`, *Scan* uses `Scanner.scan1D`, etc. The GUI is aiming to be customizable by simply enabling/disabling tabs giving only the features that are currently desired. New custom buttons may be added to the *GoTo* tab with a single line of code allowing for quick extensions of the GUI.
+The GUI built on top of *slic* is not containing any DAQ/controls code itself, instead it interfaces one *slic* function per tab: *Static* uses `Acquisition.acquire()`, *Scan* uses `Scanner.scan1D`, etc. The GUI is aiming to be customizable by simply enabling/disabling tabs giving only the features that are currently desired. New custom buttons may be added to the *GoTo* tab with a single line of code allowing for quick extensions of the GUI.
 
-Furthermore, due to the complete separation of slic features and GUI code interfacing them, it would be easy to replace the current wxPython GUI with one written in a different toolkit or to integrate slic features in another, already existing project.
+Furthermore, due to the complete separation of *slic* features and GUI code interfacing them, it would be easy to replace the current wxPython GUI with one written in a different toolkit or to integrate *slic* features in another, already existing project.
 
