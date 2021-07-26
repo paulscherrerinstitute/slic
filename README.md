@@ -34,7 +34,7 @@ The core library contains
 
 ### Overview: Interactions of these building blocks:
 
-<img src="../../wikis/uploads/a1234d21f423ee8f072b28e108f9792b/drawing.png" width="50%" />
+<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/a1234d21f423ee8f072b28e108f9792b/drawing.png" width="50%" />
 
 
 ## slic.devices
@@ -50,9 +50,9 @@ One of the goals of the "library-first" approach of _slic_ is to provide means f
 
 _slic_ comes with an example GUI (written in [wxPython](https://wxpython.org/)) built on top:
 
-<img src="../../wikis/uploads/c8d3dfeb2d159b18c2a97db6793442cd/config.png" width="33%" />
-<img src="../../wikis/uploads/0c58450f1e18d134910e786fe1c33f65/scan.png"   width="33%" />
-<img src="../../wikis/uploads/75845df3a2e3e7019f048c37b3cf7684/tweak.png"  width="33%" />
+<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/c8d3dfeb2d159b18c2a97db6793442cd/config.png" width="33%" />
+<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/0c58450f1e18d134910e786fe1c33f65/scan.png"   width="33%" />
+<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/75845df3a2e3e7019f048c37b3cf7684/tweak.png"  width="33%" />
 
 In order to further the "disposable GUIs" concept, this GUI is very modular: Tabs can be enabled or disabled upon instantiation. Each tab interfaces a single feature of _slic_:
 
