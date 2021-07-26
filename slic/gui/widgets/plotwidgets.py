@@ -8,7 +8,7 @@ from matplotlib.backends.backend_wxagg import (
     NavigationToolbar2WxAgg as NavigationToolbar
 )
 
-from . import WX_DEFAULT_RESIZABLE_DIALOG_STYLE
+from .tools import WX_DEFAULT_RESIZABLE_DIALOG_STYLE
 
 
 class PlotDialog(wx.Dialog):
