@@ -60,7 +60,7 @@ TypeError: Can't instantiate abstract class MyNewCoolThing with abstract methods
 - `set_target_value(value, hold=False)` → return a Task* that sets the target value/position
 - `is_moving()` → return a boolean moving status
 
-*cf. `slic.core.task.Task` and `Adjustable._as_task(...)`. (This part will be simplified soon :) )
+*cf. `slic.core.task.Task` and `Adjustable._as_task(...)`. (This part will be simplified soon :-) )
 
 Thus, you get to work and do that:
 
@@ -117,6 +117,73 @@ def where_is_motor():
 mot = GenericAdjustable(move_motor_to, where_is_motor)
 ```
 
+### How do I combine adjustables to more complex devices?
+
+For this, slic provides the `Device` class. The easiest way to use it is via the `SimpleDevice` class:
+
+```python
+from slic.devices.simpledevice import SimpleDevice
+from slic.devices.general.motor import Motor
+
+mot_x = Motor("SPOES21-STAGE1:MOT_X")
+mot_y = Motor("SPOES21-STAGE1:MOT_Y")
+mot_z = Motor("SPOES21-STAGE1:MOT_Z")
+
+stage3d = SimpleDevice("3D Stage", x=mot_x, y=mot_y, z=mot_z)
+```
+
+The resulting object provides a nice print-out and acts as a namespace / "folder" containing the individual axes.
+
+```python
+In [10]: stage3d
+Out[10]: 
+3D Stage:
+---------
+x: 10.2 mm
+y: 0.1 mm
+z: 123.4 mm
+
+In [11]: stage3d.x
+Out[11]: Motor "SPOES10-MANIP1:MOT_X" at 10.2 mm
+```
+
+Devices may also contain other devices (as deeply nested as you may need) for structuring your objects nicely:
+
+```python
+stuff = SimpleDevice("All our stuff",
+    stages=SimpleDevice("Stages", stage3d=stage3d),
+    some_other_thing=dummy
+)
+```
+
+```python
+In [6]: stuff
+Out[6]: 
+All our stuff:
+--------------
+some_other_thing: 1000 au
+stages.stage3d.x: 10.2 mm
+stages.stage3d.y: 0.1 mm
+stages.stage3d.z: 123.4 mm
+
+In [7]: stuff.stages
+Out[7]: 
+Stages:
+-------
+stage3d.x: 10.2 mm
+stage3d.y: 0.1 mm
+stage3d.z: 123.4 mm
+
+In [8]: stuff.stages.stage3d
+Out[8]: 
+3D Stage:
+---------
+x: 10.2 mm
+y: 0.1 mm
+z: 123.4 mm
+```
+
+With ipython's tab completion and the print-outs, finding an adjustable should be straight forward.
 
 ## How do I change the channels?
 
@@ -175,4 +242,18 @@ You can check which channels are currently on the default lists in the *Config* 
 ## Why does my scan not scan where I thought it would scan?
 
 Did you accidentally enable/disable the "Relative to current position" checkbox in the GUI?
+
+## It's slic, alright. But is it slick?
+
+Of course!
+
+slic is designed to be a light-weight, easy to use framework enabling the user to achieve a desired goal – be it a GUI for running experiments, a scripted measurement automation, etc. – in contrast to imposing a specific workflow.
+
+slic embraces Python as fully as possible: The code is pythonic, and sticks to [PEP8](https://www.python.org/dev/peps/pep-0008/) and [PEP20](https://www.python.org/dev/peps/pep-0020/). There is no magic or guessing (except for the very few cases where it makes sense and there *is* a bit of [magic](https://gitlab.psi.ch/slic/slic/-/blob/master/slic/utils/registry.py) ;-) ). There are no scattered config files to edit, everything is simple and straight forward Python code giving you proper error messages.
+
+There are, on purpose, only few levels of abstraction: Scannable hardware becomes a single-axis `Adjustable`, which may be combined into `Devices` for better discoverability and structure. DAQ methods are unified into `Acquisition` objects adhering to a minimal `acquire` logic. The `Scanner` uses these adjustables and acquisitions to perform any type of scan, which may be arbitrarily customized by providing values to move to if the default ranges if values are not sufficient.
+
+The GUI built on top of slic is not containing any DAQ/controls code itself, instead it interfaces one slic function per tab: *Static* uses `Acquisition.acquire()`, *Scan* uses `Scanner.scan1D`, etc. The GUI is aiming to be customizable by simply enabling/disabling tabs giving only the features that are currently desired. New custom buttons may be added to the *GoTo* tab with a single line of code allowing for quick extensions of the GUI.
+
+Furthermore, due to the complete separation of slic features and GUI code interfacing them, it would be easy to replace the current wxPython GUI with one written in a different toolkit or to integrate slic features in another, already existing project.
 
