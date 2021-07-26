@@ -2,8 +2,16 @@ import wx
 
 from slic.utils import arithmetic_eval, typename
 
-from .tools import ADJUSTMENTS, make_filled_hbox
 from ..persist import PersistableWidget
+from .tools import make_filled_hbox
+from .fname import increase, decrease
+
+
+ADJUSTMENTS = {
+    wx.WXK_UP: increase,
+    wx.WXK_DOWN: decrease
+}
+
 
 
 class LabeledTweakEntry(wx.BoxSizer):

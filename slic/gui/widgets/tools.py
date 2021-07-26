@@ -1,19 +1,11 @@
 import wx
 
-from .fname import increase, decrease
-
 
 WX_DEFAULT_RESIZABLE_DIALOG_STYLE = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MINIMIZE_BOX|wx.MAXIMIZE_BOX
 
 
 class EXPANDING: pass
 class STRETCH: pass
-
-
-ADJUSTMENTS = {
-    wx.WXK_UP: increase,
-    wx.WXK_DOWN: decrease
-}
 
 
 
