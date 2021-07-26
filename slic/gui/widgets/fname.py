@@ -37,6 +37,7 @@ def reverse_string(s):
 
 
 def count_digits(seq):
+    i = 0
     for i, char in enumerate(seq):
         if not char.isdigit():
             break
@@ -66,16 +67,16 @@ def decrease_maintaining_width(num):
 
 
 if __name__ == "__main__":
-    v = extract_counter("t01est01")
+    v = increase("t01est01")
     print(v)
     assert v == "t01est02"
 
-    v = extract_counter("test_001")
+    v = increase("test_001")
     print(v)
     assert v == "test_002"
 
     v = "test"
-    assert v == extract_counter(v)
+    assert v == increase(v)
 
 
 

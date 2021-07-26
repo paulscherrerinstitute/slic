@@ -4,16 +4,16 @@ from concurrent.futures import ThreadPoolExecutor
 import epics
 import wx
 
-from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl, copy_to_clipboard
-from ..widgets import ContainsTextCompleter, FuzzyTextCompleter
-from ..widgets.plotwidgets import PlotDialog
-
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.registry import instances
 from slic.utils import nice_arange, readable_seconds
 from slic.utils.reprate import get_beamline, get_pvname_reprate
-from slic.utils import Marker, Shortcut 
+from slic.utils import Marker, Shortcut
+
+from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl, copy_to_clipboard
+from ..widgets import ContainsTextCompleter, FuzzyTextCompleter
+from ..widgets.plotwidgets import PlotDialog
 
 
 NOMINAL_REPRATE = 100 # Hz
@@ -95,20 +95,20 @@ class ConfigPanel(wx.Panel):
         self.SetSizerAndFit(vbox)
 
 
-    def on_chans_det(self, event):
+    def on_chans_det(self, _event):
         show_list("Detectors", self.chans_det)
 
-    def on_chans_bsc(self, event):
+    def on_chans_bsc(self, _event):
         chans = BSChannels(*self.chans_bsc)
         online, offline = chans.status
         show_two_lists("BS Channels", online, offline, header1="channels online", header2="channels offline")
 
-    def on_chans_pvs(self, event):
+    def on_chans_pvs(self, _event):
         chans = PVChannels(*self.chans_pvs)
         online, offline = chans.status
         show_two_lists("PVs", online, offline, header1="channels online", header2="channels offline")
 
-    def on_take_pedestal(self, event):
+    def on_take_pedestal(self, _event):
         self.acquisition.client.take_pedestal(self.chans_det, self.pvd_reprate.value)
 
 
@@ -143,7 +143,7 @@ class StaticPanel(wx.Panel):
         self.SetSizerAndFit(vbox)
 
 
-    def on_go(self, event):
+    def on_go(self, _event):
         if self.task:
             return
 
@@ -167,7 +167,7 @@ class StaticPanel(wx.Panel):
         run(wait)
 
 
-    def on_stop(self, event):
+    def on_stop(self, _event):
         print("stop", self.task)
         if self.task:
             self.task.stop()
@@ -243,7 +243,7 @@ class ScanPanel(wx.Panel):
         self.SetSizerAndFit(vbox)
 
 
-    def on_change_pos(self, event):
+    def on_change_pos(self, _event):
         try:
             start_pos, end_pos, step_size = self._get_pos()
             if step_size == 0:
@@ -259,12 +259,12 @@ class ScanPanel(wx.Panel):
         self.le_nsteps.SetToolTip(tooltip)
 
 
-    def on_change_adj(self, event):
+    def on_change_adj(self, _event):
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
 
 
-    def on_go(self, event):
+    def on_go(self, _event):
         if self.scan:
             return
 
@@ -298,7 +298,7 @@ class ScanPanel(wx.Panel):
         run(wait)
 
 
-    def on_stop(self, event):
+    def on_stop(self, _event):
         if self.scan:
             self.scan.stop()
             self.scan = None
@@ -362,12 +362,12 @@ class TweakPanel(wx.Panel):
         self.on_update_abs(event)
 
 
-    def on_update_adj(self, event):
+    def on_update_adj(self, _event):
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
 
 
-    def on_update_abs(self, event):
+    def on_update_abs(self, _event):
         adjustable = self.cb_adjs.get()
         value = adjustable.get_current_value()
         self.le_abs.SetValue(str(value))
@@ -396,7 +396,7 @@ class TweakPanel(wx.Panel):
         run(wait)
 
 
-    def on_stop(self, event):
+    def on_stop(self, _event):
         print("move stopped", self.task)
         if self.task:
             self.task.stop()
@@ -457,7 +457,7 @@ class TweakPanel(wx.Panel):
         copy_to_clipboard(value)
 
 
-    def on_click_header(self, event):
+    def on_click_header(self, _event):
         items = self.lc_log.GetItemsText()
         if not items:
             return
@@ -497,8 +497,8 @@ class GoToPanel(wx.Panel):
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        markers   = sorted(instances(Marker),   key=lambda x: repr(x))
-        shortcuts = sorted(instances(Shortcut), key=lambda x: repr(x))
+        markers   = sorted(instances(Marker),   key=repr)
+        shortcuts = sorted(instances(Shortcut), key=repr)
 
 #        btn_add = wx.Button(self, label="Add")
 #        btn_add.Bind(wx.EVT_BUTTON, self.on_click_add)
@@ -677,7 +677,7 @@ class PVDisplay(wx.BoxSizer):
         self.st_value.Bind(wx.EVT_WINDOW_DESTROY, self.on_destroy)
 
 
-    def update(self, event):
+    def update(self, _event):
         value = self.value
         units = self.units
 
@@ -707,7 +707,7 @@ class ETADisplay(PVDisplay):
             tc.Bind(wx.EVT_TEXT, self.update)
 
 
-    def update(self, event):
+    def update(self, _event):
         factor = 1
         for tc in self.textctrls:
             val = tc.GetValue()

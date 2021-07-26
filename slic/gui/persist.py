@@ -1,7 +1,6 @@
 from pathlib import Path
 from slic.utils import typename, json_save, json_load
 from slic.gui import widgets as ws
-from slic.gui.daqpanels.special import ValueEntry
 
 
 def skip_on_error(f):

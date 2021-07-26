@@ -80,7 +80,7 @@ class PlotPanel(wx.Panel):
         toolbar.update()
         self.sizer.Add(toolbar, 0, wx.LEFT|wx.EXPAND)
 
-    def __getattr__(self, name):    
+    def __getattr__(self, name):
         return getattr(self.axes, name)
 
     def make_axes(self):

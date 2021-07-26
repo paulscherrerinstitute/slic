@@ -45,7 +45,7 @@ class ListDialog(wx.Dialog):
     def __init__(self, title, sequence, header="entries"):
         wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
-        hld = HeaderedListDisplay(self, sequence)
+        hld = HeaderedListDisplay(self, sequence, header=header)
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -56,7 +56,7 @@ class ListDialog(wx.Dialog):
 
 
 
-class DoubleListDialog(ListDialog):
+class DoubleListDialog(wx.Dialog):
 
     def __init__(self, title, sequence1, sequence2, header1="entries", header2="entries"):
         wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
@@ -101,7 +101,7 @@ class ListDisplay(wx.ListBox):
         self.Bind(wx.EVT_LISTBOX_DCLICK, self.on_copy)
 
 
-    def on_copy(self, event):
+    def on_copy(self, _event):
         val = self.GetStringSelection()
         print(val)
         copy_to_clipboard(val)
@@ -421,7 +421,7 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
 class MainPanel(wx.Panel): #TODO: This still needs work
 
     def wrap(self, inner):
-        self.sizer = sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(inner, proportion=1, flag=wx.EXPAND)
         self.SetSizer(sizer)
 

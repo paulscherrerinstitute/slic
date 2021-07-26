@@ -1,11 +1,10 @@
 import numpy as np
 import wx
 
+from slic.utils.reprate import get_pvname_reprate
+
 from . import AdjustableComboBox, ETADisplay, correct_n_pulses, run, post_event
 from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING, PersistableWidget
-
-from slic.utils import nice_arange, readable_seconds
-from slic.utils.reprate import get_pvname_reprate
 
 
 class LabeledValueEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
@@ -100,7 +99,7 @@ class SpecialScanPanel(wx.Panel):
         self.SetSizerAndFit(vbox)
 
 
-    def on_change_values(self, event):
+    def on_change_values(self, _event):
         try:
             steps = self._get_values()
         except ValueError as e:
@@ -113,12 +112,12 @@ class SpecialScanPanel(wx.Panel):
         self.le_nsteps.SetToolTip(tooltip)
 
 
-    def on_change_adj(self, event):
+    def on_change_adj(self, _event):
         adjustable = self.cb_adjs.get()
         self.st_adj.SetLabel(repr(adjustable))
 
 
-    def on_go(self, event):
+    def on_go(self, _event):
         if self.scan:
             return
 
@@ -156,7 +155,7 @@ class SpecialScanPanel(wx.Panel):
         run(wait)
 
 
-    def on_stop(self, event):
+    def on_stop(self, _event):
         if self.scan:
             self.scan.stop()
             self.scan = None
