@@ -249,7 +249,7 @@ Of course!
 
 slic is designed to be a light-weight, easy to use framework enabling the user to achieve a desired goal – be it a GUI for running experiments, a scripted measurement automation, etc. – in contrast to imposing a specific workflow.
 
-slic embraces Python as fully as possible: The code is pythonic, and sticks to [PEP8](https://www.python.org/dev/peps/pep-0008/) and [PEP20](https://www.python.org/dev/peps/pep-0020/). There is no magic or guessing (except for the very few cases where it makes sense and there *is* a bit of [magic](https://gitlab.psi.ch/slic/slic/-/blob/master/slic/utils/registry.py) ;-) ). There are no scattered config files to edit, everything is simple and straight forward Python code giving you proper error messages.
+slic embraces Python as fully as possible: The code is pythonic, and sticks to [PEP8](https://www.python.org/dev/peps/pep-0008/) and [PEP20](https://www.python.org/dev/peps/pep-0020/). There is no magic or guessing (except for the very few cases where it makes sense and there *is* a bit of [magic](slic/utils/registry.py) ;-) ). There are no scattered config files to edit, everything is simple and straight forward Python code giving you proper error messages.
 
 There are, on purpose, only few levels of abstraction: Scannable hardware becomes a single-axis `Adjustable`, which may be combined into `Devices` for better discoverability and structure. DAQ methods are unified into `Acquisition` objects adhering to a minimal `acquire` logic. The `Scanner` uses these adjustables and acquisitions to perform any type of scan, which may be arbitrarily customized by providing values to move to if the default ranges if values are not sufficient.
 
