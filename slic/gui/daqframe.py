@@ -1,7 +1,7 @@
 import wx
 
 from .daqpanels import ConfigPanel, StaticPanel, ScanPanel, TweakPanel, GoToPanel
-from .special import SpecialScanPanel
+from .daqpanels.special import SpecialScanPanel
 from .widgets import MainPanel, NotebookDX
 from .icon import get_wx_icon
 from .persist import Persistence

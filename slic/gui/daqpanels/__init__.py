@@ -4,9 +4,9 @@ from concurrent.futures import ThreadPoolExecutor
 import epics
 import wx
 
-from .widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl, copy_to_clipboard
-from .widgets import ContainsTextCompleter, FuzzyTextCompleter
-from .plotwidgets import PlotDialog
+from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, TwoButtons, LabeledTweakEntry, LabeledEntry, LabeledMathEntry, MathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event, AutoWidthListCtrl, copy_to_clipboard
+from ..widgets import ContainsTextCompleter, FuzzyTextCompleter
+from ..widgets.plotwidgets import PlotDialog
 
 from slic.core.adjustable import Adjustable
 from slic.core.acquisition import BSChannels, PVChannels
