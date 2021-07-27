@@ -79,6 +79,9 @@ class TweakPanel(wx.Panel):
 
     def on_update_abs(self, _event):
         adjustable = self.cb_adjs.get()
+        if adjustable is None:
+            return
+
         value = adjustable.get_current_value()
         self.le_abs.SetValue(str(value))
 
@@ -91,8 +94,12 @@ class TweakPanel(wx.Panel):
         target = self.le_abs.GetValue()
         target = float(target)
 
-        adj = self.cb_adjs.get()
-        self.task = adj.set_target_value(target)
+        adjustable = self.cb_adjs.get()
+        if adjustable is None:
+            post_event(wx.EVT_BUTTON, self.btn_go.btn2)
+            return
+
+        self.task = adjustable.set_target_value(target)
 
         def wait():
             print("start", self.task)
@@ -133,6 +140,9 @@ class TweakPanel(wx.Panel):
     def _move_delta(self, direction):
         print("move delta", direction)
         adj = self.cb_adjs.get()
+        if adj is None:
+            return
+
         current = adj.get_current_value()
 
         delta = self.lte.GetValue()

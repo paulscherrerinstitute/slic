@@ -123,6 +123,9 @@ class SpecialScanPanel(wx.Panel):
             return
 
         adjustable = self.cb_adjs.get()
+        if adjustable is None:
+            post_event(wx.EVT_BUTTON, self.btn_go.btn2)
+            return
 
         steps = self._get_values()
 
