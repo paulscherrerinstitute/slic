@@ -21,12 +21,12 @@ def pos_to_delay(pos):
 
 class DelayStage(Device):
 
-    def __init__(self, Id, name=None):
+    def __init__(self, Id, name=None, internal=False):
         self.Id = Id
         self.name = name = name or Id
 
-        self.motor = motor = Motor(Id, name)
-        self.delay = delay = Delay(motor)
+        self.motor = motor = Motor(Id, name, internal=internal)
+        self.delay = delay = Delay(motor, internal=internal)
 
         self.devices = {
             "motor": motor,
@@ -47,10 +47,10 @@ class DelayStage(Device):
 
 class Delay(Adjustable):
 
-    def __init__(self, motor, name=None, units="fs"):
+    def __init__(self, motor, name=None, units="fs", internal=False):
         self._motor = motor
         name = name or motor.name + " as delay"
-        super().__init__(name=name, units=units)
+        super().__init__(name=name, units=units, internal=internal)
         self.pvname = motor.pvname
         self.offset_pos = 0
 

@@ -6,9 +6,10 @@ from .convenience import SpecConvenience
 
 class Adjustable(BaseAdjustable, SpecConvenience):
 
-    def __init__(self, name=None, units=None):
+    def __init__(self, name=None, units=None, internal=False):
         self.name = name
         self.units = units
+        self.internal = internal
         self.current_task = None
 
 

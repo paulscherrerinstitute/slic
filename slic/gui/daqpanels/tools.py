@@ -17,7 +17,7 @@ class AdjustableComboBox(wx.ComboBox):
 
     def __init__(self, parent):
         adjs_instances = instances(Adjustable)
-        self.adjs = adjs = {i.name : i for i in adjs_instances}
+        self.adjs = adjs = {i.name : i for i in adjs_instances if not i.internal}
         adjs_name = tuple(sorted(adjs.keys()))
         wx.ComboBox.__init__(self, parent, choices=adjs_name, style=wx.TE_PROCESS_ENTER)
         self.SetSelection(0)

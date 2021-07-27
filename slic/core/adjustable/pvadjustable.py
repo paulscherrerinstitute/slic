@@ -7,13 +7,13 @@ from slic.utils import typename
 
 class PVAdjustable(Adjustable):
 
-    def __init__(self, pvname_setvalue, pvname_readback=None, pvname_stop=None, pvname_done_moving=None, pvname_moving=None, accuracy=None, active_move=False, name=None):
+    def __init__(self, pvname_setvalue, pvname_readback=None, pvname_stop=None, pvname_done_moving=None, pvname_moving=None, accuracy=None, active_move=False, name=None, internal=False):
         pv_setvalue = PV(pvname_setvalue)
         pv_readback = PV(pvname_readback) if pvname_readback else pv_setvalue
 
         name = name or pvname_readback or pvname_setvalue
         units = pv_readback.units
-        super().__init__(name=name, units=units)
+        super().__init__(name=name, units=units, internal=internal)
 
         self.accuracy = accuracy
         self.active_move = active_move
