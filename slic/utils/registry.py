@@ -1,3 +1,4 @@
+import inspect
 import weakref
 
 from .utils import typename
@@ -11,6 +12,7 @@ class RegistryMeta(type):
 
     def __init__(cls, name, bases, namespace):
         super().__init__(name, bases, namespace) # creates the class
+        cls.__signature__ = inspect.signature(cls.__init__) # restore the constructor signature (instead of that of __call__ below)
         cls.__instances__ = weakref.WeakSet()
 
     def __call__(cls, *args, **kwargs):
