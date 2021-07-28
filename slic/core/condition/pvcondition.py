@@ -1,5 +1,7 @@
 from epics import PV
 
+from slic.utils import typename
+
 from .condition import Condition
 
 
@@ -25,6 +27,12 @@ class PVCondition(Condition):
 
     def stop_counting(self):
         self.pv.clear_callbacks()
+
+
+    def __repr__(self):
+        name = typename(self)
+        status = "happy" if self.check() else "unhappy"
+        return f"{name} \"{self.channel}\": {status}"
 
 
 
