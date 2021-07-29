@@ -1,4 +1,5 @@
 from bsread.avail import dispatcher
+from requests.exceptions import ConnectionError # make it easier to find this Exception if it needs to be caught
 
 from slic.utils.printing import format_header, itemize
 
@@ -38,7 +39,7 @@ def bs_avail(search=None):
 
 
 def bs_all_avail():
-    available_channels = dispatcher.get_current_channels()
+    available_channels = dispatcher.get_current_channels() # may raise ConnectionError
     available_channels_names = set(i["name"] for i in available_channels)
     return available_channels_names
 
