@@ -57,7 +57,7 @@ class SFAcquisition(BaseAcquisition):
             print("No channels specified, using default channel list.")
             channels = self.default_channels
 
-        bschs = BSChannels(channels)
+        bschs = BSChannels(*channels)
         bschs.check()
 
         client = self.client
