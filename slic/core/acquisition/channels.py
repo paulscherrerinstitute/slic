@@ -28,18 +28,27 @@ class Channels(list, ABC):
         return itemize(self)
 
 
-    def cleanup(self):
+    def cleanup(self, silent=False):
         online, offline = self.get_status()
         if offline:
             self.clear()
             self.extend(online)
+            if silent:
+                return
             print("Removed offline channels:")
             print(itemize(offline))
             print("(Note: The channels have not been deleted from the respective config file.)")
 
 
     def check(self, print_online=False, print_offline=True):
-        online, offline = self.get_status()
+        try:
+            online, offline = self.get_status()
+        except Exception as e:
+            print(COLOR_BAD, end="")
+            print("Channel status check failed due to:")
+            print(e)
+            print(COLOR_RESET)
+            return
 
         if print_online and online:
             print(COLOR_GOOD, end="")
