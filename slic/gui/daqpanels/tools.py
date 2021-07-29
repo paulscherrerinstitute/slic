@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from logzero import logger as log
 import epics
 import wx
 
@@ -124,7 +125,8 @@ class ETADisplay(PVDisplay):
             rate = self.value
             units = self.units
 
-        assert units == "Hz"
+        if units != "Hz":
+            log.warning(f"Units of repetition rate PV are {units} and not Hz")
 
         if rate == 0 or factor is None:
             secs = "∞"
