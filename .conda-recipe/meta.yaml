@@ -23,9 +23,12 @@ requirements:
         - data_api
         - detector_integration_api
         - elog
+        - fuzzywuzzy
         - ipython
         - jungfrau_utils
+        - logzero
         - pyepics
         - tqdm
+        - yaspin
 
 
