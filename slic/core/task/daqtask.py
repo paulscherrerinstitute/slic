@@ -19,9 +19,8 @@ class DAQTask(Task):
     def __repr__(self):
         res = super().__repr__()
         if self.filenames:
-            items = itemize(self.filenames)
-            header = "Output files:"
-            res = "\n".join((res, header, items))
+            items = itemize(self.filenames, header="Output files")
+            res = f"{res}\n\n{items}"
         return res
 
 

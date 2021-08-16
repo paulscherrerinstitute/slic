@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import namedtuple
-from slic.utils.printing import format_header, itemize
+from slic.utils.printing import itemize
 from slic.utils.channels import load_channels
 
 
@@ -35,8 +35,7 @@ class Channels(list, ABC):
             self.extend(online)
             if silent:
                 return
-            print("Removed offline channels:")
-            print(itemize(offline))
+            print(itemize(offline, header="Removed offline channels"))
             print("(Note: The channels have not been deleted from the respective config file.)")
 
 
@@ -52,14 +51,12 @@ class Channels(list, ABC):
 
         if print_online and online:
             print(COLOR_GOOD, end="")
-            print(format_header("Online Channels"))
-            print(itemize(online))
+            print(itemize(online, header="Online Channels"))
             print(COLOR_RESET)
 
         if print_offline and offline:
             print(COLOR_BAD, end="")
-            print(format_header("Offline Channels"))
-            print(itemize(offline))
+            print(itemize(offline, header="Offline Channels"))
             print(COLOR_RESET)
 
 

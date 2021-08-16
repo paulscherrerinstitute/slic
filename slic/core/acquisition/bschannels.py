@@ -13,9 +13,8 @@ class BSChannels(Channels):
 
     @staticmethod
     def avail(search=None):
-        available = bs_avail(search=search)
-        print(format_header("Available Channels"))
-        print(itemize(sorted(available)))
+        available = sorted(bs_avail(search=search))
+        print(itemize(available, header="Available Channels"))
 
 
 
