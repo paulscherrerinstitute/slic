@@ -1,3 +1,5 @@
+import string
+
 
 def printable_dict_of_dicts(d):
     lines = (printable_dict(v, header=k) for k, v in d.items())
@@ -49,8 +51,13 @@ def itemize(iterable, header=None, bullet="-"):
 
 
 
-def printable_table(data, labels=None, enumerate_lines=False):
+def printable_table(data, labels=None, enumerate_lines=False, make_legend=False):
     res = []
+
+    if make_legend:
+        d = {k: v for k, v in zip(string.ascii_uppercase, labels)}
+        pd = printable_dict(d)
+        labels = list(d.keys())
 
     if enumerate_lines:
         numbers = list(range(len(data)))
@@ -71,6 +78,9 @@ def printable_table(data, labels=None, enumerate_lines=False):
     if labels:
         sep = _fmt_label_sep(widths, line="-")
         res.insert(1, sep) # insert behind labels
+
+    if make_legend:
+        _prepend(pd, res)
 
     return "\n".join(res)
 
