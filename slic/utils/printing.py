@@ -21,9 +21,9 @@ def maxlen(seq):
     return max(len(i) for i in seq)
 
 
-def format_header(msg, line_char="-"):
+def format_header(msg, line="-"):
     msg += ":"
-    line = line_char * len(msg)
+    line = line * len(msg)
     msg += "\n" + line
     return msg
 
