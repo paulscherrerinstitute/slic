@@ -49,3 +49,35 @@ def itemize(iterable, header=None, bullet="-"):
 
 
 
+def printable_table(data, labels=None):
+    res = []
+
+    if labels:
+        data = [labels] + data
+
+    cols = zip(*data)
+    widths = [maxstrlen(c) for c in cols]
+
+    formatted_data = _fmt_table_data(data, widths)
+    res.extend(formatted_data)
+
+    if labels:
+        sep = _fmt_label_sep(widths, line="-")
+        res.insert(1, sep) # insert behind labels
+
+    return "\n".join(res)
+
+
+def _fmt_table_data(data, widths):
+    return (_fmt_table_line(entries, widths) for entries in data)
+
+def _fmt_table_line(entries, widths):
+    res = (str(c).rjust(w) for c, w in zip(entries, widths))
+    return " ".join(res)
+
+def _fmt_label_sep(widths, line="-"):
+    res = (line * w for w in widths)
+    return " ".join(res)
+
+
+
