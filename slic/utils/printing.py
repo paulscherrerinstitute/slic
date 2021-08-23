@@ -49,13 +49,20 @@ def itemize(iterable, header=None, bullet="-"):
 
 
 
-def printable_table(data, labels=None):
+def printable_table(data, labels=None, enumerate_lines=False):
     res = []
 
-    if labels:
-        data = [labels] + data
+    if enumerate_lines:
+        numbers = list(range(len(data)))
+        cols = _transpose(data)
+        _prepend(numbers, cols)
+        data = _transpose(cols)
+        _prepend("#", labels)
 
-    cols = zip(*data)
+    if labels:
+        _prepend(labels, data)
+
+    cols = _transpose(data)
     widths = [maxstrlen(c) for c in cols]
 
     formatted_data = _fmt_table_data(data, widths)
@@ -67,6 +74,12 @@ def printable_table(data, labels=None):
 
     return "\n".join(res)
 
+
+def _prepend(new, lst):
+    lst.insert(0, new)
+
+def _transpose(lst):
+    return list(zip(*lst))
 
 def _fmt_table_data(data, widths):
     return (_fmt_table_line(entries, widths) for entries in data)
