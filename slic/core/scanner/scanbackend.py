@@ -1,7 +1,7 @@
 import os
 
 from slic.utils import make_missing_dir
-from slic.utils.printing import printable_dict, itemize, format_header
+from slic.utils.printing import printable_dict, itemize, format_header, printable_table
 from slic.utils.ask_yes_no import ask_Yes_no
 from slic.utils.trinary import check_trinary
 
@@ -228,11 +228,10 @@ class ScanBackend:
             printable_repeat = "perform the following scan"
         res += format_header(printable_repeat, line="=") + "\n\n"
 
-        values = zip(*self.values)
-        for a, v in zip(self.adjustables, values):
-            a = repr(a)
-            v = str(v)
-            res += f"{a}\n{v}\n\n"
+        vals = self.values.tolist()
+        adjs = [repr(a) for a in self.adjustables]
+        res += printable_table(vals, adjs)
+        res += "\n\n"
 
         n_pulses_per_step = self.n_pulses_per_step
         printable_pulses = f"{n_pulses_per_step} pulse"
