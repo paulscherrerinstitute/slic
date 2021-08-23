@@ -230,7 +230,7 @@ class ScanBackend:
 
         vals = self.values.tolist()
         adjs = [repr(a) for a in self.adjustables]
-        res += printable_table(vals, adjs, enumerate_lines=True)
+        res += printable_table(vals, adjs, enumerate_lines=True, make_legend=True)
         res += "\n\n"
 
         n_pulses_per_step = self.n_pulses_per_step
