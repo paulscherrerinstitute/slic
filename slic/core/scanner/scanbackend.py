@@ -1,7 +1,7 @@
 import os
 
 from slic.utils import make_missing_dir
-from slic.utils.printing import printable_dict
+from slic.utils.printing import printable_dict, itemize, format_header
 from slic.utils.ask_yes_no import ask_Yes_no
 from slic.utils.trinary import check_trinary
 
@@ -216,6 +216,34 @@ class ScanBackend:
     def stop(self):
         self.running = False
         stop_all(self.current_tasks)
+
+
+    def __repr__(self):
+        res = ""
+
+        repeat = self.repeat
+        if repeat and repeat > 1:
+            printable_repeat = f"repeat the following scan {repeat} times"
+        else:
+            printable_repeat = "perform the following scan"
+        res += format_header(printable_repeat, line="=") + "\n\n"
+
+        values = zip(*self.values)
+        for a, v in zip(self.adjustables, values):
+            a = repr(a)
+            v = str(v)
+            res += f"{a}\n{v}\n\n"
+
+        n_pulses_per_step = self.n_pulses_per_step
+        printable_pulses = f"{n_pulses_per_step} pulse"
+        if n_pulses_per_step != 1:
+            printable_pulses += "s"
+
+        head = f"record {printable_pulses} per step to \"{self.filename}\" via"
+        acqs = itemize(self.acquisitions, header=head)
+        res += acqs
+
+        return res
 
 
 
