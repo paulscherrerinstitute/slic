@@ -219,10 +219,16 @@ class ScanBackend:
 
 
     def __repr__(self):
+        return self._make_summary(enumerate_lines=True, make_legend=True)
+
+    def summarize(self, enumerate_lines=True, make_legend=True):
+        print(self._make_summary(enumerate_lines=enumerate_lines, make_legend=make_legend))
+
+    def _make_summary(self, **kwargs):
         res = ""
 
         repeat = self.repeat
-        if repeat and repeat > 1:
+        if repeat > 1:
             printable_repeat = f"repeat the following scan {repeat} times"
         else:
             printable_repeat = "perform the following scan"
@@ -230,7 +236,7 @@ class ScanBackend:
 
         vals = self.values.tolist()
         adjs = [repr(a) for a in self.adjustables]
-        res += printable_table(vals, adjs, enumerate_lines=True, make_legend=True)
+        res += printable_table(vals, adjs, **kwargs)
         res += "\n\n"
 
         n_pulses_per_step = self.n_pulses_per_step
