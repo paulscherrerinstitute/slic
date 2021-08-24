@@ -1,6 +1,8 @@
 from time import sleep
 from epics import PV
 
+from slic.utils import typename
+
 from .adjustable import AdjustableError
 
 
@@ -16,6 +18,11 @@ class PVChangeMonitor:
 
         self.pv = PV(pvname)
         self._update()
+
+
+    def __repr__(self):
+        tn = typename(self)
+        return f"{tn}(\"{self.pvname}\", inverted={self.inverted}): state={self.state}"
 
 
     def start(self):
