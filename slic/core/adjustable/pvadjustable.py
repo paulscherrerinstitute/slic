@@ -74,7 +74,8 @@ class PVAdjustable(Adjustable):
                 tname = typename(self)
                 raise AdjustableError(f"waiting for {tname} \"{self.name}\" to be ready for change to {value} {self.units} timed out")
 
-        self.pvs.setvalue.put(value, wait=True, use_complete=True) # use_complete=True enables status in PV.put_complete
+        ret = self.pvs.setvalue.put(value, wait=True, use_complete=True) # use_complete=True enables status in PV.put_complete
+        handle_put_return_value(ret)
         time.sleep(self.process_time)
 
         # wait for done
@@ -138,6 +139,20 @@ def make_pcm(pvname_done_moving, pvname_moving):
 
     if pvname_done_moving:
         return PVChangeMonitor(pvname_done_moving, inverted=True)
+
+
+def handle_put_return_value(ret):
+    if ret == 1: # success
+        return
+
+    if ret == -1:
+        error = "time out"
+    elif ret is None:
+        error = "disconnected PV"
+    else:
+        error = f"unknown error (return code: {ret})"
+
+    raise AdjustableError(f"changing {tname} \"{self.name}\" to {value} {self.units} failed due to {error}")
 
 
 
