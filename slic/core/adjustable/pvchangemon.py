@@ -1,6 +1,8 @@
 from time import sleep
 from epics import PV
 
+from .adjustable import AdjustableError
+
 
 class PVChangeMonitor:
 
@@ -38,14 +40,14 @@ class PVChangeMonitor:
     def _start_callback(self):
         index = self._cb_index
         if index is not None:
-            raise Exception("already started")
+            raise AdjustableError("already started")
         index = self.pv.add_callback(self._on_change, with_ctrlvars=False)
         self._cb_index = index
 
     def _stop_callback(self):
         index = self._cb_index
         if index is None:
-            raise Exception("nothing to stop")
+            raise AdjustableError("nothing to stop")
         self.pv.remove_callback(index)
         self._cb_index = None
 
@@ -58,14 +60,14 @@ class PVChangeMonitor:
     def _announce(self):
         state = self.state
         if state is not None:
-            raise Exception(f"cannot announce from {state}")
+            raise AdjustableError(f"cannot announce from {state}")
         new_state = "announced"
         self.state = _calc_state(new_state, self.is_changing)
 
     def _reset(self):
         state = self.state
         if state not in ("ready", "done"):
-            raise Exception(f"cannot reset from {state}")
+            raise AdjustableError(f"cannot reset from {state}")
         new_state = None
         self.state = _calc_state(new_state, self.is_changing)
 
@@ -94,7 +96,7 @@ def _calc_state(state, is_changing):
     elif state == "not ready": return "not ready" if is_changing else "ready"
     elif state == "ready":     return "changing"  if is_changing else "ready"
     elif state == "changing":  return "changing"  if is_changing else "done"
-    raise Exception(state)
+    raise AdjustableError(state)
 
 
 
