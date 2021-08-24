@@ -133,7 +133,7 @@ A new conda environment containing all dependencies can be created from [`conda-
 conda env create --name slic --file conda-env.yml
 ```
 
-The dependencies are pulled from the PSI channel and conda-forge as needed.
+The dependencies are pulled from the [PSI channel](https://anaconda.org/paulscherrerinstitute/) and [conda-forge](https://conda-forge.org/) as needed.
 
 Similarly, the dependencies may also be added to an existing environment:
 
