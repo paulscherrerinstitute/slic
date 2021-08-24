@@ -1,0 +1,33 @@
+# use via:
+# conda env create --name $NEW_ENV_NAME --file $THIS_FILE_NAME
+# e.g.
+# conda env create --name slic --file conda-env.yml
+# NOTE: $NEW_ENV_NAME is optional and defaults to slic
+
+name: slic
+dependencies:
+  - python >=3.9
+# defaults
+  - ipython
+  - numpy
+  - scipy
+  - matplotlib
+# DAQ
+  - paulscherrerinstitute::bsread
+  - paulscherrerinstitute::cam_server_client
+  - paulscherrerinstitute::data_api
+  - paulscherrerinstitute::detector_integration_api
+  - paulscherrerinstitute::elog
+  - paulscherrerinstitute::pyepics >=3.4.2
+# data
+  - paulscherrerinstitute::jungfrau_utils >=3
+  - paulscherrerinstitute::sfdata
+# GUI
+  - wxpython
+# terminal
+  - colorama
+  - tqdm
+  - conda-forge::fuzzywuzzy
+  - conda-forge::yaspin
+
+

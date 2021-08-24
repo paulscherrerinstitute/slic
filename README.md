@@ -75,12 +75,14 @@ Collection of utility functions and classes that are used throughout both of the
 
 ### Latest release version
 
+Note: Currently it is preferable to use the [current code from git](#current-code-from-git-repositories) instead of the latest release from conda.
+
 #### Installation
 
 The latest _slic_ release is available via [conda](https://docs.conda.io/en/latest/) from the PSI channel. You may **either** create a new dedicated environment
 
 ```bash
-conda create -c paulscherrerinstitute -n slic slic
+conda create --name slic -c paulscherrerinstitute slic
 ```
 
 **or** install it (and its dependencies) into your current conda environment
@@ -125,18 +127,21 @@ This assumes that the command is executed from the folder where the beamline scr
 
 All dependencies should be available via [conda](https://docs.conda.io/en/latest/).
 
-If need be, create a new conda environment:
+A new conda environment containing all dependencies can be created from [`conda-env.yml`](conda-env.yml):
 
 ```bash
-conda create -n slic
-conda activate slic
+conda env create --name slic --file conda-env.yml
 ```
 
-Some dependencies might need the PSI channel, thus:
+The dependencies are pulled from the PSI channel and conda-forge as needed.
+
+Similarly, the dependencies may also be added to an existing environment:
 
 ```bash
-conda install -c paulscherrerinstitute bsread cam_server_client colorama data_api detector_integration_api elog ipython jungfrau_utils pyepics tqdm
+conda activate the_target_env
+conda env update --file conda-env.yml
 ```
+
 
 #### Installation
 
