@@ -61,39 +61,44 @@ class PVAdjustable(Adjustable):
 
 
     def _change(self, value):
-        timeout = self.timeout + time.time()
-        wait_time = self.wait_time
-
-        if self._pcm:
-            # wait for ready
-            for _ in self._pcm.start():
-#                print(self._pcm.state)
-#                print("waiting for: ready")
-                time.sleep(wait_time)
-                if time.time() >= timeout:
-                    self._pcm.stop()
-                    tname = typename(self)
-                    raise AdjustableError(f"waiting for {tname} \"{self.name}\" to be ready for change to {value} {self.units} timed out")
+        self._wait_for_ready()
 
         ret = self.pvs.setvalue.put(value, wait=True, use_complete=True) # use_complete=True enables status in PV.put_complete
         handle_put_return_value(ret)
         time.sleep(self.process_time)
 
-        if self._pcm:
-            # wait for done
-            for _ in self._pcm.wait():
-#                print(self._pcm.state)
-#                print("waiting for: done")
-                time.sleep(wait_time)
-                if self._pcm.state == "ready" and self._is_close():
-                    self._stop()
-                    print("seems we are already there")
-                    break
+        self._wait_for_done()
+
+
+    def _wait_for_ready(self):
+        if not self._pcm:
+            return
+
+        timeout = self.timeout + time.time()
+        for _ in self._pcm.start():
+            time.sleep(self.wait_time)
+            if time.time() >= timeout:
+                self._pcm.stop()
+                tname = typename(self)
+                raise AdjustableError(f"waiting for {tname} \"{self.name}\" to be ready for change to {value} {self.units} timed out")
+
+
+    def _wait_for_done(self):
+        if not self._pcm:
+            return
+
+        for _ in self._pcm.wait():
+            time.sleep(self.wait_time)
+            if self._pcm.state == "ready" and self._is_close():
+                self._stop()
+                print("seems we are already there")
+                break
 
 
     def _stop(self):
         if self._pcm:
             self._pcm.stop()
+
         pv_stop = self._get_pv("stop")
         if pv_stop:
             pv_stop.put(1, wait=True)
