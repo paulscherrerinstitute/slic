@@ -183,7 +183,7 @@ class Laser_Exp:
             print("No psen delay stage")
             print(expt)
 
-        # SmarAct ID
+        # SmarActID
         ### Mirrors used in the experiment ###
 
         for smar_name, smar_address in self.smar_config.items():
@@ -274,7 +274,7 @@ class Laser_Exp_old:
         # self._psen_delayStg = Motor(self.Id+'')
         # self.psen_delay = DelayStage(self._pump_delayStg)
 
-        # SmarAct ID
+        # SmarActID
         ### Mirrors used in the experiment ###
 
         for smar_name, smar_address in self.smar_config.items():
