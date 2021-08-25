@@ -42,11 +42,11 @@ def get_pulseid_pv(endstation):
     try:
         pv_name = ENDSTATION_TO_PULSEID_PVS[endstation]
     except KeyError as e:
-        raise ValueError(f"cannot assign Pulse ID PV to endstation \"{endstation}\"") from e
+        raise ValueError(f"cannot assign PulseID PV to endstation \"{endstation}\"") from e
 
     pv = epics.PV(pv_name)
     if not pv.wait_for_connection(timeout=0.1):
-        raise RuntimeError(f"could not connect to Pulse ID PV \"{pv_name}\" for endstation \"{endstation}\"")
+        raise RuntimeError(f"could not connect to PulseID PV \"{pv_name}\" for endstation \"{endstation}\"")
 
     return pv
 
@@ -68,7 +68,7 @@ def cut_after_nth(string, sep, n):
 
 
 def get_fake_current_pulseid():
-    log.warning("using fake Pulse ID")
+    log.warning("using fake PulseID")
     now = datetime.utcnow()
     delta_t = now - REFERENCE_DATETIME
     delta_p = delta_t.total_seconds() * 100
