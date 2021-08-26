@@ -23,7 +23,7 @@ class devices:
                 try:
                     doc = v.description
                 except AttributeError:
-                    doc = v.__doc__ or v.name or v.Id
+                    doc = v.__doc__ or v.name or v.ID
                 res[k] = doc
 
         return printable_dict(res)

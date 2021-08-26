@@ -18,7 +18,7 @@ class ETiming(Adjustable):
 
     def __init__(
         self,
-        Id,
+        ID,
         pvname_setvalue="SLAAR01-LTIM-PDLY:DELAY",
         pvname_readback="SLAAR-LGEN:DLY_OFFS1",
         pvname_waiting="SLAAR01-LTIM-PDLY:WAITING",
@@ -26,7 +26,7 @@ class ETiming(Adjustable):
         units="ps"
     ):
         super().__init__(name=name, units=units)
-        self.Id = Id
+        self.ID = ID
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,
@@ -78,21 +78,21 @@ class ETiming(Adjustable):
 
 class LXT(Adjustable):
 
-    def __init__(self, Id_phase_shifter, Id_timing, base_folder, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
+    def __init__(self, ID_phase_shifter, ID_timing, base_folder, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
         super().__init__(name=name, units=units)
-        self.Id = Id = Id_phase_shifter #TODO: does that make sense?
+        self.ID = ID = ID_phase_shifter #TODO: does that make sense?
         self.tolerance_poly_coeff = tolerance_poly_coeff
 
-        pvname_sdg1_readback = Id_timing + ":Pul2-Delay-RB"
-        pvname_sdg1_setvalue = Id_timing + ":Pul2_NEW_DELAY" #TODO: ":Pul2-Delay-SP" ?
-        pvname_sdg1_offset   = Id_timing + ":UnivDlyModule1-Delay0-RB"
+        pvname_sdg1_readback = ID_timing + ":Pul2-Delay-RB"
+        pvname_sdg1_setvalue = ID_timing + ":Pul2_NEW_DELAY" #TODO: ":Pul2-Delay-SP" ?
+        pvname_sdg1_offset   = ID_timing + ":UnivDlyModule1-Delay0-RB"
 
-        pvname_slicer_gate_readback = Id_timing + ":Pul3-Delay-RB"
-        pvname_slicer_gate_setvalue = Id_timing + ":Pul3_NEW_DELAY" #TODO: ":Pul3-Delay-SP" ?
-        pvname_slicer_gate_offset   = Id_timing + ":UnivDlyModule1-Delay1-RB"
+        pvname_slicer_gate_readback = ID_timing + ":Pul3-Delay-RB"
+        pvname_slicer_gate_setvalue = ID_timing + ":Pul3_NEW_DELAY" #TODO: ":Pul3-Delay-SP" ?
+        pvname_slicer_gate_offset   = ID_timing + ":UnivDlyModule1-Delay1-RB"
 
         self.devices = SimpleNamespace(
-            phase_shifter = PhaseShifter(Id_phase_shifter, base_folder),
+            phase_shifter = PhaseShifter(ID_phase_shifter, base_folder),
             sdg1 = PockelsTrigger(pvname_sdg1_readback, pvname_sdg1_setvalue, pvname_sdg1_offset, base_folder),
             slicer_gate = PockelsTrigger(pvname_slicer_gate_readback, pvname_slicer_gate_setvalue, pvname_slicer_gate_offset, base_folder)
         )
@@ -141,10 +141,10 @@ class LXT(Adjustable):
 
 class PhaseShifterAramis(Adjustable):
 
-    def __init__(self, Id, base_folder, name=None):
+    def __init__(self, ID, base_folder, name=None):
         super().__init__(name=name)
-        self.Id = Id
-        self._phase_shifter = PhaseShifter(Id, base_folder)
+        self.ID = ID
+        self._phase_shifter = PhaseShifter(ID, base_folder)
 
     def set_target_value(self, value, hold=False):
         change = lambda: self._phase_shifter.move(value)

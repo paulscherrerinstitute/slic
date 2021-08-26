@@ -7,10 +7,10 @@ from ...general.delay_stage import DelayStage
 
 class psen:
 
-    def __init__(self, Id):
-        self.Id = Id
+    def __init__(self, ID):
+        self.ID = ID
 
-        self.delay = Motor(self.Id + "-M424:MOT")
+        self.delay = Motor(self.ID + "-M424:MOT")
         self.delayTime = DelayStage(self.delay)
 
     def get_adjustable_positions_str(self):

@@ -12,9 +12,9 @@ class ScanInfo:
         self.filename += suffix
 
         self.names = names = [ta.name  if hasattr(ta, "name")  else "noName"  for ta in adjustables] #TODO else None?
-        self.ids   = ids =   [ta.Id    if hasattr(ta, "Id")    else "noId"    for ta in adjustables]
+        self.IDs   = IDs =   [ta.ID    if hasattr(ta, "ID")    else "noID"    for ta in adjustables]
         self.units = units = [ta.units if hasattr(ta, "units") else "noUnits" for ta in adjustables]
-        self.parameters = {"name": names, "Id": ids, "units": units}
+        self.parameters = {"name": names, "Id": IDs, "units": units}
 
         self.values_all = values
 
@@ -55,7 +55,7 @@ class ScanInfo:
         scan_name = self.filename_base.replace("/", "_") #TODO: better use "__" to easier see difference to actual _ in original string?
 
         #TODO: not every adjustable needs/has a raw/user/dial distinction (also readbacks_raw below)
-        num_adjustables = len(self.ids)
+        num_adjustables = len(self.IDs)
         offsets      = [0] * num_adjustables
         coefficients = [1] * num_adjustables
 
@@ -69,7 +69,7 @@ class ScanInfo:
             "scan_name":            scan_name,
 
             "name":                 self.names,
-            "Id":                   self.ids,
+            "Id":                   self.IDs,
             "units":                self.units,
             "offset":               offsets,
             "conversion_factor":    coefficients,

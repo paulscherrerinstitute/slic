@@ -5,49 +5,49 @@ from ..aliases import Alias
 
 class XRD:
 
-    def __init__(self, name=None, Id=None, configuration=[]):
+    def __init__(self, name=None, ID=None, configuration=[]):
         """X-ray diffractometer platform in AiwssFEL Bernina.\
                 <configuration> : list of elements mounted on 
                 the plaform, options are kappa, nutable, hlgonio, polana"""
-        self.Id = Id
+        self.ID = ID
         self.name = name
         self.alias = Alias(name)
 
         ### motors base platform ###
-        self.xbase = Motor(Id + ":MOT_TX", name="xbase")
-        self.ybase = Motor(Id + ":MOT_TY", name="ybase")
-        self.rxbase = Motor(Id + ":MOT_RX", name="rxbase")
-        self.omega = Motor(Id + ":MOT_MY_RYTH", name="omega")
+        self.xbase = Motor(ID + ":MOT_TX", name="xbase")
+        self.ybase = Motor(ID + ":MOT_TY", name="ybase")
+        self.rxbase = Motor(ID + ":MOT_RX", name="rxbase")
+        self.omega = Motor(ID + ":MOT_MY_RYTH", name="omega")
 
         ### motors XRD detector arm ###
-        self.gamma = Motor(Id + ":MOT_NY_RY2TH", name="gam")
-        self.delta = Motor(Id + ":MOT_DT_RX2TH", name="del")
+        self.gamma = Motor(ID + ":MOT_NY_RY2TH", name="gam")
+        self.delta = Motor(ID + ":MOT_DT_RX2TH", name="del")
 
         ### motors XRD area detector branch ###
-        self.tdet = Motor(Id + ":MOT_D_T", name="tdet")
+        self.tdet = Motor(ID + ":MOT_D_T", name="tdet")
 
         ### motors XRD polarisation analyzer branch ###
-        self.tpol = Motor(Id + ":MOT_P_T", name="tpol")
+        self.tpol = Motor(ID + ":MOT_P_T", name="tpol")
         # missing: slits of flight tube
 
         ### motors heavy load goniometer ###
-        self.xhl = Motor(Id + ":MOT_TBL_TX", name="xhl")
-        self.zhl = Motor(Id + ":MOT_TBL_TZ", name="zhl")
-        self.yhl = Motor(Id + ":MOT_TBL_TY", name="yhl")
+        self.xhl = Motor(ID + ":MOT_TBL_TX", name="xhl")
+        self.zhl = Motor(ID + ":MOT_TBL_TZ", name="zhl")
+        self.yhl = Motor(ID + ":MOT_TBL_TY", name="yhl")
         try:
-            self.rxhl = Motor(Id + ":MOT_TBL_RX", name="rxhl")
+            self.rxhl = Motor(ID + ":MOT_TBL_RX", name="rxhl")
         except:
             print("GPS.pitch not found")
             pass
         try:
-            self.ryhl = Motor(Id + ":MOT_TBL_RY", name="rxhl")
+            self.ryhl = Motor(ID + ":MOT_TBL_RY", name="rxhl")
         except:
             print("GPS.roll not found")
             pass
 
         ### motors nu table ###
-        self.tnu = Motor(Id + ":MOT_HEX_TX", name="tnu")
-        self.nu = Motor(Id + ":MOT_HEX_RX", name="nu")
+        self.tnu = Motor(ID + ":MOT_HEX_TX", name="tnu")
+        self.nu = Motor(ID + ":MOT_HEX_RX", name="nu")
 
         ### motors PI hexapod ###
         self.hex_x = PV("SARES20-HEX_PI:POSI-X")

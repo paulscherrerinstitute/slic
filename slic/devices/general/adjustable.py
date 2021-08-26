@@ -64,7 +64,7 @@ class AdjustableVirtual(SpecConvenience):
         elif self.name:
             return self.name
         else:
-            return self.Id
+            return self.ID
 
     def __repr__(self):
         s = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S") + ": "

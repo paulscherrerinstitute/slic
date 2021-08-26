@@ -17,11 +17,11 @@ from slic.utils.eco_components.aliases import Alias
 
 class PvDataStream:
 
-    def __init__(self, Id, name=None):
-        self.Id = Id
-        self._pv = PV(Id)
+    def __init__(self, ID, name=None):
+        self.ID = ID
+        self._pv = PV(ID)
         self.name = name
-        self.alias = Alias(self.name, channel=self.Id, channeltype="CA")
+        self.alias = Alias(self.name, channel=self.ID, channeltype="CA")
 
     def collect(self, seconds=None, samples=None):
         if (not seconds) and (not samples):
@@ -90,7 +90,7 @@ _cameraArrayTypes = ["monochrome", "rgb"]
 class CameraCA:
 
     def __init__(self, pvname, cameraArrayType="monochrome", elog=None):
-        self.Id = pvname
+        self.ID = pvname
         self.isBS = False
         self.px_height = None
         self.px_width = None
@@ -98,19 +98,19 @@ class CameraCA:
 
     def get_px_height(self):
         if not self.px_height:
-            self.px_height = caget(self.Id + ":HEIGHT")
+            self.px_height = caget(self.ID + ":HEIGHT")
         return self.px_height
 
     def get_px_width(self):
         if not self.px_width:
-            self.px_width = caget(self.Id + ":WIDTH")
+            self.px_width = caget(self.ID + ":WIDTH")
         return self.px_width
 
     def get_data(self):
         w = int(self.get_px_width())
         h = int(self.get_px_height())
-        numpix = int(caget(self.Id + ":FPICTURE.NORD"))
-        i = caget(self.Id + ":FPICTURE", count=numpix)
+        numpix = int(caget(self.ID + ":FPICTURE.NORD"))
+        i = caget(self.ID + ":FPICTURE", count=numpix)
         return i.reshape(h, w)
 
     def record_images(self, fina, N_images, sleeptime=0.2):
@@ -125,7 +125,7 @@ class CameraCA:
         """ Adjustable convention"""
         cmd = ["caqtdm", "-macro"]
 
-        cmd.append('"NAME=%s,CAMNAME=%s"' % (self.Id, self.Id))
+        cmd.append('"NAME=%s,CAMNAME=%s"' % (self.ID, self.ID))
         cmd.append("/sf/controls/config/qt/Camera/CameraMiniView.ui")
         return subprocess.Popen(" ".join(cmd), shell=True)
 
@@ -169,17 +169,17 @@ class CameraBS:
 
 class FeDigitizer:
 
-    def __init__(self, Id, elog=None):
-        self.Id = Id
-        self.gain = EnumWrapper(Id + "-WD-gain")
-        self._bias = PV(Id + "-HV_SET")
+    def __init__(self, ID, elog=None):
+        self.ID = ID
+        self.gain = EnumWrapper(ID + "-WD-gain")
+        self._bias = PV(ID + "-HV_SET")
         self.channels = [
-            Id + "-BG-DATA",
-            Id + "-BG-DRS_TC",
-            Id + "-BG-PULSEID-valid",
-            Id + "-DATA",
-            Id + "-DRS_TC",
-            Id + "-PULSEID-valid",
+            ID + "-BG-DATA",
+            ID + "-BG-DRS_TC",
+            ID + "-BG-PULSEID-valid",
+            ID + "-DATA",
+            ID + "-DRS_TC",
+            ID + "-PULSEID-valid",
         ]
 
     def set_bias(self, value):
@@ -191,8 +191,8 @@ class FeDigitizer:
 
 class DiodeDigitizer:
 
-    def __init__(self, Id, VME_crate=None, link=None, ch_0=7, ch_1=8, elog=None):
-        self.Id = Id
+    def __init__(self, ID, VME_crate=None, link=None, ch_0=7, ch_1=8, elog=None):
+        self.ID = ID
         if VME_crate:
             self.diode_0 = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_0))
             self.diode_1 = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_1))

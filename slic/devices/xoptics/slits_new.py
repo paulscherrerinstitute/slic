@@ -18,7 +18,7 @@ class SlitBlades:
 
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
-        self.Id = pvname
+        self.ID = pvname
         self.alias = Alias(name)
         append_object_to_object(self, Motor, pvname + ":MOTOR_X1", name="right")
         append_object_to_object(self, Motor, pvname + ":MOTOR_X2", name="left")
@@ -88,7 +88,7 @@ class SlitPosWidth:
 
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
-        self.Id = pvname
+        self.ID = pvname
         self.alias = Alias(name)
         append_object_to_object(self, Motor, pvname + ":MOTOR_X", name="hpos")
         append_object_to_object(self, Motor, pvname + ":MOTOR_Y", name="vpos")
@@ -152,7 +152,7 @@ class SlitBlades_JJ:
 
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
-        self.Id = pvname
+        self.ID = pvname
         self.alias = Alias(name)
         append_object_to_object(self, Motor, pvname + ":MOT_1", name="right")
         append_object_to_object(self, Motor, pvname + ":MOT_2", name="left")
@@ -215,13 +215,13 @@ class SlitBlades_JJ:
 
 class SlitBlades_old:
 
-    def __init__(self, Id, name=None, elog=None):
-        self.Id = Id
+    def __init__(self, ID, name=None, elog=None):
+        self.ID = ID
         self.name = name
-        self._x1 = Motor(Id + ":MOTOR_X1")
-        self._x2 = Motor(Id + ":MOTOR_X2")
-        self._y1 = Motor(Id + ":MOTOR_Y1")
-        self._y2 = Motor(Id + ":MOTOR_Y2")
+        self._x1 = Motor(ID + ":MOTOR_X1")
+        self._x2 = Motor(ID + ":MOTOR_X2")
+        self._y1 = Motor(ID + ":MOTOR_Y1")
+        self._y2 = Motor(ID + ":MOTOR_Y2")
 
     def get_hg(self):
         return self._x2.get_current_value() - self._x1.get_current_value()
@@ -271,13 +271,13 @@ class SlitBlades_old:
 
 class SlitBladesJJ_old:
 
-    def __init__(self, Id, name=None, elog=None):
-        self.Id = Id
+    def __init__(self, ID, name=None, elog=None):
+        self.ID = ID
         self.name = name
-        self._x1 = Motor(Id + ":MOT2")
-        self._x2 = Motor(Id + ":MOT3")
-        self._y1 = Motor(Id + ":MOT4")
-        self._y2 = Motor(Id + ":MOT5")
+        self._x1 = Motor(ID + ":MOT2")
+        self._x2 = Motor(ID + ":MOT3")
+        self._y1 = Motor(ID + ":MOT4")
+        self._y2 = Motor(ID + ":MOT5")
 
     def get_hg(self):
         return -(self._x2.get_current_value() - self._x1.get_current_value())
@@ -327,17 +327,17 @@ class SlitBladesJJ_old:
 
 class SlitFourBlades_old:
 
-    def __init__(self, Id, name=None, elog=None):
-        self.Id = Id
+    def __init__(self, ID, name=None, elog=None):
+        self.ID = ID
         self.name = name
-        self._ax1 = Motor(Id + ":MOTOR_AX1")
-        self._ax2 = Motor(Id + ":MOTOR_AX2")
-        self._ay1 = Motor(Id + ":MOTOR_AY1")
-        self._ay2 = Motor(Id + ":MOTOR_AY2")
-        self._bx1 = Motor(Id + ":MOTOR_BX1")
-        self._bx2 = Motor(Id + ":MOTOR_BX2")
-        self._by1 = Motor(Id + ":MOTOR_BY1")
-        self._by2 = Motor(Id + ":MOTOR_BY2")
+        self._ax1 = Motor(ID + ":MOTOR_AX1")
+        self._ax2 = Motor(ID + ":MOTOR_AX2")
+        self._ay1 = Motor(ID + ":MOTOR_AY1")
+        self._ay2 = Motor(ID + ":MOTOR_AY2")
+        self._bx1 = Motor(ID + ":MOTOR_BX1")
+        self._bx2 = Motor(ID + ":MOTOR_BX2")
+        self._by1 = Motor(ID + ":MOTOR_BY1")
+        self._by2 = Motor(ID + ":MOTOR_BY2")
 
     def get_hg(self):
         return self._ax2.get_current_value() - self._ax1.get_current_value()
@@ -398,13 +398,13 @@ class SlitFourBlades_old:
 
 class SlitPosWidth_old:
 
-    def __init__(self, Id, name=None, elog=None):
-        self.Id = Id
+    def __init__(self, ID, name=None, elog=None):
+        self.ID = ID
         self.name = name
-        self._xoffs = Motor(Id + ":MOTOR_X")
-        self._yoffs = Motor(Id + ":MOTOR_Y")
-        self._xgap = Motor(Id + ":MOTOR_W")
-        self._ygap = Motor(Id + ":MOTOR_H")
+        self._xoffs = Motor(ID + ":MOTOR_X")
+        self._yoffs = Motor(ID + ":MOTOR_Y")
+        self._xgap = Motor(ID + ":MOTOR_W")
+        self._ygap = Motor(ID + ":MOTOR_H")
 
     def get_hg(self):
         return self._xgap.get_current_value()

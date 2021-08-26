@@ -7,13 +7,13 @@ from ...general.delay_stage import DelayStage
 
 class palm:
 
-    def __init__(self, Id):
-        self.Id = Id
+    def __init__(self, ID):
+        self.ID = ID
 
-        self.delay = Motor(self.Id + "-M423:MOT")
+        self.delay = Motor(self.ID + "-M423:MOT")
         self.delayTime = DelayStage(self.delay)
 
-#        self.delay2 = Motor(self.Id + '-M422:MOT')
+#        self.delay2 = Motor(self.ID + '-M422:MOT')
 #        self.delayTime2 = DelayStage(self.delay)
 
     def get_adjustable_positions_str(self):
@@ -31,10 +31,10 @@ class palm:
 
 class eo:
 
-    def __init__(self, Id):
-        self.Id = Id
+    def __init__(self, ID):
+        self.ID = ID
 
-        self.delay = Motor(self.Id + "-M422:MOT")
+        self.delay = Motor(self.ID + "-M422:MOT")
         self.delayTime = DelayStage(self.delay)
 
     def get_adjustable_positions_str(self):

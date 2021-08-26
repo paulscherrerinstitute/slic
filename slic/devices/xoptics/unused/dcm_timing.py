@@ -9,21 +9,21 @@ from slic.core.task import Task
 
 class Double_Crystal_Mono_AramisMacro:
 
-    def __init__(self, Id, timeAdjustable=None, timeReferenceEnergy=None, timeReference=None):
-        self.Id = Id
-        self.theta = Motor(Id + ":RX12")
-        self.x = Motor(Id + ":TX12")
-        self.gap = Motor(Id + ":T2")
-        self.roll1 = Motor(Id + ":RZ1")
-        self.roll2 = Motor(Id + ":RZ2")
-        self.pitch2 = Motor(Id + ":RX2")
+    def __init__(self, ID, timeAdjustable=None, timeReferenceEnergy=None, timeReference=None):
+        self.ID = ID
+        self.theta = Motor(ID + ":RX12")
+        self.x = Motor(ID + ":TX12")
+        self.gap = Motor(ID + ":T2")
+        self.roll1 = Motor(ID + ":RZ1")
+        self.roll2 = Motor(ID + ":RZ2")
+        self.pitch2 = Motor(ID + ":RX2")
 
-        self.energy_rbk = PV(Id + ":ENERGY")
-        self.energy_sp = PV(Id + ":ENERGY_SP")
-        self.moving = PV(Id + ":MOVING")
-        self._stop = PV(Id + ":STOP.PROC")
-        self.crystal_type = EnumWrapper(Id + ":CRYSTAL_SP")
-        self.beam_offset = PV(Id + ":BEAM_OFFSET")
+        self.energy_rbk = PV(ID + ":ENERGY")
+        self.energy_sp = PV(ID + ":ENERGY_SP")
+        self.moving = PV(ID + ":MOVING")
+        self._stop = PV(ID + ":STOP.PROC")
+        self.crystal_type = EnumWrapper(ID + ":CRYSTAL_SP")
+        self.beam_offset = PV(ID + ":BEAM_OFFSET")
         self.timeAdjustable = timeAdjustable
         self.timeReferenceEnergy = timeReferenceEnergy
         self.timeReference = timeReference
@@ -119,8 +119,8 @@ class Double_Crystal_Mono_AramisMacro:
 
 class EcolEnergy:
 
-    def __init__(self, Id, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
-        self.Id = Id
+    def __init__(self, ID, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
+        self.ID = ID
         self.setter = PV(val)
         self.readback = PV(rb)
         self.dmov = PV(dmov)
@@ -150,21 +150,21 @@ class EcolEnergy:
 
 class Double_Crystal_Mono:
 
-    def __init__(self, Id, timeAdjustable=None, timeReferenceEnergy=None, timeReference=None):
-        self.Id = Id
-        self.theta = Motor(Id + ":RX12")
-        self.x = Motor(Id + ":TX12")
-        self.gap = Motor(Id + ":T2")
-        self.roll1 = Motor(Id + ":RZ1")
-        self.roll2 = Motor(Id + ":RZ2")
-        self.pitch2 = Motor(Id + ":RX2")
+    def __init__(self, ID, timeAdjustable=None, timeReferenceEnergy=None, timeReference=None):
+        self.ID = ID
+        self.theta = Motor(ID + ":RX12")
+        self.x = Motor(ID + ":TX12")
+        self.gap = Motor(ID + ":T2")
+        self.roll1 = Motor(ID + ":RZ1")
+        self.roll2 = Motor(ID + ":RZ2")
+        self.pitch2 = Motor(ID + ":RX2")
 
-        self.energy_rbk = PV(Id + ":ENERGY")
-        self.energy_sp = PV(Id + ":ENERGY_SP")
-        self.moving = PV(Id + ":MOVING")
-        self._stop = PV(Id + ":STOP.PROC")
-        self.crystal_type = EnumWrapper(Id + ":CRYSTAL_SP")
-        self.beam_offset = PV(Id + ":BEAM_OFFSET")
+        self.energy_rbk = PV(ID + ":ENERGY")
+        self.energy_sp = PV(ID + ":ENERGY_SP")
+        self.moving = PV(ID + ":MOVING")
+        self._stop = PV(ID + ":STOP.PROC")
+        self.crystal_type = EnumWrapper(ID + ":CRYSTAL_SP")
+        self.beam_offset = PV(ID + ":BEAM_OFFSET")
         self.timeAdjustable = timeAdjustable
         self.timeReferenceEnergy = timeReferenceEnergy
         self.timeReference = timeReference
@@ -262,8 +262,8 @@ class Double_Crystal_Mono:
 
 class EcolEnergy:
 
-    def __init__(self, Id, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
-        self.Id = Id
+    def __init__(self, ID, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
+        self.ID = ID
         self.setter = PV(val)
         self.readback = PV(rb)
         self.dmov = PV(dmov)
@@ -293,10 +293,10 @@ class EcolEnergy:
 
 class MonoEcolEnergy:
 
-    def __init__(self, Id):
-        self.Id = Id
+    def __init__(self, ID):
+        self.ID = ID
         self.name = "energy_collimator"
-        self.dcm = Double_Crystal_Mono(Id)
+        self.dcm = Double_Crystal_Mono(ID)
         self.ecol = EcolEnergy("ecol_dummy")
         self.offset = None
         self.MeVperEV = 0.78333
@@ -324,8 +324,8 @@ class MonoEcolEnergy:
 
 class AlvraDCM_FEL:
 
-    def __init__(self, Id):
-        self.Id = Id
+    def __init__(self, ID):
+        self.ID = ID
         self.name = "Alvra DCM monochromator coupled to FEL beam"
 #        self.IOCstatus = PV('ALVRA:running')                    # bool 0 running, 1 not running
         self._FELcoupling = PV("SGE-OP2E-ARAMIS:MODE_SP")       # string "Off" or "e-beam"

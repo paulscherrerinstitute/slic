@@ -25,7 +25,7 @@ class SpectralEncoder:
                 append_object_to_object(self, Motor, pv, name=tname)
                 append_object_to_object(self, DelayTime, self.__dict__[tname], name="delay_" + key)
 
-        #self.delay = Motor(self.Id + "-M424:MOT")
+        #self.delay = Motor(self.ID + "-M424:MOT")
         #self.delayTime = DelayStage(self.delay)
         self.data_reduction_client = PsenProcessingClient(address=reduction_client_address)
 
@@ -68,7 +68,7 @@ class SpatialEncoder:
                 append_object_to_object(self, Motor, pv, name=tname)
                 append_object_to_object(self, DelayTime, self.__dict__[tname], name="delay_" + key)
 
-        #self.delay = Motor(self.Id + "-M424:MOT")
+        #self.delay = Motor(self.ID + "-M424:MOT")
         #self.delayTime = DelayStage(self.delay)
         #self.data_reduction_client =  PsenProcessingClient(address=reduction_client_address)
         self._camera_server_client = PipelineClient()

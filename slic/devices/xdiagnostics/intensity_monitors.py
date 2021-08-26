@@ -11,12 +11,12 @@ class GasDetector:
 
 class SolidTargetDetectorPBPS:
 
-    def __init__(self, Id, VME_crate=None, link=None, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, z_undulator=None, description=None):
-        self.Id = Id
-        self.x_diode = Motor(Id + ":MOTOR_X1")
-        self.y_diode = Motor(Id + ":MOTOR_Y1")
-        self.y_target = Motor(Id + ":MOTOR_PROBE")
-        self.target = EnumWrapper(Id + ":PROBE_SP")
+    def __init__(self, ID, VME_crate=None, link=None, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, z_undulator=None, description=None):
+        self.ID = ID
+        self.x_diode = Motor(ID + ":MOTOR_X1")
+        self.y_diode = Motor(ID + ":MOTOR_Y1")
+        self.y_target = Motor(ID + ":MOTOR_PROBE")
+        self.target = EnumWrapper(ID + ":PROBE_SP")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
             self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))

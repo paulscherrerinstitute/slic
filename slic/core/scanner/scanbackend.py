@@ -257,7 +257,7 @@ class ScanBackend:
 def print_all_current_values(adjustables):
     res = {}
     for adj in adjustables:
-        key = adj.Id
+        key = adj.ID
         val = adj.get_current_value()
         res[key] = val
     res = printable_dict(res, "Current values")

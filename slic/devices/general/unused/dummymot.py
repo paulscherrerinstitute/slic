@@ -23,7 +23,7 @@ class DummyMot: #TODO: does not have _stage, delay_to_motor, etc. ?!
     def __init__(self):
         self._mot
         self.name = "Dummy Motor"
-        self.Id = self.Id
+        self.ID = self.ID
 
     def get_current_value(self):
         """ Adjustable convention"""

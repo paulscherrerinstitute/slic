@@ -5,8 +5,8 @@ from ..aliases import Alias, append_object_to_object
 
 class RefLaser_Aramis:
 
-    def __init__(self, Id, elog=None, name=None, inpos=-18.818, outpos=-5):
-        self.Id = Id
+    def __init__(self, ID, elog=None, name=None, inpos=-18.818, outpos=-5):
+        self.ID = ID
         self.elog = elog
         self.name = name
         self.alias = Alias(name)
@@ -14,7 +14,7 @@ class RefLaser_Aramis:
 
         self._inpos = inpos
         self._outpos = outpos
-        self.mirrmotor = Motor(self.Id + ":MOTOR_1")
+        self.mirrmotor = Motor(self.ID + ":MOTOR_1")
 
     def __call__(self, *args, **kwargs):
         self.set(*args, **kwargs)

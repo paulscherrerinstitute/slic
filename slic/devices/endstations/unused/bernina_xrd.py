@@ -4,32 +4,32 @@ from slic.devices.general.motor import Motor
 
 class XRD:
 
-    def __init__(self, Id, alias_namespace=None):
-        self.Id = Id
+    def __init__(self, ID, alias_namespace=None):
+        self.ID = ID
 
         ### motors heavy load table ###
-        self.xhl = Motor(Id + ":MOT_TBL_TX")
-        self.zhl = Motor(Id + ":MOT_TBL_TZ")
-        self.yhl = Motor(Id + ":MOT_TBL_TY")
-        self.th = Motor(Id + ":MOT_MY_RYTH")
+        self.xhl = Motor(ID + ":MOT_TBL_TX")
+        self.zhl = Motor(ID + ":MOT_TBL_TZ")
+        self.yhl = Motor(ID + ":MOT_TBL_TY")
+        self.th = Motor(ID + ":MOT_MY_RYTH")
         self.zaber_x = Motor("SARES20-EXP" + ":MOT_TZ")
         try:
-            self.rxhl = Motor(Id + ":MOT_TBL_RX")
+            self.rxhl = Motor(ID + ":MOT_TBL_RX")
         except:
             print("GPS.pitch not found")
             pass
         try:
-            self.ryhl = Motor(Id + ":MOT_TBL_RY")
+            self.ryhl = Motor(ID + ":MOT_TBL_RY")
         except:
             print("GPS.roll not found")
             pass
 
         ### motors heavy load gonio base ###
-        #self.xmu = Motor(Id + ':MOT_HEX_TX')
-        #self.mu = Motor(Id + ':MOT_HEX_RX')
-        self.gamma = Motor(Id + ":MOT_NY_RY2TH")
-        self.xbase = Motor(Id + ":MOT_TX")
-        self.ybase = Motor(Id + ":MOT_TY")
+#        self.xmu = Motor(ID + ':MOT_HEX_TX')
+#        self.mu = Motor(ID + ':MOT_HEX_RX')
+        self.gamma = Motor(ID + ":MOT_NY_RY2TH")
+        self.xbase = Motor(ID + ":MOT_TX")
+        self.ybase = Motor(ID + ":MOT_TY")
 
         #self.hex_x = PV("SARES20-HEX_PI:POSI-X")
         #self.hex_y = PV("SARES20-HEX_PI:POSI-Y")
@@ -39,9 +39,9 @@ class XRD:
         #self.hex_w = PV("SARES20-HEX_PI:POSI-W")
 
         ### motors XRD arm ###
-        self.delta = Motor(Id + ":MOT_DT_RX2TH")
-        self.det_z = Motor(Id + ":MOT_D_T")
-        self.cam_z = Motor(Id + ":MOT_P_T")
+        self.delta = Motor(ID + ":MOT_DT_RX2TH")
+        self.det_z = Motor(ID + ":MOT_D_T")
+        self.cam_z = Motor(ID + ":MOT_P_T")
 
     def __repr__(self):
 

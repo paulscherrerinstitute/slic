@@ -176,14 +176,14 @@ class SolidTargetDetectorPBPS_new:
 class SolidTargetDetectorPBPS:
 
     def __init__(
-        self, Id, VME_crate=None, link=None, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None,
+        self, ID, VME_crate=None, link=None, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None,
     ):
-        self.Id = Id
+        self.ID = ID
         self.name = name
-        self.diode_x = Motor(Id + ":MOTOR_X1", name="diode_x")
-        self.diode_y = Motor(Id + ":MOTOR_Y1", name="diode_y")
-        self.target_pos = Motor(Id + ":MOTOR_PROBE", name="target_pos")
-        self.target = PVEnumAdjustable(Id + ":PROBE_SP", name="target")
+        self.diode_x = Motor(ID + ":MOTOR_X1", name="diode_x")
+        self.diode_y = Motor(ID + ":MOTOR_Y1", name="diode_y")
+        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target_pos")
+        self.target = PVEnumAdjustable(ID + ":PROBE_SP", name="target")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
             self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))

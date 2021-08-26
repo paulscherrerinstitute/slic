@@ -1,8 +1,8 @@
 
 class Hexapod_PI:
 
-    def __init__(self, Id):
-        self.Id = Id
+    def __init__(self, ID):
+        self.ID = ID
         self.x, self.y, self.z = [
             ValueRdback(self.id + f":SET-POSI-{i}", self.id + f":POSI-{i}")
             for i in "XYZ"

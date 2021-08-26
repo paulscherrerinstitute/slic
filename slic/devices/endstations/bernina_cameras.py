@@ -8,8 +8,8 @@ from epics import PV
 from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
 
-def addMotorToSelf(self, Id=None, name=None):
-    self.__dict__[name] = Motor(Id, name=name)
+def addMotorToSelf(self, ID=None, name=None):
+    self.__dict__[name] = Motor(ID, name=name)
     self.alias.append(self.__dict__[name].alias)
 
 
@@ -68,7 +68,7 @@ class Qioptiq:
             append_object_to_object(self, Motor, zoomstage_pv, name="zoom")
 
         try:
-            addMotorToSelf(self, Id="SARES20-EXP:MOT_QIOPT_F", name="focus")
+            addMotorToSelf(self, ID="SARES20-EXP:MOT_QIOPT_F", name="focus")
 
         except:
             print("Qioptic focus motor not found")

@@ -26,7 +26,7 @@ def init_device(devDict, devId, args, kwargs, verbose=True):
     error = None
     try:
         exec(istr)
-        tdev = eval("_%s(Id='%s',*args,**kwargs)" % (eco_type_name, devId))
+        tdev = eval("_%s(ID='%s',*args,**kwargs)" % (eco_type_name, devId))
         tdev.name = dev_alias
         tdev._z_und = devDict["z_und"]
         if verbose:

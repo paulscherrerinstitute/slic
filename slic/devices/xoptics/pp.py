@@ -6,27 +6,27 @@ from slic.devices.general.motor import Motor
 from slic.utils.eco_components.aliases import Alias
 
 
-def addMotorToSelf(self, name=None, Id=None):
+def addMotorToSelf(self, name=None, ID=None):
     try:
-        self.__dict__[name] = Motor(Id, name=name)
+        self.__dict__[name] = Motor(ID, name=name)
         self.alias.append(self.__dict__[name].alias)
     except:
-        print(f"Warning! Could not find motor {name} (Id:{Id})")
+        print(f"Warning! Could not find motor {name} (ID: {ID})")
 
 
 class Pulsepick:
 
-    def __init__(self, Id=None, evronoff=None, evrsrc=None, name=None):
+    def __init__(self, ID=None, evronoff=None, evrsrc=None, name=None):
         self.name = name
         self.alias = Alias(name)
         self.evrsrc = evrsrc
         self.evronoff = evronoff
 
-        self.Id = Id
+        self.ID = ID
         self._openclose = PV(self.evronoff)
         self._evrsrc = PV(self.evrsrc)
-        addMotorToSelf(self, Id=self.Id + ":MOTOR_X1", name="x")
-        addMotorToSelf(self, Id=self.Id + ":MOTOR_Y1", name="y")
+        addMotorToSelf(self, ID=self.ID + ":MOTOR_X1", name="x")
+        addMotorToSelf(self, ID=self.ID + ":MOTOR_Y1", name="y")
 
     def movein(self):
         self.x.set_target_value(4.45)

@@ -10,23 +10,23 @@ from ..device import Device
 
 class DoubleCrystalMono(Device):
 
-    def __init__(self, Id, name="Alvra DCM", **kwargs):
-        super().__init__(Id, name=name, **kwargs)
+    def __init__(self, ID, name="Alvra DCM", **kwargs):
+        super().__init__(ID, name=name, **kwargs)
 
-        self.theta  = Motor(Id + ":RX12")
-        self.x      = Motor(Id + ":TX12")
-        self.gap    = Motor(Id + ":T2")
-        self.roll1  = Motor(Id + ":RZ1")
-        self.roll2  = Motor(Id + ":RZ2")
-        self.pitch2 = Motor(Id + ":RX2")
+        self.theta  = Motor(ID + ":RX12")
+        self.x      = Motor(ID + ":TX12")
+        self.gap    = Motor(ID + ":T2")
+        self.roll1  = Motor(ID + ":RZ1")
+        self.roll2  = Motor(ID + ":RZ2")
+        self.pitch2 = Motor(ID + ":RX2")
 
-        self.energy = DoubleCrystalMonoEnergy(Id, name=name)
+        self.energy = DoubleCrystalMonoEnergy(ID, name=name)
 
 
 
 class DoubleCrystalMonoEnergy(Adjustable):
 
-    def __init__(self, Id, name=None):
+    def __init__(self, ID, name=None):
         pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP"
         pvname_readback = "SAROP11-ARAMIS:ENERGY"
         pvname_moving   = "SAROP11-ODCM105:MOVING"
@@ -37,7 +37,7 @@ class DoubleCrystalMonoEnergy(Adjustable):
         pv_moving   = PV(pvname_moving)
         pv_stop     = PV(pvname_stop)
 
-        name = name or Id
+        name = name or ID
         units = pv_readback.units
         super().__init__(name=name, units=units)
 
@@ -93,8 +93,8 @@ class DoubleCrystalMonoEnergy(Adjustable):
 
 class EcolEnergy:
 
-    def __init__(self, Id, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
-        self.Id = Id
+    def __init__(self, ID, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
+        self.ID = ID
         self.setter = PV(val)
         self.readback = PV(rb)
         self.dmov = PV(dmov)
@@ -125,10 +125,10 @@ class EcolEnergy:
 
 class MonoEcolEnergy:
 
-    def __init__(self, Id):
-        self.Id = Id
+    def __init__(self, ID):
+        self.ID = ID
         self.name = "energy_collimator"
-        self.dcm = DoubleCrystalMono(Id)
+        self.dcm = DoubleCrystalMono(ID)
         self.ecol = EcolEnergy("ecol_dummy")
         self.offset = None
         self.MeVperEV = 0.78333
@@ -159,8 +159,8 @@ class MonoEcolEnergy:
 
 class CoupledDoubleCrystalMono(Device):
 
-    def __init__(self, Id, name="Alvra DCM coupled to FEL energy", **kwargs):
-        super().__init__(Id, name=name, **kwargs)
+    def __init__(self, ID, name="Alvra DCM coupled to FEL energy", **kwargs):
+        super().__init__(ID, name=name, **kwargs)
 
         self.alvraMode   = PVEnumAdjustable("SAROP11-ARAMIS:MODE")
         self.FELcoupling = PVEnumAdjustable("SGE-OP2E-ARAMIS:MODE_SP")
@@ -174,13 +174,13 @@ class CoupledDoubleCrystalMono(Device):
         self.dcmMoving       = PVAdjustable("SAROP11-ODCM105:MOVING")
         self.dcmStop         = PVAdjustable("SAROP11-ODCM105:STOP.PROC")
 
-        self.energy = CoupledDoubleCrystalMonoEnergy(Id, name=name)
+        self.energy = CoupledDoubleCrystalMonoEnergy(ID, name=name)
 
 
 
 class CoupledDoubleCrystalMonoEnergy(Adjustable):
 
-    def __init__(self, Id, name=None):
+    def __init__(self, ID, name=None):
         pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP"
         pvname_readback = "SAROP11-ARAMIS:ENERGY"
 #        pvname_moving   = "SGE-OP2E-ARAMIS:MOVING" #TODO: this seems broken?
@@ -192,7 +192,7 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
         pv_moving   = PV(pvname_moving)
         pv_coupling = PV(pvname_coupling)
 
-        name = name or Id
+        name = name or ID
         units = pv_readback.units
         super().__init__(name=name, units=units)
 
@@ -243,7 +243,7 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
 
 class CoupledDoubleCrystalMonoEnergyWithTimeCorrection(Adjustable):
 
-    def __init__(self, Id="CDCMEWTC", name="Alvra DCM coupled to FEL energy with time correction", limit_low=None, limit_high=None):
+    def __init__(self, ID="CDCMEWTC", name="Alvra DCM coupled to FEL energy with time correction", limit_low=None, limit_high=None):
         self.limit_low = limit_low
         self.limit_high = limit_high
 
@@ -262,7 +262,7 @@ class CoupledDoubleCrystalMonoEnergyWithTimeCorrection(Adjustable):
         self.electron_energy_rb = PV("SARCL02-MBND100:P-READ")
         self.electron_energy_sv = PV("SGE-OP2E-ARAMIS:E_ENERGY_SP")
 
-        name = name or Id
+        name = name or ID
         units = pv_readback.units
         super().__init__(name=name, units=units)
 

@@ -6,16 +6,16 @@ from .basedevice import BaseDevice
 
 class Device(BaseDevice):
 
-    def __init__(self, Id, name=None, description=None, z_undulator=None):
-        self.Id = Id
+    def __init__(self, ID, name=None, description=None, z_undulator=None):
+        self.ID = ID
         self.name = name
         self.description = description
-        self.z_undulator = decide_z(Id, z_undulator)
+        self.z_undulator = decide_z(ID, z_undulator)
 
 
     def __repr__(self):
         to_print = recursive_adjustables(self)
-        head = self.description or self.name or self.Id
+        head = self.description or self.name or self.ID
         return printable_dict(to_print, head)
 
 

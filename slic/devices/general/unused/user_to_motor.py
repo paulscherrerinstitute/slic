@@ -25,7 +25,7 @@ class User_to_motor:
         self._stage = stage
         self.offset = offset
         self.name = self._stage.name
-        self.Id = self._stage.Id
+        self.ID = self._stage.ID
         self._elog = self._stage._elog
 
     def user_to_motor(self, user):

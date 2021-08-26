@@ -9,12 +9,12 @@ from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
 class Pprm:
 
-    def __init__(self, Id, z_undulator=None, description=None):
-        self.Id = Id
-        self.targetY = Motor(Id + ":MOTOR_PROBE")
-        self.cam = CameraCA(Id)
-        self._led = PV(self.Id + ":LED")
-        self.target = EnumWrapper(self.Id + ":PROBE_SP")
+    def __init__(self, ID, z_undulator=None, description=None):
+        self.ID = ID
+        self.targetY = Motor(ID + ":MOTOR_PROBE")
+        self.cam = CameraCA(ID)
+        self._led = PV(self.ID + ":LED")
+        self.target = EnumWrapper(self.ID + ":PROBE_SP")
 
     def illuminate(self, value=None):
         if value:
@@ -33,15 +33,15 @@ class Pprm:
 
 class Bernina_XEYE:
 
-    def __init__(self, Id, bshost=None, bsport=None):
-        self.Id = Id
+    def __init__(self, ID, bshost=None, bsport=None):
+        self.ID = ID
         try:
             self.zoom = Motor("SARES20-EXP:MOT_NAV_Z.VAL")
         except:
             print("X-Ray eye zoom motor not found")
             pass
         try:
-            self.cam = CameraCA(Id)
+            self.cam = CameraCA(ID)
         except:
             print("X-Ray eye Cam not found")
             pass
@@ -50,7 +50,7 @@ class Bernina_XEYE:
             self.camBS = CameraBS(host=bshost, port=bsport)
 
 
-#        self._led = PV(self.Id + ':LED')
+#        self._led = PV(self.ID + ':LED')
 
 
 #    def illuminate(self,value=None):

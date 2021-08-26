@@ -8,20 +8,20 @@ from epics import PV
 from slic.utils.eco_epics.utilities_epics import EnumWrapper
 
 
-def addMotorToSelf(self, Id=None, name=None):
-    self.__dict__[name] = Motor(Id, name=name)
+def addMotorToSelf(self, ID=None, name=None):
+    self.__dict__[name] = Motor(ID, name=name)
     self.alias.append(self.__dict__[name].alias)
 
 
 class Pprm:
 
-    def __init__(self, Id, name=None):
-        self.Id = Id
+    def __init__(self, ID, name=None):
+        self.ID = ID
         self.name = name
-        self.target_pos = Motor(Id + ":MOTOR_PROBE", name="target_pos")
-        self.cam = CameraCA(Id)
-        self.led = PVEnumAdjustable(self.Id + ":LED", name="led")
-        self.target = PVEnumAdjustable(self.Id + ":PROBE_SP", name="target")
+        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target_pos")
+        self.cam = CameraCA(ID)
+        self.led = PVEnumAdjustable(self.ID + ":LED", name="led")
+        self.target = PVEnumAdjustable(self.ID + ":PROBE_SP", name="target")
         if name:
             self.alias = Alias(name)
             self.alias.append(self.target_pos.alias)
@@ -69,7 +69,7 @@ class Bernina_XEYE:
         return self.get_adjustable_positions_str()
 
 
-#        self._led = PV(self.Id+':LED')
+#        self._led = PV(self.ID+':LED')
 
 
 #    def illuminate(self,value=None):

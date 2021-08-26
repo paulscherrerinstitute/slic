@@ -49,24 +49,24 @@ class SmarActStage(BaseDevice):
 
 class SmarActAxis(Adjustable):
 
-    def __init__(self, Id, name=None, internal=False):
-        name = name or Id
-        units = PV(Id + ":DRIVE.EGU").get() #TODO
+    def __init__(self, ID, name=None, internal=False):
+        name = name or ID
+        units = PV(ID + ":DRIVE.EGU").get() #TODO
         super().__init__(name=name, units=units, internal=internal)
-        self.Id = Id
+        self.ID = ID
 
         self._move_requested = False
 
         self.pvs = SimpleNamespace(
-            drive    = PV(Id + ":DRIVE"),
-            readback = PV(Id + ":MOTRBV"),
-            hlm      = PV(Id + ":HLM"),
-            llm      = PV(Id + ":LLM"),
-            status   = PV(Id + ":STATUS"),
-            set_pos  = PV(Id + ":SET_POS"),
-            stop     = PV(Id + ":STOP.PROC"),
-            hold     = PV(Id + ":HOLD"),
-            twv      = PV(Id + ":TWV")
+            drive    = PV(ID + ":DRIVE"),
+            readback = PV(ID + ":MOTRBV"),
+            hlm      = PV(ID + ":HLM"),
+            llm      = PV(ID + ":LLM"),
+            status   = PV(ID + ":STATUS"),
+            set_pos  = PV(ID + ":SET_POS"),
+            stop     = PV(ID + ":STOP.PROC"),
+            hold     = PV(ID + ":HOLD"),
+            twv      = PV(ID + ":TWV")
         )
 
 
@@ -266,7 +266,7 @@ class SmarActAxis(Adjustable):
 
 
     def gui(self):
-        device, motor = self.Id.split(":")
+        device, motor = self.ID.split(":")
         cmd = f'caqtdm -macro "P={device}:,M={motor}" ESB_MX_SMARACT_mot_exp.ui'
         return subprocess.Popen(cmd, shell=True)
 

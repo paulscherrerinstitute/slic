@@ -299,8 +299,8 @@ class EventReceiver:
 
 class CTA_sequencer:
 
-    def __init__(self, Id, name=None, master_frequency=100):
-        self._cta = CtaLib(Id)
+    def __init__(self, ID, name=None, master_frequency=100):
+        self._cta = CtaLib(ID)
         self.sequence_local = {}
         self.synced = False
         self._master_frequency = master_frequency

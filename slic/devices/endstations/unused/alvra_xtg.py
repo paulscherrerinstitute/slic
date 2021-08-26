@@ -4,21 +4,21 @@ from epics import PV
 
 class XTG:
 
-    def __init__(self, Id, alias_namespace=None):
-        self.Id = Id
+    def __init__(self, ID, alias_namespace=None):
+        self.ID = ID
 
         ### sample smaract motors ###
-        self.sx = SmarActAxis(Id + ":TRX3")
-        self.sy = SmarActAxis(Id + ":TRY3")
+        self.sx = SmarActAxis(ID + ":TRX3")
+        self.sy = SmarActAxis(ID + ":TRY3")
 
         ### grating 1 motors ###
-        self.g1x = SmarActAxis(Id + ":TRX1")
-        self.g1y = SmarActAxis(Id + ":TRY1")
-        self.g1z = SmarActAxis(Id + ":TRZ1")
+        self.g1x = SmarActAxis(ID + ":TRX1")
+        self.g1y = SmarActAxis(ID + ":TRY1")
+        self.g1z = SmarActAxis(ID + ":TRZ1")
         ### grating 2 motors ###
-        self.g2x = SmarActAxis(Id + ":TRX2")
-        self.g2y = SmarActAxis(Id + ":TRY2")
-        self.g2z = SmarActAxis(Id + ":TRZ2")
+        self.g2x = SmarActAxis(ID + ":TRX2")
+        self.g2y = SmarActAxis(ID + ":TRY2")
+        self.g2z = SmarActAxis(ID + ":TRZ2")
 
     def get_adjustable_positions_str(self):
         ostr = "*****SmarAct motor positions******\n"

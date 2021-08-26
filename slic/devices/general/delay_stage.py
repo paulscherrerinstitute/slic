@@ -21,11 +21,11 @@ def pos_to_delay(pos):
 
 class DelayStage(Device):
 
-    def __init__(self, Id, name=None, internal=False):
-        self.Id = Id
-        self.name = name = name or Id
+    def __init__(self, ID, name=None, internal=False):
+        self.ID = ID
+        self.name = name = name or ID
 
-        self.motor = motor = Motor(Id, name, internal=internal)
+        self.motor = motor = Motor(ID, name, internal=internal)
         self.delay = delay = Delay(motor, internal=internal)
 
         self.devices = {
