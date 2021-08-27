@@ -28,6 +28,7 @@ dependencies:
   - colorama
   - tqdm
   - conda-forge::fuzzywuzzy
+  - conda-forge::logzero
   - conda-forge::yaspin
 
 
