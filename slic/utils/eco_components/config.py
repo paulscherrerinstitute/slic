@@ -4,11 +4,18 @@ from pathlib import Path
 import sys
 from colorama import Fore as _color
 from functools import partial
-from .lazy_proxy import Proxy
 from .aliases import Alias
 import getpass
 import colorama
 import socket
+
+
+#TODO: add lazy_object_proxy as dep?
+try:
+    from lazy_object_proxy import Proxy
+except ImportError:
+    print(_color.RED + "Cannot import lazy_object_proxy, thus cannot create lazy objects" + _color.RESET)
+    Proxy = None
 
 
 class Component:
@@ -35,7 +42,7 @@ def init_device(type_string, name, args=[], kwargs={}, verbose=True, lazy=True):
     try:
         tg = importlib.import_module(".".join(imp_p)).__dict__[type_name]
 
-        if lazy:
+        if lazy and Proxy:
             tdev = Proxy(partial(init_name_obj, tg, args, kwargs, name=name))
             if verbose:
                 print((_color.YELLOW + "LAZY" + _color.RESET).rjust(5))
