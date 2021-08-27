@@ -3,9 +3,10 @@ from types import SimpleNamespace
 from contextlib import contextmanager
 import colorama
 
+from epics import Motor as EpicsMotor
+
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.core.adjustable.convenience import SpecConvenienceProgress
-from slic.utils.eco_epics.motor import Motor as EpicsMotor
 from slic.utils.eco_epics.utilities_epics import EpicsString
 from slic.utils.eco_components.aliases import Alias
 from slic.utils.rangebar import RangeBar
