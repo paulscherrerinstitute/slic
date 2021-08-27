@@ -1,6 +1,4 @@
 from epics import PV
-from slic.utils.eco_components.aliases import Alias
-from slic.utils.eco_components.lazy_proxy import Proxy
 from slic.core.adjustable import PVEnumAdjustable
 from cta_lib import CtaLib
 from numbers import Number
