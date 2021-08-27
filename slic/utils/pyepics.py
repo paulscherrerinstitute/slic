@@ -2,12 +2,11 @@ from epics import PV
 
 
 class EnumWrapper:
+
     def __init__(self, pvname, elog=None):
         self._elog = elog
         self._pv = PV(pvname)
         self.names = self._pv.enum_strs
-        # print(self.names)
-        # if self.names:
         self.setters = Positioner([(nam, lambda: self.set(nam)) for nam in self.names])
 
     def set(self, target):
@@ -32,6 +31,7 @@ class EnumWrapper:
 
 
 class MonitorAccumulator:
+
     def __init__(self, pv, attr=None, keywords=["value", "timestamp"]):
         self.pv = pv
         self.attr = attr
@@ -56,6 +56,7 @@ class MonitorAccumulator:
 
 
 class Positioner:
+
     def __init__(self, list_of_name_func_tuples):
         for name, func in list_of_name_func_tuples:
             tname = name.replace(" ", "_").replace(".", "p")
@@ -63,23 +64,25 @@ class Positioner:
                 tname = "v" + tname
             self.__dict__[tname] = func
 
+
 class EpicsString:
-    def __init__(self,pvname,name=None,elog=None):
+
+    def __init__(self, pvname, name=None, elog=None):
         self.name = name
         self.pvname = pvname
         self._pv = PV(pvname)
         self._elog = elog
-    
+
     def get(self):
         return self._pv.get()
 
-    def set(self,string):
-        self._pv.put(bytes(string,'utf8'))
+    def set(self, string):
+        self._pv.put(bytes(string, "utf8"))
 
     def __repr__(self):
         return self.get()
 
-    def __call__(self,string):
+    def __call__(self, string):
         self.set(string)
 
 
