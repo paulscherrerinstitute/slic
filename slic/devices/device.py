@@ -8,7 +8,7 @@ class Device(BaseDevice):
 
     def __init__(self, ID, name=None, description=None, z_undulator=None):
         self.ID = ID
-        self.name = name
+        self.name = name or ID
         self.description = description
         self.z_undulator = decide_z(ID, z_undulator)
 

@@ -3,8 +3,8 @@ from .adjustable import Adjustable
 
 class GenericAdjustable(Adjustable):
 
-    def __init__(self, set, get, wait=None, name=None, units=None, internal=False):
-        super().__init__(name=name, units=units, internal=internal)
+    def __init__(self, set, get, wait=None, ID="GENERIC", name=None, units=None, internal=False):
+        super().__init__(ID, name=name, units=units, internal=internal)
         self._set = set
         self._get = get
         self._wait = wait or self._generic_wait

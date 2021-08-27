@@ -37,9 +37,8 @@ class DoubleCrystalMonoEnergy(Adjustable):
         pv_moving   = PV(pvname_moving)
         pv_stop     = PV(pvname_stop)
 
-        name = name or ID
         units = pv_readback.units
-        super().__init__(name=name, units=units)
+        super().__init__(ID, name=name, units=units)
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,
@@ -192,9 +191,8 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
         pv_moving   = PV(pvname_moving)
         pv_coupling = PV(pvname_coupling)
 
-        name = name or ID
         units = pv_readback.units
-        super().__init__(name=name, units=units)
+        super().__init__(ID, name=name, units=units)
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,
@@ -262,9 +260,8 @@ class CoupledDoubleCrystalMonoEnergyWithTimeCorrection(Adjustable):
         self.electron_energy_rb = PV("SARCL02-MBND100:P-READ")
         self.electron_energy_sv = PV("SGE-OP2E-ARAMIS:E_ENERGY_SP")
 
-        name = name or ID
         units = pv_readback.units
-        super().__init__(name=name, units=units)
+        super().__init__(ID, name=name, units=units)
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,

@@ -25,8 +25,7 @@ class ETiming(Adjustable):
         name="Globi Laser Electronic Timing",
         units="ps"
     ):
-        super().__init__(name=name, units=units)
-        self.ID = ID
+        super().__init__(ID, name=name, units=units)
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,
@@ -79,8 +78,8 @@ class ETiming(Adjustable):
 class LXT(Adjustable):
 
     def __init__(self, ID_phase_shifter, ID_timing, base_folder, tolerance_poly_coeff=(100e-15, 1e-7), name="Laser X-ray Timing", units="s"):
-        super().__init__(name=name, units=units)
-        self.ID = ID = ID_phase_shifter #TODO: does that make sense?
+        ID = ID_phase_shifter + "_LXT" #TODO: does that make sense?
+        super().__init__(ID, name=name, units=units)
         self.tolerance_poly_coeff = tolerance_poly_coeff
 
         pvname_sdg1_readback = ID_timing + ":Pul2-Delay-RB"
@@ -142,8 +141,7 @@ class LXT(Adjustable):
 class PhaseShifterAramis(Adjustable):
 
     def __init__(self, ID, base_folder, name=None):
-        super().__init__(name=name)
-        self.ID = ID
+        super().__init__(ID, name=name)
         self._phase_shifter = PhaseShifter(ID, base_folder)
 
     def set_target_value(self, value, hold=False):

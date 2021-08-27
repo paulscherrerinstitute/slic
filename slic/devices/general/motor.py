@@ -46,7 +46,7 @@ STATUS_MESSAGES = {
 
 class Motor(Adjustable, SpecConvenienceProgress):
 
-    def __init__(self, pvname, name=None, internal=False):
+    def __init__(self, pvname, ID=None, name=None, internal=False):
         self.pvname = pvname
         self._motor = motor = EpicsMotor(pvname)
 
@@ -59,9 +59,9 @@ class Motor(Adjustable, SpecConvenienceProgress):
             units       = motor.get_pv("EGU")
         )
 
-        name = name or pvname
+        ID = ID or pvname
         units = self.pvs.units.value
-        super().__init__(name=name, units=units, internal=internal)
+        super().__init__(ID, name=name, units=units, internal=internal)
 
         self.status = None
         self.status_message = None

@@ -5,10 +5,7 @@ from slic.core.adjustable import Adjustable
 class AttenuatorAramis(Adjustable):
 
     def __init__(self, ID, z_undulator=None, description=None, name="Attenuator Aramis"):
-        self.ID = ID
-
-        name = name or ID
-        super().__init__(name=name, units=None)
+        super().__init__(ID, name=name, units=None)
 
         self._pv_status_str = PV(ID + ":MOT2TRANS.VALD")
         self._pv_status_int = PV(ID + ":IDX_RB")

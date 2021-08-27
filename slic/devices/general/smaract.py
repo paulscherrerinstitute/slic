@@ -50,10 +50,8 @@ class SmarActStage(BaseDevice):
 class SmarActAxis(Adjustable):
 
     def __init__(self, ID, name=None, internal=False):
-        name = name or ID
         units = PV(ID + ":DRIVE.EGU").get() #TODO
-        super().__init__(name=name, units=units, internal=internal)
-        self.ID = ID
+        super().__init__(ID, name=name, units=units, internal=internal)
 
         self._move_requested = False
 
