@@ -3,7 +3,7 @@ import numpy as np
 from epics import PV
 
 from slic.devices.general.motor import Motor
-from ..eco_epics.utilities_epics import EnumWrapper
+from slic.utils.pyepics import EnumWrapper
 from slic.core.task import Task
 
 

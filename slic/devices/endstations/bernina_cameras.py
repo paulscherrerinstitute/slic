@@ -5,7 +5,7 @@ from slic.utils.eco_components.aliases import Alias, append_object_to_object
 
 #from ..devices_general.epics_wrappers import EnumSelector
 from epics import PV
-from slic.utils.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.pyepics import EnumWrapper
 
 
 def addMotorToSelf(self, ID=None, name=None):

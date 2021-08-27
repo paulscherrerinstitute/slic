@@ -1,5 +1,5 @@
 from slic.devices.general.motor import Motor
-from slic.utils.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.pyepics import EnumWrapper
 from ..general.detectors import FeDigitizer
 
 

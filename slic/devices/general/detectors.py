@@ -1,7 +1,7 @@
 import numpy as np
 from epics import caget
 from epics import PV
-from slic.utils.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.pyepics import EnumWrapper
 
 from cam_server_client import PipelineClient
 from cam_server_client.utils import get_host_port_from_stream_address

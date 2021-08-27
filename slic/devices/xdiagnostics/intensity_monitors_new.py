@@ -2,7 +2,7 @@ import numpy as np
 from epics import PV
 
 from slic.devices.general.motor import Motor
-from slic.utils.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.pyepics import EnumWrapper
 from ..general.detectors_new import FeDigitizer, PvDataStream
 from slic.core.adjustable import PVEnumAdjustable
 from slic.utils.eco_components.aliases import Alias, append_object_to_object

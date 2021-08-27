@@ -5,7 +5,7 @@ from slic.core.adjustable import PVEnumAdjustable
 
 # from ..devices_general.epics_wrappers import EnumSelector
 from epics import PV
-from slic.utils.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.pyepics import EnumWrapper
 
 
 def addMotorToSelf(self, ID=None, name=None):

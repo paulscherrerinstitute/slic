@@ -4,7 +4,7 @@ from slic.devices.general.motor import Motor
 from ..general.detectors import CameraCA, CameraBS
 
 #from ..general.epics_wrappers import EnumSelector
-from slic.utils.eco_epics.utilities_epics import EnumWrapper
+from slic.utils.pyepics import EnumWrapper
 
 
 class Pprm:
