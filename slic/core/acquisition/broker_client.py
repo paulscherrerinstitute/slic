@@ -128,27 +128,44 @@ class BrokerClient:
 
 
     #TODO: this needs work
-    def take_pedestal(self, detectors, rate):
-        n_pulses = 5000 # this is a constant on the broker side
-        self.set_config(n_pulses, "JF_pedestals", detectors=detectors)
+    def take_pedestal(self, detectors=None, rate=None):
+        if detectors is None:
+            detectors = self.config.detectors
 
-        current_pulseid = get_current_pulseid()
-#        rate_multiplicator = self.config.rate_multiplicator
-        rate_multiplicator = int(round(100. / rate))
-        rate_multiplicator = 1 #TODO: WHY???
-        print(f"using rate multiplicator {rate_multiplicator}")
+        if not detectors:
+            raise ValueError(f"Need at least one detector to take pedestal (got: {detectors})")
 
-        start_pulseid, stop_pulseid = aligned_pids(current_pulseid, n_pulses, rate_multiplicator)
-        params = self.get_config(start_pulseid, stop_pulseid)
+        detectors = flatten_detectors(detectors)
 
-        params["rate_multiplicator"] = rate_multiplicator
-
-        trigger_pedestal_gain_switching(self.address, params, n_pulses)
-        print("trigger file saving")
-        run_number = retrieve(self.address, params) #TODO: store in self.run_number?
-        print(f"saving run {run_number}")
+        if rate is None:
+            rate_multiplicator = self.config.rate_multiplicator
+        else:
+            rate_multiplicator = int(round(100. / rate))
 
         pgroup = self.config.pgroup
+
+        params = dict(
+            detectors=detectors,
+            rate_multiplicator=rate_multiplicator,
+            pgroup=pgroup
+        )
+
+
+        n_pulses = 5000 # this is a constant on the broker side
+        timeout = 10 + n_pulses / 100 * rate_multiplicator
+
+        requrl = self.address.rstrip("/") + "/take_pedestal"
+        print("posting:", requrl, params)
+        response = post_request(requrl, params, timeout)
+        print("done, got:", response)
+
+        print(f"waiting for {timeout} seconds")
+        tqdm_sleep(timeout)
+
+        #TODO: follow /sf/{beamline}/data/{pgroup}/raw/run_info/{(run_number//1000*1000):06}/run_{run_number:06}.PEDESTAL.log
+
+
+        run_number = response["run"]
         padded_run_number = str(run_number).zfill(6)
         fnames_raw = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.h5"     for det in detectors]
         fnames_res = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.res.h5" for det in detectors]
@@ -176,41 +193,11 @@ class BrokerClient:
 
 
 
-#TODO: this needs work
-def trigger_pedestal_gain_switching(address, config, n_pulses):
-    print(config)
-    detectors = config.get("detectors")
-    if not detectors:
-        raise ValueError(f"Need at least one detector to take pedestal (got: {detectors})")
-
-    params = {
-#        "directory_name": "JF_pedestals"
-    }
-
-    items_to_copy = ("detectors", "directory_name", "client_name", "pgroup", "start_pulseid", "rate_multiplicator")
-    for key in items_to_copy:
-        params[key] = config[key]
-
-    timeout = 10
-    #TODO: why is the lengthened timeout needed?
-    rate_multiplicator = config.get("rate_multiplicator", 1)
-    timeout += n_pulses / 100 * rate_multiplicator
-
-    requrl = address.rstrip("/") + "/take_pedestal"
-    print("posting:", requrl, params)
-    response = post_request(requrl, params, timeout)
-    print("done, got:", response)
-
-    print(f"waiting for {timeout} seconds")
-    tqdm_sleep(timeout)
-    return response
-
-
-
 def retrieve(address, *args, **kwargs):
     requrl = address.rstrip("/") + "/retrieve_from_buffers"
     response = post_request(requrl, *args, **kwargs)
-    run_number = int(response)
+    run_number = response["message"]
+    run_number = int(run_number)
     return run_number
 
 
@@ -222,7 +209,7 @@ def post_request(requrl, params, timeout=10):
 
 def validate_response(resp):
     if resp.get("status") == "ok":
-        return resp.get("message")
+        return resp
 
     message = resp.get("message", "Unknown error")
     msg = "An error happened on the server:\n{}".format(message)
