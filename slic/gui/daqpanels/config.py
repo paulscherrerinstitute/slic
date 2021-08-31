@@ -50,6 +50,11 @@ class ConfigPanel(wx.Panel):
 
         if not chans_det: btn_take_pedestal.Disable()
 
+        #TODO:
+        # the slic pedestal taking procedure is currently out of date with what the DAQ expects
+        # disable button for now
+        btn_take_pedestal.Disable()
+
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument)
         le_pgroup     = LabeledEntry(self, label="pgroup", value=pgroup)
 
