@@ -63,18 +63,15 @@ class SFAcquisition(BaseAcquisition):
         client = self.client
         client.set_config(n_pulses, filename, detectors=detectors, channels=channels, pvs=pvs, scan_info=scan_info)
 
-        if continuous:
-            def _acquire():
+        def _acquire():
+            if continuous:
                 run_numbers = client.start_continuous(n_repeat=10)
-                printable_run_numbers = [str(rn).zfill(6) for rn in run_numbers]
-                filename_patterns = [self.paths.raw / filename / f"run_{prn}.*.h5" for prn in printable_run_numbers]
-                return filename_patterns #TODO: list? insert the file types instead of the asterisk?
-        else:
-            def _acquire():
+            else:
                 run_number = client.start()
-                printable_run_number = str(run_number).zfill(6)
-                filename_pattern = self.paths.raw / filename / f"run_{printable_run_number}.*.h5"
-                return [filename_pattern] #TODO: list? insert the file types instead of the asterisk?
+                run_numbers = [run_number]
+            printable_run_numbers = [str(rn).zfill(6) for rn in run_numbers]
+            filename_patterns = [self.paths.raw / filename / f"run_{prn}.*.h5" for prn in printable_run_numbers]
+            return filename_patterns #TODO: list? insert the file types instead of the asterisk?
 
         task = DAQTask(_acquire, stopper=client.stop, filename=filename, hold=False)
         self.current_task = task
