@@ -67,8 +67,11 @@ class BrokerClient:
 
         for i in xrange(n_repeat):
             #TODO: for debugging
+            counter = f"#{i+1}"
+            if n_repeat:
+                counter += f" / {n_repeat}"
             stop_pulseid = start_pulseid + n_pulses
-            print(f"#{i}", start_pulseid, stop_pulseid, n_pulses)
+            print(counter, start_pulseid, stop_pulseid, n_pulses)
 
             yield self.run(start_pulseid, n_pulses)
 
