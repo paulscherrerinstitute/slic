@@ -167,26 +167,13 @@ class BrokerClient:
 
         run_number = response["run"]
         padded_run_number = str(run_number).zfill(6)
+
         fnames_raw = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.h5"     for det in detectors]
         fnames_res = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.res.h5" for det in detectors]
         print(fnames_raw)
         print(fnames_res)
-
-        with yaspin(Spinners.clock, text="elapsed time: raw files", timer=True) as sp:
-            while True:
-                all_exists = all(bool(glob(fn)) for fn in fnames_raw)
-                if all_exists:
-                    break
-                sleep(10)
-            sp.ok("✅")
-
-        with yaspin(Spinners.clock, text="elapsed time: res files", timer=True) as sp:
-            while True:
-                all_exists = all(bool(glob(fn)) for fn in fnames_res)
-                if all_exists:
-                    break
-                sleep(10)
-            sp.ok("✅")
+        wait_for_files("raw files", fnames_raw)
+        wait_for_files("res files", fnames_res)
 
         print("done :)")
         return run_number
@@ -368,6 +355,17 @@ def tqdm_sleep(seconds, ndiv=100):
     delta = seconds / float(ndiv)
     for _ in tqdm(range(ndiv)):
         sleep(delta)
+
+
+
+def wait_for_files(label, fnames):
+    with yaspin(Spinners.clock, text=f"elapsed time: {label}", timer=True) as sp:
+        while True:
+            all_exists = all(bool(glob(fn)) for fn in fnames)
+            if all_exists:
+                break
+            sleep(10)
+        sp.ok("✅")
 
 
 
