@@ -65,7 +65,7 @@ class SFAcquisition(BaseAcquisition):
 
         def _acquire():
             if continuous:
-                run_numbers = client.start_continuous(n_repeat=10)
+                run_numbers = client.start_continuous()
             else:
                 run_number = client.start()
                 run_numbers = [run_number]
