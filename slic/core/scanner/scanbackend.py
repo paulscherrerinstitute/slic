@@ -234,7 +234,7 @@ class ScanBackend:
             printable_repeat = "perform the following scan"
         res += format_header(printable_repeat, line="=") + "\n\n"
 
-        vals = self.values.tolist()
+        vals = self.values
         adjs = [repr(a) for a in self.adjustables]
         res += printable_table(vals, adjs, **kwargs)
         res += "\n\n"
