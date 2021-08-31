@@ -1,3 +1,4 @@
+import itertools
 import requests
 import json
 from glob import glob
@@ -22,6 +23,7 @@ class BrokerClient:
         self.set_config(0, None) #TODO: sensible defaults?
 
         self.running = False
+        self.running_continuously = False
         self.run_number = None
 
 
@@ -35,11 +37,56 @@ class BrokerClient:
 
 
     def start(self):
+        current_pulseid = get_current_pulseid()
         n_pulses = self.n_pulses
         rate_multiplicator = self.config.rate_multiplicator
 
+        start_pulseid, n_pulses_actual = aligned_pid_and_n(current_pulseid, n_pulses, rate_multiplicator)
+
+        run_number = self.run(start_pulseid, n_pulses_actual)
+
+        print("run number:", run_number) #TODO
+        return run_number
+
+
+    def start_continuous(self):
         current_pulseid = get_current_pulseid()
-        start_pulseid, stop_pulseid = aligned_pids(current_pulseid, n_pulses, rate_multiplicator)
+        n_pulses = self.n_pulses
+        rate_multiplicator = self.config.rate_multiplicator
+
+        start_pulseid = align_pid_left(current_pulseid, rate_multiplicator)
+
+        run_numbers = list(self.run_continuous(start_pulseid, n_pulses))
+
+        print("continuous run numbers:", run_numbers) #TODO
+        return run_numbers
+
+
+    def run_continuous(self, start_pulseid, n_pulses):
+        self.running_continuously = True
+
+        for i in itertools.count(): #TODO: allow limiting the number of repetitions?
+            #TODO: for debugging
+            stop_pulseid = start_pulseid + n_pulses
+            print(f"#{i}", start_pulseid, stop_pulseid, n_pulses)
+
+            yield self.run(start_pulseid, n_pulses)
+
+            if not self.running_continuously:
+                break
+
+            start_pulseid += n_pulses + 1 #TODO: check whether upper boundary is excluded (otherwise no +1 here)
+
+        self.running_continuously = False
+
+
+    def run(self, start_pulseid, n_pulses):
+        # n_pulses may differ from self.n_pulses due to alignment
+        # there is no alignment done in here, except for early stops
+        stop_pulseid = start_pulseid + n_pulses
+
+        current_pulseid = get_current_pulseid()
+        rate_multiplicator = self.config.rate_multiplicator
 
         self.running = True
 
@@ -59,18 +106,21 @@ class BrokerClient:
         self.running = False
 
         params = self.get_config(start_pulseid, stop_pulseid)
-        self.run_number = retrieve(self.address, params, timeout=self.timeout)
-        return self.run_number
+        self.run_number = run_number = retrieve(self.address, params, timeout=self.timeout)
+        return run_number
 
 
     def stop(self):
         self.running = False
+        self.running_continuously = False
 
 
     @property
     def status(self):
         if self.running:
             return "running"
+        if self.running_continuously:
+            return "running continuously"
         return "idle"
 
 
@@ -154,11 +204,13 @@ def trigger_pedestal_gain_switching(address, config, n_pulses):
 
 
 
+counter = itertools.count() #TODO: for debugging
 def retrieve(address, *args, **kwargs):
+    return next(counter) #TODO: for debugging
     requrl = address.rstrip("/") + "/retrieve_from_buffers"
     response = post_request(requrl, *args, **kwargs)
-    runnumber = int(response)
-    return runnumber
+    run_number = int(response)
+    return run_number
 
 
 def post_request(requrl, params, timeout=10):
@@ -275,6 +327,10 @@ def harmonize_detector_dict(d):
     return d
 
 
+
+def aligned_pid_and_n(start, n, rm):
+    start, stop = aligned_pids(start, n, rm)
+    return start, stop - start
 
 def aligned_pids(start, n, rm):
     """
