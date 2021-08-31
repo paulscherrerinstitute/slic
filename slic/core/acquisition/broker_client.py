@@ -1,4 +1,3 @@
-import itertools
 import requests
 import json
 from glob import glob
@@ -8,6 +7,7 @@ from yaspin import yaspin
 from yaspin.spinners import Spinners
 import numpy as np
 
+from slic.utils import xrange
 from slic.utils.json import json_validate
 
 from .broker_tools import get_current_pulseid
@@ -49,23 +49,23 @@ class BrokerClient:
         return run_number
 
 
-    def start_continuous(self):
+    def start_continuous(self, n_repeat=None):
         current_pulseid = get_current_pulseid()
         n_pulses = self.n_pulses
         rate_multiplicator = self.config.rate_multiplicator
 
         start_pulseid = align_pid_left(current_pulseid, rate_multiplicator)
 
-        run_numbers = list(self.run_continuous(start_pulseid, n_pulses))
+        run_numbers = list(self.run_continuous(start_pulseid, n_pulses, n_repeat=n_repeat))
 
         print("continuous run numbers:", run_numbers) #TODO
         return run_numbers
 
 
-    def run_continuous(self, start_pulseid, n_pulses):
+    def run_continuous(self, start_pulseid, n_pulses, n_repeat=None):
         self.running_continuously = True
 
-        for i in itertools.count(): #TODO: allow limiting the number of repetitions?
+        for i in xrange(n_repeat):
             #TODO: for debugging
             stop_pulseid = start_pulseid + n_pulses
             print(f"#{i}", start_pulseid, stop_pulseid, n_pulses)
@@ -204,9 +204,7 @@ def trigger_pedestal_gain_switching(address, config, n_pulses):
 
 
 
-counter = itertools.count() #TODO: for debugging
 def retrieve(address, *args, **kwargs):
-    return next(counter) #TODO: for debugging
     requrl = address.rstrip("/") + "/retrieve_from_buffers"
     response = post_request(requrl, *args, **kwargs)
     run_number = int(response)
