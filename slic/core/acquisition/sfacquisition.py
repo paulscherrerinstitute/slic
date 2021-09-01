@@ -89,7 +89,7 @@ class SFAcquisition(BaseAcquisition):
         return self.client.status
 
     def __repr__(self):
-        return "SF DAQ on {} (status: {}, last run: {})".format(self.client.api_address, self.status, self.client.run_number)
+        return "SF DAQ on {} (status: {}, last run: {})".format(self.client.address, self.status, self.client.run_number)
 
 
 
