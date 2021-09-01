@@ -15,7 +15,6 @@ class SFAcquisition(BaseAcquisition):
 
     def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1):
         self.instrument = instrument
-        self.pgroup = pgroup
         self.default_data_base_dir = default_data_base_dir
 
         if not default_channels:
@@ -85,11 +84,20 @@ class SFAcquisition(BaseAcquisition):
 
 
     @property
+    def pgroup(self):
+        return self.client.config.pgroup
+
+    @pgroup.setter
+    def pgroup(self, value):
+        self.client.config.pgroup = value
+
+
+    @property
     def status(self):
         return self.client.status
 
     def __repr__(self):
-        return "SF DAQ on {} (status: {}, last run: {})".format(self.client.address, self.status, self.client.run_number)
+        return "SF DAQ on {} (status: {}, last run: {})".format(self.client.address, self.client.status, self.client.run_number)
 
 
 
