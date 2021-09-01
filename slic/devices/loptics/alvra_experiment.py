@@ -1,7 +1,9 @@
 from slic.core.adjustable import PVAdjustable
 from slic.devices.general.motor import Motor
 from ..device import Device
-from ..general.delay_stage import DelayStage
+from ..simpledevice import SimpleDevice
+from ..general.delay_stage import DelayStage, Delay
+from ..general.smaract import SmarActAxis
 from ..timing.lasertiming import ETiming
 
 
@@ -48,6 +50,14 @@ class LaserExp(Device):
 
         # Globi electronic timing PV from Edwin
         self.eTiming = ETiming(ID + "-eTiming")
+
+        # FROG
+        FROG_motor = SmarActAxis("SLAAR11-LMTS-FROG1")
+        FROG_delay = Delay(FROG_motor)
+        self.FROG = SimpleDevice("FROG",
+            motor = FROG_motor,
+            delay = FROG_delay
+        )
 
 
 
