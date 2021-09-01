@@ -18,11 +18,9 @@ class SFAcquisition(BaseAcquisition):
         self.pgroup = pgroup
         self.default_data_base_dir = default_data_base_dir
 
-        self.paths = SwissFELPaths(instrument, pgroup)
-
         if not default_channels:
-            default_channel_list = self.paths.default_channel_list
-            default_channels = Channels(default_channel_list)
+            paths = SwissFELPaths(instrument, pgroup)
+            default_channels = BSChannels(paths.default_channel_list)
 
         self.default_detectors = default_detectors
         self.default_channels = default_channels
@@ -63,6 +61,8 @@ class SFAcquisition(BaseAcquisition):
         client = self.client
         client.set_config(n_pulses, filename, detectors=detectors, channels=channels, pvs=pvs, scan_info=scan_info)
 
+        paths = SwissFELPaths(self.instrument, self.pgroup)
+
         def _acquire():
             if continuous:
                 run_numbers = client.start_continuous()
@@ -70,7 +70,7 @@ class SFAcquisition(BaseAcquisition):
                 run_number = client.start()
                 run_numbers = [run_number]
             printable_run_numbers = [str(rn).zfill(6) for rn in run_numbers]
-            filename_patterns = [self.paths.raw / filename / f"run_{prn}.*.h5" for prn in printable_run_numbers]
+            filename_patterns = [paths.raw / filename / f"run_{prn}.*.h5" for prn in printable_run_numbers]
             return filename_patterns #TODO: list? insert the file types instead of the asterisk?
 
         task = DAQTask(_acquire, stopper=client.stop, filename=filename, hold=False)
