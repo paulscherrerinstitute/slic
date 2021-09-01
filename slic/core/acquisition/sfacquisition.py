@@ -26,7 +26,6 @@ class SFAcquisition(BaseAcquisition):
         self.default_channels = default_channels
         self.default_pvs = default_pvs
 
-        self.api_address = api_address
         self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, client_name="slic")
 
         self.current_task = None
@@ -90,7 +89,7 @@ class SFAcquisition(BaseAcquisition):
         return self.client.status
 
     def __repr__(self):
-        return "SF DAQ on {} (status: {}, last run: {})".format(self.api_address, self.status, self.client.run_number)
+        return "SF DAQ on {} (status: {}, last run: {})".format(self.client.api_address, self.status, self.client.run_number)
 
 
 
