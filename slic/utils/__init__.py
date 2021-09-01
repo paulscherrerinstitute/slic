@@ -1,7 +1,7 @@
 
 from .utils import *
 from .argfwd import forwards_to
-from .channels import Channels
+from .channels import load_channels, Channels
 from .config import Config
 from .elog import Elog
 from .eval import arithmetic_eval
