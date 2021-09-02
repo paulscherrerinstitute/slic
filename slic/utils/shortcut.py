@@ -12,7 +12,7 @@ class Shortcut(Registry):
         #TODO: maybe name should be mandatory?
         if name is None:
             name = func.__name__
-            name = name.replace("_", " ").capitalize()
+            name = name.replace("_", " ")
 
         self.func = func
         self.name = name
