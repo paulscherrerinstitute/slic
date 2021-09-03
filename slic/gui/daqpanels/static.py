@@ -20,7 +20,7 @@ class StaticPanel(wx.Panel):
         self.task = None
 
         # widgets:
-        self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value="100")
+        self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses", value="100")
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
