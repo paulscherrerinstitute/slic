@@ -21,7 +21,9 @@ class RunPanel(wx.Panel):
         self.task = None
 
         # widgets:
-        self.cb_cont    = cb_cont    = wx.CheckBox(self, label="Run continuously")
+        self.cb_contin = cb_contin = wx.CheckBox(self, label="Run continuously")
+        cb_contin.Bind(wx.EVT_CHECKBOX, self.on_check_contin)
+
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses", value="100")
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
@@ -32,10 +34,26 @@ class RunPanel(wx.Panel):
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
+        # workaround:
+        # enable checkbox and set longer labels before fitting to avoid overlapping labels
+        cb_contin.SetValue(True)
+        self.on_check_contin(None)
+
         # sizers:
-        widgets = (STRETCH, cb_cont, le_npulses, le_fname, eta, btn_go)
+        widgets = (STRETCH, cb_contin, le_npulses, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
+
+        # disable checkbox after fitting as default state
+        cb_contin.SetValue(False)
+        self.on_check_contin(None)
+
+
+    def on_check_contin(self, _event):
+        continuous = self.cb_contin.IsChecked()
+        suffix = " per run" if continuous else ""
+        self.le_npulses.label.SetLabel("#Pulses" + suffix)
+        self.eta.st_label.SetLabel("Estimated time needed" + suffix + ":")
 
 
     def on_go(self, _event):
@@ -50,7 +68,7 @@ class RunPanel(wx.Panel):
         rate = self.eta.value
         n_pulses = correct_n_pulses(rate, n_pulses)
 
-        continuous = self.cb_cont.GetValue()
+        continuous = self.cb_contin.IsChecked()
 
         self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, continuous=continuous, wait=False)
 
