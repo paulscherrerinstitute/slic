@@ -6,11 +6,12 @@ from ..widgets import STRETCH, TwoButtons, LabeledMathEntry, LabeledFilenameEntr
 from .tools import ETADisplay, correct_n_pulses, run
 
 
-class StaticPanel(wx.Panel):
+class RunPanel(wx.Panel):
     # filename
     # detectors=None, channels=None, pvs=None
     # scan_info=None
     # n_pulses=100
+    # continuous=False
     # wait=True
 
     def __init__(self, parent, acquisition, instrument, *args, **kwargs):
@@ -20,6 +21,7 @@ class StaticPanel(wx.Panel):
         self.task = None
 
         # widgets:
+        self.cb_cont    = cb_cont    = wx.CheckBox(self, label="Run continuously")
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses", value="100")
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
@@ -31,7 +33,7 @@ class StaticPanel(wx.Panel):
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (STRETCH, le_npulses, le_fname, eta, btn_go)
+        widgets = (STRETCH, cb_cont, le_npulses, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -48,7 +50,9 @@ class StaticPanel(wx.Panel):
         rate = self.eta.value
         n_pulses = correct_n_pulses(rate, n_pulses)
 
-        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, wait=False)
+        continuous = self.cb_cont.GetValue()
+
+        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, continuous=continuous, wait=False)
 
         def wait():
             print("start", self.task)
