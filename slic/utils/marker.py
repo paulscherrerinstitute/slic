@@ -9,14 +9,19 @@ class Marker(Registry):
         if value is None:
             value = adj.get_current_value()
 
-        #TODO: maybe name should be mandatory?
-        if name is None:
-            printable_value = format_value(value, adj.units)
-            name = f"{adj.name} at {printable_value}"
-
         self.adj = adj
         self.value = value
-        self.name = name
+        self._name = name #TODO: maybe name should be mandatory?
+
+
+    @property
+    def name(self):
+        name = self._name
+        if name is None:
+            adj = self.adj
+            printable_value = format_value(self.value, adj.units)
+            name = f"{adj.name} at {printable_value}"
+        return name
 
 
     def __repr__(self):
@@ -39,6 +44,12 @@ class Marker(Registry):
         return self.adj.set_target_value(self.value, hold=hold)
 
     __call__ = goto
+
+
+    def update(self, value=None):
+        if value is None:
+            value = self.adj.get_current_value()
+        self.value = value
 
 
 

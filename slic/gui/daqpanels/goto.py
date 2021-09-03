@@ -91,13 +91,26 @@ class MarkerGoToLine(wx.BoxSizer):
         tc_pv.Disable()
         tc_value.Disable()
 
+        self.btn_update = btn_update = wx.Button(parent, label="Update!", size=(100, -1))
+        btn_update.Bind(wx.EVT_BUTTON, self.on_update)
+
         self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
         btn_go.Bind(wx.EVT_BUTTON, self.on_go)
 
         self.Add(tc_name,  1)
         self.Add(tc_pv,    1)
         self.Add(tc_value, 1)
-        self.Add(btn_go,   0, wx.LEFT|wx.EXPAND, 10)
+
+        self.Add(btn_update, 0, wx.LEFT|wx.EXPAND, 10)
+        self.Add(btn_go,     0, wx.LEFT|wx.EXPAND, 10)
+
+
+    def on_update(self, _event):
+        marker = self.marker
+        marker.update()
+        self.tc_name.SetValue(marker.name)
+        self.tc_pv.SetValue(marker.adj.name)
+        self.tc_value.SetValue(str(marker.value))
 
 
     def on_go(self, _event):
