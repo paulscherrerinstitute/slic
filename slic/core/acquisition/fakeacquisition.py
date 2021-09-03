@@ -24,7 +24,7 @@ class FakeAcquisition(BaseAcquisition):
         self._stop()
 
 
-    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, wait=True):
+    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, continuous=False, wait=True):
         if data_base_dir is None:
             print("No base directory specified, using default base directory.")
             data_base_dir = self.default_data_base_dir
@@ -37,10 +37,13 @@ class FakeAcquisition(BaseAcquisition):
             print("acquire({})".format(args))
             print(f"fake acquire to {filename}:")
             self.running = True
-            for i in trange(n_pulses):
-                if not self.running:
-                    break
-                sleep(1/100)
+            n = 0
+            while self.running and (continuous or n == 0):
+                n += 1
+                for i in trange(n_pulses):
+                    if not self.running:
+                        break
+                    sleep(1/100)
 
         task = DAQTask(_acquire, stopper=self._stop, filename=filename, hold=False)
         self.current_task = task
