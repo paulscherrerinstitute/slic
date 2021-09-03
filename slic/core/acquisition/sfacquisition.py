@@ -19,7 +19,7 @@ class SFAcquisition(BaseAcquisition):
 
         if not default_channels:
             paths = SwissFELPaths(instrument, pgroup)
-            default_channels = BSChannels(paths.default_channel_list)
+            default_channels = BSChannels.from_file(paths.default_channel_list)
 
         self.default_detectors = default_detectors
         self.default_channels = default_channels
