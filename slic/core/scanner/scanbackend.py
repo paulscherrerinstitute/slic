@@ -89,19 +89,28 @@ class ScanBackend:
 
 
     def repeated_scan_loop(self, step_info=None):
-        base_fname = self.filename
+        base_fn       = self.filename
+        base_fn_sfdaq = self.filename_sfdaq
 
         nreps = self.repeat
         for i in range(nreps):
             if not self.running:
                 break
             print("Repetition {} of {}".format(i+1, nreps))
-            fn = f"{base_fname}_{i+1:03}"
-            self.filename = self.scan_info_sfdaq.filename_base = fn #SFDAQ: this needs work!
-            print("File:", self.filename)
+            suffix = f"_{i+1:03}"
+
+            fn       = base_fn       + suffix
+            fn_sfdaq = base_fn_sfdaq + suffix
+
+            #TODO: this needs work!
+            self.filename       = self.scan_info.filename_base       = fn
+            self.filename_sfdaq = self.scan_info_sfdaq.filename_base = fn_sfdaq
+
+            print("File:", fn, fn_sfdaq)
             self.scan_loop(step_info=step_info)
 
-        self.filename = base_fname
+        self.filename       = base_fn
+        self.filename_sfdaq = base_fn_sfdaq
 
 
     def scan_loop(self, step_info=None):
