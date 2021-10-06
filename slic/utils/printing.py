@@ -1,4 +1,5 @@
 import string
+from .utils import sorted_naturally
 
 
 def printable_dict_of_dicts(d):
@@ -8,7 +9,7 @@ def printable_dict_of_dicts(d):
 
 def printable_dict(d, header=None):
     length = maxstrlen(d) + 1
-    lines = sorted("{}:{}{}".format(k, " "*(length-strlen(k)), v) for k, v in d.items())
+    lines = sorted_naturally("{}:{}{}".format(k, " "*(length-strlen(k)), v) for k, v in d.items())
 
     if header:
         header = format_header(header)
