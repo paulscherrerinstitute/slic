@@ -3,13 +3,22 @@ from types import SimpleNamespace
 from contextlib import contextmanager
 import colorama
 
-from epics import Motor as EpicsMotor
+import epics
 
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.core.adjustable.convenience import SpecConvenienceProgress
 from slic.utils.pyepics import EpicsString
 from slic.utils.eco_components.aliases import Alias
 from slic.utils.rangebar import RangeBar
+
+
+
+class EpicsMotor(epics.Motor):
+
+    # speed up: used by Motor.get_pv() with connect=True, i.e., waiting for connection
+    def PV(self, attr, connect=False, **kw):
+        return super().PV(attr, connect=connect, **kw)
+
 
 
 POS_TYPES = {"dial", "raw", "user"}
