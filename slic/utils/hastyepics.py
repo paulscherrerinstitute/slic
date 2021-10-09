@@ -1,4 +1,11 @@
 import epics
+from epics import get_pv as _get_pv
+
+
+
+def get_pv(*args, connect=False, timeout=0, **kwargs):
+    return _get_pv(*args, connect=connect, timeout=timeout, **kwargs)
+
 
 
 class Motor(epics.Motor):
