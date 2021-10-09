@@ -50,8 +50,7 @@ class SmarActStage(BaseDevice):
 
 class SmarActAxis(Adjustable):
 
-    def __init__(self, ID, name=None, internal=False):
-        units = PV(ID + ":DRIVE.EGU").get() #TODO
+    def __init__(self, ID, name=None, units=None, internal=False):
         super().__init__(ID, name=name, units=units, internal=internal)
 
         self._move_requested = False
@@ -65,8 +64,21 @@ class SmarActAxis(Adjustable):
             set_pos  = PV(ID + ":SET_POS"),
             stop     = PV(ID + ":STOP.PROC"),
             hold     = PV(ID + ":HOLD"),
-            twv      = PV(ID + ":TWV")
+            twv      = PV(ID + ":TWV"),
+            units    = PV(ID + ":DRIVE.EGU")
         )
+
+
+    @property
+    def units(self):
+        units = self._units
+        if units is not None:
+            return units
+        return self.pvs.units.get()
+
+    @units.setter
+    def units(self, value):
+        self._units = value
 
 
     def get_current_value(self, readback=True):

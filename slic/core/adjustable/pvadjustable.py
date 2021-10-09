@@ -13,13 +13,12 @@ class PVAdjustable(Adjustable):
     def __init__(self,
         pvname_setvalue, pvname_readback=None, pvname_stop=None, pvname_done_moving=None, pvname_moving=None, 
         accuracy=None, active_move=False, process_time=0, wait_time=0.1, timeout=60, 
-        ID=None, name=None, internal=False
+        ID=None, name=None, units=None, internal=False
     ):
         pv_setvalue = PV(pvname_setvalue)
         pv_readback = PV(pvname_readback) if pvname_readback else pv_setvalue
 
         ID = ID or pvname_readback or pvname_setvalue
-        units = pv_readback.units
         super().__init__(ID, name=name, units=units, internal=internal)
 
         self.accuracy = accuracy
@@ -46,6 +45,18 @@ class PVAdjustable(Adjustable):
             self.pvs.stop = pv_stop
 
         self._pcm = make_pcm(pvname_done_moving, pvname_moving)
+
+
+    @property
+    def units(self):
+        units = self._units
+        if units is not None:
+            return units
+        return self.pvs.readback.units
+
+    @units.setter
+    def units(self, value):
+        self._units = value
 
 
     def get_current_value(self, readback=True):
