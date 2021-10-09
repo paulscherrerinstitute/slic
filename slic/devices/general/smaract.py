@@ -2,11 +2,12 @@ import time
 import subprocess
 from types import SimpleNamespace
 from enum import IntEnum
-from epics import PV, ca
+from epics import ca
 
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.utils import typename
 from slic.utils.printing import printable_dict
+from slic.utils.hastyepics import get_pv as PV
 from ..basedevice import BaseDevice
 
 
