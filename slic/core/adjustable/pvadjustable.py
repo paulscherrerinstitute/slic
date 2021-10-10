@@ -1,8 +1,8 @@
 from time import sleep, time
 from types import SimpleNamespace
-from epics import PV
 
 from slic.utils import typename
+from slic.utils.hastyepics import get_pv as PV
 
 from .adjustable import Adjustable, AdjustableError
 from .pvchangemon import PVChangeMonitor
