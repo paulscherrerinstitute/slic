@@ -3,6 +3,7 @@ from epics import get_pv as _get_pv
 
 
 
+# speed up: do not wait for the connection to happen
 def get_pv(*args, connect=False, timeout=0, **kwargs):
     return _get_pv(*args, connect=connect, timeout=timeout, **kwargs)
 
