@@ -28,32 +28,32 @@ def preload_offload():
     offload()
 
 def preload():
-    log.debug("preload start")
+    log.debug("PV preload start")
     try:
         delta = file_age(fn)
         if delta > lifetime:
-            log.info("preload file too old")
+            log.info("PV preload file too old")
             return
         names = unpickle(fn)
     except Exception as e:
         tn = typename(e)
-        log.warning(f"preload file not loaded due to: {tn}: {e}")
+        log.warning(f"PV preload file not loaded due to: {tn}: {e}")
         return
     [get_pv(n) for n in names]
-    log.debug("preload done")
+    log.debug("PV preload done")
 
 def offload():
-    log.debug(f"offload delay ({delay} seconds)")
+    log.debug(f"PV offload delay ({delay} seconds)")
     sleep(delay)
-    log.debug("offload start")
+    log.debug("PV offload start")
     names = [i.pvname for i in epics.pv._PVcache_.values() if i.connected]
     try:
         pickle(names, fn)
     except Exception as e:
         tn = typename(e)
-        log.warning(f"preload file not saved due to: {tn}: {e}")
+        log.warning(f"PV preload file not saved due to: {tn}: {e}")
         return
-    log.debug("offload done")
+    log.debug("PV offload done")
 
 
 def file_age(fn):
