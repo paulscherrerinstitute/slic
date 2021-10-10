@@ -2,8 +2,9 @@ import os
 import logzero
 
 
-loglevel = os.environ.get("LOGLEVEL", "WARNING").upper()
-logzero.loglevel(loglevel)
+def logcfg(default_loglevel="WARNING"):
+    loglevel = os.environ.get("LOGLEVEL", default_loglevel).upper()
+    logzero.loglevel(loglevel)
 
 
 
