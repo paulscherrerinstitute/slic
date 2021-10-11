@@ -46,7 +46,7 @@ def offload():
     log.debug(f"PV offload delay ({delay} seconds)")
     sleep(delay)
     log.debug("PV offload start")
-    names = [i.pvname for i in epics.pv._PVcache_.values() if i.connected]
+    names = set(i.pvname for i in epics.pv._PVcache_.values() if i.connected)
     try:
         pickle(names, fn)
     except Exception as e:
