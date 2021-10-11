@@ -5,15 +5,26 @@ from .adjustable import Adjustable
 
 class PVEnumAdjustable(Adjustable):
 
-    def __init__(self, pvname, ID=None, name=None, internal=False):
+    def __init__(self, pvname, ID=None, name=None, units=None, internal=False):
         self.pvname = pvname
         self.pv = pv = PV(pvname)
 
         ID = ID or pvname
-        units = pv.units
         super().__init__(ID, name=name, units=units, internal=internal)
 
         self.states = Enum(pv.enum_strs)
+
+
+    @property
+    def units(self):
+        units = self._units
+        if units is not None:
+            return units
+        return self.pvs.readback.units
+
+    @units.setter
+    def units(self, value):
+        self._units = value
 
 
     def get_current_value(self, as_number=False):
