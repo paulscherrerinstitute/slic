@@ -1,5 +1,3 @@
-from epics import PV
-
 from slic.devices.general.motor import Motor
 from slic.utils.eco_components.aliases import Alias
 

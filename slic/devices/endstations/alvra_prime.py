@@ -1,6 +1,6 @@
-from epics import PV
 from slic.devices.general.motor import Motor
-from ..general.smaract import SmarActAxis
+from slic.devices.general.smaract import SmarActAxis
+from slic.utils.hastyepics import get_pv as PV
 
 
 class Huber:

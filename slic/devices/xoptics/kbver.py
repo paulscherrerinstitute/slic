@@ -1,4 +1,4 @@
-from epics import PV
+#from slic.utils.hastyepics import get_pv as PV
 from slic.devices.general.motor import Motor
 
 

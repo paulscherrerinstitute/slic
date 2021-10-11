@@ -1,10 +1,7 @@
-from epics import PV
-
 from slic.devices.general.motor import Motor
-from ..general.detectors import CameraCA, CameraBS
-
-#from ..general.epics_wrappers import EnumSelector
+from slic.devices.general.detectors import CameraCA, CameraBS
 from slic.utils.pyepics import EnumWrapper
+from slic.utils.hastyepics import get_pv as PV
 
 
 class Pprm:

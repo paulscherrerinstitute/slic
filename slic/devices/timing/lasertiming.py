@@ -3,11 +3,11 @@ from time import sleep, asctime
 from types import SimpleNamespace
 from abc import ABC, abstractmethod
 import numpy as np
-from epics import PV
 
 from slic.core.adjustable import Adjustable
 from slic.devices.general.motor import check_pos_type
 from slic.utils import typename
+from slic.utils.hastyepics import get_pv as PV
 
 
 OSCILLATOR_PERIOD = 1 / 71.368704e6

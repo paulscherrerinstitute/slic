@@ -1,7 +1,7 @@
 from time import sleep
-from epics import PV
 
 from slic.utils import typename
+from slic.utils.hastyepics import get_pv as PV
 
 from .adjustable import AdjustableError
 

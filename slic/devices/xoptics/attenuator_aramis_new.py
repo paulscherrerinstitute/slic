@@ -1,8 +1,8 @@
-from epics import PV
 from time import sleep
 from slic.devices.general.motor import Motor
 from slic.core.task import Task
 from slic.utils.eco_components.aliases import Alias
+from slic.utils.hastyepics import get_pv as PV
 
 
 class AttenuatorAramis:

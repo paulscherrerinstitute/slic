@@ -1,8 +1,8 @@
-from epics import PV
 from time import sleep
 import numpy as np
 
 from slic.devices.general.motor import Motor
+from slic.utils.hastyepics import get_pv as PV
 from slic.utils.eco_components.aliases import Alias
 
 

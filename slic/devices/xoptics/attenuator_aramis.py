@@ -1,5 +1,5 @@
-from epics import PV
 from slic.core.adjustable import Adjustable
+from slic.utils.hastyepics import get_pv as PV
 
 
 class AttenuatorAramis(Adjustable):

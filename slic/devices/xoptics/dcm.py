@@ -1,9 +1,9 @@
 from types import SimpleNamespace
 from time import sleep
 import numpy as np
-from epics import PV
 
 from slic.core.adjustable import Adjustable, PVAdjustable, PVEnumAdjustable
+from slic.utils.hastyepics import get_pv as PV
 from slic.devices.general.motor import Motor
 from ..device import Device
 

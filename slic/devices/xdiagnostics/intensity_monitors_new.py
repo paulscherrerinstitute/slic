@@ -1,11 +1,10 @@
 import numpy as np
-from epics import PV
-
-from slic.devices.general.motor import Motor
-from slic.utils.pyepics import EnumWrapper
-from ..general.detectors_new import FeDigitizer, PvDataStream
 from slic.core.adjustable import PVEnumAdjustable
+from slic.devices.general.motor import Motor
+from slic.devices.general.detectors_new import FeDigitizer, PvDataStream
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
+from slic.utils.pyepics import EnumWrapper
+from slic.utils.hastyepics import get_pv as PV
 
 
 class GasDetector:

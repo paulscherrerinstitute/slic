@@ -1,7 +1,9 @@
-from epics import PV
-from slic.core.adjustable import PVEnumAdjustable
-from cta_lib import CtaLib
 from numbers import Number
+from cta_lib import CtaLib
+
+from slic.core.adjustable import PVEnumAdjustable
+from slic.utils.hastyepics import get_pv as PV
+
 
 # EVR output mapping
 evr_mapping = {

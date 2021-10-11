@@ -1,9 +1,9 @@
 from time import sleep
 import numpy as np
-from epics import PV
 import h5py
 
 from slic.utils import get_dtype, get_shape
+from slic.utils.hastyepics import get_pv as PV
 
 from .acquisition import Acquisition
 

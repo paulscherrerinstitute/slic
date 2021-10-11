@@ -1,17 +1,19 @@
-import numpy as np
-from epics import caget
-from epics import PV
-from slic.utils.pyepics import EnumWrapper
+from datetime import datetime
+from time import sleep
+import subprocess
 
+from epics import caget
+import h5py
+import numpy as np
+
+from bsread import source, SUB
 from cam_server_client import PipelineClient
 from cam_server_client.utils import get_host_port_from_stream_address
-from bsread import source, SUB
-import subprocess
-import h5py
-from time import sleep
-from datetime import datetime
 
 from slic.core.task import Task
+from slic.utils.pyepics import EnumWrapper
+from slic.utils.hastyepics import get_pv as PV
+
 
 try:
     import sys, os

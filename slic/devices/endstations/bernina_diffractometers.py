@@ -1,7 +1,5 @@
 from slic.devices.general.motor import Motor
 from slic.core.adjustable import PVAdjustable
-
-from epics import PV
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 
 
@@ -44,12 +42,6 @@ class GPS:
             append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-U", pvname_readback="SARES20-HEX_PI:POSI-U", name="uhex")
             append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-V", pvname_readback="SARES20-HEX_PI:POSI-V", name="vhex")
             append_object_to_object(self, PVAdjustable, "SARES20-HEX_PI:SET-POSI-W", pvname_readback="SARES20-HEX_PI:POSI-W", name="whex")
-            #self.hex_x = PV("SARES20-HEX_PI:POSI-X")
-            #self.hex_y = PV("SARES20-HEX_PI:POSI-Y")
-            #self.hex_z = PV("SARES20-HEX_PI:POSI-Z")
-            #self.hex_u = PV("SARES20-HEX_PI:POSI-U")
-            #self.hex_v = PV("SARES20-HEX_PI:POSI-V")
-            #self.hex_w = PV("SARES20-HEX_PI:POSI-W")
 
         if "hlxz" in self.configuration:
             ### motors heavy load goniometer ###

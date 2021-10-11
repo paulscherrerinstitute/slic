@@ -1,11 +1,7 @@
 from slic.devices.general.motor import Motor
-from ..general.detectors import CameraCA, CameraBS
+from slic.devices.general.detectors import CameraCA, CameraBS
 from slic.utils.eco_components.aliases import Alias, append_object_to_object
 from slic.core.adjustable import PVEnumAdjustable
-
-# from ..devices_general.epics_wrappers import EnumSelector
-from epics import PV
-from slic.utils.pyepics import EnumWrapper
 
 
 def addMotorToSelf(self, ID=None, name=None):

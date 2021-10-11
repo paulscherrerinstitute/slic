@@ -1,5 +1,3 @@
-from epics import PV
-
 from slic.utils.eco_components.aliases import Alias
 from slic.devices.general.motor import Motor
 from ..general.smaract import SmarActAxis
