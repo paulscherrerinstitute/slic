@@ -44,7 +44,7 @@ def get_pulseid_pv(endstation):
     except KeyError as e:
         raise ValueError(f"cannot assign PulseID PV to endstation \"{endstation}\"") from e
 
-    pv = epics.PV(pv_name)
+    pv = epics.get_pv(pv_name)
     if not pv.wait_for_connection(timeout=0.1):
         raise RuntimeError(f"could not connect to PulseID PV \"{pv_name}\" for endstation \"{endstation}\"")
 

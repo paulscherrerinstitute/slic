@@ -3,14 +3,12 @@ from types import SimpleNamespace
 from contextlib import contextmanager
 import colorama
 
-import epics
-
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.core.adjustable.convenience import SpecConvenienceProgress
 from slic.utils.pyepics import EpicsString
 from slic.utils.eco_components.aliases import Alias
 from slic.utils.rangebar import RangeBar
-from slic.utils.hastyepics import  Motor as EpicsMotor
+from slic.utils.hastyepics import Motor as EpicsMotor
 
 
 POS_TYPES = {"dial", "raw", "user"}
