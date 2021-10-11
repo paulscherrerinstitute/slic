@@ -1,3 +1,4 @@
+from time import sleep
 from slic.core.adjustable import Adjustable
 from slic.utils.hastyepics import get_pv as PV
 
@@ -41,7 +42,7 @@ class AttenuatorAramis(Adjustable):
         return self.get_transmission(*args, verbose=False, **kwargs)[0]
 
 
-    def set_target_value(self, value, sleeptime=10, hold=False):
+    def set_target_value(self, value, sleeptime=5, hold=False):
         def changer():
             self.set_transmission(value)
             sleep(sleeptime)
