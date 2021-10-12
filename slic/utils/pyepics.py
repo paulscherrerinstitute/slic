@@ -6,8 +6,14 @@ class EnumWrapper:
     def __init__(self, pvname, elog=None):
         self._elog = elog
         self._pv = PV(pvname)
-        self.names = self._pv.enum_strs
-        self.setters = Positioner([(nam, lambda: self.set(nam)) for nam in self.names])
+
+    @property
+    def names(self):
+        return self._pv.enum_strs
+
+    @property
+    def setters(self):
+        return Positioner([(nam, lambda: self.set(nam)) for nam in self.names])
 
     def set(self, target):
         if type(target) is str:
