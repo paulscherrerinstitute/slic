@@ -20,7 +20,7 @@ class PVEnumAdjustable(Adjustable):
         units = self._units
         if units is not None:
             return units
-        return self.pvs.readback.units
+        return self.pv.units
 
     @units.setter
     def units(self, value):
