@@ -149,6 +149,8 @@ def run(fn): # TODO
 
 
 def correct_n_pulses(rate, n_pulses):
+    if not rate:
+        raise ValueError(f"cannot calculate #Pulses for Rep. Rate = {rate}")
     multiplier = NOMINAL_REPRATE / rate
     n_pulses *= multiplier
     n_pulses = int(n_pulses)
