@@ -24,7 +24,7 @@ class TwoButtons(wx.BoxSizer):
             try:
                 return handler(*args, **kwargs)
             except Exception as e:
-                exception_to_warning(e, stacklevel=2)
+                exception_to_warning(e)
                 post_event(wx.EVT_BUTTON, self.btn2)
         self.btn1.Bind(event, wrapped, *args, **kwargs)
 
@@ -34,7 +34,7 @@ class TwoButtons(wx.BoxSizer):
             try:
                 return handler(*args, **kwargs)
             except Exception as e:
-                exception_to_warning(e, stacklevel=2)
+                exception_to_warning(e)
 #                post_event(wx.EVT_BUTTON, self.btn1) # better not press start again if stop crashed
         self.btn2.Bind(event, wrapped, *args, **kwargs)
 
