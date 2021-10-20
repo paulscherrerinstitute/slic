@@ -25,11 +25,11 @@ class Channels(list, ABC):
         return cls(*channels)
 
     def __repr__(self):
-        return itemize(self)
+        return itemize(sorted(self))
 
 
     def cleanup(self, silent=False):
-        online, offline = self.get_status()
+        online, offline = self.status
         if offline:
             self.clear()
             self.extend(online)
@@ -41,7 +41,7 @@ class Channels(list, ABC):
 
     def check(self, print_online=False, print_offline=True):
         try:
-            online, offline = self.get_status()
+            online, offline = self.status
         except Exception as e:
             print(COLOR_BAD, end="")
             print("Channel status check failed due to:")
@@ -62,13 +62,13 @@ class Channels(list, ABC):
 
     @property
     def online(self):
-        online, _offline = self.get_status()
-        return sorted(online)
+        online, _offline = self.status
+        return online
 
     @property
     def offline(self):
-        _online, offline = self.get_status()
-        return sorted(offline)
+        _online, offline = self.status
+        return offline
 
     @property
     def status(self):
