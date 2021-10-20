@@ -14,7 +14,7 @@ COLOR_RESET = colorama.Fore.RESET
 Status = namedtuple("Status", ("online", "offline"))
 
 
-class Channels(list, ABC):
+class Channels(set, ABC):
 
     def __init__(self, *channels):
         super().__init__(channels)
@@ -32,7 +32,7 @@ class Channels(list, ABC):
         online, offline = self.status
         if offline:
             self.clear()
-            self.extend(online)
+            self.update(online)
             if silent:
                 return
             print(itemize(offline, header="Removed offline channels"))
