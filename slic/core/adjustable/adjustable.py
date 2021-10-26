@@ -1,5 +1,5 @@
 from slic.utils import typename
-from slic.core.task import Task
+from slic.core.task import Task, task_producer
 from .baseadjustable import BaseAdjustable
 from .convenience import SpecConvenience
 
@@ -12,6 +12,8 @@ class Adjustable(BaseAdjustable, SpecConvenience):
         self.units = units
         self.internal = internal
         self.current_task = None
+
+        self.set_target_value = task_producer(self, self.set_target_value)
 
 
     def _as_task(self, *args, **kwargs):
