@@ -30,7 +30,8 @@ class Task(BaseTask):
             self.exception = exc
 
     def run(self):
-        self.start()
+        if self.status == "ready":
+            self.start()
         return self.wait()
 
     def start(self):
