@@ -20,7 +20,12 @@ class Task(BaseTask):
 
     def target(self):
         try:
-            self.result = self.func()
+            res = self.func()
+            if isinstance(res, Task):
+                if res.status == "ready":
+                    res.start()
+                res = res.wait()
+            self.result = res
         except BaseException as exc: # BaseException covers a few more cases than Exception
             self.exception = exc
 
