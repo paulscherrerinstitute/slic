@@ -22,9 +22,7 @@ class Task(BaseTask):
         try:
             res = self.func()
             if isinstance(res, Task):
-                if res.status == "ready":
-                    res.start()
-                res = res.wait()
+                res = res.run()
             self.result = res
         except BaseException as exc: # BaseException covers a few more cases than Exception
             self.exception = exc
