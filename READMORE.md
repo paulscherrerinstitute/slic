@@ -57,10 +57,10 @@ TypeError: Can't instantiate abstract class MyNewCoolThing with abstract methods
 ... informing you that you need to implement three methods:
 
 - `get_current_value()` → return the current value/position
-- `set_target_value(value, hold=False)` → return a Task* that sets the target value/position
+- `set_target_value(value)` → change to the target value/position*
 - `is_moving()` → return a boolean moving status
 
-*cf. `slic.core.task.Task` and `Adjustable._as_task(...)`. (This part will be simplified soon :-) )
+*this will be automatically wrapped into a Task (`slic.core.task.Task`)
 
 Thus, you get to work and do that:
 
@@ -74,10 +74,8 @@ class MyNewCoolThing(Adjustable):
     def get_current_value(self):
         return self.pos
 
-    def set_target_value(self, value, hold=False):
-        def change():
-            self.pos = value
-        return self._as_task(change, hold=hold)
+    def set_target_value(self, value):
+        self.pos = value
 
     def is_moving(self):
         return False # OK OK, this is probably cheating ;)
