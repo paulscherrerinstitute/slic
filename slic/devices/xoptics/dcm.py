@@ -27,6 +27,8 @@ class DoubleCrystalMono(Device):
 class DoubleCrystalMonoEnergy(Adjustable):
 
     def __init__(self, ID, name=None):
+        self.wait_time = 0.1
+
         pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP"
         pvname_readback = "SAROP11-ARAMIS:ENERGY"
         pvname_moving   = "SAROP11-ODCM105:MOVING"
@@ -62,15 +64,11 @@ class DoubleCrystalMonoEnergy(Adjustable):
         self.pvs.setvalue.put(value)
         sleep(3)
 
-    def set_target_value(self, value, hold=False):
-        changer = lambda: self.move_and_wait(value)
-        return self._as_task(changer, hold=hold, stopper=self.stop)
-
-    def move_and_wait(self, value, wait_time=0.1):
+    def set_target_value(self, value):
         self.set_current_value(value)
 #        while abs(self.wait_for_valid_value() - value) > accuracy:
         while self.is_moving():
-            sleep(wait_time)
+            sleep(self.wait_time)
 
 
     def wait_for_valid_value(self):
@@ -98,11 +96,16 @@ class EcolEnergy:
         self.readback = PV(rb)
         self.dmov = PV(dmov)
         self.done = False
+        self.wait_time = 0.01
+        self.accuracy = 2
 
     def get_current_value(self):
         return self.readback.get()
 
-    def move_and_wait(self, value, wait_time=0.01, accuracy=2):
+    def set_target_value(self, value):
+        wait_time = self.wait_time
+        accuracy = self.accuracy
+
         curr = self.setter.get()
         while abs(curr - value) > 0.1:
             curr = self.setter.get()
@@ -115,10 +118,6 @@ class EcolEnergy:
         while not self.dmov.get():
             # print(self.dmov.get())
             sleep(wait_time)
-
-    def set_target_value(self, value, hold=False):
-        changer = lambda: self.move_and_wait(value)
-        return Task(changer, hold=hold)
 
 
 
@@ -135,14 +134,13 @@ class MonoEcolEnergy:
     def get_current_value(self):
         return self.dcm.get_current_value()
 
-    def move_and_wait(self, value):
+    def set_target_value(self, value):
         ch = [self.dcm.set_target_value(value), self.ecol.set_target_value(self.calcEcol(value))]
         for tc in ch:
             tc.wait()
 
-    def set_target_value(self, value, hold=False):
-        changer = lambda: self.move_and_wait(value)
-        return Task(changer, hold=hold, stopper=self.dcm.stop)
+    def stop(self):
+        self.dcm.stop()
 
     def alignOffsets(self):
         mrb = self.dcm.get_current_value()
@@ -180,6 +178,8 @@ class CoupledDoubleCrystalMono(Device):
 class CoupledDoubleCrystalMonoEnergy(Adjustable):
 
     def __init__(self, ID, name=None):
+        self.wait_time = 0.1
+
         pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP"
         pvname_readback = "SAROP11-ARAMIS:ENERGY"
 #        pvname_moving   = "SGE-OP2E-ARAMIS:MOVING" #TODO: this seems broken?
@@ -212,16 +212,12 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
     def get_current_value(self):
         return self.pvs.readback.get()
 
-    def set_target_value(self, value, hold=False):
-        changer = lambda: self.move_and_wait(value)
-        return self._as_task(changer, hold=hold, stopper=self.stop)
-
-    def move_and_wait(self, value, wait_time=0.1):
+    def set_target_value(self, value):
         self.enable_coupling()
         self.pvs.setvalue.put(value)
         sleep(3)
         while self.is_moving():
-            sleep(wait_time)
+            sleep(self.wait_time)
 
     def is_moving(self):
         moving = self.pvs.moving.get()
@@ -242,6 +238,8 @@ class CoupledDoubleCrystalMonoEnergy(Adjustable):
 class CoupledDoubleCrystalMonoEnergyWithTimeCorrection(Adjustable):
 
     def __init__(self, ID="CDCMEWTC", name="Alvra DCM coupled to FEL energy with time correction", limit_low=None, limit_high=None):
+        self.wait_time = 0.1
+
         self.limit_low = limit_low
         self.limit_high = limit_high
 
@@ -294,11 +292,9 @@ class CoupledDoubleCrystalMonoEnergyWithTimeCorrection(Adjustable):
                 msg = f"requested value is outside the allowed range: {value} > {lh}"
                 print(msg)
                 raise KeyboardInterrupt(msg)
-        changer = lambda: self.move_and_wait(value)
-        return self._as_task(changer, hold=hold, stopper=self.stop)
 
+        wait_time = self.wait_time
 
-    def move_and_wait(self, value, wait_time=0.1):
         self.enable_coupling()
 
         current_energy = self.get_current_value()

@@ -25,6 +25,8 @@ class ETiming(Adjustable):
         name="Globi Laser Electronic Timing",
         units="ps"
     ):
+        self.wait_time = 0.01
+
         super().__init__(ID, name=name, units=units)
 
         self.pvnames = SimpleNamespace(
@@ -43,15 +45,11 @@ class ETiming(Adjustable):
     def get_current_value(self):
         return self.pvs.readback.get() * 1e6 # convert from us to ps
 
-    def set_target_value(self, value, hold=False):
-        change = lambda: self.put_and_wait(value)
-        return self._as_task(change, hold=hold)
-
-    def put_and_wait(self, value, wait_time=0.01):
+    def set_target_value(self, value):
         self.pvs.setvalue.put(value)
         sleep(0.2)
         while self.is_moving():
-            sleep(wait_time)
+            sleep(self.wait_time)
 
     def is_moving(self):
         waiting = self.pvs.waiting.get()
@@ -106,9 +104,8 @@ class LXT(Adjustable):
         delay = index * OSCILLATOR_PERIOD - phase_shifter
         return -delay
 
-    def set_target_value(self, value, hold=False):
-        change = lambda: self.move(value)
-        return self._as_task(change, hold=hold)
+    def set_target_value(self, value):
+        self.move(value)
 
     def is_moving(self):
         raise NotImplementedError
@@ -144,9 +141,8 @@ class PhaseShifterAramis(Adjustable):
         super().__init__(ID, name=name)
         self._phase_shifter = PhaseShifter(ID, base_folder)
 
-    def set_target_value(self, value, hold=False):
-        change = lambda: self._phase_shifter.move(value)
-        return self._as_task(change, hold=hold)
+    def set_target_value(self, value):
+        self._phase_shifter.move(value)
 
     def get_current_value(self, pos_type="user"):
         check_pos_type(pos_type, {"user", "dial"})

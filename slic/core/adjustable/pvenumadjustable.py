@@ -31,10 +31,9 @@ class PVEnumAdjustable(Adjustable):
         as_string = not as_number
         return self.pv.get(as_string=as_string)
 
-    def set_target_value(self, value, hold=False):
+    def set_target_value(self, value):
         value = self.states.get(value)
-        change = lambda: self.pv.put(value, wait=True, use_complete=True)
-        return self._as_task(change, hold=hold)
+        self.pv.put(value, wait=True, use_complete=True)
 
     def is_moving(self):
         return not self.pv.put_complete

@@ -13,10 +13,9 @@ class GenericAdjustable(Adjustable):
     def get_current_value(self):
         return self._get()
 
-    def set_target_value(self, value, hold=False):
+    def set_target_value(self, value):
         self._last_target = value
-        change = lambda: self._set(value)
-        return self._as_task(change, hold=hold)
+        self._set(value)
 
     def is_moving(self):
         return not self._wait()
