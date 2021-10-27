@@ -1,5 +1,5 @@
 from slic.utils import typename
-from slic.core.task import Task, TaskProducer
+from slic.core.task import TaskProducer
 from .baseadjustable import BaseAdjustable
 from .convenience import SpecConvenience
 
