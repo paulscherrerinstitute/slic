@@ -9,7 +9,7 @@ class TaskProducer:
     current_task = None
 
 
-    def task_producer(self, func, starter=None, stopper=None):
+    def _task_producer(self, func, starter=None, stopper=None):
         @forwards_to(func, nfilled=1) # nfilled=1 to remove self
         @wraps(func)
         def wrapper(*args, hold=False, **kwargs):

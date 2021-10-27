@@ -15,7 +15,7 @@ class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience):
         self.internal = internal
 
         self.set_target_value, _start, self.stop, self.wait =\
-            self.task_producer(self.set_target_value, stopper=self.stop)
+            self._task_producer(self.set_target_value, stopper=self.stop)
 
 
     def tweak(self, delta, *args, **kwargs):
