@@ -66,16 +66,14 @@ class PVAdjustable(Adjustable):
             return self.pvs.setvalue.get()
 
 
-    def set_target_value(self, value, hold=False):
-        change = lambda: self._change(value)
-        return self._as_task(change, stopper=self._stop, hold=hold)
-
-
-    def _change(self, value):
+    def set_target_value(self, value):
         self._wait_for_ready()
 
         ret = self.pvs.setvalue.put(value, wait=True, use_complete=True) # use_complete=True enables status in PV.put_complete
-        handle_put_return_value(ret)
+        error = handle_put_return_value(ret)
+        if error is not None:
+            tname = typename(self)
+            raise AdjustableError(f"changing {tname} \"{self.name}\" to {value} {self.units} failed due to {error}")
         sleep(self.process_time)
 
         self._wait_for_done()
@@ -101,12 +99,12 @@ class PVAdjustable(Adjustable):
         for _ in self._pcm.wait():
             sleep(self.wait_time)
             if self._pcm.state == "ready" and self._is_close():
-                self._stop()
+                self.stop()
                 print("seems we are already there")
                 break
 
 
-    def _stop(self):
+    def stop(self):
         if self._pcm:
             self._pcm.stop()
 
@@ -135,13 +133,6 @@ class PVAdjustable(Adjustable):
             return setvalue == readback
 
 
-    def stop(self):
-        try:
-            return super().stop()
-        except:
-            self._stop()
-
-
     def _get_pv(self, name):
         return vars(self.pvs).get(name)
 
@@ -164,7 +155,7 @@ def make_pcm(pvname_done_moving, pvname_moving):
 
 def handle_put_return_value(ret):
     if ret == 1: # success
-        return
+        return None
 
     if ret == -1:
         error = "time out"
@@ -173,7 +164,7 @@ def handle_put_return_value(ret):
     else:
         error = f"unknown error (return code: {ret})"
 
-    raise AdjustableError(f"changing {tname} \"{self.name}\" to {value} {self.units} failed due to {error}")
+    return error
 
 
 
