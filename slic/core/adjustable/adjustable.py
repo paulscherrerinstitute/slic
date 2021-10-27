@@ -1,32 +1,18 @@
 from slic.utils import typename
-from slic.core.task import Task, task_producer
+from slic.core.task import Task, TaskProducer
 from .baseadjustable import BaseAdjustable
 from .convenience import SpecConvenience
 
 
-class Adjustable(BaseAdjustable, SpecConvenience):
+class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience):
 
     def __init__(self, ID, name=None, units=None, internal=False):
         self.ID = ID
         self.name = name or ID
         self.units = units
         self.internal = internal
-        self.current_task = None
 
-        self.set_target_value = task_producer(self, self.set_target_value)
-
-
-    def _as_task(self, *args, **kwargs):
-        self.current_task = task = Task(*args, **kwargs)
-        return task
-
-    def wait(self):
-        if self.current_task:
-            return self.current_task.wait()
-
-    def stop(self):
-        if self.current_task:
-            return self.current_task.stop()
+        self.set_target_value = self.task_producer(self.set_target_value)
 
 
     def tweak(self, delta, *args, **kwargs):

@@ -2,6 +2,6 @@
 from .task import Task
 from .daqtask import DAQTask
 from .loop import Loop, TimedLoop
-from .tools import task_producer
+from .tools import TaskProducer
 
 
