@@ -37,6 +37,9 @@ class DummyAdjustable(Adjustable):
         self._running = True
 
         for i in range(nsteps):
+            if not self._running:
+                print(repr(self))
+                return
             sleep(delta_time)
             self._current_value += delta_value
 
@@ -46,6 +49,10 @@ class DummyAdjustable(Adjustable):
         self._running = False
 
         print(repr(self))
+
+
+    def stop(self):
+        self._running = False
 
 
     def is_moving(self):
