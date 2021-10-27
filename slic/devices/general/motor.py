@@ -78,7 +78,7 @@ class Motor(Adjustable, SpecConvenienceProgress):
         return self._motor.set_position(value, **kwargs)
 
 
-    def set_target_value(self, value, hold=False, check_limits=True, show_progress=False):
+    def set_target_value(self, value, check_limits=True, show_progress=False):
         ignore_limits = not check_limits
 
         low, high = self.get_limits()
@@ -86,22 +86,18 @@ class Motor(Adjustable, SpecConvenienceProgress):
             ignore_limits = True
 
         if not show_progress:
-            def change():
-                self._move(value, ignore_limits=ignore_limits, wait=True)
+            self._move(value, ignore_limits=ignore_limits, wait=True)
 
         else:
-            def change():
-                start = self.get_current_value()
-                stop = value
+            start = self.get_current_value()
+            stop = value
 
-                with RangeBar(start, stop) as rbar:
-                    def on_change(value=None, **kw):
-                        rbar.show(value)
+            with RangeBar(start, stop) as rbar:
+                def on_change(value=None, **kw):
+                    rbar.show(value)
 
-                    with self.use_callback(on_change):
-                        self._move(stop, ignore_limits=ignore_limits, wait=True)
-
-        return self._as_task(change, hold=hold, stopper=self._motor.stop)
+                with self.use_callback(on_change):
+                    self._move(stop, ignore_limits=ignore_limits, wait=True)
 
 
     def _move(self, *args, **kwargs):
@@ -118,10 +114,7 @@ class Motor(Adjustable, SpecConvenienceProgress):
 
 
     def stop(self):
-        try:
-            return super().stop()
-        except:
-            self._motor.stop()
+        self._motor.stop()
 
 
     def get_limits(self, pos_type="user"):

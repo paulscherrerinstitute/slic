@@ -53,6 +53,8 @@ class SmarActAxis(Adjustable):
     def __init__(self, ID, name=None, units=None, internal=False):
         super().__init__(ID, name=name, units=units, internal=internal)
 
+        self.wait_time = 0.1
+        self.timeout = 60
         self._move_requested = False
 
         self.pvs = SimpleNamespace(
@@ -90,13 +92,9 @@ class SmarActAxis(Adjustable):
     def reset_current_value_to(self, value):
         return self.pvs.set_pos.put(value)
 
-    def set_target_value(self, value, hold=False):
-        change = lambda: self._move(value)
-        return self._as_task(change, stopper=self._stop, hold=hold)
-
-
-    def _move(self, value, wait_time=0.1, timeout=60):
-        timeout += time.time()
+    def set_target_value(self, value):
+        wait_time = self.wait_time
+        timeout = self.timeout + time.time()
 
         self._move_requested = True
         self.pvs.drive.put(value, wait=True)
@@ -106,7 +104,7 @@ class SmarActAxis(Adjustable):
             time.sleep(wait_time)
             if time.time() >= timeout:
                 tname = typename(self)
-                self._stop()
+                self.stop()
                 raise SmarActError(f"starting to move {tname} \"{self.name}\" to {value} {self.units} timed out")
 
         # wait for move done
@@ -118,7 +116,7 @@ class SmarActAxis(Adjustable):
         self._move_requested = False
 
 
-    def _stop(self):
+    def stop(self):
         self._move_requested = False
         self.pvs.stop.put(1, wait=True)
 
@@ -132,13 +130,6 @@ class SmarActAxis(Adjustable):
     @property
     def status(self):
         return self.pvs.status.get()
-
-
-    def stop(self):
-        try:
-            return super().stop()
-        except:
-            self._stop()
 
 
     def within_limits(self, val):
