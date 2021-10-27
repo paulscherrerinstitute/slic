@@ -3,7 +3,7 @@ from time import sleep
 from .adjustable import Adjustable
 
 
-DELTA_T = 0.1 # sec
+DELTA_T = 0.1 # sec # approx. time between steps
 
 
 class DummyAdjustable(Adjustable):
