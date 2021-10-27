@@ -6,7 +6,7 @@ from .convenience import SpecConvenience
 
 class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience):
 
-    stop = None
+    stop = None #TODO: might be better to make this callable
 
     def __init__(self, ID, name=None, units=None, internal=False):
         self.ID = ID
