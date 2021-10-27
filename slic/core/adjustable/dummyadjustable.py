@@ -15,11 +15,9 @@ class DummyAdjustable(Adjustable):
             value += round(random(), 1)
         return value
 
-    def set_target_value(self, value, hold=False):
-        def change():
-            self._current_value = value
-            print(repr(self))
-        return self._as_task(change, hold=hold)
+    def set_target_value(self, value):
+        self._current_value = value
+        print(repr(self))
 
     def is_moving(self):
         return False
