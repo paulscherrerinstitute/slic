@@ -6,13 +6,16 @@ from .convenience import SpecConvenience
 
 class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience):
 
+    stop = None
+
     def __init__(self, ID, name=None, units=None, internal=False):
         self.ID = ID
         self.name = name or ID
         self.units = units
         self.internal = internal
 
-        self.set_target_value = self.task_producer(self.set_target_value)
+        self.set_target_value, _start, self.stop, self.wait =\
+            self.task_producer(self.set_target_value, stopper=self.stop)
 
 
     def tweak(self, delta, *args, **kwargs):
