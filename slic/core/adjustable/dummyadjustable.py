@@ -15,11 +15,14 @@ class DummyAdjustable(Adjustable):
         self._process_time = process_time
         self._running = False
 
+
     def get_current_value(self):
         value = self._current_value
+
         jitter = self._jitter
         if jitter:
             value += plus_minus() * float(jitter)
+
         return value
 
 
@@ -53,7 +56,6 @@ class DummyAdjustable(Adjustable):
 
     def stop(self):
         self._running = False
-
 
     def is_moving(self):
         return self._running
