@@ -3,7 +3,7 @@ from time import sleep
 from slic.utils import typename
 from slic.utils.hastyepics import get_pv as PV
 
-from .adjustable import AdjustableError
+from .error import AdjustableError
 
 
 class PVChangeMonitor:

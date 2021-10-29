@@ -1,6 +1,7 @@
 from slic.utils import typename
 from slic.core.task import TaskProducer
 from .baseadjustable import BaseAdjustable
+from .error import AdjustableError
 from .convenience import SpecConvenience
 
 
@@ -58,11 +59,6 @@ class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience):
         value = self.get_current_value()
         units = self.units
         return f"{value} {units}" if units is not None else str(value)
-
-
-
-class AdjustableError(Exception):
-    pass
 
 
 

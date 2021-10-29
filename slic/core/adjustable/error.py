@@ -1,0 +1,5 @@
+
+class AdjustableError(Exception):
+    pass
+
+
