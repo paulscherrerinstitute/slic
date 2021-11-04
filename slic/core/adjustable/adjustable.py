@@ -3,13 +3,14 @@ from slic.core.task import TaskProducer
 from .baseadjustable import BaseAdjustable
 from .error import AdjustableError
 from .convenience import SpecConvenience
+from .limited import Limited
 
 
-class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience):
+class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience, Limited):
 
     stop = None #TODO: might be better to make this callable
 
-    def __init__(self, ID, name=None, units=None, internal=False):
+    def __init__(self, ID, name=None, units=None, internal=False, limit_low=None, limit_high=None):
         self.ID = ID
         self.name = name or ID
         self.units = units
@@ -17,6 +18,9 @@ class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience):
 
         self.set_target_value, _start, self.stop, self.wait =\
             self._task_producer(self.set_target_value, stopper=self.stop)
+
+        self.set_limits(limit_low, limit_high)
+        self.set_target_value = self._with_check_limits(self.set_target_value)
 
 
     def tweak(self, delta, *args, **kwargs):
