@@ -1,6 +1,6 @@
 import wx
 
-from slic.utils import typename
+from slic.utils import printable_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import STRETCH, TwoButtons, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
@@ -77,8 +77,7 @@ class RunPanel(wx.Panel):
             try:
                 self.task.wait()
             except Exception as e:
-                tn = typename(e)
-                print(f"{tn}: {e}")
+                print(printable_exception(e))
             self.task = None
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
 

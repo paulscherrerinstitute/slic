@@ -1,6 +1,6 @@
 import wx
 
-from slic.utils import nice_arange, typename
+from slic.utils import nice_arange, printable_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import STRETCH, TwoButtons, LabeledEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
@@ -127,8 +127,7 @@ class ScanPanel(wx.Panel):
             try:
                 self.scan.run()
             except Exception as e:
-                tn = typename(e)
-                print(f"{tn}: {e}")
+                print(printable_exception(e))
             self.scan = None
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
             post_event(wx.EVT_COMBOBOX, self.cb_adjs)
