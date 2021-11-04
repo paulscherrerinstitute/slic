@@ -1,7 +1,6 @@
 from threading import Thread
 
-from slic.utils import typename
-from slic.utils.exceptions import ChainedException
+from slic.utils import typename, ChainedException
 
 from .basetask import BaseTask
 
