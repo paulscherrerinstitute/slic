@@ -2,6 +2,8 @@ from collections import defaultdict
 from datetime import datetime
 import wx
 
+from slic.utils import typename
+
 from ..widgets import EXPANDING, TwoButtons, LabeledTweakEntry, LabeledMathEntry, make_filled_vbox, post_event, AutoWidthListCtrl, copy_to_clipboard
 from ..widgets.plotting import PlotDialog
 from .tools import AdjustableComboBox, run
@@ -102,9 +104,11 @@ class TweakPanel(wx.Panel):
         self.task = adjustable.set_target_value(target)
 
         def wait():
-            print("start", self.task)
-            self.task.wait()
-            print("done", self.task)
+            try:
+                self.task.wait()
+            except Exception as e:
+                tn = typename(e)
+                print(f"{tn}: {e}")
             self.task = None
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
             post_event(wx.EVT_COMBOBOX, self.cb_adjs)

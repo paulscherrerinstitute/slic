@@ -1,6 +1,7 @@
 import numpy as np
 import wx
 
+from slic.utils import typename
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
@@ -150,7 +151,11 @@ class SpecialScanPanel(wx.Panel):
         self.scan = self.scanner.ascan_list(adjustable, steps, n_pulses, filename, return_to_initial_values=return_to_initial_values, repeat=n_repeat, start_immediately=False)
 
         def wait():
-            self.scan.run()
+            try:
+                self.scan.run()
+            except Exception as e:
+                tn = typename(e)
+                print(f"{tn}: {e}")
             self.scan = None
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
             post_event(wx.EVT_COMBOBOX, self.cb_adjs)
