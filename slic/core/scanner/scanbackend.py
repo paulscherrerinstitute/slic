@@ -1,6 +1,6 @@
 import os
 
-from slic.utils import make_missing_dir
+from slic.utils import make_missing_dir, printable_exception
 from slic.utils.printing import printable_dict, itemize, format_header, printable_table
 from slic.utils.ask_yes_no import ask_Yes_no
 from slic.utils.trinary import check_trinary
@@ -69,8 +69,11 @@ class ScanBackend:
         try:
             self.running = True
             scan_loop(step_info=step_info)
-        except KeyboardInterrupt:
-            print() # print new line after ^C
+        except Exception as e:
+            if isinstance(e, KeyboardInterrupt):
+                print() # print new line after ^C
+            else:
+                print("Stopping because of:", printable_exception(e))
             self.stop()
             print("Stopped current DAQ tasks:")
             for t in self.current_tasks:
@@ -282,21 +285,16 @@ def set_all_target_values_and_wait(adjustables, values):
 def set_all_target_values(adjustables, values):
     return [adj.set_target_value(val) for adj, val in zip(adjustables, values)]
 
-def wait_for_all(tasks):
+def wait_for_all(tasks): #TODO: do we need to stagger the waiting here (to raise all exceptions ASAP)?
     for t in tasks:
-        try: # TODO: what do we want to do here? not write the filenames(s?) to scan_info?
-            t.wait()
-        except KeyboardInterrupt:
-            raise
-        except Exception as e: #TODO: should this just be TaskError?
-            print(e)
+        t.wait()
 
 def stop_all(tasks):
     for t in tasks:
         try:
             t.stop()
         except Exception as e:
-            print(e)
+            print("Stopping caused:", printable_exception(e))
 
 
 
