@@ -16,6 +16,9 @@ class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience, Limited):
         self.units = units
         self.internal = internal
 
+        # The following allows a subclass to implement the methods that are actually called by a user.
+        # The methods then are wrapped here to provide extra funcationality (producing tasks, checking limits).
+
         self.set_target_value, _start, self.stop, self.wait =\
             self._task_producer(self.set_target_value, stopper=self.stop)
 
