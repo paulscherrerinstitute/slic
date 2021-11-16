@@ -132,16 +132,18 @@ class SmarActAxis(Adjustable):
         return self.pvs.status.get()
 
 
-    def within_limits(self, val):
-        low, high = self.get_limits()
+    def within_epics_limits(self, val):
+        low, high = self.get_epics_limits()
         return low <= val <= high
 
-    def get_limits(self):
+    def get_epics_limits(self):
         low  = self.pvs.llm.get()
         high = self.pvs.hlm.get()
         return low, high
 
-    def set_limits(self, low, high, relative_to_current=False):
+    def set_epics_limits(self, low, high, relative_to_current=False):
+        low  = -np.inf if low  is None else low
+        high = +np.inf if high is None else high
         if relative_to_current:
             val = self.get_current_value()
             low  += val
@@ -201,7 +203,7 @@ class SmarActAxis(Adjustable):
             val += self.pvs.drive.get()
 
         if not ignore_limits:
-            if not self.within_limits(val):
+            if not self.within_epics_limits(val):
                 return OUTSIDE_LIMITS
 
         put_stat = self.pvs.drive.put(val, wait=wait, timeout=timeout)

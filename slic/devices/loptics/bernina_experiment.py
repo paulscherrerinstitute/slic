@@ -56,10 +56,10 @@ class DelayTime(AdjustableVirtual):
     def get_limits(self):
         return [self._mm_to_s(tl) for tl in self._stage.get_limits()]
 
-    def set_limits(self, low_limit, high_limit):
+    def set_epics_limits(self, low_limit, high_limit):
         lims_stage = [self._s_to_mm(tl) for tl in [low_limit, high_limit]]
         lims_stage.sort()
-        self._stage.set_limits(*lims_stage)
+        self._stage.set_epics_limits(*lims_stage)
 
         return [self._mm_to_s(tl) for tl in self._stage.get_limits()]
 

@@ -7,7 +7,7 @@ from slic.utils.hastyepics import get_pv as PV
 
 class AttenuatorAramis:
 
-    def __init__(self, ID, E_min=1500, sleeptime=1, name=None, set_limits=[-52, 2], pulse_picker=None):
+    def __init__(self, ID, E_min=1500, sleeptime=1, name=None, limits=[-52, 2], pulse_picker=None):
         self.ID = ID
         self._pv_status_str = PV(ID + ":MOT2TRANS.VALD")
         self._pv_status_int = PV(ID + ":IDX_RB")
@@ -21,8 +21,8 @@ class AttenuatorAramis:
         for n, mot in enumerate(self.motors):
             self.__dict__[f"motor_{n+1}"] = mot
             self.alias.append(mot.alias)
-            if set_limits:
-                mot.set_limits(*set_limits)
+            if limits:
+                mot.set_epics_limits(*limits)
 
 
     def updateE(self, energy=None):

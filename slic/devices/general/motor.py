@@ -2,6 +2,7 @@ import subprocess
 from types import SimpleNamespace
 from contextlib import contextmanager
 import colorama
+import numpy as np
 
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.core.adjustable.convenience import SpecConvenienceProgress
@@ -81,7 +82,7 @@ class Motor(Adjustable, SpecConvenienceProgress):
     def set_target_value(self, value, check_limits=True, show_progress=False):
         ignore_limits = not check_limits
 
-        low, high = self.get_limits()
+        low, high = self.get_epics_limits()
         if low == high == 0:
             ignore_limits = True
 
@@ -117,14 +118,21 @@ class Motor(Adjustable, SpecConvenienceProgress):
         self._motor.stop()
 
 
-    def get_limits(self, pos_type="user"):
+    def get_epics_limits(self, pos_type="user"):
         check_pos_type(pos_type)
         low_name, high_name = POS_TYPE_LIMIT_NAMES[pos_type]
         low  = self._motor.get(low_name)
         high = self._motor.get(high_name)
         return low, high
 
-    def set_limits(self, low, high, relative_to_current=False, pos_type="user"):
+    def set_epics_limits(self, low, high, relative_to_current=False, pos_type="user"):
+        if low is None and high is None:
+            low = high = 0
+            self._motor.put(low_name, low)
+            self._motor.put(high_name, high)
+            return
+        low  = -np.inf if low  is None else low
+        high = +np.inf if high is None else high
         check_pos_type(pos_type)
         low_name, high_name = POS_TYPE_LIMIT_NAMES[pos_type]
         if relative_to_current:
@@ -134,8 +142,8 @@ class Motor(Adjustable, SpecConvenienceProgress):
         self._motor.put(low_name, low)
         self._motor.put(high_name, high)
 
-    def print_limits(self):
-        low, high = self.get_limits()
+    def print_epics_limits(self):
+        low, high = self.get_epics_limits()
         val = self.get_current_value()
         res = RangeBar(low, high).get(val)
         print(res)

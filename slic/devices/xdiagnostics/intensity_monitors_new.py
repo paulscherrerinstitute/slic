@@ -66,8 +66,8 @@ class SolidTargetDetectorPBPS_new:
             PV(tc).put(bytes(str(tv), "utf8"))
 
     def get_calibration_values_position(self, calib_intensities, seconds=5, motion_range=0.2):
-        self.x_diodes.set_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
-        self.y_diodes.set_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.x_diodes.set_epics_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.y_diodes.set_epics_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
         self.x_diodes.set_target_value(0).wait()
         self.y_diodes.set_target_value(0).wait()
         raw = []
