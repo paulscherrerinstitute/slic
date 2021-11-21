@@ -17,6 +17,8 @@ class Condition(BaseCondition):
         self.time_start = None
         self.required_fraction = required_fraction
 
+        self._repeater_gen = self._repeater()
+
         self.data = []
 
 
@@ -117,6 +119,22 @@ class Condition(BaseCondition):
         name = typename(self)
         status = "happy" if self.check() else "unhappy"
         return f"{name}: {status}" #TODO
+
+
+    def wants_repeat(self):
+        try:
+            next(self._repeater_gen)
+        except StopIteration:
+            self._repeater_gen = self._repeater()
+            return False
+        return True
+
+    def _repeater(self):
+        while True:
+            self.get_ready()
+            yield
+            if self.is_happy():
+                break
 
 
 
