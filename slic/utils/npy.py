@@ -72,6 +72,7 @@ def istep(val, step):
 
 
 
+#TODO: True -> numpy.full_like(val, True) ?
 def within(val, vmin, vmax):
     if vmin is not None and vmax is not None:
         vmin, vmax = sorted((vmin, vmax))
