@@ -122,19 +122,18 @@ class Condition(BaseCondition):
 
 
     def wants_repeat(self):
-        try:
-            next(self._repeater_gen)
-        except StopIteration:
-            self._repeater_gen = self._repeater()
-            return False
-        return True
+        return next(self._repeater_gen)
 
     def _repeater(self):
+        # outer loop keeps generator alive
         while True:
-            self.get_ready()
-            yield
-            if self.is_happy():
-                break
+            # inner loop runs body until condition is happy
+            while True:
+                self.get_ready()
+                yield True # signal condition wants a repeat (incl. the first measurement)
+                if self.is_happy():
+                    break
+            yield False # signal condition was happy with last repeat
 
 
 
