@@ -14,6 +14,7 @@ class Condition(BaseCondition):
         self.vmin = vmin
         self.vmax = vmax
         self.wait_time = wait_time
+        self.time_start = None
         self.required_fraction = required_fraction
 
         self.data = []
@@ -34,6 +35,7 @@ class Condition(BaseCondition):
     def clear_and_start_counting(self):
         self.clear()
         self.start_counting()
+        self.time_start = time()
 
     def clear(self):
         self.data.clear()
@@ -55,13 +57,18 @@ class Condition(BaseCondition):
 
 
     def analyze(self):
+        if self.time_start is None:
+            print("Cannot analyze, never started...")
+            return
+
         vmin = self.vmin
         vmax = self.vmax
         required_fraction = self.required_fraction
         data = self.data
 
+        waited_time = time() - self.time_start
         ndata = len(data) or "no(!)"
-        print(f"Waited for {self.wait_time} seconds and collected {ndata} data points.")
+        print(f"Waited for {waited_time:.1f} seconds and collected {ndata} data points.")
 
         if not data:
             print("Is the source alive?")
