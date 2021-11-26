@@ -40,7 +40,7 @@ class GoToPanel(wx.Panel):
             labels.Add(st_go_dummy, 0, wx.LEFT|wx.EXPAND, 10)
 
             widgets.append(labels)
-            widgets += [MarkerGoToLine(self, m)   for m in markers]
+            widgets += [MarkerGoToLine(self, m) for m in markers]
 
         if markers and shortcuts:
             sl_sep = wx.StaticLine(self)
@@ -79,17 +79,13 @@ class MarkerGoToLine(wx.BoxSizer):
 
         self.marker = marker
 
-        self.tc_name  = tc_name  = wx.TextCtrl(parent, value=marker.name)
-        self.tc_pv    = tc_pv    = wx.TextCtrl(parent, value=marker.adj.name) #AdjustableComboBox(parent)
-        self.tc_value = tc_value = wx.TextCtrl(parent, value=str(marker.value))
+        self.tc_name  = tc_name  = DisabledTextCtrl(parent, value=marker.name)
+        self.tc_pv    = tc_pv    = DisabledTextCtrl(parent, value=marker.adj.name) #AdjustableComboBox(parent)
+        self.tc_value = tc_value = DisabledTextCtrl(parent, value=str(marker.value))
 
 #        tc_name.SetHint("Name / Description")
 #        tc_pv.SetHint("PV Name")
 #        tc_value.SetHint("Value")
-
-        tc_name.Disable()
-        tc_pv.Disable()
-        tc_value.Disable()
 
         self.btn_update = btn_update = wx.Button(parent, label="Update!", size=(100, -1))
         btn_update.Bind(wx.EVT_BUTTON, self.on_update)
@@ -125,8 +121,7 @@ class ShortcutGoToLine(wx.BoxSizer):
 
         self.shortcut = shortcut
 
-        self.tc_name = tc_name = wx.TextCtrl(parent, value=shortcut.name)
-        tc_name.Disable()
+        self.tc_name = tc_name = DisabledTextCtrl(parent, value=shortcut.name)
         tc_name.SetToolTip(shortcut.source)
 
         self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
@@ -138,6 +133,15 @@ class ShortcutGoToLine(wx.BoxSizer):
 
     def on_go(self, _event):
         self.shortcut.run().wait()
+
+
+
+class DisabledTextCtrl(wx.TextCtrl):
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("style", wx.TE_READONLY)
+        super().__init__(*args, **kwargs)
+        self.SetBackgroundColour(wx.LIGHT_GREY)
 
 
 
