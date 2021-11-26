@@ -68,9 +68,9 @@ class ScanPanel(wx.Panel):
         hb_pos = make_filled_hbox(widgets)
 
         widgets = (cb_relative, cb_return)
-        hb_cbs = make_filled_vbox(widgets)
+        vb_cbs = make_filled_vbox(widgets, flag=wx.ALL)
 
-        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, hb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
+        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
