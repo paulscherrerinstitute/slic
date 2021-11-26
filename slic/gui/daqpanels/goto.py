@@ -114,7 +114,7 @@ class MarkerGoToLine(wx.BoxSizer):
 
 
     def on_go(self, _event):
-        self.marker.goto()
+        self.marker.goto().wait()
 
 
 
@@ -137,7 +137,7 @@ class ShortcutGoToLine(wx.BoxSizer):
 
 
     def on_go(self, _event):
-        self.shortcut.run()
+        self.shortcut.run().wait()
 
 
 
