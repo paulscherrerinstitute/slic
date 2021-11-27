@@ -1,7 +1,7 @@
 import wx
 
 from slic.utils.registry import instances
-from slic.utils import Marker, Shortcut
+from slic.utils import Marker, Shortcut, printable_exception
 
 from ..widgets import STRETCH, make_filled_vbox, make_filled_hbox
 from .tools import run
