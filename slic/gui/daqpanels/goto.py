@@ -4,6 +4,7 @@ from slic.utils.registry import instances
 from slic.utils import Marker, Shortcut
 
 from ..widgets import STRETCH, make_filled_vbox, make_filled_hbox
+from .tools import run
 
 
 class GoToPanel(wx.Panel):
@@ -90,8 +91,8 @@ class MarkerGoToLine(wx.BoxSizer):
         self.btn_update = btn_update = wx.Button(parent, label="Update!", size=(100, -1))
         btn_update.Bind(wx.EVT_BUTTON, self.on_update)
 
-        self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
-        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+        self.btn_go = btn_go = wx.ToggleButton(parent, label="Go!", size=(100, -1))
+        btn_go.Bind(wx.EVT_TOGGLEBUTTON, self.on_go)
 
         self.Add(tc_name,  1)
         self.Add(tc_pv,    1)
@@ -110,7 +111,13 @@ class MarkerGoToLine(wx.BoxSizer):
 
 
     def on_go(self, _event):
-        self.marker.goto().wait()
+        def wait():
+            try:
+                self.marker.goto().wait()
+            except Exception as e:
+                print(printable_exception(e))
+            wx.CallAfter(self.btn_go.SetValue, False)
+        run(wait)
 
 
 
@@ -124,15 +131,21 @@ class ShortcutGoToLine(wx.BoxSizer):
         self.tc_name = tc_name = DisabledTextCtrl(parent, value=shortcut.name)
         tc_name.SetToolTip(shortcut.source)
 
-        self.btn_go = btn_go = wx.Button(parent, label="Go!", size=(100, -1))
-        btn_go.Bind(wx.EVT_BUTTON, self.on_go)
+        self.btn_go = btn_go = wx.ToggleButton(parent, label="Go!", size=(100, -1))
+        btn_go.Bind(wx.EVT_TOGGLEBUTTON, self.on_go)
 
         self.Add(tc_name, 1)
         self.Add(btn_go,  0, wx.LEFT|wx.EXPAND, 10)
 
 
     def on_go(self, _event):
-        self.shortcut.run().wait()
+        def wait():
+            try:
+                self.shortcut.run().wait()
+            except Exception as e:
+                print(printable_exception(e))
+            wx.CallAfter(self.btn_go.SetValue, False)
+        run(wait)
 
 
 
