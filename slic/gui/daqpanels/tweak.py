@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 import wx
 
-from slic.utils import printable_exception
+from slic.utils import printed_exception
 
 from ..widgets import EXPANDING, TwoButtons, LabeledTweakEntry, LabeledMathEntry, make_filled_vbox, post_event, AutoWidthListCtrl, copy_to_clipboard
 from ..widgets.plotting import PlotDialog
@@ -104,10 +104,8 @@ class TweakPanel(wx.Panel):
         self.task = adjustable.set_target_value(target)
 
         def wait():
-            try:
+            with printed_exception:
                 self.task.wait()
-            except Exception as e:
-                print(printable_exception(e))
             self.task = None
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
             post_event(wx.EVT_COMBOBOX, self.cb_adjs)

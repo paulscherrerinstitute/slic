@@ -1,7 +1,7 @@
 import wx
 
 from slic.utils.registry import instances
-from slic.utils import Marker, Shortcut, printable_exception
+from slic.utils import Marker, Shortcut, printed_exception
 
 from ..widgets import STRETCH, make_filled_vbox, make_filled_hbox
 from .tools import run
@@ -112,10 +112,8 @@ class MarkerGoToLine(wx.BoxSizer):
 
     def on_go(self, _event):
         def wait():
-            try:
+            with printed_exception:
                 self.marker.goto().wait()
-            except Exception as e:
-                print(printable_exception(e))
             wx.CallAfter(self.btn_go.SetValue, False)
         run(wait)
 
@@ -140,10 +138,8 @@ class ShortcutGoToLine(wx.BoxSizer):
 
     def on_go(self, _event):
         def wait():
-            try:
+            with printed_exception:
                 self.shortcut.run().wait()
-            except Exception as e:
-                print(printable_exception(e))
             wx.CallAfter(self.btn_go.SetValue, False)
         run(wait)
 

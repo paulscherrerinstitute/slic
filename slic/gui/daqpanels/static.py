@@ -1,6 +1,6 @@
 import wx
 
-from slic.utils import printable_exception
+from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import STRETCH, TwoButtons, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
@@ -52,10 +52,8 @@ class StaticPanel(wx.Panel):
         self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, wait=False)
 
         def wait():
-            try:
+            with printed_exception:
                 self.task.wait()
-            except Exception as e:
-                print(printable_exception(e))
             self.task = None
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
 
