@@ -1,4 +1,5 @@
-from .utils import typename
+from contextlib import AbstractContextManager
+from .utils import typename, singleton
 
 
 class ChainedException(Exception):
@@ -19,6 +20,18 @@ def printable_exception(exc):
     name = typename(exc)
     message = exc.args[0] if exc.args else ""
     return "{}: {}".format(name, message)
+
+
+
+@singleton
+class printed_exception(AbstractContextManager):
+
+   def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            name = exc_type.__name__
+            message = exc_val or ""
+            print("{}: {}".format(name, message))
+        return True # this causes the with statement to suppress the exception
 
 
 

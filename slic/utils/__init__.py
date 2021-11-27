@@ -5,7 +5,7 @@ from .channels import load_channels, Channels
 from .config import Config
 from .elog import Elog
 from .eval import arithmetic_eval
-from .exceptions import ChainedException, printable_exception
+from .exceptions import ChainedException, printable_exception, printed_exception
 from .ipy import devices
 from .json import json_save, json_load
 from .marker import Marker, markers
