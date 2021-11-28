@@ -80,9 +80,9 @@ class MarkerGoToLine(wx.BoxSizer):
 
         self.marker = marker
 
-        self.tc_name  = tc_name  = DisabledTextCtrl(parent, value=marker.name)
-        self.tc_pv    = tc_pv    = DisabledTextCtrl(parent, value=marker.adj.name) #AdjustableComboBox(parent)
-        self.tc_value = tc_value = DisabledTextCtrl(parent, value=str(marker.value))
+        self.tc_name  = tc_name  = ReadOnlyTextCtrl(parent, value=marker.name)
+        self.tc_pv    = tc_pv    = ReadOnlyTextCtrl(parent, value=marker.adj.name) #AdjustableComboBox(parent)
+        self.tc_value = tc_value = ReadOnlyTextCtrl(parent, value=str(marker.value))
 
 #        tc_name.SetHint("Name / Description")
 #        tc_pv.SetHint("PV Name")
@@ -126,7 +126,7 @@ class ShortcutGoToLine(wx.BoxSizer):
 
         self.shortcut = shortcut
 
-        self.tc_name = tc_name = DisabledTextCtrl(parent, value=shortcut.name)
+        self.tc_name = tc_name = ReadOnlyTextCtrl(parent, value=shortcut.name)
         tc_name.SetToolTip(shortcut.source)
 
         self.btn_go = btn_go = wx.ToggleButton(parent, label="Go!", size=(100, -1))
@@ -145,7 +145,7 @@ class ShortcutGoToLine(wx.BoxSizer):
 
 
 
-class DisabledTextCtrl(wx.TextCtrl):
+class ReadOnlyTextCtrl(wx.TextCtrl):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("style", wx.TE_READONLY)
