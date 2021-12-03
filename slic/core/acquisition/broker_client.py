@@ -2,12 +2,11 @@ import requests
 import json
 from glob import glob
 from time import sleep
-from tqdm import tqdm
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 import numpy as np
 
-from slic.utils import xrange
+from slic.utils import xrange, tqdm_mod, tqdm_sleep
 from slic.utils.json import json_validate
 
 from .broker_tools import get_current_pulseid
@@ -93,7 +92,7 @@ class BrokerClient:
 
         self.running = True
 
-        with stqdm(total=n_pulses) as pbar:
+        with tqdm_mod(total=n_pulses) as pbar:
             while self.running:
                 current_pulseid = get_current_pulseid()
                 delta_n = (current_pulseid - start_pulseid) // rate_multiplicator
@@ -329,32 +328,6 @@ def align_pid(pid, rm, block_offset=0):
     block = pid // rm
     block += block_offset
     return block * rm
-
-
-
-class stqdm(tqdm):
-
-    def set(self, elapsed):
-        """
-        update with elapsed n, i.e., the delta between start and current n
-        """
-        elapsed = clamp(elapsed, 0, self.total)
-        increment = elapsed - self.n
-        self.update(increment)
-
-
-
-def clamp(val, vmin, vmax):
-    val = max(val, vmin)
-    val = min(val, vmax)
-    return val
-
-
-
-def tqdm_sleep(seconds, ndiv=100):
-    delta = seconds / float(ndiv)
-    for _ in tqdm(range(ndiv)):
-        sleep(delta)
 
 
 
