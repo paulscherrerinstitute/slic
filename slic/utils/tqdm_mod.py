@@ -22,7 +22,7 @@ def clamp(val, vmin, vmax):
 
 def tqdm_sleep(seconds, ndiv=100):
     delta = seconds / float(ndiv)
-    for _ in tqdm.tqdm(range(ndiv)):
+    for _ in tqdm.trange(ndiv):
         sleep(delta)
 
 
