@@ -3,7 +3,7 @@ import wx
 from slic.utils import nice_arange, printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import EXPANDING, STRETCH, TwoButtons, LabeledEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
+from ..widgets import EXPANDING, MINIMIZED, STRETCH, TwoButtons, LabeledEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
 from .tools import AdjustableComboBox, ETADisplay, correct_n_pulses, run
 
 
@@ -34,10 +34,7 @@ class Scan2DPanel(wx.Panel):
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (cb_return,) # make sure checkbox does not stretch horizontally
-        vb_cbs = make_filled_vbox(widgets, flag=wx.ALL)
-
-        widgets = (EXPANDING, adjbox1, EXPANDING, adjbox2, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
+        widgets = (EXPANDING, adjbox1, EXPANDING, adjbox2, MINIMIZED, cb_return, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -133,10 +130,7 @@ class AdjustableBox(wx.StaticBoxSizer):
         widgets = (le_start, le_stop, le_step, le_nsteps)
         hb_pos = make_filled_hbox(widgets)
 
-        widgets = (cb_relative,) # make sure checkbox does not stretch horizontally
-        vb_cbs = make_filled_vbox(widgets, flag=wx.ALL)
-
-        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, vb_cbs)
+        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, MINIMIZED, cb_relative)
         make_filled_vbox(widgets, border=10, box=self)
 
 

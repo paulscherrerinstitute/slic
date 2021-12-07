@@ -5,6 +5,7 @@ WX_DEFAULT_RESIZABLE_DIALOG_STYLE = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.
 
 
 class EXPANDING: pass
+class MINIMIZED: pass
 class STRETCH: pass
 
 
@@ -40,18 +41,25 @@ def make_filled_box(orient, widgets, proportion, flag, border, box):
     }
 
     expand = False
+    minimal = False
 
     for i in widgets:
         if i is STRETCH:
             box.AddStretchSpacer()
         elif i is EXPANDING:
             expand = True # store for (and then apply to) next widget
+        elif i is MINIMIZED:
+            minimal = True # store for (and then apply to) next widget
         else:
-            prop = proportion
+            iprop = proportion
+            iflag = flag
             if expand:
                 expand = False # apply only once
-                prop = OTHER_PROP[prop] # other proportion makes widget expanding
-            box.Add(i, proportion=prop, flag=flag, border=border)
+                iprop = OTHER_PROP[iprop] # other proportion makes widget expanding
+            if minimal:
+                minimal = False # apply only once
+                iflag = wx.ALL #TODO: calculate actual flag without wx.EXPAND?
+            box.Add(i, proportion=iprop, flag=iflag, border=border)
 
     return box
 
