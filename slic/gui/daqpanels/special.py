@@ -94,7 +94,7 @@ class SpecialScanPanel(wx.Panel):
         hb_pos = make_filled_hbox(widgets)
 
         widgets = (cb_relative, cb_return)
-        vb_cbs = make_filled_vbox(widgets, flag=wx.ALL)
+        vb_cbs = make_filled_vbox(widgets, flag=wx.ALL) # make sure checkboxes do not expand horizontally
 
         widgets = (cb_adjs, st_adj, EXPANDING, hb_values, hb_pos, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
