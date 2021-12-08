@@ -1,17 +1,16 @@
 
 def increase(s):
-    base, number = split_last_number(s)
-    if not number:
-        return base
-    number = increase_maintaining_width(number)
-    return base + number
-
+    return adjust_last_number(s, +1)
 
 def decrease(s):
+    return adjust_last_number(s, -1)
+
+
+def adjust_last_number(s, delta):
     base, number = split_last_number(s)
     if not number:
         return base
-    number = decrease_maintaining_width(number)
+    number = adjust_maintaining_width(number, delta)
     return base + number
 
 
@@ -48,16 +47,9 @@ def split_at(seq, i):
     return seq[:i], seq[i:]
 
 
-def increase_maintaining_width(num):
+def adjust_maintaining_width(num, delta):
     length = len(num)
-    num = int(num) + 1
-    num = str(num).zfill(length)
-    return num
-
-
-def decrease_maintaining_width(num):
-    length = len(num)
-    num = int(num) - 1
+    num = int(num) + delta
     num = max(num, 1) #TODO clamp decrease at 1? or 0? or allow negative numbers?
     num = str(num).zfill(length)
     return num
