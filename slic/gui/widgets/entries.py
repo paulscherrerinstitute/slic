@@ -204,10 +204,11 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
             event.Skip()
 
     def _update_value(self, adjust):
+        ins = self.GetInsertionPoint()
         val = self.GetValue()
         val = adjust(val)
         self.SetValue(val)
-        self.SetInsertionPointEnd()
+        self.SetInsertionPoint(ins)
 
     def GetValue(self):
         return super().GetValue().strip()
