@@ -64,14 +64,12 @@ def reverse_string(s):
 
 
 def count_digits(seq):
-    i = 0
     for i, char in enumerate(seq):
         if not char.isdigit():
-            break
-    else:
-        # last item was a digit
-        i += 1
-    return i
+            return i
+
+    # all chars are digits or seq is empty
+    return len(seq)
 
 
 def split_at(seq, i):
