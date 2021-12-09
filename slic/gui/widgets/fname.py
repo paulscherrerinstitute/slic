@@ -20,24 +20,17 @@ def adjust_selected_number(s, index, delta):
     except ValueError as e:
         print(e)
         return s
-    return join_selected_number(left, number, right)
+    return left + number + right
 
 
 def split_selected_number(s, index):
     left, right = split_at(s, index)
 
-    left  = left.split("_")
-    right = right.split("_")
-
-    left_piece  = left.pop()
-    right_piece = right.pop(0)
+    left, left_piece   = split_last_number(left)
+    right_piece, right = split_first_number(right)
 
     number = left_piece + right_piece
     return left, number, right
-
-
-def join_selected_number(left, num, right):
-    return "_".join((*left, num, *right))
 
 
 
@@ -75,6 +68,9 @@ def count_digits(seq):
     for i, char in enumerate(seq):
         if not char.isdigit():
             break
+    else:
+        # last item was a digit
+        i += 1
     return i
 
 
