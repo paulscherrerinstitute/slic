@@ -15,11 +15,9 @@ def adjust(s, index, delta):
 
 def adjust_selected_number(s, index, delta):
     left, number, right = split_selected_number(s, index)
-    try:
-        number = adjust_maintaining_width(number, delta)
-    except ValueError as e:
-        print(e)
+    if not number:
         return s
+    number = adjust_maintaining_width(number, delta)
     return left + number + right
 
 
@@ -37,7 +35,7 @@ def split_selected_number(s, index):
 def adjust_last_number(s, delta):
     base, number = split_last_number(s)
     if not number:
-        return base
+        return s
     number = adjust_maintaining_width(number, delta)
     return base + number
 
