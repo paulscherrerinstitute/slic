@@ -8,7 +8,7 @@ from .fname import increase, decrease
 
 
 ADJUSTMENTS = {
-    wx.WXK_UP: increase,
+    wx.WXK_UP:   increase,
     wx.WXK_DOWN: decrease
 }
 
@@ -197,16 +197,18 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
 
     def on_key_press(self, event):
         key = event.GetKeyCode()
-        if key in ADJUSTMENTS:
-            adjust = ADJUSTMENTS[key]
-            self._update_value(adjust)
-        else:
+        if key not in ADJUSTMENTS:
             event.Skip()
+            return
+
+        adjust = ADJUSTMENTS[key]
+        self._update_value(adjust)
+
 
     def _update_value(self, adjust):
         ins = self.GetInsertionPoint()
         val = self.GetValue()
-        val = adjust(val)
+        val = adjust(val, ins)
         self.SetValue(val)
         self.SetInsertionPoint(ins)
 

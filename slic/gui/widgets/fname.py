@@ -1,9 +1,44 @@
 
-def increase(s):
-    return adjust_last_number(s, +1)
+def increase(s, index=None):
+    return adjust(s, index, +1)
 
-def decrease(s):
-    return adjust_last_number(s, -1)
+def decrease(s, index=None):
+    return adjust(s, index, -1)
+
+
+def adjust(s, index, delta):
+    if index is not None:
+        return adjust_selected_number(s, index, delta)
+    return adjust_last_number(s, delta)
+
+
+
+def adjust_selected_number(s, index, delta):
+    left, number, right = split_selected_number(s, index)
+    try:
+        number = adjust_maintaining_width(number, delta)
+    except ValueError as e:
+        print(e)
+        return s
+    return join_selected_number(left, number, right)
+
+
+def split_selected_number(s, index):
+    left, right = split_at(s, index)
+
+    left  = left.split("_")
+    right = right.split("_")
+
+    left_piece  = left.pop()
+    right_piece = right.pop(0)
+
+    number = left_piece + right_piece
+    return left, number, right
+
+
+def join_selected_number(left, num, right):
+    return "_".join((*left, num, *right))
+
 
 
 def adjust_last_number(s, delta):
