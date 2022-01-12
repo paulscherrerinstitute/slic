@@ -1,4 +1,4 @@
-from epics import PV
+from epics import get_pv
 from slic.utils.printing import printable_dict
 from .adjustable import Adjustable
 
@@ -7,7 +7,7 @@ class PVEnumAdjustable(Adjustable):
 
     def __init__(self, pvname, ID=None, name=None, units=None, internal=False):
         self.pvname = pvname
-        self.pv = pv = PV(pvname)
+        self.pv = pv = get_pv(pvname)
 
         ID = ID or pvname
         super().__init__(ID, name=name, units=units, internal=internal)
