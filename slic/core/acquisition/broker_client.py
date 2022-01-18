@@ -117,6 +117,10 @@ class BrokerClient:
         self.running_continuously = False
 
 
+    def next_run(self):
+        return advance_run_number(self.address, self.config.pgroup)
+
+
     @property
     def status(self):
         if self.running:
@@ -179,6 +183,15 @@ class BrokerClient:
 
 
 
+def advance_run_number(address, pgroup, *args, **kwargs):
+    params = {"pgroup": pgroup}
+    requrl = address.rstrip("/") + "/get_next_run_number"
+    response = get_request(requrl, params, *args, **kwargs)
+    run_number = response["message"]
+    run_number = int(run_number)
+    return run_number
+
+
 def retrieve(address, *args, **kwargs):
     requrl = address.rstrip("/") + "/retrieve_from_buffers"
     response = post_request(requrl, *args, **kwargs)
@@ -190,6 +203,11 @@ def retrieve(address, *args, **kwargs):
 def post_request(requrl, params, timeout=10):
     params = json_validate(params)
     response = requests.post(requrl, json=params, timeout=timeout).json()
+    return validate_response(response)
+
+def get_request(requrl, params, timeout=10):
+    params = json_validate(params)
+    response = requests.get(requrl, json=params, timeout=timeout).json()
     return validate_response(response)
 
 
