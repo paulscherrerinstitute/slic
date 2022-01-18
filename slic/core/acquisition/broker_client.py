@@ -83,6 +83,8 @@ class BrokerClient:
 
 
     def run(self, start_pulseid, n_pulses):
+        assert self.run_number is not None, "current run number is None" #TODO: raise proper exception
+
         # n_pulses may differ from self.n_pulses due to alignment
         # there is no alignment done in here, except for early stops
         stop_pulseid = start_pulseid + n_pulses
@@ -107,8 +109,9 @@ class BrokerClient:
 
         self.running = False
 
-        params = self.get_config(start_pulseid, stop_pulseid)
-        self.run_number = run_number = retrieve(self.address, params, timeout=self.timeout)
+        params = self.get_config(self.run_number, start_pulseid, stop_pulseid)
+        run_number = retrieve(self.address, params, timeout=self.timeout)
+        assert run_number == self.run_number, f"received {run_number} and expected {self.run_number} run numbers not identical" #TODO: raise proper exception
         return run_number
 
 
@@ -118,7 +121,8 @@ class BrokerClient:
 
 
     def next_run(self):
-        return advance_run_number(self.address, self.config.pgroup)
+        self.run_number = run_number = advance_run_number(self.address, self.config.pgroup)
+        return run_number
 
 
     @property
@@ -195,7 +199,7 @@ def advance_run_number(address, pgroup, *args, **kwargs):
 def retrieve(address, *args, **kwargs):
     requrl = address.rstrip("/") + "/retrieve_from_buffers"
     response = post_request(requrl, *args, **kwargs)
-    run_number = response["message"]
+    run_number = response["run_number"]
     run_number = int(run_number)
     return run_number
 
@@ -242,11 +246,13 @@ class BrokerConfig:
         self.scan_info = scan_info
 
 
-    def to_dict(self, start_pulseid, stop_pulseid):
+    def to_dict(self, run_number, start_pulseid, stop_pulseid):
         config = {
             "pgroup": self.pgroup,
             "rate_multiplicator": self.rate_multiplicator,
-            "directory_name": self.output_dir,
+#            "directory_name": self.output_dir, # structure <= 2021
+            "user_tag": self.output_dir,        # structure >= 2022
+            "run_number": run_number,           # new in 2022
             "start_pulseid": start_pulseid,
             "stop_pulseid": stop_pulseid
         }
