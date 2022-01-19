@@ -42,11 +42,12 @@ class SFAcquisition(BaseAcquisition):
             print("Skipping retrieval since no filename was given.")
             return
 
-        if data_base_dir is None:
-            print("No base directory specified, using default base directory.")
-            data_base_dir = self.default_data_base_dir
+#TODO: this is not supported by sf_daq anymore; need a replacement?
+#        if data_base_dir is None:
+#            print("No base directory specified, using default base directory.")
+#            data_base_dir = self.default_data_base_dir
 
-        filename = os.path.join(data_base_dir, filename)
+#        filename = os.path.join(data_base_dir, filename)
 
         if detectors is None:
             print("No detectors specified, using default detector list.")
