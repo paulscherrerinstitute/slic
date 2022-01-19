@@ -30,7 +30,11 @@ class SFAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, continuous=False, wait=True):
+    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, continuous=False, is_scan_step=False, wait=True):
+        if not is_scan_step:
+            run_number = self.client.next_run()
+            print(f"Advanced run number to {run_number}.")
+
         if not filename or filename == "/dev/null":
             print("Skipping retrieval since no filename was given.")
             return
