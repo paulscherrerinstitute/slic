@@ -60,6 +60,12 @@ class ScanBackend:
 
 
     def run(self, step_info=None):
+        #TODO this needs work
+        for acq in self.acquisitions:
+            if is_sfdaq(acq):
+                run_number = acq.client.next_run()
+                print(f"Advanced run number to {run_number} for {acq}.")
+
         self.store_initial_values()
         self.create_output_dirs()
 
@@ -199,7 +205,7 @@ class ScanBackend:
             if is_sfdaq(acq):
                 #SFDAQ: sf_daq expects scan info in advance, detectors/bs-channels/PVs separated, raw filename without counters
                 scan_info = self.scan_info_sfdaq.to_sfdaq_dict()
-                t = acq.acquire(self.filename_sfdaq, data_base_dir=self.data_base_dir, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, wait=False)
+                t = acq.acquire(self.filename_sfdaq, data_base_dir=self.data_base_dir, detectors=self.detectors, channels=self.channels, pvs=self.pvs, scan_info=scan_info, n_pulses=self.n_pulses_per_step, is_scan_step=True, wait=False)
             else:
                 #SFDAQ: others do not expect scan info at all, expect only one type of channels, filename (which is optional) is used verbatim, i.e., needs to have counters and scan sub dir
                 t = acq.acquire(filename=filename, data_base_dir=self.data_base_dir, channels=self.channels, n_pulses=self.n_pulses_per_step, wait=False)
