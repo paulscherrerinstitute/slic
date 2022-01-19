@@ -34,6 +34,9 @@ class SFAcquisition(BaseAcquisition):
         if not is_scan_step:
             run_number = self.client.next_run()
             print(f"Advanced run number to {run_number}.")
+        else:
+            run_number = self.client.run_number
+            print(f"Continuing run number {run_number}.")
 
         if not filename or filename == "/dev/null":
             print("Skipping retrieval since no filename was given.")
