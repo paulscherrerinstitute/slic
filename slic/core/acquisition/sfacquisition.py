@@ -70,14 +70,8 @@ class SFAcquisition(BaseAcquisition):
         paths = SwissFELPaths(self.instrument, self.pgroup)
 
         def _acquire():
-            if continuous:
-                run_numbers = client.start_continuous()
-            else:
-                run_number = client.start()
-                run_numbers = [run_number]
-            printable_run_numbers = [str(rn).zfill(6) for rn in run_numbers]
-            filename_patterns = [paths.raw / filename / f"run_{prn}.*.h5" for prn in printable_run_numbers]
-            return filename_patterns #TODO: list? insert the file types instead of the asterisk?
+            res = client.start_continuous() if continuous else client.start()
+            return res["filenames"]
 
         task = DAQTask(_acquire, stopper=client.stop, filename=filename, hold=False)
         self.current_task = task
