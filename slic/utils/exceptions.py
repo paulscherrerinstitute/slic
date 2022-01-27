@@ -5,7 +5,7 @@ from .utils import typename, singleton
 class ChainedException(Exception):
 
     def __str__(self):
-        printable = printable_exception(self)
+        printable = self.args[0] if self.args else ""
 
         cause = self.__cause__
         if cause:
@@ -18,7 +18,7 @@ class ChainedException(Exception):
 
 def printable_exception(exc):
     name = typename(exc)
-    message = exc.args[0] if exc.args else ""
+    message = str(exc)
     return "{}: {}".format(name, message)
 
 
