@@ -42,10 +42,8 @@ class BrokerClient:
 
         start_pulseid, n_pulses_actual = aligned_pid_and_n(current_pulseid, n_pulses, rate_multiplicator)
 
-        run_number = self.run(start_pulseid, n_pulses_actual)
-
-        print("run number:", run_number) #TODO
-        return run_number
+        res = self.run(start_pulseid, n_pulses_actual)
+        return res
 
 
     def start_continuous(self, n_repeat=None):
@@ -55,10 +53,8 @@ class BrokerClient:
 
         start_pulseid = align_pid_left(current_pulseid, rate_multiplicator)
 
-        run_numbers = list(self.run_continuous(start_pulseid, n_pulses, n_repeat=n_repeat))
-
-        print("continuous run numbers:", run_numbers) #TODO
-        return run_numbers
+        res = list(self.run_continuous(start_pulseid, n_pulses, n_repeat=n_repeat))
+        return res
 
 
     def run_continuous(self, start_pulseid, n_pulses, n_repeat=None):
@@ -110,9 +106,12 @@ class BrokerClient:
         self.running = False
 
         params = self.get_config(self.run_number, start_pulseid, stop_pulseid)
-        run_number = retrieve(self.address, params, timeout=self.timeout)
+        res = retrieve(self.address, params, timeout=self.timeout)
+
+        run_number = res["run_number"]
         assert run_number == self.run_number, f"received {run_number} and expected {self.run_number} run numbers not identical" #TODO: raise proper exception
-        return run_number
+
+        return res
 
 
     def stop(self):
@@ -199,9 +198,13 @@ def advance_run_number(address, pgroup, *args, **kwargs):
 def retrieve(address, *args, **kwargs):
     requrl = address.rstrip("/") + "/retrieve_from_buffers"
     response = post_request(requrl, *args, **kwargs)
-    run_number = response["run_number"]
-    run_number = int(run_number)
-    return run_number
+    res = dict(
+        run_number       = int(response["run_number"]),
+        acq_number       = int(response["acquisition_number"]),
+        total_acq_number = int(response["unique_acquisition_number"]),
+        filenames = response["files"]
+    )
+    return res
 
 
 def post_request(requrl, params, timeout=10):
