@@ -1,6 +1,6 @@
 import os
 from time import sleep
-from collections import defaultdict, Iterable
+from collections import defaultdict
 
 from slic.utils.channels import Channels
 from slic.utils.printing import printable_dict
@@ -72,11 +72,8 @@ class SFAcquisition(BaseAcquisition):
         paths = SwissFELPaths(self.instrument, self.pgroup)
 
         def _acquire():
-            if continuous:
-                res = client.start_continuous()
-                res = transpose_dicts(res)
-            else:
-                res = client.start()
+            res = client.start_continuous() if continuous else client.start()
+            res = transpose_dicts(res) #TODO: only for continuous?
             filenames = res.pop("filenames")
             print_response(res)
             return filenames
@@ -114,6 +111,8 @@ class SFAcquisition(BaseAcquisition):
 
 
 def transpose_dicts(seq_of_dicts):
+    if isinstance(seq_of_dicts, dict):
+        seq_of_dicts = [seq_of_dicts]
     res = defaultdict(list)
     for d in seq_of_dicts:
         for k, v in d.items():
@@ -129,7 +128,7 @@ def print_response(res):
     to_print = {}
     for k, v in res.items():
         k = k.replace("_", " ")
-        if isinstance(v, Iterable) and len(set(v)) == 1: #TODO: maybe the Iterable check should not be here, but in transpose_dicts?
+        if len(set(v)) == 1:
             v = v[0]
         else:
             k = k if k.endswith("s") else k+"s"
