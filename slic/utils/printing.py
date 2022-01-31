@@ -7,9 +7,12 @@ def printable_dict_of_dicts(d):
     return "\n".join(lines)
 
 
-def printable_dict(d, header=None):
+def printable_dict(d, header=None, sorter=sorted_naturally):
     length = maxstrlen(d) + 1
-    lines = sorted_naturally("{}:{}{}".format(k, " "*(length-strlen(k)), v) for k, v in d.items())
+    lines = ("{}:{}{}".format(k, " "*(length-strlen(k)), v) for k, v in d.items())
+
+    if sorter:
+        lines = sorter(lines)
 
     if header:
         header = format_header(header)
