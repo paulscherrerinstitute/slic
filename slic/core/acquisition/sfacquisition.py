@@ -1,7 +1,9 @@
 import os
 from time import sleep
+from collections import defaultdict
 
 from slic.utils.channels import Channels
+from slic.utils.printing import printable_dict
 from slic.core.task import DAQTask
 
 from .baseacquisition import BaseAcquisition
@@ -71,7 +73,10 @@ class SFAcquisition(BaseAcquisition):
 
         def _acquire():
             res = client.start_continuous() if continuous else client.start()
-            return res["filenames"]
+            res = transpose_dicts(res) #TODO: only for continuous?
+            filenames = res.pop("filenames")
+            print_response(res)
+            return filenames
 
         task = DAQTask(_acquire, stopper=client.stop, filename=filename, hold=False)
         self.current_task = task
@@ -100,6 +105,34 @@ class SFAcquisition(BaseAcquisition):
 
     def __repr__(self):
         return "SF DAQ on {} (status: {}, last run: {})".format(self.client.address, self.client.status, self.client.run_number)
+
+
+
+
+
+def transpose_dicts(seq_of_dicts):
+    res = defaultdict(list)
+    for d in seq_of_dicts:
+        for k, v in d.items():
+            try:
+                res[k].extend(v)
+            except TypeError:
+                res[k].append(v)
+    return dict(res)
+
+
+
+def print_response(res):
+    to_print = {}
+    for k, v in res.items():
+        k = k.replace("_", " ")
+        if len(set(v)) == 1:
+            v = v[0]
+        else:
+            k = k if k.endswith("s") else k+"s"
+        to_print[k] = v
+
+    print(printable_dict(to_print, sorter=None))
 
 
 
