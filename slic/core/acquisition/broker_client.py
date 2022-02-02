@@ -195,6 +195,15 @@ def advance_run_number(address, pgroup, *args, **kwargs):
     return run_number
 
 
+def get_run_number(address, pgroup, *args, **kwargs):
+    params = {"pgroup": pgroup}
+    requrl = address.rstrip("/") + "/get_last_run_number"
+    response = get_request(requrl, params, *args, **kwargs)
+    run_number = response["message"]
+    run_number = int(run_number)
+    return run_number
+
+
 def retrieve(address, *args, **kwargs):
     requrl = address.rstrip("/") + "/retrieve_from_buffers"
     response = post_request(requrl, *args, **kwargs)
