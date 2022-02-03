@@ -1,4 +1,4 @@
-from .json import json_load
+from .jsonext import json_load
 
 
 class Config:

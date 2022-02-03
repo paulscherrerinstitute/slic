@@ -7,7 +7,7 @@ from .elog import Elog
 from .eval import arithmetic_eval
 from .exceptions import ChainedException, printable_exception, printed_exception
 from .ipy import devices
-from .json import json_save, json_load, json_validate
+from .jsonext import json_save, json_load, json_validate
 from .marker import Marker, markers
 from .npy import nice_linspace, nice_arange, fraction_to_percentage, within, within_fraction, get_dtype, get_shape, is_array
 from .path import can_create_all_files, can_create_file, glob_files, make_missing_dir
