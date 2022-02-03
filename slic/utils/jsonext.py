@@ -14,6 +14,8 @@ class ExtendedJSONEncoder(json.JSONEncoder):
             return {"real": obj.real, "imag": obj.imag}
         elif isinstance(obj, Path):
             return str(obj)
+        elif isinstance(obj, set):
+            return sorted(obj)
         return super().default(obj)
 
 
