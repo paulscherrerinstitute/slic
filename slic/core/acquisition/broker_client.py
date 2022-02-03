@@ -1,5 +1,4 @@
 import requests
-import json
 from glob import glob
 from time import sleep
 from yaspin import yaspin
@@ -7,7 +6,7 @@ from yaspin.spinners import Spinners
 import numpy as np
 
 from slic.utils import xrange, tqdm_mod, tqdm_sleep
-from slic.utils.json import json_validate
+from slic.utils import json_validate
 
 from .broker_tools import get_current_pulseid
 
