@@ -38,8 +38,11 @@ def bs_avail(search=None):
 
 
 def bs_all_avail():
-    available_channels = dispatcher.get_current_channels() # may raise ConnectionError
-    available_channels_names = set(i["name"] for i in available_channels)
+    available_channels_names = set()
+    for backend in ("sf-databuffer", "sf-imagebuffer"):
+        url = "https://dispatcher-api.psi.ch/" + backend
+        available_channels = dispatcher.get_current_channels(url) # may raise ConnectionError
+        available_channels_names |= set(i["name"] for i in available_channels)
     return available_channels_names
 
 
