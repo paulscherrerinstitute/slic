@@ -60,12 +60,6 @@ class ScanBackend:
 
 
     def run(self, step_info=None):
-        #TODO this needs work
-        for acq in self.acquisitions:
-            if is_sfdaq(acq):
-                run_number = acq.client.next_run()
-                print(f"Advanced run number to {run_number} for {acq}.")
-
         self.store_initial_values()
         self.create_output_dirs()
 
@@ -124,6 +118,12 @@ class ScanBackend:
 
     def scan_loop(self, step_info=None):
         do_step = self.do_checked_step if self.condition else self.do_step
+
+        #TODO this needs work
+        for acq in self.acquisitions:
+            if is_sfdaq(acq):
+                run_number = acq.client.next_run()
+                print(f"Advanced run number to {run_number} for {acq}.")
 
         values = self.values
         ntotal = len(values)
