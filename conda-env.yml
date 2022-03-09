@@ -6,7 +6,7 @@
 
 name: slic
 dependencies:
-  - python >=3.9
+  - python =3.8
 # defaults
   - ipython
   - numpy
@@ -16,7 +16,7 @@ dependencies:
   - paulscherrerinstitute::bsread
   - paulscherrerinstitute::cam_server_client
   - paulscherrerinstitute::data_api
-  - paulscherrerinstitute::detector_integration_api
+#  - paulscherrerinstitute::detector_integration_api #TODO: deprecated?
   - paulscherrerinstitute::elog
   - paulscherrerinstitute::pyepics >=3.4.2
 # data
