@@ -21,7 +21,7 @@ requirements:
         - cam_server_client
         - colorama
         - data_api
-        - detector_integration_api
+#        - detector_integration_api #TODO: deprecated?
         - elog
         - fuzzywuzzy
         - ipython
