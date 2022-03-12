@@ -66,8 +66,9 @@ class ScanBackend:
         #TODO which test? None for infinite? 0?
         scan_loop = self.repeated_scan_loop if self.repeat > 1 else self.scan_loop
 
+        self.running = True
+
         try:
-            self.running = True
             scan_loop(step_info=step_info)
         except Exception as e:
             if isinstance(e, KeyboardInterrupt):
@@ -80,6 +81,8 @@ class ScanBackend:
                 print()
                 print(t)
                 print()
+
+        self.running = False
 
         go_back = self.return_to_initial_values
 
