@@ -137,11 +137,8 @@ class ScanBackend:
 
 
     def do_checked_step(self, *args, **kwargs):
-        while True:
-            self.condition.get_ready()
+        while self.condition.wants_repeat():
             self.do_step(*args, **kwargs)
-            if self.condition.is_happy():
-                break
 
 
     def do_step(self, n_step, step_values, step_info=None):
