@@ -20,6 +20,7 @@ class Condition(BaseCondition):
         self._repeater_gen = self._repeater()
 
         self.data = []
+        self.running = False
 
 
     def check(self):
@@ -31,7 +32,11 @@ class Condition(BaseCondition):
         raise NotImplementedError
 
     def sleep(self):
-        sleep(self.wait_time)
+        time_start = time()
+        while time() - time_start < self.wait_time:
+            if not self.running:
+                return
+            sleep(0.01)
 
 
     def clear_and_start_counting(self):
@@ -47,6 +52,9 @@ class Condition(BaseCondition):
     def start_counting(self):
         raise NotImplementedError
 
+    def stop(self):
+        self.running = False
+        self.stop_counting()
 
     def stop_counting_and_analyze(self):
         self.stop_counting()
@@ -91,8 +99,11 @@ class Condition(BaseCondition):
     def get_ready(self):
         time_start = time()
         was_ever_unhappy = False
+        self.running = True
 
         while not self.long_check():
+            if not self.running:
+                break
             was_ever_unhappy = True
             delta_t = time() - time_start
             print(f"Condition is unhappy, waiting for OK conditions since {delta_t:.1f} seconds.")
@@ -131,9 +142,11 @@ class Condition(BaseCondition):
             while True:
                 self.get_ready()
                 yield True # signal condition wants a repeat (incl. the first measurement)
+                if not self.running:
+                    break
                 if self.is_happy():
                     break
-            yield False # signal condition was happy with last repeat
+            yield False # signal condition was happy with last repeat or stopped
 
 
 
