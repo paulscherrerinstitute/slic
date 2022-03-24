@@ -24,7 +24,7 @@ class TaskProducer:
             if self.current_task:
                 return self.current_task.stop()
 
-        def task_wait(self):
+        def task_wait():
             if self.current_task:
                 return self.current_task.wait()
 
