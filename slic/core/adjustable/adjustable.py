@@ -2,11 +2,11 @@ from slic.utils import typename
 from slic.core.task import TaskProducer
 from .baseadjustable import BaseAdjustable
 from .error import AdjustableError
-from .convenience import SpecConvenience
+from .convenience import SpecConvenience, NumericConvenience
 from .limited import Limited
 
 
-class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience, Limited):
+class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience, NumericConvenience, Limited):
 
     stop = None #TODO: might be better to make this callable
 

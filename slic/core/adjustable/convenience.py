@@ -1,3 +1,34 @@
+from math import trunc, floor, ceil
+
+
+class NumericConvenience:
+
+    def __int__(self):
+        v = self.get_current_value()
+        return int(v)
+
+    def __float__(self):
+        v = self.get_current_value()
+        return float(v)
+
+
+    def __round__(self, *args, **kwargs):
+        v = self.get_current_value()
+        return round(v, *args, **kwargs)
+
+    def __trunc__(self):
+        v = self.get_current_value()
+        return trunc(v)
+
+    def __floor__(self):
+        v = self.get_current_value()
+        return floor(v)
+
+    def __ceil__(self):
+        v = self.get_current_value()
+        return ceil(v)
+
+
 
 class SpecConvenience:
 
