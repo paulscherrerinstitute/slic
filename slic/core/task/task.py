@@ -58,7 +58,7 @@ class Task(BaseTask):
     def status(self):
         if self.thread.ident is None:
             return "ready"
-        if self.thread.isAlive():
+        if self.thread.is_alive():
             return "running"
         return "done"
 
