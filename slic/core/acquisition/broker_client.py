@@ -243,9 +243,10 @@ class BrokerError(Exception):
 
 class BrokerConfig:
 
-    def __init__(self, pgroup, rate_multiplicator=1, client_name=None):
+    def __init__(self, pgroup, rate_multiplicator=1, append_user_tag_to_data_dir=False, client_name=None):
         self.pgroup = pgroup
         self.rate_multiplicator = rate_multiplicator #TODO: can we read that from epics?
+        self.append_user_tag_to_data_dir = append_user_tag_to_data_dir
         self.client_name = client_name
         self.set(None) #TODO: sensible defaults?
 
@@ -261,6 +262,7 @@ class BrokerConfig:
         config = {
             "pgroup": self.pgroup,
             "rate_multiplicator": self.rate_multiplicator,
+            "append_user_tag_to_data_dir": self.append_user_tag_to_data_dir,
 #            "directory_name": self.output_dir, # structure <= 2021
             "user_tag": self.output_dir,        # structure >= 2022
             "run_number": run_number,           # new in 2022

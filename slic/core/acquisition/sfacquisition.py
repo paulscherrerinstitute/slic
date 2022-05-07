@@ -15,7 +15,7 @@ from .broker_client import BrokerClient
 
 class SFAcquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1):
+    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1, append_user_tag_to_data_dir=False):
         self.instrument = instrument
         self.default_data_base_dir = default_data_base_dir
 
@@ -27,7 +27,7 @@ class SFAcquisition(BaseAcquisition):
         self.default_channels = default_channels
         self.default_pvs = default_pvs
 
-        self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, client_name="slic")
+        self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, append_user_tag_to_data_dir=append_user_tag_to_data_dir, client_name="slic")
 
         self.current_task = None
 
