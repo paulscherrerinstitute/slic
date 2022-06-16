@@ -33,6 +33,7 @@ class Condition(BaseCondition):
 
     def sleep(self):
         time_start = time()
+        self.running = True
         while time() - time_start < self.wait_time:
             if not self.running:
                 return
