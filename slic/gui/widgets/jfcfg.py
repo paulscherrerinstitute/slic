@@ -1,4 +1,3 @@
-import re
 from numbers import Number
 
 import wx
@@ -7,10 +6,7 @@ from slic.core.acquisition.detcfg import DetectorConfig, ALLOWED_PARAMS
 
 from .entries import LabeledEntry, LabeledMathEntry
 from .lists import ListDialog, ListDisplay, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
-
-
-JF_PATTERN = r"(JF)(\d{2})(T)(\d{2})(V)(\d{2})"
-JF_REGEX = re.compile(JF_PATTERN)
+from .jfmodcoords import get_module_coords
 
 
 def show_list_jf(*args, **kwargs):
@@ -105,32 +101,22 @@ class JFConfig(wx.Dialog):
 
 
     def make_widget_disabled_modules(self, jf_name, label):
-        n = parse_jf_name(jf_name)["T"]
-        return LabeledNumberedToggles(self, n, label=label)
+        coords = get_module_coords(jf_name)
+        return LabeledNumberedToggles(self, coords, label=label)
 
 
 
-def parse_jf_name(n):
-    groups = JF_REGEX.match(n).groups()
-    names = groups[:-1:2]
-    values = groups[1::2]
-    values = (int(x) for x in values)
-    res = dict(zip(names, values))
-    return res
+class NumberedToggles(wx.GridBagSizer):
 
-
-
-class NumberedToggles(wx.BoxSizer):
-
-    def __init__(self, parent, n, id=wx.ID_ANY, size=(30, 30)):
-        super().__init__(wx.HORIZONTAL)
+    def __init__(self, parent, coords, id=wx.ID_ANY, button_size=(33, 33)):
+        super().__init__()
 
         self.buttons = buttons = {}
 
-        for i in range(n):
-            btn = wx.ToggleButton(parent, label=str(i), size=size)
-            self.Add(btn, flag=wx.EXPAND)
-            self.buttons[i] = btn
+        for label, pos in coords.items():
+            btn = wx.ToggleButton(parent, label=str(label), size=button_size)
+            self.Add(btn, pos=pos)
+            self.buttons[label] = btn
 
 
     def GetValue(self):
@@ -176,13 +162,6 @@ class LabeledChoice(wx.BoxSizer): #TODO: largely copy of LabeledEntry
 
     def GetValue(self):
         return self.GetStringSelection() or None
-
-
-
-
-
-if __name__ == "__main__":
-    assert parse_jf_name("JF06T32V02") == {"JF": 6, "T": 32, "V": 2}
 
 
 
