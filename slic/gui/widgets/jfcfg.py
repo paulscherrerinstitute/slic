@@ -85,19 +85,23 @@ class JFConfig(wx.Dialog):
         if key == "disabled_modules":
             return self.make_widget_disabled_modules(jf_name, label)
 
-        if issubclass(value, bool):
-            return wx.CheckBox(self, label=label)
-        elif issubclass(value, Number):
-            return LabeledMathEntry(self, label=label)
+        if isinstance(value, type):
+            if issubclass(value, bool):
+                return wx.CheckBox(self, label=label)
+            elif issubclass(value, Number):
+                return LabeledMathEntry(self, label=label)
+
         elif isinstance(value, list):
             choices = [""] + value
             res = LabeledChoice(self, label=label, choices=choices)
             res.SetSelection(0)
             return res
-        else:
-            n = value.__name__ if isinstance(value, type) else str(value)
-            msg = f"unsupported parameter type: {n}"
-            return LabeledEntry(self, label=label, value=msg)
+
+        n = value.__name__ if isinstance(value, type) else str(value)
+        msg = f"unsupported parameter type: {n}"
+        res = LabeledEntry(self, label=label, value=msg)
+        res.Disable()
+        return res
 
 
     def make_widget_disabled_modules(self, jf_name, label):
