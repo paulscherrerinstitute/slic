@@ -41,23 +41,30 @@ class JFConfig(wx.Dialog):
 
         self.widgets = widgets = {}
 
-        vbox_params = wx.BoxSizer(wx.VERTICAL)
-        vbox_params.AddSpacer(10)
+        border = 10
+
+        vbox_params = wx.BoxSizer(wx.HORIZONTAL)
+        vbox_cbs    = wx.BoxSizer(wx.VERTICAL)
+        vbox_others = wx.BoxSizer(wx.VERTICAL)
+
+        vbox_cbs.AddSpacer(border)
 
         for k, v in sorted(ALLOWED_PARAMS.items()):
-            w = self.make_widget(title, k, v)
-            widgets[k] = w
+            widgets[k] = w = self.make_widget(title, k, v)
 
-            # disable clickable expansion space right of checkbox
-            flag = wx.ALL|wx.EXPAND
-            border = 10
             if isinstance(w, wx.CheckBox):
+                # no wx.EXPAND to disable clickable expansion space right of checkbox label
+                # no vertical gap, only left and right
                 flag = wx.LEFT|wx.RIGHT
-                border = 10
+                vbox_cbs.Add(w, flag=flag, border=border)
+            else:
+                flag = wx.ALL|wx.EXPAND
+                vbox_others.Add(w, flag=flag, border=border)
 
-            vbox_params.Add(w, flag=flag, border=border)
+        vbox_cbs.AddSpacer(border)
 
-        vbox_params.AddSpacer(10)
+        vbox_params.Add(vbox_cbs, flag=wx.ALL|wx.EXPAND)
+        vbox_params.Add(vbox_others, flag=wx.ALL|wx.EXPAND, proportion=1)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(vbox_params, flag=wx.ALL|wx.EXPAND)
