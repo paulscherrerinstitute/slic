@@ -58,6 +58,15 @@ def jf_geom_coords(geom):
     xs = replace_pixels(xs)
     ys = replace_pixels(ys)
 
+#    rot = geom.det_rot90
+#    if rot == 1:
+#        xs, ys = ys, xs
+#    elif rot == 2:
+#        xs = xs[::-1]
+#        ys = ys[::-1]
+#    elif rot == 3:
+#        xs, ys = ys[::-1], xs[::-1]
+
 #    nxs = len(set(xs))
 #    nys = len(set(ys))
     coords = dict(enumerate(zip(xs, ys)))
