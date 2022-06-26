@@ -10,32 +10,40 @@ from .labeled import make_labeled
 from .jfmodcoords import get_module_coords
 
 
-def show_list_jf(*args, **kwargs):
-    dlg = ListDialog(*args, **kwargs)
+def show_list_jf(title, det_dict):
+    dlg = ListDialog(title, det_dict)
+
+    cb = lambda evt: on_dclick(evt, det_dict)
 
     #TODO: attach widgets to parents and replace the following workaround
     children = dlg.GetChildren()
     for child in children:
         if isinstance(child, ListDisplay):
-            child.Bind(wx.EVT_LISTBOX_DCLICK, on_dclick)
+            child.Bind(wx.EVT_LISTBOX_DCLICK, cb)
             break
 
     dlg.ShowModal()
     dlg.Destroy()
 
 
-def on_dclick(evt):
+def on_dclick(evt, det_dict):
     name = evt.GetString()
-    dlg = JFConfig(name)
+    params = det_dict[name]
+    dlg = JFConfig(name, params)
     dlg.ShowModal()
-    dlg.get()
+
+    # update the dict with the changed values
+#    print("before:", det_dict)
+    det_dict[name] = dlg.get()
+#    print("after: ", det_dict)
+
     dlg.Destroy()
 
 
 
 class JFConfig(wx.Dialog):
 
-    def __init__(self, title):
+    def __init__(self, title, params):
         wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
@@ -72,14 +80,20 @@ class JFConfig(wx.Dialog):
         vbox.AddStretchSpacer()
         vbox.Add(std_dlg_btn_sizer, flag=wx.ALL|wx.CENTER, border=10)
 
+        for k, v in params.items():
+            widgets[k].SetValue(v)
+
         self.SetSizerAndFit(vbox)
 
 
     def get(self):
-        res = {}
-        for n, w in self.widgets.items():
-            res[n] = w.GetValue()
-        print(res)
+        res = {n: w.GetValue() for n, w in self.widgets.items()}
+#        print(res)
+
+        # remove the unset/empty params
+        res = {k: v for k, v in res.items() if v}
+#        print(res)
+
         return res
 
 
@@ -127,6 +141,11 @@ class NumberedToggles(wx.GridBagSizer):
     def GetValue(self):
         return [i for i, btn in self.buttons.items() if btn.GetValue()]
 
+    def SetValue(self, val):
+        for i, btn in self.buttons.items():
+            state = (i in val)
+            btn.SetValue(state)
+
 
 
 class ChoiceDefault(wx.Choice):
@@ -141,6 +160,12 @@ class ChoiceDefault(wx.Choice):
 
     def GetValue(self):
         return self.GetStringSelection() or None
+
+    def SetValue(self, val):
+        if val is None:
+            super().SetSelection(0)
+        else:
+            super().SetStringSelection(val)
 
 
 
