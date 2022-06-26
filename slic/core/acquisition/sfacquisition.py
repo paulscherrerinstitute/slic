@@ -11,6 +11,7 @@ from .sfpaths import SwissFELPaths
 from .bschannels import BSChannels
 
 from .broker_client import BrokerClient
+from .detcfg import DetectorConfig
 
 
 class SFAcquisition(BaseAcquisition):
@@ -23,7 +24,7 @@ class SFAcquisition(BaseAcquisition):
             paths = SwissFELPaths(instrument, pgroup)
             default_channels = BSChannels.from_file(paths.default_channel_list)
 
-        self.default_detectors = default_detectors
+        self.default_detectors = DetectorConfig(default_detectors) #TODO: here?
         self.default_channels = default_channels
         self.default_pvs = default_pvs
 
