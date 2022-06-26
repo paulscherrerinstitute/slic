@@ -145,7 +145,7 @@ class ChoiceDefault(wx.Choice):
 
 
 LabeledNumberedToggles = make_labeled(NumberedToggles)
-LabeledChoice = make_labeled(ChoiceDefault)
+LabeledChoice          = make_labeled(ChoiceDefault)
 
 
 

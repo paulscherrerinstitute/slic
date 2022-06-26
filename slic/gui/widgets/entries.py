@@ -162,8 +162,8 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
 
 
 
-LabeledEntry = make_labeled(wx.TextCtrl)
-LabeledMathEntry = make_labeled(MathEntry)
+LabeledEntry         = make_labeled(wx.TextCtrl)
+LabeledMathEntry     = make_labeled(MathEntry)
 LabeledFilenameEntry = make_labeled(FilenameEntry)
 
 
