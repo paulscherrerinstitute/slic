@@ -96,10 +96,7 @@ class JFConfig(wx.Dialog):
                 return LabeledMathEntry(self, label=label)
 
         elif isinstance(value, list):
-            choices = [""] + value
-            res = LabeledChoice(self, label=label, choices=choices)
-            res.SetSelection(0)
-            return res
+            return LabeledChoice(self, label=label, choices=value)
 
         n = value.__name__ if isinstance(value, type) else str(value)
         msg = f"unsupported parameter type: {n}"
@@ -132,7 +129,15 @@ class NumberedToggles(wx.GridBagSizer):
 
 
 
-class ChoiceMod(wx.Choice):
+class ChoiceDefault(wx.Choice):
+
+    def __init__(self, *args, **kwargs):
+        choices = kwargs.get("choices", [])
+        kwargs["choices"] = [""] + list(choices)
+
+        super().__init__(*args, **kwargs)
+        self.SetSelection(0)
+
 
     def GetValue(self):
         return self.GetStringSelection() or None
@@ -140,7 +145,7 @@ class ChoiceMod(wx.Choice):
 
 
 LabeledNumberedToggles = make_labeled(NumberedToggles)
-LabeledChoice = make_labeled(ChoiceMod)
+LabeledChoice = make_labeled(ChoiceDefault)
 
 
 
