@@ -21,7 +21,7 @@ class AdjustableComboBox(wx.ComboBox):
         self.adjs = adjs = {i.name : i for i in adjs_instances if not i.internal}
         adjs_name = tuple(sorted(adjs.keys()))
         wx.ComboBox.__init__(self, parent, choices=adjs_name, style=wx.TE_PROCESS_ENTER)
-        self.SetSelection(0)
+#        self.SetSelection(0) #TODO: select first or leave box empty (-> None)?
 #        self.AutoComplete(adjs_name) #TODO: make this selectable?
         self.AutoComplete(ContainsTextCompleter(adjs_name, " → "))
 #        self.AutoComplete(FuzzyTextCompleter(adjs_name, " → "))
