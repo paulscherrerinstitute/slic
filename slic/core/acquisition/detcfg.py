@@ -4,6 +4,8 @@ from collections.abc import Mapping
 from collections.abc import Sequence
 from numbers import Number
 
+from .broker_client import flatten_detectors #TODO: should probably move here
+
 
 ALLOWED_PARAMS = dict(
     adc_to_energy = bool,
@@ -72,6 +74,17 @@ class DictUpdateMixin:
 
 
 class DetectorConfig(DictUpdateMixin, dict):
+
+    def __init__(self, *args, **kwargs):
+        if len(args) == 1:
+            args = args[0]
+            if args is None:
+                args = []
+        dets_args   = flatten_detectors(args)
+        dets_kwargs = flatten_detectors(kwargs)
+        dets = dict(**dets_args, **dets_kwargs)
+        for k, v in dets.items():
+            self.add(k, **v)
 
     def __dir__(self):
         return ["add", "remove", "names"]
