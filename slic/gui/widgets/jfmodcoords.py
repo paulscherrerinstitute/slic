@@ -12,10 +12,16 @@ def get_module_coords(name):
     try:
         g = detector_geometry[name]
     except KeyError:
-        n = parse_jf_name(name)["T"]
-        return square_grid_coords(n)
+        pass
     else:
-        return jf_geom_coords(g)
+        try:
+            return jf_geom_coords(g)
+        except ValueError:
+            pass
+
+    print("fall back to squared grid for", name)
+    n = parse_jf_name(name)["T"]
+    return square_grid_coords(n)
 
 
 def parse_jf_name(n):
@@ -71,6 +77,8 @@ def jf_geom_coords(geom):
 #    nys = len(set(ys))
     coords = dict(enumerate(zip(xs, ys)))
 
+    sanity_check(coords)
+
     return coords
 
 
@@ -93,6 +101,17 @@ def replace_pixels(vs):
 
 def map_pixels(vs):
     return {v: i for i, v in enumerate(sorted(set(vs)))}
+
+
+
+def sanity_check(coords):
+    if not check_all_unique(coords.values()):
+        raise ValueError("found duplicates in coords")
+
+def check_all_unique(l):
+    l = sorted(l)
+    s = sorted(set(l))
+    return s == l
 
 
 
