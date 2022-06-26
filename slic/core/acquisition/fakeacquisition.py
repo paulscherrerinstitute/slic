@@ -8,6 +8,9 @@ from slic.utils import typename
 
 from .baseacquisition import BaseAcquisition
 
+from slic.core.acquisition.detcfg import DetectorConfig
+from jungfrau_utils.geometry import detector_geometry
+
 
 class FakeAcquisition(BaseAcquisition):
 
@@ -20,7 +23,8 @@ class FakeAcquisition(BaseAcquisition):
         self.default_data_base_dir = "static_data"
         self.default_dir = ""
 
-        self.default_detectors = shuffle([f"JFJFJFJFJFJFJFJFJFJF{i}" for i in range(2)])
+        detnames = [f"JF9{i}T0{i}V0{i}" for i in range(5, 10)] + sorted(detector_geometry.keys())
+        self.default_detectors = DetectorConfig(detnames)
         self.default_channels  = shuffle([f"CHCHCHCHCH{i}" for i in range(100)])
         self.default_pvs       = shuffle([f"PVPV{i}" for i in range(10)])
 
