@@ -74,8 +74,20 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
         self.Bind(wx.EVT_KEY_UP, self.on_escape)
 
 
+    def GetValue(self):
+        val = super().GetValue()
+        if val == "":
+            val = None
+        else:
+            val = arithmetic_eval(val)
+        return val
+
+
     def SetValue(self, val):
-        val = str(val)
+        if val is None:
+            val == ""
+        else:
+            val = str(val)
         super().SetValue(val)
 
 
