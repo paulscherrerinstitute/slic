@@ -5,6 +5,7 @@ from slic.utils import arithmetic_eval, typename
 from ..persist import PersistableWidget
 from .tools import make_filled_hbox
 from .fname import increase, decrease
+from .labeled import make_labeled
 
 
 ADJUSTMENTS = {
@@ -52,46 +53,6 @@ class LabeledTweakEntry(wx.BoxSizer):
 
 
 
-class LabeledEntry(wx.BoxSizer):
-
-    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
-        super().__init__(wx.VERTICAL)
-
-        value = str(value)
-        name = label
-
-        self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = wx.TextCtrl(parent, value=value, name=name, style=wx.TE_RIGHT)
-
-        self.Add(label, flag=wx.EXPAND)
-        self.Add(text,  flag=wx.EXPAND)
-
-
-    def __getattr__(self, name):
-        return getattr(self.text, name)
-
-
-
-class LabeledMathEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
-
-    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
-        super().__init__(wx.VERTICAL)
-
-        value = str(value)
-        name = label
-
-        self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = MathEntry(parent, value=value, name=name, style=wx.TE_RIGHT)
-
-        self.Add(label, flag=wx.EXPAND)
-        self.Add(text,  flag=wx.EXPAND)
-
-
-    def __getattr__(self, name):
-        return getattr(self.text, name)
-
-
-
 class MathEntry(wx.TextCtrl, PersistableWidget):
 
     def __init__(self, *args, **kwargs):
@@ -99,6 +60,10 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
             kwargs["style"] |= wx.TE_PROCESS_ENTER
         else:
             kwargs["style"] = wx.TE_PROCESS_ENTER
+
+        if "value" in kwargs:
+            value = kwargs["value"]
+            kwargs["value"] = str(value)
 
         wx.TextCtrl.__init__(self, *args, **kwargs)
 
@@ -162,26 +127,6 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
 
 
 
-class LabeledFilenameEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
-
-    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
-        super().__init__(wx.VERTICAL)
-
-        value = str(value)
-        name = label
-
-        self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = FilenameEntry(parent, value=value, name=name, style=wx.TE_RIGHT)
-
-        self.Add(label, flag=wx.EXPAND)
-        self.Add(text,  flag=wx.EXPAND)
-
-
-    def __getattr__(self, name):
-        return getattr(self.text, name)
-
-
-
 class FilenameEntry(wx.TextCtrl, PersistableWidget):
 
     def __init__(self, *args, **kwargs):
@@ -214,6 +159,12 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
 
     def GetValue(self):
         return super().GetValue().strip()
+
+
+
+LabeledEntry = make_labeled(wx.TextCtrl)
+LabeledMathEntry = make_labeled(MathEntry)
+LabeledFilenameEntry = make_labeled(FilenameEntry)
 
 
 

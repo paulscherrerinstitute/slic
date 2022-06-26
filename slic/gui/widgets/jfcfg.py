@@ -6,6 +6,7 @@ from slic.core.acquisition.detcfg import DetectorConfig, ALLOWED_PARAMS
 
 from .entries import LabeledEntry, LabeledMathEntry
 from .lists import ListDialog, ListDisplay, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
+from .labeled import make_labeled
 from .jfmodcoords import get_module_coords
 
 
@@ -115,7 +116,7 @@ class JFConfig(wx.Dialog):
 
 class NumberedToggles(wx.GridBagSizer):
 
-    def __init__(self, parent, coords, id=wx.ID_ANY, button_size=(33, 33)):
+    def __init__(self, parent, coords, id=wx.ID_ANY, button_size=(33, 33), name="NumberedToggles"):
         super().__init__()
 
         self.buttons = buttons = {}
@@ -131,44 +132,15 @@ class NumberedToggles(wx.GridBagSizer):
 
 
 
-class LabeledNumberedToggles(wx.BoxSizer): #TODO: largely copy of LabeledEntry
-
-    def __init__(self, parent, n, id=wx.ID_ANY, label=""):
-        super().__init__(wx.VERTICAL)
-
-        name = label
-
-        self.label  = label  = wx.StaticText(parent, label=label)
-        self.numtgl = numtgl = NumberedToggles(parent, n)
-
-        self.Add(label,  flag=wx.EXPAND)
-        self.Add(numtgl, flag=wx.EXPAND)
-
-
-    def __getattr__(self, name):
-        return getattr(self.numtgl, name)
-
-
-
-class LabeledChoice(wx.BoxSizer): #TODO: largely copy of LabeledEntry
-
-    def __init__(self, parent, id=wx.ID_ANY, label="", choices=None):
-        super().__init__(wx.VERTICAL)
-
-        name = label
-
-        self.label  = label  = wx.StaticText(parent, label=label)
-        self.choice = choice = wx.Choice(parent, choices=choices, name=name)
-
-        self.Add(label,  flag=wx.EXPAND)
-        self.Add(choice, flag=wx.EXPAND)
-
-
-    def __getattr__(self, name):
-        return getattr(self.choice, name)
+class ChoiceMod(wx.Choice):
 
     def GetValue(self):
         return self.GetStringSelection() or None
+
+
+
+LabeledNumberedToggles = make_labeled(NumberedToggles)
+LabeledChoice = make_labeled(ChoiceMod)
 
 
 
