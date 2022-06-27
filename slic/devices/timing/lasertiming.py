@@ -101,7 +101,7 @@ class LXT(Adjustable):
         phase_shifter = self.devices.phase_shifter.get()
         sdg1 = self.devices.sdg1.get()
         index = (phase_shifter + sdg1) // OSCILLATOR_PERIOD
-        delay = index * OSCILLATOR_PERIOD - phase_shifter
+        delay = phase_shifter - index * OSCILLATOR_PERIOD
         return -delay
 
     def set_target_value(self, value):
@@ -111,6 +111,7 @@ class LXT(Adjustable):
         raise NotImplementedError
 
     def move(self, value, tolerance=None):
+        value = -value
         self.devices.sdg1.move(-value)
         self.devices.slicer_gate.move(-value)
         if tolerance is None:
