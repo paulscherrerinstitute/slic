@@ -4,6 +4,8 @@ from collections.abc import Mapping
 from collections.abc import Sequence
 from numbers import Number
 
+from slic.utils.printing import printable_dict_of_dicts, printable_dict
+
 from .broker_client import flatten_detectors #TODO: should probably move here
 
 
@@ -105,6 +107,10 @@ class DetectorConfig(DictUpdateMixin, dict):
         value = DetectorParams(**value)
         super().__setitem__(key, value)
 
+    def __repr__(self):
+        return printable_dict_of_dicts(self)
+
+
 
 class DetectorParams(DictUpdateMixin, AttrDict):
 
@@ -114,6 +120,10 @@ class DetectorParams(DictUpdateMixin, AttrDict):
     def __setitem__(self, key, value):
         check_consistency(key, value)
         super().__setitem__(key, value)
+
+    def __repr__(self):
+        return printable_dict(self)
+
 
 
 def check_consistency(k, v):
