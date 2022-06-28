@@ -2,8 +2,8 @@ import string
 from .utils import sorted_naturally
 
 
-def printable_dict_of_dicts(d):
-    lines = (printable_dict(v, header=k) for k, v in d.items())
+def printable_dict_of_dicts(d, sorter=sorted_naturally):
+    lines = (printable_dict(v, header=k, sorter=sorter) for k, v in sorter(d.items()))
     return "\n".join(lines)
 
 
