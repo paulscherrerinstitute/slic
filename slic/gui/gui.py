@@ -21,6 +21,7 @@ def run(*args, **kwargs):
     frame = DAQFrame(*args, **kwargs)
     frame.Show()
     app.MainLoop()
+    app.Yield() #TODO: without this, wxPython segfaults locking a mutex
 
 
 
