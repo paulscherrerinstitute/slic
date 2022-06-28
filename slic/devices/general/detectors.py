@@ -14,17 +14,7 @@ from slic.core.task import Task
 from slic.utils.pyepics import EnumWrapper
 from slic.utils.hastyepics import get_pv as PV
 
-
-try:
-    import sys, os
-
-    tpath = os.path.dirname(__file__)
-    sys.path.insert(0, os.path.join(tpath, "../../detector_integration_api"))
-    #ask Leo(2018.03.14):
-    #sys.path.insert(0,os.path.join(tpath,'../../jungfrau_utils'))
-    from detector_integration_api import DetectorIntegrationClient
-except:
-    print("NB: detector integration could not be imported!")
+#from detector_integration_api import DetectorIntegrationClient
 
 
 _cameraArrayTypes = ["monochrome", "rgb"]
@@ -137,6 +127,7 @@ class DiodeDigitizer:
 class DIAClient:
 
     def __init__(self, ID, instrument=None, api_address="http://sf-daq-2:10000", jf_name="JF_1.5M"):
+        raise RuntimeError("DIA is deprecated")
         self.ID = ID
         self._api_address = api_address
         self.client = DetectorIntegrationClient(api_address)
