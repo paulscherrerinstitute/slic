@@ -309,6 +309,9 @@ def split_channels(channels):
 
 
 def flatten_detectors(dets):
+    if isinstance(dets, str): #TODO: improve that logic
+        dets = [dets]
+
     if isinstance(dets, dict):
         return harmonize_detector_dict(dets)
 
