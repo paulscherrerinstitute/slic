@@ -1,7 +1,12 @@
 import re
 import numpy as np
 from matplotlib import pyplot as plt
-from jungfrau_utils.geometry import detector_geometry
+
+try:
+    from jungfrau_utils.geometry import detector_geometry
+except ImportError:
+    print("could not import detector_geometry from jungfrau_utils")
+    detector_geometry = {}
 
 
 JF_PATTERN = r"(JF)(\d{2})(T)(\d{2})(V)(\d{2})"
