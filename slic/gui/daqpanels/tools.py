@@ -112,7 +112,7 @@ class ETADisplay(PVDisplay):
             val = tc.GetValue()
             try:
                 val = int(val)
-            except ValueError:
+            except (ValueError, TypeError):
                 # if any of the values is missing, cannot calculate factor
                 factor = None
                 break
