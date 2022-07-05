@@ -9,7 +9,11 @@ from slic.utils import typename
 from .baseacquisition import BaseAcquisition
 
 from slic.core.acquisition.detcfg import DetectorConfig
-from jungfrau_utils.geometry import detector_geometry
+
+try:
+    from jungfrau_utils.geometry import detector_geometry
+except ImportError:
+    detector_geometry = {}
 
 
 class FakeAcquisition(BaseAcquisition):
