@@ -32,6 +32,8 @@ class Shutter:
     @property
     def status(self):
         state = self._adj.get_current_value()
+        if state is None:
+            return "not connected"
         return "open" if state else "closed"
 
     def __repr__(self):
