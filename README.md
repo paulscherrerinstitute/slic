@@ -10,10 +10,9 @@ The beamline codes can be found here:
 
 - [Alvra](https://gitlab.psi.ch/slic/alvra)
 - [Bernina](https://gitlab.psi.ch/slic/bernina)
+- [Cristallina](https://gitlab.psi.ch/slic/cristallina)
 - [Maloja](https://gitlab.psi.ch/slic/maloja)
 - [Furka](https://gitlab.psi.ch/slic/furka)
-
-... with more to come.
 
 Please click [here](READMORE.md) for some FAQs.
 
@@ -26,10 +25,11 @@ The core library contains
   - [sf_daq](https://github.com/paulscherrerinstitute/sf_daq_broker) (via a standalone [BrokerClient](slic/core/acquisition/broker_client.py#L15))
   - [bsread](https://github.com/paulscherrerinstitute/bsread_python)
   - [DataAPI](https://github.com/paulscherrerinstitute/data_api_python)
-  - [DIA (Detector integration API)](https://github.com/paulscherrerinstitute/sf_dia)
+  - ~~[DIA (Detector integration API)](https://github.com/paulscherrerinstitute/sf_dia)~~
   - [epics PVs](https://github.com/pyepics/pyepics#pv-object-oriented-ca-interface)
 - **adjustable** — ABC for physical/virtual devices that can be moved or otherwise adjusted. The `PVAdjustable` class handles interaction with the typical set of epics PV defining a device (set value, readback, moving status). A generic class is also provided, which turns a getter/setter pair into an adjustable.
 - **condition** — Classes that collect statistics over a given time window and test whether a value was in a specified range often enough. This allows to define what conditions are considered good enough for a recording.
+- **device** — Representation of larger hardware components that consist of several adjustables. Devices can also be nested allowing to represent, e.g, a whole beamline. `SimpleDevice` is a straight-forward interface for creating devices. The included collection of device implementations may in [`slic.devices`](#slic.devices).
 - **task** — Simplifying wrappers for python's [threading.Thread](https://docs.python.org/3/library/threading.html#threading.Thread), which allow return values and forward exceptions raised within a thread to the calling scope. A nicer `__repr__` makes tasks easier to use in ipython. More specific tasks are also available: the DAQTask can hold information about the files it is writing, and the Loop comes in two variants (infinite and with time out) that both call a function repeatedly.
 
 ### Overview: Interactions of these building blocks:
@@ -59,8 +59,9 @@ In order to further the "disposable GUIs" concept, this GUI is very modular: Tab
 - Static → `Acquisition.acquire()`
 - Scan → `Scanner.scan1D()`
 - Tweak → `Adjustable.set_target_value()`
+- etc.
 
-Additionally, the wx built-ins are extended by several widgets specific to experiment control (numeral input boxes are calculators, which perform simple math on enter press; filename boxes increment a counter at the end when pressing up; etc.), which can be re-used easily.
+Additionally, the wx built-ins are extended by several widgets specific to experiment control (numeral input boxes are calculators, which perform simple math on enter press; filename boxes increment a counter when pressing up; etc.), which can be re-used easily.
 
 
 ## slic.utils
@@ -197,5 +198,4 @@ _slic_ is based on code from the two actively used _eco_ forks:
 
 - [Alvra](https://git.psi.ch/swissfel/eco) (only visible from within the PSI network)
 - [Bernina](https://github.com/paulscherrerinstitute/eco/tree/bernina-op)
-
 
