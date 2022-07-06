@@ -14,7 +14,7 @@ class PulsePicker:
     def __init__(self, ID, evr_channel, name="X-ray Pulse Picker"):
         self.ID = ID
         self.evr_channel = evr_channel
-        self.name = name
+        self.name = name or ID
 
         mot_x = Motor(ID + ":MOTOR_X1", internal=True)
         mot_y = Motor(ID + ":MOTOR_Y1", internal=True)
