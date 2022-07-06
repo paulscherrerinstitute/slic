@@ -27,6 +27,7 @@ dependencies:
 # terminal
   - colorama
   - tqdm
+  - rich
   - conda-forge::fuzzywuzzy
   - conda-forge::logzero
   - conda-forge::yaspin
