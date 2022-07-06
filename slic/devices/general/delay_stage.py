@@ -1,6 +1,6 @@
 from slic.core.adjustable import Adjustable
+from slic.core.device import Device
 from slic.devices.general.motor import Motor
-from ..device import Device
 
 
 SPEED_OF_LIGHT = 299792458 # m/s

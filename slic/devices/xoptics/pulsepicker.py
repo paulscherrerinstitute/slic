@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from slic.devices.simpledevice import SimpleDevice
+from slic.core.device import SimpleDevice
 from slic.devices.general.motor import Motor
 from slic.utils.hastyepics import get_pv as PV
 

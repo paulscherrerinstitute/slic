@@ -1,7 +1,6 @@
 from slic.core.adjustable import PVAdjustable
+from slic.core.device import Device, SimpleDevice
 from slic.devices.general.motor import Motor
-from ..device import Device
-from ..simpledevice import SimpleDevice
 from ..general.delay_stage import DelayStage, Delay
 from ..general.smaract import SmarActAxis
 from ..timing.lasertiming import ETiming

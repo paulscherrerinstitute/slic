@@ -3,9 +3,9 @@ from time import sleep
 import numpy as np
 
 from slic.core.adjustable import Adjustable, PVAdjustable, PVEnumAdjustable
+from slic.core.device import Device
 from slic.utils.hastyepics import get_pv as PV
 from slic.devices.general.motor import Motor
-from ..device import Device
 
 
 class DoubleCrystalMono(Device):

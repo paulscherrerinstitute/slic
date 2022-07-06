@@ -5,10 +5,10 @@ from enum import IntEnum
 from epics import ca
 
 from slic.core.adjustable import Adjustable, AdjustableError
+from slic.core.device import Device
 from slic.utils import typename
 from slic.utils.printing import printable_dict
 from slic.utils.hastyepics import get_pv as PV
-from ..basedevice import BaseDevice
 
 
 class Status(IntEnum):
@@ -24,10 +24,10 @@ class Status(IntEnum):
 
 
 
-class SmarActStage(BaseDevice):
+class SmarActStage(Device):
 
-    def __init__(self, name=None, **axis_ids):
-        self.name = name
+    def __init__(self, ID, name=None, description=None, z_undulator=None, **axis_ids):
+        super().__init__(ID, name=None, description=None, z_undulator=None)
         self.axis_ids = axis_ids
 
         self.axes = {}

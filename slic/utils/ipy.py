@@ -1,8 +1,8 @@
 from IPython import get_ipython
 
+from slic.core.device.basedevice import BaseDevice
 from .utils import singleton
 from .printing import printable_dict
-from ..devices.basedevice import BaseDevice
 
 
 @singleton
@@ -23,8 +23,9 @@ class devices:
                 try:
                     doc = v.description
                 except AttributeError:
-                    doc = v.__doc__ or v.name or v.ID
-                res[k] = doc
+                    doc = None
+                finally:
+                    res[k] = doc or v.__doc__ or v.name or v.ID
 
         return printable_dict(res)
 
