@@ -1,4 +1,3 @@
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from slic.devices.general.motor import Motor
 from ..general.smaract import SmarActAxis
 from ..general.delay_stage import DelayStage
@@ -88,68 +87,61 @@ class ExpLaser:
         self.ID_Exp1 = "SARES20-EXP"
         self.ID_SA = "SARES23"
         self.name = name
-        self.alias = Alias(name)
         self.smar_config = smar_config
 
         # Waveplate and Delay stage
-        append_object_to_object(self, Motor, self.ID + "-M534:MOT", name="pump_wp")
-        append_object_to_object(self, Motor, self.ID + "-M533:MOT", name="tt_wp")
+        self.pump_wp = Motor(ID + "-M534:MOT")
+        self.tt_wp = Motor(ID + "-M533:MOT")
 
-        append_object_to_object(self, Motor, self.ID + "-M521:MOTOR_1", name="_pump_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_pump_delaystg"], name="pump_delay")
+        self._pump_delaystg = Motor(ID + "-M521:MOTOR_1")
+        self.pump_delay = DelayStage(self._pump_delaystg)
 
-        append_object_to_object(self, Motor, self.ID + "-M521:MOTOR_1", name="delay_eos_stg")
+        self.delay_eos_stg = Motor(ID + "-M521:MOTOR_1")
         self.delay_eos = DelayTime(self.delay_eos_stg, name="delay_eos")
-        self.alias.append(self.delay_eos.alias)
         self.lxt_eos = DelayTime(self.delay_eos_stg, direction=-1, name="lxt_eos")
-        self.alias.append(self.lxt_eos.alias)
 
-        append_object_to_object(self, Motor, self.ID + "-M522:MOTOR_1", name="delay_tt_stg")
+        self.delay_tt_stg = Motor(ID + "-M522:MOTOR_1")
         self.delay_tt = DelayTime(self.delay_tt_stg, name="delay_tt")
-        self.alias.append(self.delay_tt.alias)
 
-        append_object_to_object(self, Motor, self.ID + "-M523:MOTOR_1", name="delay_glob_stg")
+        self.delay_glob_stg = Motor(ID + "-M523:MOTOR_1")
         self.delay_glob = DelayTime(self.delay_glob_stg, name="delay_glob")
-        self.alias.append(self.delay_glob.alias)
         self.lxt_glob = DelayTime(self.delay_glob_stg, direction=-1, name="lxt_glob")
-        self.alias.append(self.lxt_glob.alias)
 
         # Implementation of delay compensation, this assumes for now that delays_glob and delay_tt actually delay in positive directions.
         self.delay_lxtt = DelayCompensation([self.delay_glob, self.delay_tt], [-1, 1], name="delay_lxtt")
-        self.alias.append(self.delay_lxtt.alias)
 
         # compressor
-        append_object_to_object(self, Motor, self.ID + "-M532:MOT", name="compressor")
-        # self.compressor = Motor(ID + '-M532:MOT')
+        self.compressor = Motor(ID + "-M532:MOT")
+#        self.compressor = Motor(ID + '-M532:MOT')
 
         # LAM delay stages
-        append_object_to_object(self, SmarActAxis, "SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
-        append_object_to_object(self, DelayStage, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
-        # self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
-        # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
+        self._lam_delay_smarstg = SmarActAxis("SLAAR21-LMTS-LAM11")
+        self.lam_delay_smar = DelayStage(self._lam_delay_smarstg)
+#        self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
+#        self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
-        append_object_to_object(self, Motor, self.ID + "-M548:MOT", name="_lam_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_lam_delaystg"], name="lam_delay")
-        # self._lam_delayStg = Motor(self.ID + '-M548:MOT')
-        # self.lam_delay = DelayStage(self._lam_delayStg)
+        self._lam_delaystg = Motor(ID + "-M548:MOT")
+        self.lam_delay = DelayStage(self._lam_delaystg)
+#        self._lam_delayStg = Motor(ID + '-M548:MOT')
+#        self.lam_delay = DelayStage(self._lam_delayStg)
 
         # PALM delay stages
-        append_object_to_object(self, Motor, self.ID + "-M552:MOT", name="_palm_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_palm_delaystg"], name="palm_delay")
-        # self._palm_delayStg = Motor(self.ID + '-M552:MOT')
-        # self.palm_delay = DelayStage(self._palm_delayStg)
+        self._palm_delaystg = Motor(ID + "-M552:MOT")
+        self.palm_delay = DelayStage(self._palm_delaystg)
+#        self._palm_delayStg = Motor(ID + '-M552:MOT')
+#        self.palm_delay = DelayStage(self._palm_delayStg)
 
         # PSEN delay stages
-        # self._psen_delayStg = Motor(self.ID + '')
-        # self.psen_delay = DelayStage(self._pump_delayStg)
-        append_object_to_object(self, Motor, self.ID + "-M561:MOT", name="_psen_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_psen_delaystg"], name="psen_delay")
+#        self._psen_delayStg = Motor(ID + '')
+#        self.psen_delay = DelayStage(self._pump_delayStg)
+        self._psen_delaystg = Motor(ID + "-M561:MOT")
+        self.psen_delay = DelayStage(self._psen_delaystg)
 
         # SmarActID
-        ### Mirrors used in the experiment ###
-
+        # Mirrors used in the experiment
         for smar_name, smar_address in self.smar_config.items():
-            append_object_to_object(self, SmarActAxis, self.ID_SA + smar_address, name=smar_name)
+            sa = SmarActAxis(self.ID_SA + smar_address)
+            setattr(self, sa, smar_name)
 
 
     def __repr__(self):
@@ -175,54 +167,53 @@ class Laser_Exp_old:
         self.ID_Exp1 = "SARES20-EXP"
         self.ID_SA = "SARES23"
         self.name = name
-        self.alias = Alias(name)
         self.smar_config = smar_config
 
         # Waveplate and Delay stage
-        append_object_to_object(self, Motor, self.ID + "-M534:MOT", name="pump_wp")
-        append_object_to_object(self, Motor, self.ID + "-M533:MOT", name="tt_wp")
+        self.pump_wp = Motor(ID + "-M534:MOT")
+        self.tt_wp = Motor(ID + "-M533:MOT")
 
-        append_object_to_object(self, Motor, self.ID + "-M521:MOTOR_1", name="_pump_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_pump_delaystg"], name="pump_delay")
+        self._pump_delaystg = Motor(ID + "-M521:MOTOR_1")
+        self.pump_delay = DelayStage(self._pump_delaystg)
 
-        append_object_to_object(self, Motor, self.ID + "-M522:MOTOR_1", name="_tt_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_tt_delaystg"], name="tt_delay")
-        # append_object_to_object(self, DelayStage, self.__dict__["_thz_delaystg"], name="thz_delay")
+        self._tt_delaystg = Motor(ID + "-M522:MOTOR_1")
+        self.tt_delay = DelayStage(self._tt_delaystg)
+#        self.thz_delay = DelayStage(self._thz_delaystg)
 
-        append_object_to_object(self, Motor, self.ID + "-M553:MOT", name="_exp_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_exp_delaystg"], name="exp_delay")
-        # append_object_to_object(self, DelayStage, self.__dict__["_thz_delaystg"], name="thz_delay")
+        self._exp_delaystg = Motor(ID + "-M553:MOT")
+        self.exp_delay = DelayStage(self._exp_delaystg)
+#        self.thz_delay = DelayStage(self._thz_delaystg)
 
         # compressor
-        append_object_to_object(self, Motor, self.ID + "-M532:MOT", name="compressor")
-        # self.compressor = Motor(ID + '-M532:MOT')
+        self.compressor = Motor(ID + "-M532:MOT")
+#        self.compressor = Motor(ID + '-M532:MOT')
 
         # LAM delay stages
-        append_object_to_object(self, SmarActAxis, "SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
-        append_object_to_object(self, DelayStage, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
-        # self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
-        # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
+        self._lam_delay_smarstg = SmarActAxis("SLAAR21-LMTS-LAM11")
+        self.lam_delay_smar = DelayStage(self._lam_delay_smarstg)
+#        self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
+#        self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
-        append_object_to_object(self, Motor, self.ID + "-M548:MOT", name="_lam_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_lam_delaystg"], name="lam_delay")
-        # self._lam_delayStg = Motor(self.ID + '-M548:MOT')
-        # self.lam_delay = DelayStage(self._lam_delayStg)
+        self._lam_delaystg = Motor(ID + "-M548:MOT")
+        self.lam_delay = DelayStage(self._lam_delaystg)
+#        self._lam_delayStg = Motor(ID + '-M548:MOT')
+#        self.lam_delay = DelayStage(self._lam_delayStg)
 
         # PALM delay stages
-        append_object_to_object(self, Motor, self.ID + "-M552:MOT", name="_palm_delaystg")
-        append_object_to_object(self, DelayStage, self.__dict__["_palm_delaystg"], name="palm_delay")
-        # self._palm_delayStg = Motor(self.ID + '-M552:MOT')
-        # self.palm_delay = DelayStage(self._palm_delayStg)
+        self._palm_delaystg = Motor(ID + "-M552:MOT")
+        self.palm_delay = DelayStage(self._palm_delaystg)
+#        self._palm_delayStg = Motor(ID + '-M552:MOT')
+#        self.palm_delay = DelayStage(self._palm_delayStg)
 
         # PSEN delay stages
-        # self._psen_delayStg = Motor(self.ID + '')
-        # self.psen_delay = DelayStage(self._pump_delayStg)
+#        self._psen_delayStg = Motor(ID + '')
+#        self.psen_delay = DelayStage(self._pump_delayStg)
 
         # SmarActID
-        ### Mirrors used in the experiment ###
-
+        # Mirrors used in the experiment
         for smar_name, smar_address in self.smar_config.items():
-            append_object_to_object(self, SmarActAxis, self.ID_SA + smar_address, name=smar_name)
+            sa = SmarActAxis(self.ID_SA + smar_address)
+            setattr(self, sa, smar_name)
 
 
     def __repr__(self):
