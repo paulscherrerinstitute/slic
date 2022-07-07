@@ -2,7 +2,7 @@ from slic.core.adjustable import PVAdjustable, PVEnumAdjustable
 from slic.core.device import Device, SimpleDevice
 from slic.devices.general.motor import Motor
 from slic.devices.general.smaract import SmarActAxis
-from slic.utils.hastyepics import get_pv as PV
+from slic.utils.printing import printable_dict
 
 
 class PrimeTable(Device):
@@ -53,51 +53,35 @@ class Microscope(Device):
 
 
 
-class Vacuum:
+class Vacuum(Device):
 
-    def __init__(self, ID, z_undulator=None, description=None):
-        self.ID = ID
+    def __init__(self, ID, **kwargs):
+        super().__init__(ID, **kwargs)
+        self.KBvalve           = PVEnumAdjustable(ID + "VPG124-230:PLC_OPEN")
+        self.spectrometerP     = PVAdjustable(ID + "MFR125-600:PRESSURE")
+        self.intermediateP     = PVAdjustable(ID + "MCP125-510:PRESSURE")
+        self.sampleP           = PVAdjustable(ID + "MCP125-410:PRESSURE")
+        self.spectrometerTurbo = PVAdjustable(ID + "PTM125-600:HZ")
+        self.intermediateTurbo = PVAdjustable(ID + "PTM125-500:HZ")
+        self.sampleTurbo       = PVAdjustable(ID + "PTM125-400:HZ")
+        self.pDiff             = PVAdjustable("SARES11-EVSP-010:DIFFERENT")
+        self.regulationStatus  = PVAdjustable("SARES11-EVGA-STM010:ACTIV_MODE")
 
-        # Vacuum PVs for Prime chamber
-        self.spectrometerP = PV(ID + "MFR125-600:PRESSURE")
-        self.intermediateP = PV(ID + "MCP125-510:PRESSURE")
-        self.sampleP = PV(ID + "MCP125-410:PRESSURE")
-        self.pDiff = PV("SARES11-EVSP-010:DIFFERENT")
-        self.regulationStatus = PV("SARES11-EVGA-STM010:ACTIV_MODE")
-        self.spectrometerTurbo = PV(ID + "PTM125-600:HZ")
-        self.intermediateTurbo = PV(ID + "PTM125-500:HZ")
-        self.sampleTurbo = PV(ID + "PTM125-400:HZ")
-        self.KBvalve = PV(ID + "VPG124-230:PLC_OPEN")
-
-    def __str__(self):
-        valve = self.KBvalve.get()
-        if valve == 0:
-            valveStr = "KB valve closed"
-        else:
-            valveStr = "KB valve open"
-        currSpecP = self.spectrometerP.get()
-        currInterP = self.intermediateP.get()
-        currSamP = self.sampleP.get()
-        currPDiff = self.pDiff.get()
-        regStatusStr = self.regulationStatus.get(as_string=True)
-        currSpecTurbo = self.spectrometerTurbo.get()
-        currInterTurbo = self.intermediateTurbo.get()
-        currSamTurbo = self.sampleTurbo.get()
-
-        s = "**Prime chamber vacuum status**\n\n"
-        s += "Regulation mode: %s\n" % regStatusStr
-        s += "%s\n" % valveStr
-        s += "Spectrometer pressure: %.3g mbar\n" % currSpecP
-        s += "Spectrometer Turbo pump: %s Hz\n" % currSpecTurbo
-        s += "Intermediate pressure: %.3g mbar\n" % currInterP
-        s += "Intermediate Turbo pump: %s Hz\n" % currInterTurbo
-        s += "Sample pressure: %.3g mbar\n" % currSamP
-        s += "Sample Turbo pump: %s Hz\n" % currSamTurbo
-        s += "Intermediate/Sample pressure difference: %.3g mbar\n" % currPDiff
-        return s
 
     def __repr__(self):
-        return self.__str__()
+        current = {}
+        current["KB valve"] = "open" if self.KBvalve.get_current_value() == "ON" else "closed"
+
+        current["Regulation mode"]                         = str(self.regulationStatus)
+        current["Spectrometer pressure"]                   = str(self.spectrometerP)
+        current["Spectrometer turbo pump"]                 = str(self.spectrometerTurbo)
+        current["Intermediate pressure"]                   = str(self.intermediateP)
+        current["Intermediate turbo pump"]                 = str(self.intermediateTurbo)
+        current["Sample pressure"]                         = str(self.sampleP)
+        current["Sample turbo pump"]                       = str(self.sampleTurbo)
+        current["Intermediate/Sample pressure difference"] = str(self.pDiff)
+
+        return printable_dict(current, "Prime chamber vacuum status")
 
 
 
