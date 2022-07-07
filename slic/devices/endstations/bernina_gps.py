@@ -9,7 +9,7 @@ class GPS(Device):
         super().__init__(ID, name=name, **kwargs)
         self.configuration = configuration
 
-        if "base" in self.configuration:
+        if "base" in configuration:
             # base platform
             self.xbase  = Motor(ID + ":MOT_TX")
             self.ybase  = Motor(ID + ":MOT_TY")
@@ -18,12 +18,12 @@ class GPS(Device):
             # XRD detector arm
             self.gamma = Motor(ID + ":MOT_NY_RY2TH")
 
-        if "phi_table" in self.configuration:
+        if "phi_table" in configuration:
             self.phi  = Motor(ID + ":MOT_HEX_RX")
             self.tphi = Motor(ID + ":MOT_HEX_TX")
 
         # PI hexapod
-        if "phi_hex" in self.configuration:
+        if "phi_hex" in configuration:
             PI_ID = "SARES20-HEX_PI"
             self.xhex = PVAdjustable(PI_ID + ":SET-POSI-X", PI_ID + ":POSI-X")
             self.yhex = PVAdjustable(PI_ID + ":SET-POSI-Y", PI_ID + ":POSI-Y")
@@ -33,14 +33,14 @@ class GPS(Device):
             self.whex = PVAdjustable(PI_ID + ":SET-POSI-W", PI_ID + ":POSI-W")
 
         # heavy load goniometer
-        if "hlxz" in self.configuration:
+        if "hlxz" in configuration:
             self.xhl = Motor(ID + ":MOT_TBL_TX")
             self.zhl = Motor(ID + ":MOT_TBL_TZ")
 
-        if "hly" in self.configuration:
+        if "hly" in configuration:
             self.yhl = Motor(ID + ":MOT_TBL_TY")
 
-        if "hlrxrz" in self.configuration:
+        if "hlrxrz" in configuration:
             self.rxhl = Motor(ID + ":MOT_TBL_RX")
             self.rzhl = Motor(ID + ":MOT_TBL_RZ")
 
