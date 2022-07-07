@@ -1,7 +1,8 @@
+from slic.core.device import Device
+from slic.devices.general.adjustable import AdjustableVirtual
+from slic.devices.general.delay_stage import DelayStage
 from slic.devices.general.motor import Motor
-from ..general.smaract import SmarActAxis
-from ..general.delay_stage import DelayStage
-from ..general.adjustable import AdjustableVirtual
+from slic.devices.general.smaract import SmarActAxis
 
 import colorama, datetime
 from pint import UnitRegistry
@@ -49,8 +50,10 @@ class DelayTime(AdjustableVirtual):
 
 
 class DelayCompensation(AdjustableVirtual):
-    """Simple virtual adjustable for compensating delay adjustables. It assumes the first adjustable is the master for 
-    getting the current value."""
+    """
+    Virtual adjustable for compensating delay adjustables.
+    It assumes the first adjustable is the master for getting the current value.
+    """
 
     def __init__(self, adjustables, directions, set_current_value=True, name=None):
         self._directions = directions
@@ -80,13 +83,11 @@ class DelayCompensation(AdjustableVirtual):
 
 
 
-class ExpLaser:
+class ExpLaser(Device):
 
-    def __init__(self, ID=None, name=None, smar_config=None):
-        self.ID = ID
-        self.ID_Exp1 = "SARES20-EXP"
-        self.ID_SA = "SARES23"
-        self.name = name
+    def __init__(self, ID, name="Laser motor positions", ID_SA="SARES23", smar_config=None, **kwargs):
+        super().__init__(ID, name=name, **kwargs)
+        self.ID_SA = ID_SA
         self.smar_config = smar_config
 
         # Waveplate and Delay stage
@@ -107,7 +108,6 @@ class ExpLaser:
         self.delay_glob = DelayTime(self.delay_glob_stg, name="delay_glob")
         self.lxt_glob = DelayTime(self.delay_glob_stg, direction=-1, name="lxt_glob")
 
-        # Implementation of delay compensation, this assumes for now that delays_glob and delay_tt actually delay in positive directions.
         self.delay_lxtt = DelayCompensation([self.delay_glob, self.delay_tt], [-1, 1], name="delay_lxtt")
 
         self.compressor = Motor(ID + "-M532:MOT")
@@ -124,26 +124,10 @@ class ExpLaser:
         self.psen_delay_stg = Motor(ID + "-M561:MOT")
         self.psen_delay = DelayStage(self.psen_delay_stg)
 
-        # SmarActID
         # Mirrors used in the experiment
         for smar_name, smar_address in self.smar_config.items():
-            sa = SmarActAxis(self.ID_SA + smar_address)
+            sa = SmarActAxis(ID_SA + smar_address)
             setattr(self, sa, smar_name)
-
-
-    def __repr__(self):
-        ostr = "*****Laser motor positions******\n"
-        for tkey, item in sorted(self.__dict__.items()):
-            if hasattr(item, "get_current_value"):
-                pos = item.get_current_value()
-                posdialstr = ""
-                try:
-                    posdial = item.get_current_value(postype="dial")
-                    posdialstr = "    dial:  % 14g\n" % posdial
-                except:
-                    pass
-                ostr += "  " + tkey.ljust(18) + " : % 14g\n" % pos + posdialstr
-        return ostr
 
 
 
