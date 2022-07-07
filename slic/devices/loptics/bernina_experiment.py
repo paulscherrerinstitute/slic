@@ -1,4 +1,4 @@
-from slic.utils.eco_components.aliases import Alias
+from slic.utils.deprecated.aliases import Alias
 from slic.devices.general.motor import Motor
 from ..general.smaract import SmarActAxis
 from ..general.delay_stage import DelayStage

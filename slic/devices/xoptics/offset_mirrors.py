@@ -1,5 +1,5 @@
 from slic.devices.general.motor import Motor
-from slic.utils.eco_components.aliases import Alias
+from slic.utils.deprecated.aliases import Alias
 
 
 def addMotorToSelf(self, name=None, ID=None):

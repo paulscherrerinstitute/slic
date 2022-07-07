@@ -1,6 +1,6 @@
 from slic.devices.general.motor import Motor
 from ..general.adjustable import AdjustableVirtual
-from slic.utils.eco_components.aliases import Alias, append_object_to_object
+from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from functools import partial
 
 

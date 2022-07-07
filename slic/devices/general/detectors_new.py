@@ -7,7 +7,7 @@ import h5py
 import numpy as np
 
 from slic.core.task import Task
-from slic.utils.eco_components.aliases import Alias
+from slic.utils.deprecated.aliases import Alias
 from slic.utils.hastyepics import get_pv as PV
 from slic.utils.pyepics import EnumWrapper
 

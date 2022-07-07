@@ -3,7 +3,7 @@ from psen_processing import PsenProcessingClient
 from slic.devices.general.motor import Motor
 from slic.devices.general.delay_stage import DelayStage
 from slic.devices.loptics.bernina_experiment import DelayTime
-from slic.utils.eco_components.aliases import Alias, append_object_to_object
+from slic.utils.deprecated.aliases import Alias, append_object_to_object
 
 
 class SpectralEncoder:

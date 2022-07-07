@@ -1,6 +1,6 @@
 from slic.devices.general.motor import Motor
 from slic.core.adjustable import PVAdjustable
-from slic.utils.eco_components.aliases import Alias, append_object_to_object
+from slic.utils.deprecated.aliases import Alias, append_object_to_object
 
 
 def addMotorToSelf(self, name=None, ID=None):

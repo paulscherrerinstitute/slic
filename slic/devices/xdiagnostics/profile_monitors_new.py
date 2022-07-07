@@ -1,6 +1,6 @@
 from slic.devices.general.motor import Motor
 from slic.devices.general.detectors import CameraCA, CameraBS
-from slic.utils.eco_components.aliases import Alias, append_object_to_object
+from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from slic.core.adjustable import PVEnumAdjustable
 
 

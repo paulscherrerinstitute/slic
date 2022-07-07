@@ -1,5 +1,5 @@
 from slic.core.task import Task
-from slic.utils.eco_components.aliases import Alias
+from slic.utils.deprecated.aliases import Alias
 import colorama
 import datetime
 from slic.core.adjustable.convenience import SpecConvenience
