@@ -1,12 +1,12 @@
 from slic.core.adjustable import PVAdjustable
 from slic.core.device import Device, SimpleDevice
 from slic.devices.general.motor import Motor
-from ..general.delay_stage import DelayStage, Delay
-from ..general.smaract import SmarActAxis
-from ..timing.lasertiming import ETiming
+from slic.devices.general.delay_stage import DelayStage, Delay
+from slic.devices.general.smaract import SmarActAxis
+from slic.devices.timing.lasertiming import ETiming
 
 
-class LaserExp(Device):
+class ExpLaser(Device):
 
     def __init__(self):
         ID = "SLAAR11-LMOT"
@@ -51,11 +51,11 @@ class LaserExp(Device):
         self.eTiming = ETiming(ID + "-eTiming")
 
         # FROG
-        FROG_motor = SmarActAxis("SLAAR11-LMTS-FROG1")
-        FROG_delay = Delay(FROG_motor)
+        frog_motor = SmarActAxis("SLAAR11-LMTS-FROG1")
+        frog_delay = Delay(frog_motor)
         self.FROG = SimpleDevice("FROG",
-            motor = FROG_motor,
-            delay = FROG_delay
+            motor = frog_motor,
+            delay = frog_delay
         )
 
 
