@@ -12,13 +12,13 @@ class XTG(Device):
             y = SmarActAxis(ID + ":TRY3")
         )
 
-        self.grating1 = = SimpleDevice("Grating 1",
+        self.grating1 = SimpleDevice("Grating 1",
             x = SmarActAxis(ID + ":TRX1"),
             y = SmarActAxis(ID + ":TRY1"),
             z = SmarActAxis(ID + ":TRZ1")
         )
 
-        self.grating2 = = SimpleDevice("Grating 2",
+        self.grating2 = SimpleDevice("Grating 2",
             x = SmarActAxis(ID + ":TRX2"),
             y = SmarActAxis(ID + ":TRY2"),
             z = SmarActAxis(ID + ":TRZ2")
