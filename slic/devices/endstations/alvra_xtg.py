@@ -1,5 +1,5 @@
 from slic.core.device import Device, SimpleDevice
-from self.devices.general.smaract import SmarActAxis
+from slic.devices.general.smaract import SmarActAxis
 
 
 class XTG(Device):
