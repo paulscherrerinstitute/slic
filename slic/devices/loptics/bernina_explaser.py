@@ -93,8 +93,8 @@ class ExpLaser:
         self.pump_wp = Motor(ID + "-M534:MOT")
         self.tt_wp = Motor(ID + "-M533:MOT")
 
-        self._pump_delaystg = Motor(ID + "-M521:MOTOR_1")
-        self.pump_delay = DelayStage(self._pump_delaystg)
+        self.pump_delay_stg = Motor(ID + "-M521:MOTOR_1")
+        self.pump_delay = DelayStage(self.pump_delay_stg)
 
         self.delay_eos_stg = Motor(ID + "-M521:MOTOR_1")
         self.delay_eos = DelayTime(self.delay_eos_stg, name="delay_eos")
@@ -115,27 +115,27 @@ class ExpLaser:
 #        self.compressor = Motor(ID + '-M532:MOT')
 
         # LAM delay stages
-        self._lam_delay_smarstg = SmarActAxis("SLAAR21-LMTS-LAM11")
-        self.lam_delay_smar = DelayStage(self._lam_delay_smarstg)
-#        self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
-#        self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
+        self.lam_delay_smar_stg = SmarActAxis("SLAAR21-LMTS-LAM11")
+        self.lam_delay_smar = DelayStage(self.lam_delay_smar_stg)
+#        self.lam_delay_stg_smar = SmarActAxis('SLAAR21-LMTS-LAM11')
+#        self.lam_delay_smar = DelayStage(self.lam_delay_stg_smar)
 
-        self._lam_delaystg = Motor(ID + "-M548:MOT")
-        self.lam_delay = DelayStage(self._lam_delaystg)
-#        self._lam_delayStg = Motor(ID + '-M548:MOT')
-#        self.lam_delay = DelayStage(self._lam_delayStg)
+        self.lam_delay_stg = Motor(ID + "-M548:MOT")
+        self.lam_delay = DelayStage(self.lam_delay_stg)
+#        self.lam_delay_stg = Motor(ID + '-M548:MOT')
+#        self.lam_delay = DelayStage(self.lam_delay_stg)
 
         # PALM delay stages
-        self._palm_delaystg = Motor(ID + "-M552:MOT")
-        self.palm_delay = DelayStage(self._palm_delaystg)
-#        self._palm_delayStg = Motor(ID + '-M552:MOT')
-#        self.palm_delay = DelayStage(self._palm_delayStg)
+        self.palm_delay_stg = Motor(ID + "-M552:MOT")
+        self.palm_delay = DelayStage(self.palm_delay_stg)
+#        self.palm_delay_stg = Motor(ID + '-M552:MOT')
+#        self.palm_delay = DelayStage(self.palm_delay_stg)
 
         # PSEN delay stages
-#        self._psen_delayStg = Motor(ID + '')
-#        self.psen_delay = DelayStage(self._pump_delayStg)
-        self._psen_delaystg = Motor(ID + "-M561:MOT")
-        self.psen_delay = DelayStage(self._psen_delaystg)
+#        self.psen_delay_stg = Motor(ID + '')
+#        self.psen_delay = DelayStage(self.pump_delay_stg)
+        self.psen_delay_stg = Motor(ID + "-M561:MOT")
+        self.psen_delay = DelayStage(self.psen_delay_stg)
 
         # SmarActID
         # Mirrors used in the experiment
@@ -173,41 +173,41 @@ class Laser_Exp_old:
         self.pump_wp = Motor(ID + "-M534:MOT")
         self.tt_wp = Motor(ID + "-M533:MOT")
 
-        self._pump_delaystg = Motor(ID + "-M521:MOTOR_1")
-        self.pump_delay = DelayStage(self._pump_delaystg)
+        self.pump_delay_stg = Motor(ID + "-M521:MOTOR_1")
+        self.pump_delay = DelayStage(self.pump_delay_stg)
 
-        self._tt_delaystg = Motor(ID + "-M522:MOTOR_1")
-        self.tt_delay = DelayStage(self._tt_delaystg)
-#        self.thz_delay = DelayStage(self._thz_delaystg)
+        self.tt_delay_stg = Motor(ID + "-M522:MOTOR_1")
+        self.tt_delay = DelayStage(self.tt_delay_stg)
+#        self.thz_delay = DelayStage(self.thz_delay_stg)
 
-        self._exp_delaystg = Motor(ID + "-M553:MOT")
-        self.exp_delay = DelayStage(self._exp_delaystg)
-#        self.thz_delay = DelayStage(self._thz_delaystg)
+        self.exp_delay_stg = Motor(ID + "-M553:MOT")
+        self.exp_delay = DelayStage(self.exp_delay_stg)
+#        self.thz_delay = DelayStage(self.thz_delay_stg)
 
         # compressor
         self.compressor = Motor(ID + "-M532:MOT")
 #        self.compressor = Motor(ID + '-M532:MOT')
 
         # LAM delay stages
-        self._lam_delay_smarstg = SmarActAxis("SLAAR21-LMTS-LAM11")
-        self.lam_delay_smar = DelayStage(self._lam_delay_smarstg)
-#        self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
-#        self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
+        self.lam_delay_smar_stg = SmarActAxis("SLAAR21-LMTS-LAM11")
+        self.lam_delay_smar = DelayStage(self.lam_delay_smar_stg)
+#        self.lam_delay_stg_smar = SmarActAxis('SLAAR21-LMTS-LAM11')
+#        self.lam_delay_smar = DelayStage(self.lam_delay_stg_smar)
 
-        self._lam_delaystg = Motor(ID + "-M548:MOT")
-        self.lam_delay = DelayStage(self._lam_delaystg)
-#        self._lam_delayStg = Motor(ID + '-M548:MOT')
-#        self.lam_delay = DelayStage(self._lam_delayStg)
+        self.lam_delay_stg = Motor(ID + "-M548:MOT")
+        self.lam_delay = DelayStage(self.lam_delay_stg)
+#        self.lam_delay_stg = Motor(ID + '-M548:MOT')
+#        self.lam_delay = DelayStage(self.lam_delay_stg)
 
         # PALM delay stages
-        self._palm_delaystg = Motor(ID + "-M552:MOT")
-        self.palm_delay = DelayStage(self._palm_delaystg)
-#        self._palm_delayStg = Motor(ID + '-M552:MOT')
-#        self.palm_delay = DelayStage(self._palm_delayStg)
+        self.palm_delay_stg = Motor(ID + "-M552:MOT")
+        self.palm_delay = DelayStage(self.palm_delay_stg)
+#        self.palm_delay_stg = Motor(ID + '-M552:MOT')
+#        self.palm_delay = DelayStage(self.palm_delay_stg)
 
         # PSEN delay stages
-#        self._psen_delayStg = Motor(ID + '')
-#        self.psen_delay = DelayStage(self._pump_delayStg)
+#        self.psen_delay_stg = Motor(ID + '')
+#        self.psen_delay = DelayStage(self.pump_delay_stg)
 
         # SmarActID
         # Mirrors used in the experiment
