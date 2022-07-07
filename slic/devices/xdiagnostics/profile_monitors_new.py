@@ -4,11 +4,6 @@ from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from slic.core.adjustable import PVEnumAdjustable
 
 
-def addMotorToSelf(self, ID=None, name=None):
-    self.__dict__[name] = Motor(ID, name=name)
-    self.alias.append(self.__dict__[name].alias)
-
-
 class Pprm:
 
     def __init__(self, ID, name=None):

@@ -1,13 +1,5 @@
-from slic.devices.general.motor import Motor
+from slic.devices.general.motor import Motor, append_object_to_object
 from slic.utils.deprecated.aliases import Alias
-
-
-def addMotorToSelf(self, name=None, ID=None):
-    try:
-        self.__dict__[name] = Motor(ID, name=name)
-        self.alias.append(self.__dict__[name].alias)
-    except:
-        print(f"Warning! Could not find motor {name} (ID: {ID})")
 
 
 class OffsetMirror:
@@ -17,10 +9,10 @@ class OffsetMirror:
         self.name = name
         self.alias = Alias(name)
 
-        addMotorToSelf(self, ID=ID + ":W_X", name="x")
-        addMotorToSelf(self, ID=ID + ":W_Y", name="y")
-        addMotorToSelf(self, ID=ID + ":W_RX", name="rx")
-        addMotorToSelf(self, ID=ID + ":W_RZ", name="rz")
+        append_object_to_object(self, Motor, ID + ":W_X", name="x")
+        append_object_to_object(self, Motor, ID + ":W_Y", name="y")
+        append_object_to_object(self, Motor, ID + ":W_RX", name="rx")
+        append_object_to_object(self, Motor, ID + ":W_RZ", name="rz")
 
     def out(self):
         pass

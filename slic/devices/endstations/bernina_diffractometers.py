@@ -3,14 +3,6 @@ from slic.core.adjustable import PVAdjustable
 from slic.utils.deprecated.aliases import Alias, append_object_to_object
 
 
-def addMotorToSelf(self, name=None, ID=None):
-    try:
-        self.__dict__[name] = Motor(ID, name=name)
-        self.alias.append(self.__dict__[name].alias)
-    except:
-        print(f"Warning! Could not find motor {name} (ID: {ID})")
-
-
 class GPS:
 
     def __init__(self, name=None, ID=None, configuration=["base"], alias_namespace=None):
@@ -21,18 +13,18 @@ class GPS:
 
         if "base" in self.configuration:
             ### motors base platform ###
-            addMotorToSelf(self, ID=ID + ":MOT_TX", name="xbase")
-            addMotorToSelf(self, ID=ID + ":MOT_TY", name="ybase")
-            addMotorToSelf(self, ID=ID + ":MOT_RX", name="rxbase")
-            addMotorToSelf(self, ID=ID + ":MOT_MY_RYTH", name="alpha")
+            append_object_to_object(self, Motor, ID + ":MOT_TX", name="xbase")
+            append_object_to_object(self, Motor, ID + ":MOT_TY", name="ybase")
+            append_object_to_object(self, Motor, ID + ":MOT_RX", name="rxbase")
+            append_object_to_object(self, Motor, ID + ":MOT_MY_RYTH", name="alpha")
 
             ### motors XRD detector arm ###
-            addMotorToSelf(self, ID=ID + ":MOT_NY_RY2TH", name="gamma")
+            append_object_to_object(self, Motor, ID + ":MOT_NY_RY2TH", name="gamma")
 
         if "phi_table" in self.configuration:
             ### motors phi table ###
-            addMotorToSelf(self, ID=ID + ":MOT_HEX_RX", name="phi")
-            addMotorToSelf(self, ID=ID + ":MOT_HEX_TX", name="tphi")
+            append_object_to_object(self, Motor, ID + ":MOT_HEX_RX", name="phi")
+            append_object_to_object(self, Motor, ID + ":MOT_HEX_TX", name="tphi")
 
         if "phi_hex" in self.configuration:
             ### motors PI hexapod ###
@@ -45,15 +37,15 @@ class GPS:
 
         if "hlxz" in self.configuration:
             ### motors heavy load goniometer ###
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_TX", name="xhl")
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_TZ", name="zhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_TX", name="xhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_TZ", name="zhl")
 
         if "hly" in self.configuration:
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_TY", name="yhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_TY", name="yhl")
 
         if "hlrxrz" in self.configuration:
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_RX", name="rxhl")
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_RZ", name="rzhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_RX", name="rxhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_RZ", name="rzhl")
 
     def get_adjustable_positions_str(self):
         ostr = "*****GPS motor positions******\n"
@@ -82,45 +74,45 @@ class XRD:
         if "base" in self.configuration:
             ### motors base platform ###
             ### motors base platform ###
-            addMotorToSelf(self, ID=ID + ":MOT_TX", name="xbase")
-            addMotorToSelf(self, ID=ID + ":MOT_TY", name="ybase")
-            addMotorToSelf(self, ID=ID + ":MOT_RX", name="rxbase")
-            addMotorToSelf(self, ID=ID + ":MOT_MY_RYTH", name="alpha")
+            append_object_to_object(self, Motor, ID + ":MOT_TX", name="xbase")
+            append_object_to_object(self, Motor, ID + ":MOT_TY", name="ybase")
+            append_object_to_object(self, Motor, ID + ":MOT_RX", name="rxbase")
+            append_object_to_object(self, Motor, ID + ":MOT_MY_RYTH", name="alpha")
 
         if "arm" in self.configuration:
             ### motors XRD detector arm ###
-            addMotorToSelf(self, ID=ID + ":MOT_NY_RY2TH", name="gamma")
-            addMotorToSelf(self, ID=ID + ":MOT_DT_RX2TH", name="delta")
+            append_object_to_object(self, Motor, ID + ":MOT_NY_RY2TH", name="gamma")
+            append_object_to_object(self, Motor, ID + ":MOT_DT_RX2TH", name="delta")
             ### motors XRD area detector branch ###
-            addMotorToSelf(self, ID=ID + ":MOT_D_T", name="tdet")
+            append_object_to_object(self, Motor, ID + ":MOT_D_T", name="tdet")
 
             ### motors XRD polarisation analyzer branch ###
-            addMotorToSelf(self, ID=ID + ":MOT_P_T", name="tpol")
+            append_object_to_object(self, Motor, ID + ":MOT_P_T", name="tpol")
             # missing: slits of flight tube
 
         if "hlxz" in self.configuration:
             ### motors heavy load goniometer ###
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_TX", name="xhl")
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_TZ", name="zhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_TX", name="xhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_TZ", name="zhl")
         if "hly" in self.configuration:
-            addMotorToSelf(self, ID=ID + ":MOT_TBL_TY", name="yhl")
+            append_object_to_object(self, Motor, ID + ":MOT_TBL_TY", name="yhl")
 
         if "hlrxrz" in self.configuration:
             try:
-                addMotorToSelf(self, ID=ID + ":MOT_TBL_RX", name="rxhl")
+                append_object_to_object(self, Motor, ID + ":MOT_TBL_RX", name="rxhl")
             except:
                 print("XRD.rxhl not found")
                 pass
             try:
-                addMotorToSelf(self, ID=ID + ":MOT_TBL_RY", name="rzhl")
+                append_object_to_object(self, Motor, ID + ":MOT_TBL_RY", name="rzhl")
             except:
                 print("XRD.rzhl not found")
                 pass
 
         if "phi_table" in self.configuration:
             ### motors nu table ###
-            addMotorToSelf(self, ID=ID + ":MOT_HEX_TX", name="tphi")
-            addMotorToSelf(self, ID=ID + ":MOT_HEX_RX", name="phi")
+            append_object_to_object(self, Motor, ID + ":MOT_HEX_TX", name="tphi")
+            append_object_to_object(self, Motor, ID + ":MOT_HEX_RX", name="phi")
 
         if "phi_hex" in self.configuration:
             ### motors PI hexapod ###

@@ -1,4 +1,4 @@
-from slic.utils.deprecated.aliases import Alias
+from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from slic.devices.general.motor import Motor
 from ..general.smaract import SmarActAxis
 from ..general.delay_stage import DelayStage
@@ -8,21 +8,6 @@ import colorama, datetime
 from pint import UnitRegistry
 
 ureg = UnitRegistry()
-
-
-def addMotorToSelf(self, ID=None, name=None):
-    self.__dict__[name] = Motor(ID, name=name)
-    self.alias.append(self.__dict__[name].alias)
-
-
-def addSmarActAxisToSelf(self, ID=None, name=None):
-    self.__dict__[name] = SmarActAxis(ID, name=name)
-    self.alias.append(self.__dict__[name].alias)
-
-
-def addDelayStageToSelf(self, stage=None, name=None):
-    self.__dict__[name] = DelayStage(stage, name=name)
-    self.alias.append(self.__dict__[name].alias)
 
 
 class DelayTime(AdjustableVirtual):
@@ -107,20 +92,20 @@ class Laser_Exp:
 
         # Waveplate and Delay stage
         try:
-            addMotorToSelf(self, self.ID + "-M534:MOT", name="pump_wp")
-            addMotorToSelf(self, self.ID + "-M533:MOT", name="tt_wp")
+            append_object_to_object(self, Motor, self.ID + "-M534:MOT", name="pump_wp")
+            append_object_to_object(self, Motor, self.ID + "-M533:MOT", name="tt_wp")
         except:
             print("No wp found")
 
         try:
-            addMotorToSelf(self, ID=self.ID + "-M521:MOTOR_1", name="_pump_delaystg")
-            addDelayStageToSelf(self, stage=self.__dict__["_pump_delaystg"], name="pump_delay")
+            append_object_to_object(self, Motor, self.ID + "-M521:MOTOR_1", name="_pump_delaystg")
+            append_object_to_object(self, DelayStage, self.__dict__["_pump_delaystg"], name="pump_delay")
         except Exception as expt:
             print("No eos delay stage")
             print(expt)
 
         # try:
-        addMotorToSelf(self, ID=self.ID + "-M521:MOTOR_1", name="delay_eos_stg")
+        append_object_to_object(self, Motor, self.ID + "-M521:MOTOR_1", name="delay_eos_stg")
         self.delay_eos = DelayTime(self.delay_eos_stg, name="delay_eos")
         self.alias.append(self.delay_eos.alias)
         self.lxt_eos = DelayTime(self.delay_eos_stg, direction=-1, name="lxt_eos")
@@ -130,13 +115,13 @@ class Laser_Exp:
         # print(expt)
 
         try:
-            addMotorToSelf(self, ID=self.ID + "-M522:MOTOR_1", name="delay_tt_stg")
+            append_object_to_object(self, Motor, self.ID + "-M522:MOTOR_1", name="delay_tt_stg")
             self.delay_tt = DelayTime(self.delay_tt_stg, name="delay_tt")
             self.alias.append(self.delay_tt.alias)
         except:
             print("Problems initializing global delay stage")
         try:
-            addMotorToSelf(self, ID=self.ID + "-M523:MOTOR_1", name="delay_glob_stg")
+            append_object_to_object(self, Motor, self.ID + "-M523:MOTOR_1", name="delay_glob_stg")
             self.delay_glob = DelayTime(self.delay_glob_stg, name="delay_glob")
             self.alias.append(self.delay_glob.alias)
             self.lxt_glob = DelayTime(self.delay_glob_stg, direction=-1, name="lxt_glob")
@@ -151,23 +136,23 @@ class Laser_Exp:
         except:
             print("Problems initializing virtual pump delay stage")
         # compressor
-        addMotorToSelf(self, ID=self.ID + "-M532:MOT", name="compressor")
+        append_object_to_object(self, Motor, self.ID + "-M532:MOT", name="compressor")
         # self.compressor = Motor(ID + '-M532:MOT')
 
         # LAM delay stages
-        addSmarActAxisToSelf(self, ID="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
-        addDelayStageToSelf(self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
+        append_object_to_object(self, SmarActAxis, "SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
+        append_object_to_object(self, DelayStage, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
         # self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
-        addMotorToSelf(self, ID=self.ID + "-M548:MOT", name="_lam_delaystg")
-        addDelayStageToSelf(self, self.__dict__["_lam_delaystg"], name="lam_delay")
+        append_object_to_object(self, Motor, self.ID + "-M548:MOT", name="_lam_delaystg")
+        append_object_to_object(self, DelayStage, self.__dict__["_lam_delaystg"], name="lam_delay")
         # self._lam_delayStg = Motor(self.ID + '-M548:MOT')
         # self.lam_delay = DelayStage(self._lam_delayStg)
 
         # PALM delay stages
-        addMotorToSelf(self, ID=self.ID + "-M552:MOT", name="_palm_delaystg")
-        addDelayStageToSelf(self, self.__dict__["_palm_delaystg"], name="palm_delay")
+        append_object_to_object(self, Motor, self.ID + "-M552:MOT", name="_palm_delaystg")
+        append_object_to_object(self, DelayStage, self.__dict__["_palm_delaystg"], name="palm_delay")
         # self._palm_delayStg = Motor(self.ID + '-M552:MOT')
         # self.palm_delay = DelayStage(self._palm_delayStg)
 
@@ -175,8 +160,8 @@ class Laser_Exp:
         # self._psen_delayStg = Motor(self.ID + '')
         # self.psen_delay = DelayStage(self._pump_delayStg)
         try:
-            addMotorToSelf(self, ID=self.ID + "-M561:MOT", name="_psen_delaystg")
-            addDelayStageToSelf(self, stage=self.__dict__["_psen_delaystg"], name="psen_delay")
+            append_object_to_object(self, Motor, self.ID + "-M561:MOT", name="_psen_delaystg")
+            append_object_to_object(self, DelayStage, self.__dict__["_psen_delaystg"], name="psen_delay")
         except Exception as expt:
             print("No psen delay stage")
             print(expt)
@@ -186,7 +171,7 @@ class Laser_Exp:
 
         for smar_name, smar_address in self.smar_config.items():
             try:
-                addSmarActAxisToSelf(self, ID=(self.ID_SA + smar_address), name=smar_name)
+                append_object_to_object(self, SmarActAxis, self.ID_SA + smar_address, name=smar_name)
             except:
                 print("Loading %s SmarAct motor in bernina laser conifg failed") % (smar_name)
 
@@ -221,50 +206,50 @@ class Laser_Exp_old:
 
         # Waveplate and Delay stage
         try:
-            addMotorToSelf(self, self.ID + "-M534:MOT", name="pump_wp")
-            addMotorToSelf(self, self.ID + "-M533:MOT", name="tt_wp")
+            append_object_to_object(self, Motor, self.ID + "-M534:MOT", name="pump_wp")
+            append_object_to_object(self, Motor, self.ID + "-M533:MOT", name="tt_wp")
         except:
             print("No wp found")
 
         try:
-            addMotorToSelf(self, ID=self.ID + "-M521:MOTOR_1", name="_pump_delaystg")
-            addDelayStageToSelf(self, stage=self.__dict__["_pump_delaystg"], name="pump_delay")
+            append_object_to_object(self, Motor, self.ID + "-M521:MOTOR_1", name="_pump_delaystg")
+            append_object_to_object(self, DelayStage, self.__dict__["_pump_delaystg"], name="pump_delay")
         except:
             print("No eos delay stage")
             pass
         try:
-            addMotorToSelf(self, ID=self.ID + "-M522:MOTOR_1", name="_tt_delaystg")
-            addDelayStageToSelf(self, self.__dict__["_tt_delaystg"], name="tt_delay")
-            # addDelayStageToSelf(self,self.__dict__["_thz_delaystg"], name="thz_delay")
+            append_object_to_object(self, Motor, self.ID + "-M522:MOTOR_1", name="_tt_delaystg")
+            append_object_to_object(self, DelayStage, self.__dict__["_tt_delaystg"], name="tt_delay")
+            # append_object_to_object(self, DelayStage, self.__dict__["_thz_delaystg"], name="thz_delay")
         except:
             print("No thz delay stage")
             pass
 
         try:
-            addMotorToSelf(self, ID=self.ID + "-M553:MOT", name="_exp_delaystg")
-            addDelayStageToSelf(self, self.__dict__["_exp_delaystg"], name="exp_delay")
-            # addDelayStageToSelf(self,self.__dict__["_thz_delaystg"], name="thz_delay")
+            append_object_to_object(self, Motor, self.ID + "-M553:MOT", name="_exp_delaystg")
+            append_object_to_object(self, DelayStage, self.__dict__["_exp_delaystg"], name="exp_delay")
+            # append_object_to_object(self, DelayStage, self.__dict__["_thz_delaystg"], name="thz_delay")
         except:
             print("No thz delay stage")
             pass
         # compressor
-        addMotorToSelf(self, ID=self.ID + "-M532:MOT", name="compressor")
+        append_object_to_object(self, Motor, self.ID + "-M532:MOT", name="compressor")
         # self.compressor = Motor(ID + '-M532:MOT')
 
         # LAM delay stages
-        addSmarActAxisToSelf(self, ID="SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
-        addDelayStageToSelf(self, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
+        append_object_to_object(self, SmarActAxis, "SLAAR21-LMTS-LAM11", name="_lam_delay_smarstg")
+        append_object_to_object(self, DelayStage, self.__dict__["_lam_delay_smarstg"], name="lam_delay_smar")
         # self._lam_delayStg_Smar = SmarActAxis('SLAAR21-LMTS-LAM11')
         # self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 
-        addMotorToSelf(self, ID=self.ID + "-M548:MOT", name="_lam_delaystg")
-        addDelayStageToSelf(self, self.__dict__["_lam_delaystg"], name="lam_delay")
+        append_object_to_object(self, Motor, self.ID + "-M548:MOT", name="_lam_delaystg")
+        append_object_to_object(self, DelayStage, self.__dict__["_lam_delaystg"], name="lam_delay")
         # self._lam_delayStg = Motor(self.ID + '-M548:MOT')
         # self.lam_delay = DelayStage(self._lam_delayStg)
 
         # PALM delay stages
-        addMotorToSelf(self, ID=self.ID + "-M552:MOT", name="_palm_delaystg")
-        addDelayStageToSelf(self, self.__dict__["_palm_delaystg"], name="palm_delay")
+        append_object_to_object(self, Motor, self.ID + "-M552:MOT", name="_palm_delaystg")
+        append_object_to_object(self, DelayStage, self.__dict__["_palm_delaystg"], name="palm_delay")
         # self._palm_delayStg = Motor(self.ID + '-M552:MOT')
         # self.palm_delay = DelayStage(self._palm_delayStg)
 
@@ -277,7 +262,7 @@ class Laser_Exp_old:
 
         for smar_name, smar_address in self.smar_config.items():
             try:
-                addSmarActAxisToSelf(self, ID=(self.ID_SA + smar_address), name=smar_name)
+                append_object_to_object(self, SmarActAxis, self.ID_SA + smar_address, name=smar_name)
             except:
                 print("Loading %s SmarAct motor in bernina laser conifg failed") % (smar_name)
 
