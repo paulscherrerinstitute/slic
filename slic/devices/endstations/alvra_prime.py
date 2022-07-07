@@ -33,20 +33,14 @@ class PrimeTable(Device):
 
 
 
-class VonHamosBragg:
+class VonHamosBragg(Device):
 
-    def __init__(self, ID, alias_namespace=None, z_undulator=None, description=None):
-        self.ID = ID
+    def __init__(self, ID, name="von Hamos positions", **kwargs):
+        super().__init__(ID, name=name, **kwargs)
+        self.cry1 = Motor(ID + ":CRY_1", name = name + " Crystal 1")
+        self.cry2 = Motor(ID + ":CRY_2", name = name + " Crystal 2")
 
-        ### Owis linear stages ###
-        self.cry1 = Motor(ID + ":CRY_1")
-        self.cry2 = Motor(ID + ":CRY_2")
 
-    def __str__(self):
-        return "von Hamos positions\nCrystal 1: %s mm\nCrystal 2: %s mm" % (self.cry1.wm(), self.cry2.wm())
-
-    def __repr__(self):
-        return "{'Crystal 1': %s, 'Crystal 2': %s}" % (self.cry1.wm(), self.cry2.wm())
 
 
 class Microscope:
