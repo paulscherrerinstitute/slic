@@ -80,7 +80,7 @@ class DelayCompensation(AdjustableVirtual):
         return s
 
 
-class Laser_Exp:
+class ExpLaser:
 
     def __init__(self, ID=None, name=None, smar_config=None):
         self.ID = ID
