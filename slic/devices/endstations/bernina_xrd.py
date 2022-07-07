@@ -6,11 +6,6 @@ from slic.devices.general.motor import Motor
 class XRD(Device):
 
     def __init__(self, ID, name="XRD", configuration=("base",), **kwargs):
-        """
-        X-ray diffractometer platform in SwissFEL Bernina.
-        <configuration> list of elements mounted on the plaform,
-                        options are kappa, nutable, hlgonio, polana
-        """
         super().__init__(ID, name=name, **kwargs)
         self.configuration = configuration
 
@@ -56,7 +51,7 @@ class XRD(Device):
 
         if "hlrxrz" in configuration:
             self.rxhl = Motor(ID + ":MOT_TBL_RX")
-            self.rzhl = Motor(ID + ":MOT_TBL_RY")
+            self.rzhl = Motor(ID + ":MOT_TBL_RZ")
 
         if "kappa" in configuration:
             KAPPA_PREFIX = "SARES21-XRD:MOT_KAP_"

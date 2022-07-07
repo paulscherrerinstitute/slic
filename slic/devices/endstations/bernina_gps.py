@@ -9,15 +9,24 @@ class GPS(Device):
         super().__init__(ID, name=name, **kwargs)
         self.configuration = configuration
 
+        # base platform
         if "base" in configuration:
-            # base platform
             self.xbase  = Motor(ID + ":MOT_TX")
             self.ybase  = Motor(ID + ":MOT_TY")
             self.rxbase = Motor(ID + ":MOT_RX")
             self.alpha  = Motor(ID + ":MOT_MY_RYTH")
+
+        if "arm" in configuration:
             # XRD detector arm
             self.gamma = Motor(ID + ":MOT_NY_RY2TH")
+            self.delta = Motor(ID + ":MOT_DT_RX2TH")
+            # XRD area detector branch
+            self.tdet = Motor(ID + ":MOT_D_T")
+            # XRD polarisation analyzer branch
+            self.tpol = Motor(ID + ":MOT_P_T")
+            # missing: slits of flight tube
 
+        # nu table
         if "phi_table" in configuration:
             self.phi  = Motor(ID + ":MOT_HEX_RX")
             self.tphi = Motor(ID + ":MOT_HEX_TX")
@@ -43,6 +52,17 @@ class GPS(Device):
         if "hlrxrz" in configuration:
             self.rxhl = Motor(ID + ":MOT_TBL_RX")
             self.rzhl = Motor(ID + ":MOT_TBL_RZ")
+
+        if "kappa" in configuration:
+            KAPPA_PREFIX = "SARES21-XRD:MOT_KAP_"
+            self.eta   = Motor(KAPPA_PREFIX + "KRX")
+            self.kappa = Motor(KAPPA_PREFIX + "KAP")
+            self.phi   = Motor(KAPPA_PREFIX + "KPH")
+            self.zkap  = Motor(KAPPA_PREFIX + "DTY")
+            self.xkap  = Motor(KAPPA_PREFIX + "DTX")
+            self.ykap  = Motor(KAPPA_PREFIX + "DTZ")
+            self.rxkap = Motor(KAPPA_PREFIX + "DRX")
+            self.rykap = Motor(KAPPA_PREFIX + "DRZ")
 
 
 
