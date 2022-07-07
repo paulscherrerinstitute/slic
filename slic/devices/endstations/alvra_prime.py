@@ -1,6 +1,36 @@
+from slic.core.adjustable import PVAdjustable, PVEnumAdjustable
+from slic.core.device import Device, SimpleDevice
 from slic.devices.general.motor import Motor
 from slic.devices.general.smaract import SmarActAxis
 from slic.utils.hastyepics import get_pv as PV
+
+
+class PrimeTable(Device):
+
+    def __init__(self, ID, **kwargs):
+        super().__init__(ID, **kwargs)
+
+        self.mode   = PVEnumAdjustable(ID + ":MODE_SP")
+        self.status = PVAdjustable(ID + ":SS_STATUS")
+
+        self.motors = SimpleDevice("Motors",
+            x1 = Motor(ID + ":MOTOR_X1"),
+            y1 = Motor(ID + ":MOTOR_Y1"),
+            y2 = Motor(ID + ":MOTOR_Y2"),
+            y3 = Motor(ID + ":MOTOR_Y3"),
+            z1 = Motor(ID + ":MOTOR_Z1")
+            z2 = Motor(ID + ":MOTOR_Z2")
+        )
+
+        self.w = SimpleDevice("W",
+            x      = Motor(ID + ":W_X"),
+            y      = Motor(ID + ":W_Y"),
+            z      = Motor(ID + ":W_Z"),
+            pitch  = Motor(ID + ":W_RX"),
+            yaw    = Motor(ID + ":W_RY"),
+            roll   = Motor(ID + ":W_RZ")
+        )
+
 
 
 class Huber:
@@ -34,34 +64,6 @@ class VonHamosBragg:
 
     def __repr__(self):
         return "{'Crystal 1': %s, 'Crystal 2': %s}" % (self.cry1.wm(), self.cry2.wm())
-
-
-class Table:
-
-    def __init__(self, ID, alias_namespace=None, z_undulator=None, description=None):
-        self.ID = ID
-
-        ### ADC optical table ###
-        self.x1 = Motor(ID + ":MOTOR_X1")
-        self.y1 = Motor(ID + ":MOTOR_Y1")
-        self.y2 = Motor(ID + ":MOTOR_Y2")
-        self.y3 = Motor(ID + ":MOTOR_Y3")
-        self.z1 = Motor(ID + ":MOTOR_Z1")
-        self.z2 = Motor(ID + ":MOTOR_Z2")
-        self.x = Motor(ID + ":W_X")
-        self.y = Motor(ID + ":W_Y")
-        self.z = Motor(ID + ":W_Z")
-        self.pitch = Motor(ID + ":W_RX")
-        self.yaw = Motor(ID + ":W_RY")
-        self.roll = Motor(ID + ":W_RZ")
-        self.modeSP = PV(ID + ":MODE_SP")
-        self.status = PV(ID + ":SS_STATUS")
-
-    def __str__(self):
-        return "Prime Table position\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mrad\nyaw: %s mrad\nmode SP: %s \nstatus: %s" % (self.x.wm(), self.y.wm(), self.z.wm(), self.pitch.wm(), self.yaw.wm(), self.modeSP.get(as_string=True), self.status.get())
-
-    def __repr__(self):
-        return "{'x': %s, 'y': %s,'z': %s,'pitch': %s, 'yaw': %s, 'mode set point': %s,'status': %s}" % (self.x, self.y, self.z, self.pitch, self.yaw, self.modeSP.get(as_string=True), self.status.get())
 
 
 class Microscope:
