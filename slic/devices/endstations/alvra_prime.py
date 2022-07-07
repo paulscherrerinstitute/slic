@@ -42,29 +42,15 @@ class VonHamosBragg(Device):
 
 
 
+class Microscope(Device):
 
-class Microscope:
-
-    def __init__(self, ID, gonio=None, rotat=None, alias_namespace=None, z_undulator=None, description=None):
-        self.ID = ID
-
-        ### Microscope motors ###
+    def __init__(self, ID, gonio=None, rotat=None, name="Microscope positions", **kwargs):
+        super().__init__(ID, name=name, **kwargs)
         self.focus = Motor(ID + ":FOCUS")
-        self.zoom = Motor(ID + ":ZOOM")
-#        self._smaractaxes = {
-#            'gonio': '_xmic_gon',   # will become self.gonio
-#            'rot':   '_xmic_rot'}   # """ self.rot
-        self.gonio = SmarActAxis(gonio) #TODO: can this be None?
-        self.rot = SmarActAxis(rotat) #TODO: can this be None?
+        self.zoom  = Motor(ID + ":ZOOM")
+        self.gonio = SmarActAxis(gonio) if gonio else None
+        self.rotat = SmarActAxis(rotat) if rotat else None
 
-    def __str__(self):
-        return "Microscope positions\nfocus: %s\nzoom:  %s\ngonio: %s\nrot:   %s" % (self.focus.wm(), self.zoom.wm(), self.gonio.wm(), self.rot.wm())
-
-    def __repr__(self):
-        return "{'Focus': %s, 'Zoom': %s, 'Gonio': %s, 'Rot': %s}" % (self.focus.wm(), self.zoom.wm(), self.gonio.wm(), self.rot.wm())
-
-
-# prism (as a SmarAct-only stage) is defined purely in ../aliases/alvra.py
 
 
 class Vacuum:
