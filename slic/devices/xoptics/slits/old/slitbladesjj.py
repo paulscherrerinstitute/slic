@@ -1,9 +1,9 @@
 from slic.devices.general.motor import Motor
 
-from old_slit_base import SlitBase
+from slitbase import SlitBase
 
 
-class SlitBlades_JJ(SlitBase):
+class SlitBladesJJ(SlitBase):
 
     def __init__(self, ID, name=None, elog=None):
         self.ID = ID

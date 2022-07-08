@@ -2,8 +2,8 @@ from slic.devices.general.motor import Motor
 from ..general.adjustable import AdjustableVirtual
 from functools import partial
 
-from new_slit_base import SlitBase
-from new_slit_base import getblade, setblade
+from slitbase import SlitBase
+from slitbase import getblade, setblade
 
 
 class SlitPosWidth(SlitBase):

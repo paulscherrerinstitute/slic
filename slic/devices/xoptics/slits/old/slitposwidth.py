@@ -1,6 +1,6 @@
 from slic.devices.general.motor import Motor
 
-from old_slit_base import SlitBase
+from slitbase import SlitBase
 
 
 class SlitPosWidth(SlitBase):

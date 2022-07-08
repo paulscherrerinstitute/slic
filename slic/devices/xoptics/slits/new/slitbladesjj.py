@@ -1,11 +1,11 @@
 from slic.devices.general.motor import Motor
 from ..general.adjustable import AdjustableVirtual
 
-from new_slit_base import SlitBase
-from new_slit_base import getgap, getpos
+from slitbase import SlitBase
+from slitbase import getgap, getpos
 
 
-class SlitBlades_JJ(SlitBase):
+class SlitBladesJJ(SlitBase):
 
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
