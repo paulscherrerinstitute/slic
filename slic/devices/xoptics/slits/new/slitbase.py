@@ -20,26 +20,22 @@ def setblade(bde, pos, gap, direction=1):
 class SlitBase:
 
     def setwidth(self, x):
-        return tuple([tx + self.hpos.get_current_value() for tx in [-x / 2, x / 2]])
+        return [tx + self.hpos.get_current_value() for tx in (-x / 2, x / 2)]
 
     def setheight(self, x):
-        return tuple([tx + self.vpos.get_current_value() for tx in [-x / 2, x / 2]])
+        return [tx + self.vpos.get_current_value() for tx in (-x / 2, x / 2)]
 
     def sethpos(self, x):
-        return tuple([tx + self.hgap.get_current_value() for tx in [-x / 2, x / 2]])
+        return [tx + self.hgap.get_current_value() for tx in (-x / 2, x / 2)]
 
     def setvpos(self, x):
-        return tuple([tx + self.vgap.get_current_value() for tx in [-x / 2, x / 2]])
+        return [tx + self.vgap.get_current_value() for tx in (-x / 2, x / 2)]
 
 
     def __call__(self, *args):
         if len(args) == 0:
-            return (
-                self.hpos.get_current_value(),
-                self.vpos.get_current_value(),
-                self.hgap.get_current_value(),
-                self.vgap.get_current_value(),
-            )
+            adjs = (self.hpos, self.vpos, self.hgap, self.vgap)
+            return [a.get_current_value() for a in adjs]
         elif len(args) == 1:
             self.hgap.set_target_value(args[0])
             self.vgap.set_target_value(args[0])
@@ -51,12 +47,13 @@ class SlitBase:
             self.vpos.set_target_value(args[1])
             self.hgap.set_target_value(args[2])
             self.vgap.set_target_value(args[3])
-        else:
-            raise Exception("wrong number of input arguments!")
+        raise ValueError("wrong number of input arguments")
 
 
     def repr(self):
-        return f"pos ({self.hpos.get_current_value():6.3f},{self.vpos.get_current_value():6.3f}), gap ({self.hgap.get_current_value():6.3f},{self.vgap.get_current_value():6.3f})"
+        pos = "pos ({}, {})".format(self.hpos.get_current_value(), self.vpos.get_current_value())
+        gap = "gap ({}, {})".format(self.hgap.get_current_value(), self.vgap.get_current_value())
+        return ", ".join((pos, gap))
 
 
 

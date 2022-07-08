@@ -7,18 +7,21 @@ from slitbase import getgap, getpos
 
 class SlitBladesJJ(SlitBase):
 
-    def __init__(self, pvname, name=None, elog=None):
-        self.name = name
-        self.ID = pvname
-        self.right = Motor(pvname + ":MOT_1")
-        self.left = Motor(pvname + ":MOT_2")
-        self.down = Motor(pvname + ":MOT_4")
-        self.up = Motor(pvname + ":MOT_3")
+    def __init__(self, ID):
+        self.ID = ID
 
-        self.hgap = AdjustableVirtual([self.right, self.left], getgap, self.setwidth,  reset_current_value_to=True)
-        self.vgap = AdjustableVirtual([self.down, self.up],    getgap, self.setheight, reset_current_value_to=True)
-        self.hpos = AdjustableVirtual([self.right, self.left], getpos, self.sethpos,   reset_current_value_to=True)
-        self.vpos = AdjustableVirtual([self.down, self.up],    getpos, self.setvpos,   reset_current_value_to=True)
+        self.right = Motor(ID + ":MOT_1")
+        self.left  = Motor(ID + ":MOT_2")
+        self.down  = Motor(ID + ":MOT_4")
+        self.up    = Motor(ID + ":MOT_3")
+
+        h = (self.right, self.left)
+        v = (self.down, self.up)
+
+        self.hgap = AdjustableVirtual(h, getgap, self.setwidth)
+        self.vgap = AdjustableVirtual(v, getgap, self.setheight)
+        self.hpos = AdjustableVirtual(h, getpos, self.sethpos)
+        self.vpos = AdjustableVirtual(v, getpos, self.setvpos)
 
 
 

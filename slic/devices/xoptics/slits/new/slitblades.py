@@ -7,22 +7,26 @@ from slitbase import getgap, getpos
 
 class SlitBlades(SlitBase):
 
-    def __init__(self, pvname, name=None, elog=None):
-        self.name = name
-        self.ID = pvname
-        self.right = Motor(pvname + ":MOTOR_X1")
-        self.left = Motor(pvname + ":MOTOR_X2")
-        self.down = Motor(pvname + ":MOTOR_Y1")
-        self.up = Motor(pvname + ":MOTOR_Y2")
-        self.hpos_virt_mrec = Motor(pvname + ":MOTOR_X")
-        self.hgap_virt_mrec = Motor(pvname + ":MOTOR_W")
-        self.vpos_virt_mrec = Motor(pvname + ":MOTOR_Y")
-        self.vgap_virt_mrec = Motor(pvname + ":MOTOR_H")
+    def __init__(self, ID):
+        self.ID = ID
 
-        self.hgap = AdjustableVirtual([self.right, self.left], getgap, self.setwidth,  reset_current_value_to=True)
-        self.vgap = AdjustableVirtual([self.down, self.up],    getgap, self.setheight, reset_current_value_to=True)
-        self.hpos = AdjustableVirtual([self.right, self.left], getpos, self.sethpos,   reset_current_value_to=True)
-        self.vpos = AdjustableVirtual([self.down, self.up],    getpos, self.setvpos,   reset_current_value_to=True)
+        self.right = Motor(ID + ":MOTOR_X1")
+        self.left  = Motor(ID + ":MOTOR_X2")
+        self.down  = Motor(ID + ":MOTOR_Y1")
+        self.up    = Motor(ID + ":MOTOR_Y2")
+
+        self.hpos_virt_mrec = Motor(ID + ":MOTOR_X")
+        self.hgap_virt_mrec = Motor(ID + ":MOTOR_W")
+        self.vpos_virt_mrec = Motor(ID + ":MOTOR_Y")
+        self.vgap_virt_mrec = Motor(ID + ":MOTOR_H")
+
+        h = (self.right, self.left)
+        v = (self.down, self.up)
+
+        self.hgap = AdjustableVirtual(h, getgap, self.setwidth)
+        self.vgap = AdjustableVirtual(v, getgap, self.setheight)
+        self.hpos = AdjustableVirtual(h, getpos, self.sethpos)
+        self.vpos = AdjustableVirtual(v, getpos, self.setvpos)
 
 
 
