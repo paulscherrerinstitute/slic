@@ -5,13 +5,12 @@ from slitbase import SlitBase
 
 class SlitPosWidth(SlitBase):
 
-    def __init__(self, ID, name=None, elog=None, z_undulator=None, description=None):
+    def __init__(self, ID):
         self.ID = ID
-        self.name = name
         self._xoffs = Motor(ID + ":MOTOR_X")
         self._yoffs = Motor(ID + ":MOTOR_Y")
-        self._xgap = Motor(ID + ":MOTOR_W")
-        self._ygap = Motor(ID + ":MOTOR_H")
+        self._xgap  = Motor(ID + ":MOTOR_W")
+        self._ygap  = Motor(ID + ":MOTOR_H")
 
     def get_hg(self):
         return self._xgap.get_current_value()
@@ -26,20 +25,16 @@ class SlitPosWidth(SlitBase):
         return self._yoffs.get_current_value()
 
     def set_hg(self, value):
-        c = self._xgap.set_target_value(value)
-        return c
+        return self._xgap.set_target_value(value)
 
     def set_vg(self, value):
-        c = self._ygap.set_target_value(value)
-        return c
+        return self._ygap.set_target_value(value)
 
     def set_ho(self, value):
-        c = self._xoffs.set_target_value(value)
-        return c
+        return self._xoffs.set_target_value(value)
 
     def set_vo(self, value):
-        c = self._yoffs.set_target_value(value)
-        return c
+        return self._yoffs.set_target_value(value)
 
 
 
