@@ -1,6 +1,5 @@
 from slic.devices.general.motor import Motor
 from ..general.adjustable import AdjustableVirtual
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 
 
 class SlitBlades_JJ:
@@ -8,11 +7,10 @@ class SlitBlades_JJ:
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
         self.ID = pvname
-        self.alias = Alias(name)
-        append_object_to_object(self, Motor, pvname + ":MOT_1", name="right")
-        append_object_to_object(self, Motor, pvname + ":MOT_2", name="left")
-        append_object_to_object(self, Motor, pvname + ":MOT_4", name="down")
-        append_object_to_object(self, Motor, pvname + ":MOT_3", name="up")
+        self.right = Motor(pvname + ":MOT_1")
+        self.left = Motor(pvname + ":MOT_2")
+        self.down = Motor(pvname + ":MOT_4")
+        self.up = Motor(pvname + ":MOT_3")
 
         def getgap(xn, xp):
             return xp - xn
@@ -32,18 +30,10 @@ class SlitBlades_JJ:
         def setvpos(x):
             return tuple([tx + self.vgap.get_current_value() for tx in [-x / 2, x / 2]])
 
-        append_object_to_object(
-            self, AdjustableVirtual, [self.right, self.left], getgap, setwidth, reset_current_value_to=True, name="hgap",
-        )
-        append_object_to_object(
-            self, AdjustableVirtual, [self.down, self.up], getgap, setheight, reset_current_value_to=True, name="vgap",
-        )
-        append_object_to_object(
-            self, AdjustableVirtual, [self.right, self.left], getpos, sethpos, reset_current_value_to=True, name="hpos",
-        )
-        append_object_to_object(
-            self, AdjustableVirtual, [self.down, self.up], getpos, setvpos, reset_current_value_to=True, name="vpos",
-        )
+        self.hgap = AdjustableVirtual([self.right, self.left], getgap, setwidth,  reset_current_value_to=True)
+        self.vgap = AdjustableVirtual([self.down, self.up],    getgap, setheight, reset_current_value_to=True)
+        self.hpos = AdjustableVirtual([self.right, self.left], getpos, sethpos,   reset_current_value_to=True)
+        self.vpos = AdjustableVirtual([self.down, self.up],    getpos, setvpos,   reset_current_value_to=True)
 
     def __call__(self, *args):
         if len(args) == 0:

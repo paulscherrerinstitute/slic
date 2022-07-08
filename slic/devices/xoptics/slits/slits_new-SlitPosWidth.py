@@ -1,6 +1,5 @@
 from slic.devices.general.motor import Motor
 from ..general.adjustable import AdjustableVirtual
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from functools import partial
 
 
@@ -9,11 +8,10 @@ class SlitPosWidth:
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
         self.ID = pvname
-        self.alias = Alias(name)
-        append_object_to_object(self, Motor, pvname + ":MOTOR_X", name="hpos")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_Y", name="vpos")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_W", name="hgap")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_H", name="vgap")
+        self.hpos = Motor(pvname + ":MOTOR_X")
+        self.vpos = Motor(pvname + ":MOTOR_Y")
+        self.hgap = Motor(pvname + ":MOTOR_W")
+        self.vgap = Motor(pvname + ":MOTOR_H")
 
         def getblade(pos, gap, direction=1):
             return pos + direction * gap / 2
@@ -39,10 +37,10 @@ class SlitPosWidth:
         def setvpos(x):
             return tuple([tx + self.vgap.get_current_value() for tw in [-x / 2, x / 2]])
 
-        append_object_to_object(self, AdjustableVirtual, [self.vpos, self.vgap], partial(getblade, direction=1), partial(setblade, direction=1), reset_current_value_to=True, name="up")
-        append_object_to_object(self, AdjustableVirtual, [self.vpos, self.vgap], partial(getblade, direction=-1), partial(setblade, direction=-1), reset_current_value_to=True, name="down")
-        append_object_to_object(self, AdjustableVirtual, [self.hpos, self.hgap], partial(getblade, direction=1), partial(setblade, direction=1), reset_current_value_to=True, name="left")
-        append_object_to_object(self, AdjustableVirtual, [self.hpos, self.hgap], partial(getblade, direction=-1), partial(setblade, direction=-1), reset_current_value_to=True, name="right")
+        self.up    = AdjustableVirtual([self.vpos, self.vgap], partial(getblade, direction=1),  partial(setblade, direction=1),  reset_current_value_to=True)
+        self.down  = AdjustableVirtual([self.vpos, self.vgap], partial(getblade, direction=-1), partial(setblade, direction=-1), reset_current_value_to=True)
+        self.left  = AdjustableVirtual([self.hpos, self.hgap], partial(getblade, direction=1),  partial(setblade, direction=1),  reset_current_value_to=True)
+        self.right = AdjustableVirtual([self.hpos, self.hgap], partial(getblade, direction=-1), partial(setblade, direction=-1), reset_current_value_to=True)
 
     def __call__(self, *args):
         if len(args) == 0:

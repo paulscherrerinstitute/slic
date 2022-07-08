@@ -1,6 +1,5 @@
 from slic.devices.general.motor import Motor
 from ..general.adjustable import AdjustableVirtual
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 
 
 class SlitBlades:
@@ -8,15 +7,14 @@ class SlitBlades:
     def __init__(self, pvname, name=None, elog=None):
         self.name = name
         self.ID = pvname
-        self.alias = Alias(name)
-        append_object_to_object(self, Motor, pvname + ":MOTOR_X1", name="right")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_X2", name="left")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_Y1", name="down")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_Y2", name="up")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_X", name="hpos_virt_mrec")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_W", name="hgap_virt_mrec")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_Y", name="vpos_virt_mrec")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_H", name="vgap_virt_mrec")
+        self.right = Motor(pvname + ":MOTOR_X1")
+        self.left = Motor(pvname + ":MOTOR_X2")
+        self.down = Motor(pvname + ":MOTOR_Y1")
+        self.up = Motor(pvname + ":MOTOR_Y2")
+        self.hpos_virt_mrec = Motor(pvname + ":MOTOR_X")
+        self.hgap_virt_mrec = Motor(pvname + ":MOTOR_W")
+        self.vpos_virt_mrec = Motor(pvname + ":MOTOR_Y")
+        self.vgap_virt_mrec = Motor(pvname + ":MOTOR_H")
 
         def getgap(xn, xp):
             return xp - xn
@@ -36,18 +34,10 @@ class SlitBlades:
         def setvpos(x):
             return tuple([tx + self.vgap.get_current_value() for tx in [-x / 2, x / 2]])
 
-        append_object_to_object(
-            self, AdjustableVirtual, [self.right, self.left], getgap, setwidth, reset_current_value_to=True, name="hgap",
-        )
-        append_object_to_object(
-            self, AdjustableVirtual, [self.down, self.up], getgap, setheight, reset_current_value_to=True, name="vgap",
-        )
-        append_object_to_object(
-            self, AdjustableVirtual, [self.right, self.left], getpos, sethpos, reset_current_value_to=True, name="hpos",
-        )
-        append_object_to_object(
-            self, AdjustableVirtual, [self.down, self.up], getpos, setvpos, reset_current_value_to=True, name="vpos",
-        )
+        self.hgap = AdjustableVirtual([self.right, self.left], getgap, setwidth,  reset_current_value_to=True)
+        self.vgap = AdjustableVirtual([self.down, self.up],    getgap, setheight, reset_current_value_to=True)
+        self.hpos = AdjustableVirtual([self.right, self.left], getpos, sethpos,   reset_current_value_to=True)
+        self.vpos = AdjustableVirtual([self.down, self.up],    getpos, setvpos,   reset_current_value_to=True)
 
     def __call__(self, *args):
         if len(args) == 0:
