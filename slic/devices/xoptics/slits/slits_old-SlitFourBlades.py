@@ -1,7 +1,9 @@
 from slic.devices.general.motor import Motor
 
+from old_slit_base import SlitBase
 
-class SlitFourBlades:
+
+class SlitFourBlades(SlitBase):
 
     def __init__(self, ID, name=None, elog=None, z_undulator=None, description=None):
         self.ID = ID
@@ -58,15 +60,6 @@ class SlitFourBlades:
         c3 = self._by1.set_target_value(value - vg / 2)
         c4 = self._by2.set_target_value(value + vg / 2)
         return c1, c2, c3, c4
-
-    def __call__(self, width, height):
-        self.set_hg(width)
-        self.set_vg(height)
-
-    def __repr__(self):
-        string1 = "gap: (%g,%g) mm" % (self.get_hg(), self.get_vg())
-        string2 = "pos: (%g,%g) mm" % (self.get_ho(), self.get_vo())
-        return "\n".join((string1, string2))
 
 
 

@@ -1,7 +1,9 @@
 from slic.devices.general.motor import Motor
 
+from old_slit_base import SlitBase
 
-class SlitBlades_JJ:
+
+class SlitBlades_JJ(SlitBase):
 
     def __init__(self, ID, name=None, elog=None):
         self.ID = ID
@@ -37,8 +39,8 @@ class SlitBlades_JJ:
 
     def set_ho(self, value):
         hg = self.get_hg()
-        c1 = self._x1.set_target_value(-(-value - hg / 2))
-        c2 = self._x2.set_target_value(-(-value + hg / 2))
+        c1 = self._x1.set_target_value(value + hg / 2)
+        c2 = self._x2.set_target_value(value - hg / 2)
         return c1, c2
 
     def set_vo(self, value):
@@ -46,15 +48,6 @@ class SlitBlades_JJ:
         c1 = self._y1.set_target_value(value + vg / 2)
         c2 = self._y2.set_target_value(value - vg / 2)
         return c1, c2
-
-    def __call__(self, width, height):
-        self.set_hg(width)
-        self.set_vg(height)
-
-    def __repr__(self):
-        string1 = "gap: (%g,%g) mm" % (self.get_hg(), self.get_vg())
-        string2 = "pos: (%g,%g) mm" % (self.get_ho(), self.get_vo())
-        return "\n".join((string1, string2))
 
 
 
