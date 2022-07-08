@@ -12,7 +12,9 @@ IP_TO_INSTRUMENT = {
     "129.129.242": "alvra",
     "129.129.243": "bernina",
     "129.129.244": "cristallina",
-    "129.129.246": "maloja"
+    "129.129.245": "diavolezza",
+    "129.129.246": "maloja",
+    "129.129.247": "furka"
 }
 
 INSTRUMENT_TO_BEAMLINE = {
@@ -20,8 +22,8 @@ INSTRUMENT_TO_BEAMLINE = {
     "bernina":     "aramis",
     "cristallina": "aramis",
     "diavolezza":  "athos",
-    "furka":       "athos",
-    "maloja":      "athos"
+    "maloja":      "athos",
+    "furka":       "athos"
 }
 
 INSTRUMENTS = INSTRUMENT_TO_BEAMLINE.keys()
