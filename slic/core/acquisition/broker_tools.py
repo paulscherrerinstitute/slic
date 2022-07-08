@@ -10,15 +10,17 @@ from slic.utils import singleton
 ENDSTATION_TO_PULSEID_PVS = {
     "alvra"  :     "SLAAR11-LTIM01-EVR0:RX-PULSEID",
     "bernina":     "SLAAR21-LTIM01-EVR0:RX-PULSEID",
-    "cristallina": "SLAAR21-LTIM01-EVR0:RX-PULSEID",
-    "maloja" :     "SLAAR11-LTIM01-EVR0:RX-PULSEID",
-    "furka":       "SLAAR11-LTIM01-EVR0:RX-PULSEID"
+    "cristallina": "SLAAR21-LTIM01-EVR0:RX-PULSEID", # fallback to bernina
+    "diavolezza":  "SLAAT31-LTIM01-EVR0:RX-PULSEID", # fallback to furka
+    "maloja" :     "SLAAT21-CVME-EVR0:RX-PULSEID",
+    "furka":       "SLAAT31-LTIM01-EVR0:RX-PULSEID"
 }
 
 IP_TO_ENDSTATION = {
     "129.129.242": "alvra",
     "129.129.243": "bernina",
     "129.129.244": "cristallina",
+    "129.129.245": "diavolezza",
     "129.129.246": "maloja",
     "129.129.247": "furka"
 }
