@@ -1,7 +1,7 @@
 from slic.devices.general.motor import Motor
 
 
-class SlitFourBlades_old:
+class SlitFourBlades:
 
     def __init__(self, ID, name=None, elog=None, z_undulator=None, description=None):
         self.ID = ID
