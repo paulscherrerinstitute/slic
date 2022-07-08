@@ -7,4 +7,7 @@ from .genericadjustable import GenericAdjustable
 from .pvadjustable import PVAdjustable
 from .pvenumadjustable import PVEnumAdjustable
 
+from .combined import Combined
+from .converted import Converted
+
 
