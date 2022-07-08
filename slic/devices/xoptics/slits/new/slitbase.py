@@ -20,16 +20,19 @@ def setblade(bde, pos, gap, direction=1):
 class SlitBase:
 
     def setwidth(self, x):
-        return [tx + self.hpos.get_current_value() for tx in (-x / 2, x / 2)]
+        return self._setter(self.hpos, x)
 
     def setheight(self, x):
-        return [tx + self.vpos.get_current_value() for tx in (-x / 2, x / 2)]
+        return self._setter(self.vpos, x)
 
     def sethpos(self, x):
-        return [tx + self.hgap.get_current_value() for tx in (-x / 2, x / 2)]
+        return self._setter(self.hgap, x)
 
     def setvpos(self, x):
-        return [tx + self.vgap.get_current_value() for tx in (-x / 2, x / 2)]
+        return self._setter(self.vgap, x)
+
+    def _setter(self, adj, x):
+        return [tx + adj.get_current_value() for tx in (-x / 2, x / 2)]
 
 
     def __call__(self, *args):
