@@ -8,20 +8,20 @@ class SlitTwoBladesA(SlitBlades):
 
     def __init__(self, ID):
         self.ID = ID
-        self._x1 = Motor(ID + ":MOTOR_AX1")
-        self._x2 = Motor(ID + ":MOTOR_AX2")
-        self._y1 = Motor(ID + ":MOTOR_AY1")
-        self._y2 = Motor(ID + ":MOTOR_AY2")
+        self.x1 = Motor(ID + ":MOTOR_AX1")
+        self.x2 = Motor(ID + ":MOTOR_AX2")
+        self.y1 = Motor(ID + ":MOTOR_AY1")
+        self.y2 = Motor(ID + ":MOTOR_AY2")
 
 
 class SlitTwoBladesB(SlitBlades):
 
     def __init__(self, ID):
         self.ID = ID
-        self._x1 = Motor(ID + ":MOTOR_BX1")
-        self._x2 = Motor(ID + ":MOTOR_BX2")
-        self._y1 = Motor(ID + ":MOTOR_BY1")
-        self._y2 = Motor(ID + ":MOTOR_BY2")
+        self.x1 = Motor(ID + ":MOTOR_BX1")
+        self.x2 = Motor(ID + ":MOTOR_BX2")
+        self.y1 = Motor(ID + ":MOTOR_BY1")
+        self.y2 = Motor(ID + ":MOTOR_BY2")
 
 
 class SlitFourBlades(SlitBase):
