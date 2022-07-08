@@ -35,7 +35,7 @@ class SlitPosWidth:
             return tuple([tx + self.hgap.get_current_value() for tx in [-x / 2, x / 2]])
 
         def setvpos(x):
-            return tuple([tx + self.vgap.get_current_value() for tw in [-x / 2, x / 2]])
+            return tuple([tx + self.vgap.get_current_value() for tx in [-x / 2, x / 2]])
 
         self.up    = AdjustableVirtual([self.vpos, self.vgap], partial(getblade, direction=1),  partial(setblade, direction=1),  reset_current_value_to=True)
         self.down  = AdjustableVirtual([self.vpos, self.vgap], partial(getblade, direction=-1), partial(setblade, direction=-1), reset_current_value_to=True)
