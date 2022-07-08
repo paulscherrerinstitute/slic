@@ -31,14 +31,16 @@ class DelayStage(Device):
 
 class Delay(Adjustable):
 
-    def __init__(self, motor, ID=None, name=None, units="fs", internal=False):
+    def __init__(self, motor, offset_pos=0, direction=1, ID=None, name=None, units="fs", internal=False):
         self._motor = motor
+
+        self.offset_pos = offset_pos
+        self.direction = direction
 
         ID   = ID   or motor.ID   + "_AS_DELAY"
         name = name or motor.name + " as delay"
 
         super().__init__(ID, name=name, units=units, internal=internal)
-        self.offset_pos = 0
 
 
     @property
@@ -66,9 +68,11 @@ class Delay(Adjustable):
     def _delay_to_pos(self, delay):
         pos = delay_to_pos(delay)
         pos += self.offset_pos
+        pos *= self.direction
         return pos
 
     def _pos_to_delay(self, pos):
+        pos *= self.direction
         pos -= self.offset_pos
         delay = pos_to_delay(pos)
         return delay
