@@ -2,8 +2,6 @@ from cam_server_client import PipelineClient
 from psen_processing import PsenProcessingClient
 from slic.devices.general.motor import Motor
 from slic.devices.general.delay_stage import DelayStage
-from slic.devices.loptics.bernina_experiment import DelayTime
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 
 
 class SpectralEncoder:
@@ -11,14 +9,12 @@ class SpectralEncoder:
     def __init__(self, pvname, name=None, reduction_client_address="http://sf-daqsync-02:12002/", delay_stages={"spect_tt": "SLAAR21-LMOT-M553:MOT", "retroreflector": "SLAAR21-LMOT-M561:MOT"}):
         self.pvname = pvname
         self.name = name
-        self.alias = Alias(name)
-        append_object_to_object(self, Motor, pvname + ":MOTOR_X1", name="x_target")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_Y1", name="y_target")
+        self.x_target = Motor(pvname + ":MOTOR_X1")
+        self.y_target = Motor(pvname + ":MOTOR_Y1")
         if delay_stages:
             for key, pv in delay_stages.items():
-                tname = "delay_" + key + "_stg"
-                append_object_to_object(self, Motor, pv, name=tname)
-                append_object_to_object(self, DelayTime, self.__dict__[tname], name="delay_" + key)
+                ds = DelayStage(pv)
+                setattr(self, ds, key)
 
         #self.delay = Motor(self.ID + "-M424:MOT")
         #self.delayTime = DelayStage(self.delay)
@@ -54,14 +50,12 @@ class SpatialEncoder:
 
     def __init__(self, name=None, reduction_client_address="http://sf-daqsync-02:12003/", delay_stages={"spatial_tt": "SLAAR21-LMOT-M522:MOTOR_1"}, pipeline_id="SARES20-CAMS142-M4_psen_db1"):
         self.name = name
-        self.alias = Alias(name)
-        #append_object_to_object(self,Motor,pvname+":MOTOR_X1",name='x_target')
-        #append_object_to_object(self,Motor,pvname+":MOTOR_Y1",name='y_target')
+#        self.x_target = Motor(pvname + ":MOTOR_X1")
+#        self.y_target = Motor(pvname + ":MOTOR_Y1")
         if delay_stages:
             for key, pv in delay_stages.items():
-                tname = "delay_" + key + "_stg"
-                append_object_to_object(self, Motor, pv, name=tname)
-                append_object_to_object(self, DelayTime, self.__dict__[tname], name="delay_" + key)
+                ds = DelayStage(pv)
+                setattr(self, ds, key)
 
         #self.delay = Motor(self.ID + "-M424:MOT")
         #self.delayTime = DelayStage(self.delay)
