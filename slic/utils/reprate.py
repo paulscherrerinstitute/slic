@@ -11,16 +11,17 @@ import epics
 IP_TO_INSTRUMENT = {
     "129.129.242": "alvra",
     "129.129.243": "bernina",
+    "129.129.244": "cristallina",
     "129.129.246": "maloja"
 }
 
 INSTRUMENT_TO_BEAMLINE = {
-    "alvra":      "aramis",
-    "bernina":    "aramis",
-    "crystalina": "aramis",
-    "diavolezza": "athos",
-    "furka":      "athos",
-    "maloja":     "athos"
+    "alvra":       "aramis",
+    "bernina":     "aramis",
+    "cristallina": "aramis",
+    "diavolezza":  "athos",
+    "furka":       "athos",
+    "maloja":      "athos"
 }
 
 INSTRUMENTS = INSTRUMENT_TO_BEAMLINE.keys()
