@@ -7,13 +7,13 @@ from slitbase import getgap, getpos
 
 class SlitBlades(SlitBase):
 
-    def __init__(self, ID):
+    def __init__(self, ID, right="MOTOR_X1", left="MOTOR_X2", down="MOTOR_Y1", up="MOTOR_Y2"):
         self.ID = ID
 
-        self.right = Motor(ID + ":MOTOR_X1")
-        self.left  = Motor(ID + ":MOTOR_X2")
-        self.down  = Motor(ID + ":MOTOR_Y1")
-        self.up    = Motor(ID + ":MOTOR_Y2")
+        self.right = Motor(ID + ":" + right)
+        self.left  = Motor(ID + ":" + left)
+        self.down  = Motor(ID + ":" + down)
+        self.up    = Motor(ID + ":" + up)
 
         h = (self.right, self.left)
         v = (self.down, self.up)

@@ -5,12 +5,20 @@ from slitbase import SlitBase
 
 class SlitBlades(SlitBase):
 
-    def __init__(self, ID, motor_name="MOTOR_"):
+    def __init__(self, ID, x1="MOTOR_X1", x2="MOTOR_X2", y1="MOTOR_Y1", y2="MOTOR_Y2"):
         self.ID = ID
-        self.x1 = Motor(ID + ":" + motor_name + "X1")
-        self.x2 = Motor(ID + ":" + motor_name + "X2")
-        self.y1 = Motor(ID + ":" + motor_name + "Y1")
-        self.y2 = Motor(ID + ":" + motor_name + "Y2")
+        self.x1 = Motor(x1)
+        self.x2 = Motor(x2)
+        self.y1 = Motor(y1)
+        self.y2 = Motor(y2)
+
+    @classmethod
+    def from_motor_name(cls, ID, motor_name="MOTOR_"):
+        x1 = ID + ":" + motor_name + "X1"
+        x2 = ID + ":" + motor_name + "X2"
+        y1 = ID + ":" + motor_name + "Y1"
+        y2 = ID + ":" + motor_name + "Y2"
+        return cls(ID, x1=x1, x2=x2, y1=y1, y2=y2)
 
     def get_hg(self):
         return self.x2.get_current_value() - self.x1.get_current_value()
