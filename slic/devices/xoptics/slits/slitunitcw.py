@@ -2,7 +2,7 @@ from slic.core.device import Device, SimpleDevice
 from slic.devices.general.motor import Motor
 
 
-class SlitPosWidth(Device):
+class SlitUnitCenterWidth(Device):
 
     def __init__(self, ID, **kwargs):
         super().__init__(ID, **kwargs)
