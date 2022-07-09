@@ -3,7 +3,7 @@ from slic.devices.general.motor import Motor
 from slitbase import SlitBase
 
 
-class SlitBlades(SlitBase):
+class SlitUnit(SlitBase):
 
     def __init__(self, ID, x1="MOTOR_X1", x2="MOTOR_X2", y1="MOTOR_Y1", y2="MOTOR_Y2"):
         self.ID = ID

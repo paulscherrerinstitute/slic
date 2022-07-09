@@ -1,13 +1,13 @@
 from slitbase import SlitBase
-from slitblades import SlitBlades
+from slitunit import SlitUnit
 
 
-class SlitFourBlades(SlitBase):
+class SlitFourUnit(SlitBase):
 
     def __init__(self, ID):
         self.ID = ID
-        self.a = SlitBlades.from_motor_name(ID, "MOTOR_A")
-        self.b = SlitBlades.from_motor_name(ID, "MOTOR_B")
+        self.a = SlitUnit.from_motor_name(ID, "MOTOR_A")
+        self.b = SlitUnit.from_motor_name(ID, "MOTOR_B")
 
     def get_hg(self):
         return self.a.get_hg()

@@ -5,7 +5,7 @@ from slitbase import SlitBase
 from slitbase import getgap, getpos
 
 
-class SlitBlades(SlitBase):
+class SlitUnit(SlitBase):
 
     def __init__(self, ID, right="MOTOR_X1", left="MOTOR_X2", down="MOTOR_Y1", up="MOTOR_Y2"):
         self.ID = ID
