@@ -54,9 +54,9 @@ class SlitBase:
 
 
     def repr(self):
-        pos = "pos ({}, {})".format(self.hpos.get_current_value(), self.vpos.get_current_value())
         gap = "gap ({}, {})".format(self.hgap.get_current_value(), self.vgap.get_current_value())
-        return ", ".join((pos, gap))
+        pos = "pos ({}, {})".format(self.hpos.get_current_value(), self.vpos.get_current_value())
+        return "\n".join((gap, pos))
 
 
 
