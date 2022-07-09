@@ -15,11 +15,6 @@ class SlitBlades(SlitBase):
         self.down  = Motor(ID + ":MOTOR_Y1")
         self.up    = Motor(ID + ":MOTOR_Y2")
 
-        self.hpos_virt_mrec = Motor(ID + ":MOTOR_X")
-        self.hgap_virt_mrec = Motor(ID + ":MOTOR_W")
-        self.vpos_virt_mrec = Motor(ID + ":MOTOR_Y")
-        self.vgap_virt_mrec = Motor(ID + ":MOTOR_H")
-
         h = (self.right, self.left)
         v = (self.down, self.up)
 
