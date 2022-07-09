@@ -7,8 +7,8 @@ class SlitBlades(Device):
 
     def __init__(self, ID, mot1, mot2, **kwargs):
         super().__init__(ID, **kwargs)
-        self.mot1 = Motor(mot1)
-        self.mot2 = Motor(mot2)
+        self.mot1 = mot1 = Motor(mot1)
+        self.mot2 = mot2 = Motor(mot2)
         self.center, self.width = make_slit_center_width(ID, mot1, mot2)
 
     @classmethod
@@ -51,6 +51,9 @@ class SlitCenter(Adjustable):
         t1.wait()
         t2.wait()
 
+    def is_moving(self):
+        return any((self.mot1.is_moving(), self.mot2.is_moving()))
+
 
 class SlitWidth(Adjustable):
 
@@ -76,6 +79,9 @@ class SlitWidth(Adjustable):
         t2 = self.mot2.set_target_value(v2)
         t1.wait()
         t2.wait()
+
+    def is_moving(self):
+        return any((self.mot1.is_moving(), self.mot2.is_moving()))
 
 
 
