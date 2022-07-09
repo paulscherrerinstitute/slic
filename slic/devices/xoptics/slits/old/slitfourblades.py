@@ -4,23 +4,12 @@ from slitbase import SlitBase
 from slitblades import SlitBlades
 
 
-class SlitTwoBlades(SlitBlades):
-
-    def __init__(self, ID, motor_name):
-        self.ID = ID
-        self.x1 = Motor(ID + ":" + motor_name + "X1")
-        self.x2 = Motor(ID + ":" + motor_name + "X2")
-        self.y1 = Motor(ID + ":" + motor_name + "Y1")
-        self.y2 = Motor(ID + ":" + motor_name + "Y2")
-
-
-
 class SlitFourBlades(SlitBase):
 
     def __init__(self, ID):
         self.ID = ID
-        self.a = SlitTwoBlades(ID, "MOTOR_A")
-        self.b = SlitTwoBlades(ID, "MOTOR_B")
+        self.a = SlitBlades(ID, "MOTOR_A")
+        self.b = SlitBlades(ID, "MOTOR_B")
 
     def get_hg(self):
         return self.a.get_hg()
