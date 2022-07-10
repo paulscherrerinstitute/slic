@@ -18,8 +18,7 @@ class Combined(Adjustable):
             t.wait()
 
     def is_moving(self):
-        states = [a.is_moving() for a in self.adjs]
-        return any(states)
+        return any(a.is_moving() for a in self.adjs)
 
 
 
