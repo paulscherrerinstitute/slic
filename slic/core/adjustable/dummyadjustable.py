@@ -8,7 +8,7 @@ DELTA_T = 0.1 # sec # approx. time between steps
 
 class DummyAdjustable(Adjustable):
 
-    def __init__(self, initial_value=0, jitter=False, process_time=0, ID="DUMMY", name="Dummy", units=None):
+    def __init__(self, ID="DUMMY", initial_value=0, jitter=False, process_time=0, name="Dummy", units=None):
         super().__init__(ID, name=name, units=units)
         self._current_value = initial_value
         self._jitter = jitter
