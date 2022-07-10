@@ -1,6 +1,5 @@
 from epics import PV
 from slic.devices.general.motor import Motor
-from ..aliases import Alias, append_object_to_object
 
 
 class RefLaser_Aramis:
@@ -9,8 +8,6 @@ class RefLaser_Aramis:
         self.ID = ID
         self.elog = elog
         self.name = name
-        self.alias = Alias(name)
-#        append_object_to_object(self,
 
         self._inpos = inpos
         self._outpos = outpos

@@ -7,7 +7,6 @@ import numpy as np
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.core.adjustable.convenience import SpecConvenienceProgress
 from slic.utils.pyepics import EpicsString
-from slic.utils.deprecated.aliases import Alias
 from slic.utils.rangebar import RangeBar
 from slic.utils.hastyepics import Motor as EpicsMotor
 

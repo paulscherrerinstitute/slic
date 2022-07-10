@@ -1,14 +1,12 @@
 from slic.devices.general.motor import Motor
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 
 
 class stage:
 
     def __init__(self, name=None, vonHamos_horiz_pv=None, vonHamos_vert_pv=None):
         self.name = name
-        self.alias = Alias(name)
-        append_object_to_object(self, Motor, vonHamos_horiz_pv, name="horiz")
-        append_object_to_object(self, Motor, vonHamos_vert_pv, name="vert")
+        self.horiz = Motor(vonHamos_horiz_pv)
+        self.vert = Motor(vonHamos_vert_pv)
 
     def get_adjustable_positions_str(self):
         ostr = "***** VonHamos motor positions******\n"

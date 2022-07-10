@@ -1,5 +1,4 @@
 from slic.core.adjustable import PVAdjustable, PVEnumAdjustable
-from ..aliases import Alias, append_object_to_object
 
 
 class CameraBasler:
@@ -7,25 +6,24 @@ class CameraBasler:
     def __init__(self, pvname, name=None):
         self.pvname = pvname
         self.name = name
-        self.alias = Alias(name)
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":INIT", name="initialize")
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":CAMERA", name="running")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":BOARD", name="board_no")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":SERIALNR", name="serial_no")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":EXPOSURE", name="_exposure_time")
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":ACQMODE", name="_acq_mode")
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":RECMODE", name="_req_mode")
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":STOREMODE", name="_store_mode")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":BINY", name="_binx")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":BINY", name="_biny")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":REGIONX_START", name="_roixmin")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":REGIONX_END", name="_roixmax")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":REGIONY_START", name="_roiymin")
-        append_object_to_object(self, PVAdjustable, self.pvname + ":REGIONY_END", name="_roiymax")
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":SET_PARAM", name="_set_parameters")
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":TRIGGER", name="trigger_on")
-        append_object_to_object(self, PVEnumAdjustable, self.pvname + ":TRIGGERSOURCE", name="trigger_source")
-        #append_object_to_object(self, PVEnumAdjustable, self.pvname+':TRIGGEREDGE', name='trigger_edge')
+        self.initialize = PVEnumAdjustable(self.pvname + ":INIT")
+        self.running = PVEnumAdjustable(self.pvname + ":CAMERA")
+        self.board_no = PVAdjustable(self.pvname + ":BOARD")
+        self.serial_no = PVAdjustable(self.pvname + ":SERIALNR")
+        self._exposure_time = PVAdjustable(self.pvname + ":EXPOSURE")
+        self._acq_mode = PVEnumAdjustable(self.pvname + ":ACQMODE")
+        self._req_mode = PVEnumAdjustable(self.pvname + ":RECMODE")
+        self._store_mode = PVEnumAdjustable(self.pvname + ":STOREMODE")
+        self._binx = PVAdjustable(self.pvname + ":BINY")
+        self._biny = PVAdjustable(self.pvname + ":BINY")
+        self._roixmin = PVAdjustable(self.pvname + ":REGIONX_START")
+        self._roixmax = PVAdjustable(self.pvname + ":REGIONX_END")
+        self._roiymin = PVAdjustable(self.pvname + ":REGIONY_START")
+        self._roiymax = PVAdjustable(self.pvname + ":REGIONY_END")
+        self._set_parameters = PVEnumAdjustable(self.pvname + ":SET_PARAM")
+        self.trigger_on = PVEnumAdjustable(self.pvname + ":TRIGGER")
+        self.trigger_source = PVEnumAdjustable(self.pvname + ":TRIGGERSOURCE")
+#        self.trigger_edge = PVEnumAdjustable(self.pvname + ":TRIGGEREDGE")
 
 
 

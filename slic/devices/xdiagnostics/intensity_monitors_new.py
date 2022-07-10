@@ -2,7 +2,6 @@ import numpy as np
 from slic.core.adjustable import PVEnumAdjustable
 from slic.devices.general.motor import Motor
 from slic.devices.general.detectors_new import FeDigitizer, PvDataStream
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from slic.utils.pyepics import EnumWrapper
 from slic.utils.hastyepics import get_pv as PV
 
@@ -20,11 +19,10 @@ class SolidTargetDetectorPBPS_new:
     ):
         self.name = name
         self.pvname = pvname
-        self.alias = Alias(name)
-        append_object_to_object(self, Motor, pvname + ":MOTOR_X1", name="x_diodes")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_Y1", name="y_diodes")
-        append_object_to_object(self, Motor, pvname + ":MOTOR_PROBE", name="target_y")
-        append_object_to_object(self, PVEnumAdjustable, pvname + ":PROBE_SP", name="target")
+        self.x_diodes = Motor(pvname + ":MOTOR_X1")
+        self.y_diodes = Motor(pvname + ":MOTOR_Y1")
+        self.target_y = Motor(pvname + ":MOTOR_PROBE")
+        self.target = PVEnumAdjustable(pvname + ":PROBE_SP")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
             self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
@@ -32,15 +30,15 @@ class SolidTargetDetectorPBPS_new:
             self.diode_right = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_right))
 
         if channels:
-            append_object_to_object(self, PvDataStream, channels["up"], name="signal_up")
-            append_object_to_object(self, PvDataStream, channels["down"], name="signal_down")
-            append_object_to_object(self, PvDataStream, channels["left"], name="signal_left")
-            append_object_to_object(self, PvDataStream, channels["right"], name="signal_right")
+            self.signal_up = PvDataStream(channels["up"])
+            self.signal_down = PvDataStream(channels["down"])
+            self.signal_left = PvDataStream(channels["left"])
+            self.signal_right = PvDataStream(channels["right"])
 
         if calc:
-            append_object_to_object(self, PvDataStream, calc["itot"], name="intensity")
-            append_object_to_object(self, PvDataStream, calc["xpos"], name="xpos")
-            append_object_to_object(self, PvDataStream, calc["ypos"], name="ypos")
+            self.intensity = PvDataStream(calc["itot"])
+            self.xpos = PvDataStream(calc["xpos"])
+            self.ypos = PvDataStream(calc["ypos"])
 
     def get_calibration_values(self, seconds=5):
         self.x_diodes.set_target_value(0).wait()
@@ -189,12 +187,6 @@ class SolidTargetDetectorPBPS:
             self.diode_left = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_left))
             self.diode_right = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_right))
 
-        if self.name:
-            self.alias = Alias(name)
-            self.alias.append(self.diode_x.alias)
-            self.alias.append(self.diode_y.alias)
-            self.alias.append(self.target_pos.alias)
-            self.alias.append(self.target.alias)
 
     def __repr__(self):
         s = f"**Intensity  monitor {self.name}**\n\n"

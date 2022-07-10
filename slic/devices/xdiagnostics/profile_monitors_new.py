@@ -1,6 +1,5 @@
 from slic.devices.general.motor import Motor
 from slic.devices.general.detectors import CameraCA, CameraBS
-from slic.utils.deprecated.aliases import Alias, append_object_to_object
 from slic.core.adjustable import PVEnumAdjustable
 
 
@@ -13,11 +12,6 @@ class Pprm:
         self.cam = CameraCA(ID)
         self.led = PVEnumAdjustable(self.ID + ":LED", name="led")
         self.target = PVEnumAdjustable(self.ID + ":PROBE_SP", name="target")
-        if name:
-            self.alias = Alias(name)
-            self.alias.append(self.target_pos.alias)
-            self.alias.append(self.target.alias)
-            self.alias.append(self.led.alias)
 
     def movein(self, target=1):
         self.target.set_target_value(target)
@@ -34,10 +28,9 @@ class Pprm:
 class Bernina_XEYE:
 
     def __init__(self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None, name=None):
-        self.alias = Alias(name)
         self.name = name
         if zoomstage_pv:
-            append_object_to_object(self, Motor, zoomstage_pv, name="zoom")
+            self.zoom = Motor(zoomstage_pv)
         try:
             self.cam = CameraCA(camera_pv)
         except:

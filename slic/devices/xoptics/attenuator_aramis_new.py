@@ -1,7 +1,6 @@
 from time import sleep
 from slic.devices.general.motor import Motor
 from slic.core.task import Task
-from slic.utils.deprecated.aliases import Alias
 from slic.utils.hastyepics import get_pv as PV
 
 
@@ -14,13 +13,11 @@ class AttenuatorAramis:
         self.E_min = E_min
         self._sleeptime = sleeptime
         self.name = name
-        self.alias = Alias(name)
         self.pulse_picker = pulse_picker
 
         self.motors = [Motor(f"{self.ID}:MOTOR_{n+1}", name=f"motor{n+1}") for n in range(6)]
         for n, mot in enumerate(self.motors):
             self.__dict__[f"motor_{n+1}"] = mot
-            self.alias.append(mot.alias)
             if limits:
                 mot.set_epics_limits(*limits)
 
