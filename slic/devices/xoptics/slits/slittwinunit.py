@@ -1,7 +1,7 @@
 from slic.core.adjustable import Combined
 from slic.core.device import Device, SimpleDevice
 
-from slitunit import SlitUnit
+from .slitunit import SlitUnit
 
 
 class SlitTwinUnit(Device):

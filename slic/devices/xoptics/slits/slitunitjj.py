@@ -1,4 +1,4 @@
-from slitunit import SlitUnit
+from .slitunit import SlitUnit
 
 
 class SlitUnitJJ(SlitUnit):

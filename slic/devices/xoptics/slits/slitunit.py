@@ -1,6 +1,6 @@
 from slic.core.device import Device
 
-from slitblades import SlitBlades
+from .slitblades import SlitBlades
 
 
 class SlitUnit(Device):
