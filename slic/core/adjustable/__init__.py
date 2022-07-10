@@ -8,6 +8,7 @@ from .pvadjustable import PVAdjustable
 from .pvenumadjustable import PVEnumAdjustable
 
 from .combined import Combined
+from .collection import Collection
 from .converted import Converted
 
 
