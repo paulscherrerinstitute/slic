@@ -3,7 +3,7 @@ from slic.devices.general.motor import Motor
 
 class RefLaser_Aramis:
 
-    def __init__(self, ID, elog=None, name=None, inpos=-18.818, outpos=-5, z_undulator=None, description=None):
+    def __init__(self, ID, elog=None, name=None, inpos=-18.818, outpos=-5):
         self.ID = ID
         self.elog = elog
         self.name = name

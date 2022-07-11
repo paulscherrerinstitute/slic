@@ -1,4 +1,3 @@
-from epics import PV
 from slic.devices.general.motor import Motor
 
 
@@ -8,7 +7,6 @@ class RefLaser_Aramis:
         self.ID = ID
         self.elog = elog
         self.name = name
-
         self._inpos = inpos
         self._outpos = outpos
         self.mirrmotor = Motor(self.ID + ":MOTOR_1")
