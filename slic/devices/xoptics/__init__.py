@@ -1,9 +1,8 @@
 
-from . import kbhor
-from . import kbver
+from . import kb
 from . import attenuator_aramis
 from . import dcm
-from . import reflaser
+from . import aramis_reflaser
 from . import slits
 from . import pulsepicker
 
