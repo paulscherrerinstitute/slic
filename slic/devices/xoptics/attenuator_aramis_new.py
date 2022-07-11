@@ -1,18 +1,19 @@
 from time import sleep
+from slic.core.adjustable import Adjustable
 from slic.devices.general.motor import Motor
-from slic.core.task import Task
 from slic.utils.hastyepics import get_pv as PV
 
 
-class AttenuatorAramis:
+class AttenuatorAramis(Adjustable):
 
-    def __init__(self, ID, E_min=1500, sleeptime=1, name=None, limits=[-52, 2], pulse_picker=None):
-        self.ID = ID
+    def __init__(self, ID, E_min=1500, sleeptime=1, limits=[-52, 2], pulse_picker=None, name="Attenuator Aramis"):
+        super().__init__(ID, name=name)
+
         self._pv_status_str = PV(ID + ":MOT2TRANS.VALD")
         self._pv_status_int = PV(ID + ":IDX_RB")
+
         self.E_min = E_min
         self._sleeptime = sleeptime
-        self.name = name
         self.pulse_picker = pulse_picker
 
         self.motors = [Motor(f"{self.ID}:MOTOR_{n+1}", name=f"motor{n+1}") for n in range(6)]
@@ -43,9 +44,6 @@ class AttenuatorAramis:
         PV(self.ID + ":3RD_HARM_SP").put(1)
         PV(self.ID + ":TRANS_SP").put(value)
 
-    def setE(self):
-        pass
-
     def get_transmission(self, verbose=True):
         tFun = PV(self.ID + ":TRANS_RB").value
         tTHG = PV(self.ID + ":TRANS3EDHARM_RB").value
@@ -56,16 +54,9 @@ class AttenuatorAramis:
     def get_current_value(self, *args, **kwargs):
         return self.get_transmission(*args, verbose=False, **kwargs)[0]
 
-
-    def set_target_value(self, value, sleeptime=10, hold=False):
-        def changer():
-            self.set_transmission(value)
-            sleep(sleeptime)
-            if self.pulse_picker:
-                self.pulse_picker.open()
-
-        return Task(changer, hold=hold)
-
+    def set_target_value(self, value):
+        self.set_transmission(value)
+        sleep(self.sleeptime)
 
     def get_status(self):
         s_str = self._pv_status_str.get(as_string=True)
@@ -73,15 +64,18 @@ class AttenuatorAramis:
         return s_str, s_int
 
     def __repr__(self):
-        t = self.get_transmission()
-        s = "1st harm. transmission = %g\n" % t[0]
-        s += "3rd harm. transmission = %g\n" % t[1]
+        t = self.get_transmission(verbose=False)
+        s = "1st harm. transmission\t=  %g\n" % t[0]
+        s += "3rd harm. transmission\t=  %g\n" % t[1]
         s += "Targets in beam:\n"
         s += "%s" % self.get_status()[0]
         return s
 
     def __call__(self, *args, **kwargs):
         self.set_transmission(*args, **kwargs)
+
+    def is_moving(self):
+        raise NotImplementedError
 
 
 

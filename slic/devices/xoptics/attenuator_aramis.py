@@ -1,23 +1,36 @@
 from time import sleep
 from slic.core.adjustable import Adjustable
+from slic.devices.general.motor import Motor
 from slic.utils.hastyepics import get_pv as PV
 
 
 class AttenuatorAramis(Adjustable):
 
-    def __init__(self, ID, z_undulator=None, description=None, name="Attenuator Aramis"):
-        self.sleeptime = 5
-
-        super().__init__(ID, name=name, units=None)
+    def __init__(self, ID, E_min=1500, sleeptime=1, limits=[-52, 2], pulse_picker=None, name="Attenuator Aramis"):
+        super().__init__(ID, name=name)
 
         self._pv_status_str = PV(ID + ":MOT2TRANS.VALD")
         self._pv_status_int = PV(ID + ":IDX_RB")
 
+        self.E_min = E_min
+        self._sleeptime = sleeptime
+        self.pulse_picker = pulse_picker
+
+        self.motors = [Motor(f"{self.ID}:MOTOR_{n+1}", name=f"motor{n+1}") for n in range(6)]
+        for n, mot in enumerate(self.motors):
+            self.__dict__[f"motor_{n+1}"] = mot
+            if limits:
+                mot.set_epics_limits(*limits)
+
 
     def updateE(self, energy=None):
-        if energy == None:
+        while not energy:
             energy = PV("SARUN03-UIND030:FELPHOTENE").value
             energy = energy * 1000
+            if energy < self.E_min:
+                energy = None
+                print(f"Machine photon energy is below {self.E_min} - waiting for the machine to recover")
+                sleep(self._sleeptime)
         PV(self.ID + ":ENERGY").put(energy)
         print("Set energy to %s eV" % energy)
 
