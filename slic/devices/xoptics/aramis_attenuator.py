@@ -4,7 +4,7 @@ from slic.devices.general.motor import Motor
 from slic.utils.hastyepics import get_pv as PV
 
 
-class AttenuatorAramis(Adjustable):
+class Attenuator(Adjustable):
 
     def __init__(self, ID, E_min=1500, sleeptime=1, limits=[-52, 2], pulse_picker=None, name="Attenuator Aramis"):
         super().__init__(ID, name=name)
