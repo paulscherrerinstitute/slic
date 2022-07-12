@@ -9,8 +9,8 @@ from slic.utils.printing import format_header
 
 class Attenuator(Device):
 
-    def __init__(self, ID, energy_threshold=1500, process_time=1, motor_limits=(-52, 2), name="Attenuator Aramis"):
-        super().__init__(ID, name=name)
+    def __init__(self, ID, energy_threshold=1500, process_time=1, motor_limits=(-52, 2), name="Attenuator Aramis", **kwargs):
+        super().__init__(ID, name=name, **kwargs)
 
         self.energy_threshold = energy_threshold
         self.process_time = process_time
