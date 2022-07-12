@@ -127,8 +127,9 @@ class Foils:
 
     def __repr__(self):
         header = format_header("Selected Foils", "=")
-        printable = " | ".join(str(i) for i in self.get())
-        printable = "| " + printable + " |"
+        left, sep, right = "| ", " | ", " |"
+        printable = sep.join(str(i) for i in self.get())
+        printable = left + printable + right
         return header + "\n" + printable
 
     def get(self):
