@@ -9,19 +9,17 @@ from slic.utils.printing import format_header
 
 class Attenuator(Device):
 
-    def __init__(self, ID, E_min=1500, process_time=1, mot_limits=(-52, 2), name="Attenuator Aramis"):
+    def __init__(self, ID, energy_threshold=1500, process_time=1, motor_limits=(-52, 2), name="Attenuator Aramis"):
         super().__init__(ID, name=name)
 
-        self.E_min = E_min
+        self.energy_threshold = energy_threshold
         self.process_time = process_time
-        self.mot_limits = mot_limits
+        self.motor_limits = motor_limits
 
-        motors = make_motors_with_limits(ID, mot_limits)
-        self.motors = SimpleDevice(ID+"-MOTORS", **motors)
-
-        self.trans1st = Transmission(ID, motors.values(), process_time=process_time)
-        self.trans3rd = Transmission(ID, motors.values(), process_time=process_time, third_order=True)
-        self.energy = LimitedEnergy(ID, E_min, process_time)
+        self.motors = motors = LimitedMotors(ID, motor_limits)
+        self.trans1st = Transmission(ID, motors, process_time=process_time)
+        self.trans3rd = Transmission(ID, motors, process_time=process_time, third_order=True)
+        self.energy = LimitedEnergy(ID, energy_threshold, process_time)
         self.foils = Foils(ID)
 
 
@@ -46,12 +44,19 @@ class Attenuator(Device):
 
 
 
-def make_motors_with_limits(ID, limits, n=6):
-    motors = {f"m{i+1}": Motor(f"{ID}:MOTOR_{i+1}") for i in range(n)}
-    if limits:
-        for m in motors.values():
-            m.set_epics_limits(*limits)
-    return motors
+class LimitedMotors(SimpleDevice):
+
+    def __init__(self, ID, limits, n=6):
+        self._motors = motors = {f"m{i+1}": Motor(f"{ID}:MOTOR_{i+1}") for i in range(n)}
+        if limits:
+            for m in motors.values():
+                m.set_epics_limits(*limits)
+
+        super().__init__(ID+"-MOTORS", **motors)
+
+
+    def any_is_moving(self):
+        return any(m.is_moving() for m in self._motors.values())
 
 
 
@@ -78,37 +83,39 @@ class Transmission(PVAdjustable):
         self.pvs.third_order_toggle.put(self.third_order)
 
     def is_moving(self):
-        return any(m.is_moving() for m in self.motors)
+        return self.motors.any_is_moving()
 
 
 
-class LimitedEnergy:
+class LimitedEnergy(PVAdjustable):
 
-    def __init__(self, ID, E_min, wait_time):
-        self.E_min = E_min
+    def __init__(self, ID, threshold, wait_time):
+        self.threshold = threshold
         self.wait_time = wait_time
 
-        self.pv_att_energy = PV(ID + ":ENERGY")
-        self.pv_fel_energy = PV("SARUN03-UIND030:FELPHOTENE")
+        super().__init__(ID + ":ENERGY")
+
+        self.pvnames.fel_energy = pvn = "SARUN03-UIND030:FELPHOTENE"
+        self.pvs.fel_energy = PV(pvn)
 
 
-    def set(self, energy=None):
-        E_min = self.E_min
+    def set_target_value(self, value):
+        threshold = self.threshold
         wait_time = self.wait_time
 
-        while not energy:
-            energy = self.pv_fel_energy.get()
-            if energy is not None:
-                energy *= 1000
-                if energy >= E_min:
+        while not value:
+            value = self.pvs.fel_energy.get()
+            if value is not None:
+                value *= 1000
+                if value >= threshold:
                     break
 
-            print(f"Machine photon energy ({energy} eV) is below {E_min} eV - waiting for the machine to recover...")
-            energy = None
+            print(f"Machine photon energy ({value} eV) is below {threshold} eV - waiting for the machine to recover...")
+            value = None
             sleep(wait_time)
 
-        self.pv_att_energy.put(energy)
-        print(f"Set attenuator energy to {energy} eV")
+        super().set_target_value(value)
+        print(f"Set attenuator energy to {value} eV")
 
 
 
