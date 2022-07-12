@@ -14,9 +14,7 @@ class GasDetector:
 
 class SolidTargetDetectorPBPS_new:
 
-    def __init__(
-        self, pvname, VME_crate=None, link=None, channels={}, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None, calc=None, calc_calib={},
-    ):
+    def __init__(self, pvname, VME_crate=None, link=None, channels={}, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None, calc=None, calc_calib={}):
         self.name = name
         self.pvname = pvname
         self.x_diodes = Motor(pvname + ":MOTOR_X1")
@@ -151,18 +149,9 @@ class SolidTargetDetectorPBPS_new:
         try:
             gains = dict()
             gains["up"] = (self.diode_up.gain.get_name(), self.diode_up.gain.get())
-            gains["down"] = (
-                self.diode_down.gain.get_name(),
-                self.diode_down.gain.get(),
-            )
-            gains["left"] = (
-                self.diode_left.gain.get_name(),
-                self.diode_left.gain.get(),
-            )
-            gains["right"] = (
-                self.diode_right.gain.get_name(),
-                self.diode_right.gain.get(),
-            )
+            gains["down"] = (self.diode_down.gain.get_name(), self.diode_down.gain.get())
+            gains["left"] = (self.diode_left.gain.get_name(), self.diode_left.gain.get())
+            gains["right"] = (self.diode_right.gain.get_name(), self.diode_right.gain.get())
             return gains
         except:
             print("No diodes configured, can not change any gain!")
@@ -172,9 +161,7 @@ class SolidTargetDetectorPBPS_new:
 
 class SolidTargetDetectorPBPS:
 
-    def __init__(
-        self, ID, VME_crate=None, link=None, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None,
-    ):
+    def __init__(self, ID, VME_crate=None, link=None, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None):
         self.ID = ID
         self.name = name
         self.diode_x = Motor(ID + ":MOTOR_X1", name="diode_x")
@@ -234,18 +221,9 @@ class SolidTargetDetectorPBPS:
         try:
             gains = dict()
             gains["up"] = (self.diode_up.gain.get_name(), self.diode_up.gain.get())
-            gains["down"] = (
-                self.diode_down.gain.get_name(),
-                self.diode_down.gain.get(),
-            )
-            gains["left"] = (
-                self.diode_left.gain.get_name(),
-                self.diode_left.gain.get(),
-            )
-            gains["right"] = (
-                self.diode_right.gain.get_name(),
-                self.diode_right.gain.get(),
-            )
+            gains["down"] = (self.diode_down.gain.get_name(), self.diode_down.gain.get())
+            gains["left"] = (self.diode_left.gain.get_name(), self.diode_left.gain.get())
+            gains["right"] = (self.diode_right.gain.get_name(), self.diode_right.gain.get())
             return gains
         except:
             print("No diodes configured, can not change any gain!")
