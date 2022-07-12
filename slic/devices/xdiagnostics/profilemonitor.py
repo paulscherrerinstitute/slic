@@ -17,17 +17,17 @@ class PPRM(Device):
 
 
     def move_in(self):
-        self.target.set_target_value(True)
+        return self.target.set_target_value(True)
 
     def move_out(self):
-        self.target.set_target_value(False)
+        return self.target.set_target_value(False)
 
 
     def illumination_on(self):
-        self.led.set_target_value(True)
+        return self.led.set_target_value(True)
 
     def illumination_off(self):
-        self.led.set_target_value(False)
+        return self.led.set_target_value(False)
 
 
 
