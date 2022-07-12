@@ -1,37 +1,33 @@
-from slic.devices.general.motor import Motor
-from slic.devices.general.detectors import CameraCA, CameraBS
 from slic.core.adjustable import PVEnumAdjustable
+from slic.core.device import Device
+from slic.devices.general.detectors import CameraCA
+from slic.devices.general.motor import Motor
 
 
-class Pprm:
+class PPRM(Device):
 
-    def __init__(self, ID, name=None):
-        self.ID = ID
-        self.name = name
-        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target_pos")
+    def __init__(self, ID, name="Profile Monitor", **kwargs):
+        super().__init__(ID, name=name, **kwargs)
+
         self.cam = CameraCA(ID)
-        self.led = PVEnumAdjustable(ID + ":LED", name="led")
+
         self.target = PVEnumAdjustable(ID + ":PROBE_SP", name="target")
+        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target position")
+        self.led = PVEnumAdjustable(ID + ":LED", name="LED")
 
-    def movein(self, target=1):
-        self.target.set_target_value(target)
 
-    def moveout(self, target=0):
-        self.target.set_target_value(target)
+    def move_in(self):
+        self.target.set_target_value(True)
 
-    def illuminate(self, value=None):
-        if value:
-            self._led.put(value)
-        else:
-            self._led.put(not self.get_illumination_state())
+    def move_out(self):
+        self.target.set_target_value(False)
 
-    def get_illumination_state(self):
-        return bool(self._led.get())
 
-    def __repr__(self):
-        s = f"**Profile Monitor {self.name}**\n"
-        s += f"Target in beam: {self.target.get_current_value().name}\n"
-        return s
+    def illumination_on(self)
+        self.led.set_target_value(True)
+
+    def illumination_off(self)
+        self.led.set_target_value(False)
 
 
 
