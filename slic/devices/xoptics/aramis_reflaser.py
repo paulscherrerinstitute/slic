@@ -3,11 +3,12 @@ from slic.devices.general.motor import Motor
 
 class RefLaser:
 
-    def __init__(self, ID, pos_in=-18.818, pos_out=-5, delta = 0.2):
+    def __init__(self, ID, pos_in=-18.818, pos_out=-5, delta = 0.2, description=None):
         self.ID = ID
         self.pos_in = pos_in
         self.pos_out = pos_out
         self.delta = delta
+        self.description = description
         self.mirror_motor = Motor(ID + ":MOTOR_1")
 
     def move_in(self):
