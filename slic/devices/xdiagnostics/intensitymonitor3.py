@@ -8,13 +8,13 @@ from slic.utils.hastyepics import get_pv as PV
 
 class SolidTargetDetectorPBPS:
 
-    def __init__(self, pvname, VME_crate=None, link=None, channels={}, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None, calc=None, calc_calib={}):
+    def __init__(self, ID, VME_crate=None, link=None, channels={}, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None, calc=None):
+        self.ID = ID
         self.name = name
-        self.pvname = pvname
-        self.x_diodes = Motor(pvname + ":MOTOR_X1")
-        self.y_diodes = Motor(pvname + ":MOTOR_Y1")
-        self.target_y = Motor(pvname + ":MOTOR_PROBE")
-        self.target = PVEnumAdjustable(pvname + ":PROBE_SP")
+        self.diode_x = Motor(ID + ":MOTOR_X1", name="diode_x")
+        self.diode_y = Motor(ID + ":MOTOR_Y1", name="diode_y")
+        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target_pos")
+        self.target = PVEnumAdjustable(ID + ":PROBE_SP", name="target")
         if VME_crate:
             self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
             self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
@@ -32,9 +32,10 @@ class SolidTargetDetectorPBPS:
             self.xpos = PvDataStream(calc["xpos"])
             self.ypos = PvDataStream(calc["ypos"])
 
+
     def get_calibration_values(self, seconds=5):
-        self.x_diodes.set_target_value(0).wait()
-        self.y_diodes.set_target_value(0).wait()
+        self.diode_x.set_target_value(0).wait()
+        self.diode_y.set_target_value(0).wait()
         ds = [self.signal_up, self.signal_down, self.signal_left, self.signal_right]
         aqs = [d.acquire(seconds=seconds) for d in ds]
         data = [aq.wait() for aq in aqs]
@@ -56,30 +57,30 @@ class SolidTargetDetectorPBPS:
             PV(tc).put(bytes(str(tv), "utf8"))
 
     def get_calibration_values_position(self, calib_intensities, seconds=5, motion_range=0.2):
-        self.x_diodes.set_epics_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
-        self.y_diodes.set_epics_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
-        self.x_diodes.set_target_value(0).wait()
-        self.y_diodes.set_target_value(0).wait()
+        self.diode_x.set_epics_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.diode_y.set_epics_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.diode_x.set_target_value(0).wait()
+        self.diode_y.set_target_value(0).wait()
         raw = []
         for pos in [motion_range / 2, -motion_range / 2]:
-            self.x_diodes.set_target_value(pos).wait()
+            self.diode_x.set_target_value(pos).wait()
             aqs = [ts.acquire(seconds=seconds) for ts in [self.signal_left, self.signal_right]]
             vals = [np.mean(aq.wait()) * calib for aq, calib in zip(aqs, calib_intensities[0:2])]
             raw.append((vals[0] - vals[1]) / (vals[0] + vals[1]))
         grad = motion_range / np.diff(raw)[0]
         # xcalib = [np.diff(calib_intensities[0:2])[0]/np.sum(calib_intensities[0:2]), grad]
         xcalib = [0, grad]
-        self.x_diodes.set_target_value(0).wait()
+        self.diode_x.set_target_value(0).wait()
         raw = []
         for pos in [motion_range / 2, -motion_range / 2]:
-            self.y_diodes.set_target_value(pos).wait()
+            self.diode_y.set_target_value(pos).wait()
             aqs = [ts.acquire(seconds=seconds) for ts in [self.signal_up, self.signal_down]]
             vals = [np.mean(aq.wait()) * calib for aq, calib in zip(aqs, calib_intensities[2:4])]
             raw.append((vals[0] - vals[1]) / (vals[0] + vals[1]))
         grad = motion_range / np.diff(raw)[0]
         # ycalib = [np.diff(calib_intensities[2:4])[0]/np.sum(calib_intensities[2:4]), grad]
         ycalib = [0, grad]
-        self.y_diodes.set_target_value(0).wait()
+        self.diode_y.set_target_value(0).wait()
         return xcalib, ycalib
 
     def set_calibration_values_position(self, xcalib, ycalib):
@@ -97,23 +98,24 @@ class SolidTargetDetectorPBPS:
         xc, yc = self.get_calibration_values_position(c, seconds=seconds)
         self.set_calibration_values_position(xc, yc)
 
+
     def __repr__(self):
         s = f"**Intensity  monitor {self.name}**\n\n"
 
         s += f"Target in: {self.target.get_current_value().name}\n\n"
         try:
-            sd = "**Biasd voltage**\n"
-            sd += " - Diode up: %.4f\n" % (sdelf.diode_up.get_biasd())
-            sd += " - Diode down: %.4f\n" % (sdelf.diode_down.get_biasd())
-            sd += " - Diode left: %.4f\n" % (sdelf.diode_left.get_biasd())
-            sd += " - Diode right: %.4f\n" % (sdelf.diode_right.get_biasd())
+            sd = "**Bias voltage**\n"
+            sd += " - Diode up: %.4f\n" % (self.diode_up.get_bias())
+            sd += " - Diode down: %.4f\n" % (self.diode_down.get_bias())
+            sd += " - Diode left: %.4f\n" % (self.diode_left.get_bias())
+            sd += " - Diode right: %.4f\n" % (self.diode_right.get_bias())
             sd += "\n"
 
             sd += "**Gain**\n"
-            sd += " - Diode up: %i\n" % (sdelf.diode_up.gain.get())
-            sd += " - Diode down: %i\n" % (sdelf.diode_down.gain.get())
-            sd += " - Diode left: %i\n" % (sdelf.diode_left.gain.get())
-            sd += " - Diode right: %i\n" % (sdelf.diode_right.gain.get())
+            sd += " - Diode up: %i\n" % (self.diode_up.gain.get())
+            sd += " - Diode down: %i\n" % (self.diode_down.gain.get())
+            sd += " - Diode left: %i\n" % (self.diode_left.gain.get())
+            sd += " - Diode right: %i\n" % (self.diode_right.gain.get())
             s += sd
         except:
             pass
