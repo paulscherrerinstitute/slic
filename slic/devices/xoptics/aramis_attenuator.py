@@ -138,12 +138,10 @@ class Foils:
         return [None if n is None else f"{n} ({i})" for n, i in zip(names, index)]
 
     def get_names(self):
-        return list(range(10))
         names = self.pv_names.get(as_string=True).strip().split()
         return [None if n == "None" else n for n in names]
 
     def get_index(self):
-        return list(range(10))
         return self.pv_index.get().tolist()
 
 
