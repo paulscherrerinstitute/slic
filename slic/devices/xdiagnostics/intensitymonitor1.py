@@ -1,12 +1,6 @@
+from slic.devices.general.detectors import FeDigitizer
 from slic.devices.general.motor import Motor
 from slic.utils.pyepics import EnumWrapper
-from ..general.detectors import FeDigitizer
-
-
-class GasDetector:
-
-    def __init__(self):
-        pass
 
 
 class SolidTargetDetectorPBPS:
@@ -73,7 +67,7 @@ class SolidTargetDetectorPBPS:
         except:
             print("No diodes configured, can not change any gain!")
 
-        #SAROP21-CVME-PBPS:Lnk10Ch15-WD-gain
+        # SAROP21-CVME-PBPS:Lnk10Ch15-WD-gain
 
 
 
