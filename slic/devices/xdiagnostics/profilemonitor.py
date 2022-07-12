@@ -23,10 +23,10 @@ class PPRM(Device):
         self.target.set_target_value(False)
 
 
-    def illumination_on(self)
+    def illumination_on(self):
         self.led.set_target_value(True)
 
-    def illumination_off(self)
+    def illumination_off(self):
         self.led.set_target_value(False)
 
 
