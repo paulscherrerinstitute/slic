@@ -8,29 +8,37 @@ from slic.utils.hastyepics import get_pv as PV
 
 class SolidTargetDetectorPBPS:
 
-    def __init__(self, ID, VME_crate=None, link=None, channels={}, ch_up=12, ch_down=13, ch_left=15, ch_right=14, elog=None, name=None, calc=None):
+    def __init__(self, ID,
+        VME_crate=None, link=None, ch_up=12, ch_down=13, ch_right=14, ch_left=15,
+        channels=None,
+        calc=None,
+        name=None
+    ):
         self.ID = ID
         self.name = name
-        self.diode_x = Motor(ID + ":MOTOR_X1", name="diode_x")
-        self.diode_y = Motor(ID + ":MOTOR_Y1", name="diode_y")
-        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target_pos")
+
+        self.diode_x    = Motor(ID + ":MOTOR_X1",    name="diode x")
+        self.diode_y    = Motor(ID + ":MOTOR_Y1",    name="diode y")
+        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target pos")
+
         self.target = PVEnumAdjustable(ID + ":PROBE_SP", name="target")
+
         if VME_crate:
-            self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
-            self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
-            self.diode_left = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_left))
+            self.diode_up    = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
+            self.diode_down  = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
+            self.diode_left  = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_left))
             self.diode_right = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_right))
 
         if channels:
-            self.signal_up = PvDataStream(channels["up"])
-            self.signal_down = PvDataStream(channels["down"])
-            self.signal_left = PvDataStream(channels["left"])
+            self.signal_up    = PvDataStream(channels["up"])
+            self.signal_down  = PvDataStream(channels["down"])
+            self.signal_left  = PvDataStream(channels["left"])
             self.signal_right = PvDataStream(channels["right"])
 
         if calc:
             self.intensity = PvDataStream(calc["itot"])
-            self.xpos = PvDataStream(calc["xpos"])
-            self.ypos = PvDataStream(calc["ypos"])
+            self.xpos      = PvDataStream(calc["xpos"])
+            self.ypos      = PvDataStream(calc["ypos"])
 
 
     def get_calibration_values(self, seconds=5):
@@ -102,7 +110,7 @@ class SolidTargetDetectorPBPS:
     def __repr__(self):
         s = f"**Intensity  monitor {self.name}**\n\n"
 
-        s += f"Target in: {self.target.get_current_value().name}\n\n"
+        s += f"Target in: {self.target.get_current_value()}\n\n"
         try:
             sd = "**Bias voltage**\n"
             sd += " - Diode up: %.4f\n" % (self.diode_up.get_bias())
@@ -144,15 +152,13 @@ class SolidTargetDetectorPBPS:
     def get_gains(self):
         try:
             gains = dict()
-            gains["up"] = (self.diode_up.gain.get_name(), self.diode_up.gain.get())
-            gains["down"] = (self.diode_down.gain.get_name(), self.diode_down.gain.get())
-            gains["left"] = (self.diode_left.gain.get_name(), self.diode_left.gain.get())
+            gains["up"]    = (self.diode_up.gain.get_name(),    self.diode_up.gain.get())
+            gains["down"]  = (self.diode_down.gain.get_name(),  self.diode_down.gain.get())
+            gains["left"]  = (self.diode_left.gain.get_name(),  self.diode_left.gain.get())
             gains["right"] = (self.diode_right.gain.get_name(), self.diode_right.gain.get())
             return gains
         except:
             print("No diodes configured, can not change any gain!")
-
-        # SAROP21-CVME-PBPS:Lnk10Ch15-WD-gain
 
 
 
