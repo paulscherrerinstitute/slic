@@ -1,5 +1,5 @@
 
-from . import intensity_monitors
+from . import intensitymonitor
 from . import profilemonitor
 
 
