@@ -1,17 +1,23 @@
 from slic.devices.general.motor import Motor
 from slic.devices.general.detectors import CameraCA, CameraBS
-from slic.utils.pyepics import EnumWrapper
-from slic.utils.hastyepics import get_pv as PV
+from slic.core.adjustable import PVEnumAdjustable
 
 
 class Pprm:
 
-    def __init__(self, ID, z_undulator=None, description=None):
+    def __init__(self, ID, name=None):
         self.ID = ID
-        self.targetY = Motor(ID + ":MOTOR_PROBE")
+        self.name = name
+        self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target_pos")
         self.cam = CameraCA(ID)
-        self._led = PV(self.ID + ":LED")
-        self.target = EnumWrapper(self.ID + ":PROBE_SP")
+        self.led = PVEnumAdjustable(ID + ":LED", name="led")
+        self.target = PVEnumAdjustable(ID + ":PROBE_SP", name="target")
+
+    def movein(self, target=1):
+        self.target.set_target_value(target)
+
+    def moveout(self, target=0):
+        self.target.set_target_value(target)
 
     def illuminate(self, value=None):
         if value:
@@ -23,28 +29,38 @@ class Pprm:
         return bool(self._led.get())
 
     def __repr__(self):
-        s = "**Profile Monitor**\n"
-        s += "Target: %s" % (self.target.get_name())
+        s = f"**Profile Monitor {self.name}**\n"
+        s += f"Target in beam: {self.target.get_current_value().name}\n"
         return s
 
 
 class Bernina_XEYE:
 
-    def __init__(self, ID, bshost=None, bsport=None):
-        self.ID = ID
+    def __init__(self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None):
+
         try:
-            self.zoom = Motor("SARES20-EXP:MOT_NAV_Z.VAL")
+            self.zoom = Motor(zoomstage_pv)
         except:
             print("X-Ray eye zoom motor not found")
-            pass
+
         try:
-            self.cam = CameraCA(ID)
+            self.cam = CameraCA(camera_pv)
         except:
             print("X-Ray eye Cam not found")
-            pass
 
         if bshost:
             self.camBS = CameraBS(host=bshost, port=bsport)
+
+
+    def __repr__(self):
+        ostr = "*****Xeye motor positions******\n"
+
+        for tkey, item in self.__dict__.items():
+            if hasattr(item, "get_current_value"):
+                pos = item.get_current_value()
+                ostr += "  " + tkey.ljust(17) + " : % 14g\n" % pos
+        return ostr
+
 
 
 #        self._led = PV(self.ID + ':LED')

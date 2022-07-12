@@ -10,14 +10,23 @@ class Pprm:
         self.name = name
         self.target_pos = Motor(ID + ":MOTOR_PROBE", name="target_pos")
         self.cam = CameraCA(ID)
-        self.led = PVEnumAdjustable(self.ID + ":LED", name="led")
-        self.target = PVEnumAdjustable(self.ID + ":PROBE_SP", name="target")
+        self.led = PVEnumAdjustable(ID + ":LED", name="led")
+        self.target = PVEnumAdjustable(ID + ":PROBE_SP", name="target")
 
     def movein(self, target=1):
         self.target.set_target_value(target)
 
     def moveout(self, target=0):
         self.target.set_target_value(target)
+
+    def illuminate(self, value=None):
+        if value:
+            self._led.put(value)
+        else:
+            self._led.put(not self.get_illumination_state())
+
+    def get_illumination_state(self):
+        return bool(self._led.get())
 
     def __repr__(self):
         s = f"**Profile Monitor {self.name}**\n"
@@ -27,20 +36,23 @@ class Pprm:
 
 class Bernina_XEYE:
 
-    def __init__(self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None, name=None):
-        self.name = name
-        if zoomstage_pv:
+    def __init__(self, camera_pv=None, zoomstage_pv=None, bshost=None, bsport=None):
+
+        try:
             self.zoom = Motor(zoomstage_pv)
+        except:
+            print("X-Ray eye zoom motor not found")
+
         try:
             self.cam = CameraCA(camera_pv)
         except:
             print("X-Ray eye Cam not found")
-            pass
 
         if bshost:
             self.camBS = CameraBS(host=bshost, port=bsport)
 
-    def get_adjustable_positions_str(self):
+
+    def __repr__(self):
         ostr = "*****Xeye motor positions******\n"
 
         for tkey, item in self.__dict__.items():
@@ -49,11 +61,9 @@ class Bernina_XEYE:
                 ostr += "  " + tkey.ljust(17) + " : % 14g\n" % pos
         return ostr
 
-    def __repr__(self):
-        return self.get_adjustable_positions_str()
 
 
-#        self._led = PV(self.ID+':LED')
+#        self._led = PV(self.ID + ':LED')
 
 
 #    def illuminate(self,value=None):
