@@ -1,6 +1,6 @@
 
 from .evr import EventReceiver
-from .tma import MasterEventSystem
-from .ctadeq import CTA_sequencer
+from .tma import TimingMaster
+from .ctaseq import CTA_sequencer
 
 

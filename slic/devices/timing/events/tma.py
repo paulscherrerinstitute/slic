@@ -1,84 +1,69 @@
-from numbers import Number
-
+from slic.core.adjustable import PVAdjustable
+from slic.core.device import Device, SimpleDevice
 from slic.utils.hastyepics import get_pv as PV
 
-from .codes import EVENTCODES, EVENTCODES_FIXED_DELAY
-
+from .codes import EVR_OUTPUT_MAPPING, EVENTCODES, EVENTCODES_FIXED_DELAY
 
 TICK = 7e-9
 
 
-class TimingMaster:
+class TimingMaster(SimpleDevice):
 
-    def __init__(self, pvname, name=None):
-        self.name = name
-        self.pvname = pvname
-        self._pvs = {}
+    def __init__(self, ID, **kwargs):
+        self._events = events = {f"evt{i}": Event(f"{ID}:Evt-{i}", name=name) for i, name in EVR_OUTPUT_MAPPING.items()}
+        super().__init__(ID, **events, **kwargs)
 
-    def _get_pv(self, pvname):
-        if not pvname in self._pvs:
-            self._pvs[pvname] = PV(pvname)
-        return self._pvs[pvname]
 
-    def _get_Id_code(self, intId):
-        return self._get_pv(f"{self.pvname}:Evt-{intId}-Code-SP").get()
+    def by_event_code(self, ec): #TODO: why not search for the event code in the events?
+        if ec not in EVENTCODES:
+            raise ValueError(f"cannot map event code {ec} to event ID")
 
-    def _get_Id_freq(self, intId):
-        return self._get_pv(f"{self.pvname}:Evt-{intId}-Freq-I").get()
+        eid = EVENTCODES.index(ec) + 1
+        evt = self._events[f"evt{eid}"]
 
-    def _get_Id_period(self, intId):
-        return self._get_pv(f"{self.pvname}:Evt-{intId}-Period-I").get()
+        tma_ec = evt.code.get_current_value()
+        if ec != tma_ec:
+            raise ValueError(f"inconsistent event codes for ID {eid}: local {ec} vs. remote {tma_ec}")
 
-    def _get_Id_delay(self, intId, inticks=False):
-        """in seconds if not ticks"""
-        if inticks:
-            return self._get_pv(f"{self.pvname}:Evt-{intId}-Delay-RB.A").get()
+        return evt
+
+
+
+class Event(Device):
+
+    def __init__(self, ID, **kwargs):
+        super().__init__(ID, **kwargs)
+
+        self.code        = PVAdjustable(ID + "-Code-SP")
+        self.delay_ticks = PVAdjustable(ID + "-Delay-RB.A")
+        self.freq        = PVAdjustable(ID + "-Freq-I")
+        self.desc        = PVAdjustable(ID + ".DESC")
+
+        self.delay  = ScaledPVAdjustable(ID + "-Delay-RB", factor=1_000_000) # convert from microseconds to seconds
+        self.period = ScaledPVAdjustable(ID + "-Period-I", factor=1_000) # convert from milliseconds to seconds
+
+
+    def get_delay(self): #TODO: are the locally fixed values needed?
+        ec = self.code.get_current_value()
+        if ec in EVENTCODES_FIXED_DELAY:
+            return EVENTCODES_FIXED_DELAY[ec] * TICK
         else:
-            return self._get_pv(f"{self.pvname}:Evt-{intId}-Delay-RB").get() / 1_000_000
+            return self.delay.get_current_value()
 
-    def _get_Id_description(self, intId):
-        return self._get_pv(f"{self.pvname}:Evt-{intId}.DESC").get()
 
-    def _get_evtcode_Id(self, evtcode):
-        if not evtcode in EVENTCODES:
-            raise Exception(f"Eventcode mapping not defined for {evtcode}")
-        Id = EVENTCODES.index(evtcode) + 1
-        if not self._get_Id_code(Id) == evtcode:
-            raise Exception(f"Eventcode mapping has apparently changed!")
-        return Id
 
-    def get_evtcode_delay(self, evtcode, **kwargs):
-        if evtcode in EVENTCODES_FIXED_DELAY.keys():
-            return EVENTCODES_FIXED_DELAY[evtcode] * TICK
-        Id = self._get_evtcode_Id(evtcode)
-        return self._get_Id_delay(Id, **kwargs)
+#TODO: move this to slic.core.adjustable?
+class ScaledPVAdjustable(PVAdjustable):
 
-    def get_evtcode_description(self, evtcode):
-        Id = self._get_evtcode_Id(evtcode)
-        return self._get_Id_description(Id)
+    def __init__(self, *args, factor=1, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.factor = factor
 
-    def get_evtcode_frequency(self, evtcode):
-        """in Hz"""
-        Id = self._get_evtcode_Id(evtcode)
-        return self._get_Id_freq(Id)
+    def get_current_value(self):
+        return super().get_current_value() / self.factor
 
-    def get_evtcode_period(self, evtcode):
-        """in seconds"""
-        Id = self._get_evtcode_Id(evtcode)
-        return self._get_Id_period(Id) / 1000
-
-    def get_evt_code_status(self, codes=None):
-        if not codes:
-            codes = sorted(EVENTCODES)
-        if isinstance(codes, Number):
-            codes = [codes]
-        s = []
-        for c in codes:
-            s.append(f"{c:3d}: delay = {self.get_evtcode_delay(c)*1e6:9.3f} us; frequency: {self.get_evtcode_frequency(c):5.1f} Hz; Desc.: {self.get_evtcode_description(c)}")
-        return s
-
-    def status(self, codes=None):
-        print("\n".join(self.get_evt_code_status(codes)))
+    def set_target_value(self, value):
+        return super().set_target_value(value * self.factor)
 
 
 
