@@ -79,15 +79,13 @@ class Calibrator(Device):
     def __init__(self, ID, channels):
         super().__init__(ID + "-CALIB")
 
-        self.diode_x = x = Motor(ID + ":MOTOR_X1", name="diode x")
-        self.diode_y = y = Motor(ID + ":MOTOR_Y1", name="diode y")
-        self._motors = dict(x=x, y=y)
+        self.motor_x = mx = Motor(ID + ":MOTOR_X1", name="motor x")
+        self.motor_y = my = Motor(ID + ":MOTOR_Y1", name="motor y")
+        self._motors = (mx, my)
 
-        self.signal_up    = up    = PvDataStream(channels["up"])
-        self.signal_down  = down  = PvDataStream(channels["down"])
-        self.signal_left  = left  = PvDataStream(channels["left"])
-        self.signal_right = right = PvDataStream(channels["right"])
-        self._signals = dict(up=up, down=down, left=left, right=right)
+        signals = {"signal_" + name: PvDataStream(ch) for name, ch in channels.items()}
+        self.__dict__.update(signals)
+        self._signals = tuple(signals.values())
 
 
     def calibrate(self, wait_time=5):
@@ -99,13 +97,13 @@ class Calibrator(Device):
 
     def get_calibration_intensity(self, wait_time=5):
         self._reset_motors()
-        return calculate_calibration_intensity(self._signals.values(), wait_time)
+        return calculate_calibration_intensity(self._signals, wait_time)
 
     def get_calibration_position(self, calib_intensities, motion_range=0.2, wait_time=5):
         self._set_motor_limits(motion_range)
         self._reset_motors()
-        cx = calculate_calibration_position(self.diode_x, self.signal_left, self.signal_right, calib_intensities[:2], motion_range, wait_time)
-        cy = calculate_calibration_position(self.diode_y, self.signal_up,   self.signal_down,  calib_intensities[2:], motion_range, wait_time)
+        cx = calculate_calibration_position(self.motor_x, self.signal_left, self.signal_right, calib_intensities[:2], motion_range, wait_time)
+        cy = calculate_calibration_position(self.motor_y, self.signal_up,   self.signal_down,  calib_intensities[2:], motion_range, wait_time)
         return cx, cy
 
 
@@ -142,13 +140,13 @@ class Calibrator(Device):
 
 
     def _reset_motors(self):
-        tasks = [m.set_target_value(0) for m in self._motors.values()]
+        tasks = [m.set_target_value(0) for m in self._motors]
         for t in tasks:
             t.wait()
 
     def _set_motor_limits(self, motion_range):
         limit = motion_range / 2 + 0.1
-        for m in self._motors.values():
+        for m in self._motors:
             m.set_epics_limits(-limit, +limit)
 
 
@@ -189,9 +187,9 @@ def fill_channels(chs, vals):
 class CalcIntensity:
 
     def __init__(self, channels):
-        self.itot = PvDataStream(channels["itot"])
-        self.xpos = PvDataStream(channels["xpos"])
-        self.ypos = PvDataStream(channels["ypos"])
+        for name, ch in channels.items():
+            ds = PvDataStream(ch)
+            setattr(self, name, ds)
 
 
 
