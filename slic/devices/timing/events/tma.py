@@ -40,16 +40,16 @@ class TimingMaster:
         return self._get_pv(f"{self.pvname}:Evt-{intId}.DESC").get()
 
     def _get_evtcode_Id(self, evtcode):
-        if not evtcode in eventcodes:
+        if not evtcode in EVENTCODES:
             raise Exception(f"Eventcode mapping not defined for {evtcode}")
-        Id = eventcodes.index(evtcode) + 1
+        Id = EVENTCODES.index(evtcode) + 1
         if not self._get_Id_code(Id) == evtcode:
             raise Exception(f"Eventcode mapping has apparently changed!")
         return Id
 
     def get_evtcode_delay(self, evtcode, **kwargs):
-        if evtcode in eventcodes_fixed_delay.keys():
-            return eventcodes_fixed_delay[evtcode] * TICK
+        if evtcode in EVENTCODES_FIXED_DELAY.keys():
+            return EVENTCODES_FIXED_DELAY[evtcode] * TICK
         Id = self._get_evtcode_Id(evtcode)
         return self._get_Id_delay(Id, **kwargs)
 
@@ -69,7 +69,7 @@ class TimingMaster:
 
     def get_evt_code_status(self, codes=None):
         if not codes:
-            codes = sorted(eventcodes)
+            codes = sorted(EVENTCODES)
         if isinstance(codes, Number):
             codes = [codes]
         s = []
