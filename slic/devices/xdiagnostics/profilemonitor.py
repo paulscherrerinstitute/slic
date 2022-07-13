@@ -4,7 +4,7 @@ from slic.devices.general.detectors import CameraCA
 from slic.devices.general.motor import Motor
 
 
-class PPRM(Device):
+class ProfileMonitorPPRM(Device):
 
     def __init__(self, ID, name="Profile Monitor", **kwargs):
         super().__init__(ID, name=name, **kwargs)

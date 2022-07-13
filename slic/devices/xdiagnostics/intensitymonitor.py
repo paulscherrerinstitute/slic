@@ -9,7 +9,7 @@ from slic.utils.hastyepics import get_pv as PV
 from slic.utils.printing import format_header, printable_dict_of_dicts
 
 
-class SolidTargetDetectorPBPS(Device):
+class IntensityMonitorPBPS(Device):
 
     def __init__(self, ID,
         vme_crate=None, link=9, ch_up=12, ch_down=13, ch_right=14, ch_left=15, # -> DiodeArray
