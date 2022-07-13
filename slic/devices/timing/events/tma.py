@@ -2,13 +2,13 @@ from numbers import Number
 
 from slic.utils.hastyepics import get_pv as PV
 
-from .codes import eventcodes, event_code_delays_fix
+from .codes import EVENTCODES, EVENTCODES_FIXED_DELAY
 
 
-tim_tick = 7e-9
+TICK = 7e-9
 
 
-class MasterEventSystem:
+class TimingMaster:
 
     def __init__(self, pvname, name=None):
         self.name = name
@@ -48,8 +48,8 @@ class MasterEventSystem:
         return Id
 
     def get_evtcode_delay(self, evtcode, **kwargs):
-        if evtcode in event_code_delays_fix.keys():
-            return event_code_delays_fix[evtcode] * tim_tick
+        if evtcode in eventcodes_fixed_delay.keys():
+            return eventcodes_fixed_delay[evtcode] * TICK
         Id = self._get_evtcode_Id(evtcode)
         return self._get_Id_delay(Id, **kwargs)
 
