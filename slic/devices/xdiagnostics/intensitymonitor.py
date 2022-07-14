@@ -50,27 +50,30 @@ class DiodeArray:
         header = format_header("Diode Array", "=")
         res = defaultdict(dict)
         for name, diode in self._diodes.items():
-            res["Bias voltage"][name] = diode.get_bias()
-            res["Gain"][name] = diode.gain.get()
+            res["Bias voltage"][name] = diode.bias.get_current_value()
+            res["Gain"][name]         = diode.gain.get_current_value()
         res = printable_dict_of_dicts(res, sorter=lambda x: list(x))
         return header + "\n\n" + res
 
     def get_available_gains(self):
-        all_names = set(diode.gain.names for diode in self._diodes.values())
+        all_names = set(
+            tuple(sorted(diode.gain.states.data.keys())) for diode in self._diodes.values()
+        )
         assert len(all_names) == 1, "gain options for the four diodes are not identical"
         return all_names.pop()
 
     def get_gains(self):
         res = {}
         for diode_name, diode in self._diodes.items():
-            gain_name = diode.gain.get_name()
-            gain = diode.gain.get()
-            res[diode_name] = (gain_name, gain)
+            gain_name  = diode.gain.get_current_value()
+            gain_value = diode.gain.get_current_value(as_number=True)
+            res[diode_name] = (gain_name, gain_value)
         return res
 
     def set_gains(self, value):
-        for diode in self._diodes.values():
-            diode.gain.set(value)
+        tasks = [diode.gain.set_target_value(value) for diode in self._diodes.values()]
+        for t in tasks:
+            t.wait()
 
 
 
