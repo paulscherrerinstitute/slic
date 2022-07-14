@@ -1,147 +1,22 @@
-from datetime import datetime
-from time import sleep
-import subprocess
-
-from epics import caget
-import h5py
-import numpy as np
-
-from bsread import source, SUB
-from cam_server_client import PipelineClient
-from cam_server_client.utils import get_host_port_from_stream_address
-
-from slic.core.task import Task
-from slic.utils.pyepics import EnumWrapper
-from slic.utils.hastyepics import get_pv as PV
-
-#from detector_integration_api import DetectorIntegrationClient
-
-
-_cameraArrayTypes = ["monochrome", "rgb"]
-
-
-class CameraCA:
-
-    def __init__(self, pvname, cameraArrayType="monochrome", elog=None):
-        self.ID = pvname
-        self.isBS = False
-        self.px_height = None
-        self.px_width = None
-        self.elog = elog
-
-    def get_px_height(self):
-        if not self.px_height:
-            self.px_height = caget(self.ID + ":HEIGHT")
-        return int(self.px_height)
-
-    def get_px_width(self):
-        if not self.px_width:
-            self.px_width = caget(self.ID + ":WIDTH")
-        return int(self.px_width)
-
-    def get_data(self):
-        w = self.get_px_width()
-        h = self.get_px_height()
-        numpix = int(caget(self.ID + ":FPICTURE.NORD"))
-        i = caget(self.ID + ":FPICTURE", count=numpix)
-        return i.reshape(h, w)
-
-    def record_images(self, fina, N_images, sleeptime=0.2):
-        with h5py.File(fina, "w") as f:
-            d = []
-            for n in range(N_images):
-                d.append(self.get_data())
-                sleep(sleeptime)
-            f["images"] = np.asarray(d)
-
-    def gui(self, guiType="xdm"):
-        """ Adjustable convention"""
-        cmd = ["caqtdm", "-macro"]
-
-        cmd.append('"NAME=%s,CAMNAME=%s"' % (self.ID, self.ID))
-        cmd.append("/sf/controls/config/qt/Camera/CameraMiniView.ui")
-        return subprocess.Popen(" ".join(cmd), shell=True)
-
-
-# /sf/controls/config/qt/Camera/CameraMiniView.ui" with macro "NAME=SAROP21-PPRM138,CAMNAME=SAROP21-PPRM138
-
-
-class CameraBS:
-
-    def __init__(self, host=None, port=None, elog=None):
-        self._stream_host = host
-        self._stream_port = port
-
-    def checkServer(self):
-        # Check if your instance is running on the server.
-        if self._instance_id not in client.get_server_info()["active_instances"]:
-            raise ValueError("Requested pipeline is not running.")
-
-    def get_images(self, N_images):
-        data = []
-        with source(host=self._stream_host, port=self._stream_port, mode=SUB) as input_stream:
-            input_stream.connect()
-
-            for n in range(N_images):
-                data.append(input_stream.receive().data.data["image"].value)
-        return data
-
-    def record_images(self, fina, N_images, dsetname="images"):
-        ds = None
-        with h5py.File(fina, "w") as f:
-            with source(host=self._stream_host, port=self._stream_port, mode=SUB) as input_stream:
-
-                input_stream.connect()
-
-                for n in range(N_images):
-                    image = input_stream.receive().data.data["image"].value
-                    if not ds:
-                        ds = f.create_dataset(dsetname, dtype=image.dtype, shape=(N_images,) + image.shape)
-                    ds[n, :, :] = image
-
-
-class FeDigitizer:
-
-    def __init__(self, ID, elog=None):
-        self.ID = ID
-        self.gain = EnumWrapper(ID + "-WD-gain")
-        self._bias = PV(ID + "-HV_SET")
-        self.channels = [ID + "-BG-DATA", ID + "-BG-DRS_TC", ID + "-BG-PULSEID-valid", ID + "-DATA", ID + "-DRS_TC", ID + "-PULSEID-valid"]
-
-    def set_bias(self, value):
-        self._bias.put(value)
-
-    def get_bias(self):
-        return self._bias.value
-
-
-class DiodeDigitizer:
-
-    def __init__(self, ID, VME_crate=None, link=None, ch_0=7, ch_1=8, elog=None):
-        self.ID = ID
-        if VME_crate:
-            self.diode_0 = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_0))
-            self.diode_1 = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_1))
-
-
 class DIAClient:
 
-    def __init__(self, ID, instrument=None, api_address="http://sf-daq-2:10000", jf_name="JF_1.5M"):
-        raise RuntimeError("DIA is deprecated")
+    def __init__(self, ID, instrument=None, api_address=None, jf_name=None):
         self.ID = ID
         self._api_address = api_address
         self.client = DetectorIntegrationClient(api_address)
         print("\nDetector Integration API on %s" % api_address)
         # No pgroup by default
-        self.pgroup = 17571
+        self.pgroup = 0
         self.n_frames = 100
         self.jf_name = jf_name
         self.pede_file = ""
+        self.gain_file = ""
         self.instrument = instrument
         if instrument is None:
             print("ERROR: please configure the instrument parameter in DIAClient")
         self.gain_file = "/sf/%s/config/jungfrau/gainMaps" % self.instrument
         self.update_config()
+        self.active_clients = list(self.get_active_clients()["clients_enabled"].keys())
 
     def update_config(self,):
         self.writer_config = {
@@ -152,8 +27,10 @@ class DIAClient:
             "general/process": __name__,
             "general/created": str(datetime.now()),
             "general/instrument": self.instrument,
-            #"general/correction": "test"
+            # "general/correction": "test"
         }
+
+        self.is_HG0 = True
 
         self.backend_config = {
             "n_frames": self.n_frames,
@@ -165,7 +42,7 @@ class DIAClient:
             #"pede_mask_dataset": "pixel_mask",
             #"activate_corrections_preview": True,
             #FIXME: HARDCODED!!!
-            "is_HG0": False,
+            "is_HG0": self.is_HG0
         }
 
         if self.pede_file != "":
@@ -182,10 +59,17 @@ class DIAClient:
             self.backend_config["pede_corrections_filename"] = ""
             self.backend_config["activate_corrections_preview"] = False
 
+# remove below since it sets the JF to high-gain mode explicitly
+#         if self.is_HG0:
+#             print(self.client.set_detector_value("setbit", "0x5d 0"))
+#         else:
+#             print(self.client.set_detector_value("clearbit", "0x5d 0"))
+
         self.detector_config = {
             "timing": "trigger",
+#            "setbit"  = "0x5d 0"
             #FIXME: HARDCODED
-            "exptime": 0.000010,
+            "exptime": 0.000005,
             "cycles": self.n_frames,
             #"delay"  : 0.001992,
             "frames": 1,
@@ -219,6 +103,9 @@ class DIAClient:
         config = self.client.get_config()
         return config
 
+    def get_active_clients(self):
+        return self.client.get_clients_enabled()
+
     def set_pgroup(self, pgroup):
         self.pgroup = pgroup
         self.update_config()
@@ -230,7 +117,7 @@ class DIAClient:
         self.reset()
         self.client.set_config({"writer": self.writer_config, "backend": self.backend_config, "detector": self.detector_config, "bsread": self.bsread_config})
 
-    def check_still_running(self, time_interval=0.5):
+    def check_still_running(self, time_interval=1):
         cfg = self.get_config()
         running = True
         while running:
@@ -243,45 +130,47 @@ class DIAClient:
             else:
                 sleep(time_interval)
 
-    def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True):
+    def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True, period=0.04):
         from jungfrau_utils.scripts.jungfrau_run_pedestals import run as jungfrau_utils_run
 
         directory = "/sf/%s/data/p%d/raw/JF_pedestal/" % (self.instrument, self.pgroup)
         if not os.path.exists(directory):
-            print("Directory %s not existing, AND I CAN NOT CREATE IT, CALL DIMA" % directory)
-            #os.makedirs(directory)
+            print("Directory %s not existing, creating it" % directory)
+            os.makedirs(directory)
 
         res_dir = directory.replace("/raw/", "/res/")
         if not os.path.exists(res_dir):
             print("Directory %s not existing, creating it" % res_dir)
             os.makedirs(res_dir)
-        filename = "pedestal_%s" % datetime.now().strftime("%Y%m%d_%H%M")
-        period = 0.04
-        print("AAAAAAAAAAAAAAAAA", filename)
+        filename = "pedestal_%s.h5" % datetime.now().strftime("%Y%m%d_%H%M")
+#        period = 0.02  # for 25 Hz this is 0.04, for 10 Hz this 0.1
         jungfrau_utils_run(self._api_address, filename, directory, self.pgroup, period, self.detector_config["exptime"], n_frames, 1, analyze, n_bad_modules, self.instrument, self.jf_name)
 
         if update_config:
-            self.pede_file = (directory + filename).replace("raw/", "res/").replace(".h5", ".res.h5")
+            self.pede_file = (directory + filename).replace("raw/", "res/").replace(".h5", "_res.h5")
             print("Pedestal file updated to %s" % self.pede_file)
         return self.pede_file
 
     def start(self):
         self.client.start()
         print("start acquisition")
+        pass
 
     def stop(self):
         self.client.stop()
         print("stop acquisition")
+        pass
 
     def config_and_start_test(self):
         self.reset()
         self.set_config()
         self.start()
+        pass
 
     def wait_for_status(self, *args, **kwargs):
         return self.client.wait_for_status(*args, **kwargs)
 
-    def acquire(self, file_name=None, Npulses=100, JF_factor=1, bsread_padding=0):
+    def acquire(self, file_name=None, Npulses=100, JF_factor=1, bsread_padding=0, reset_before=False):
         """
         JF_factor?
         bsread_padding?
@@ -291,11 +180,11 @@ class DIAClient:
         if file_name is None:
             #FIXME /dev/null crashes the data taking (h5py can't close /dev/null and crashes)
             print("Not saving any data, as file_name is not set")
-            file_name_JF = file_rootdir + "DelMe" + "_JF1p5M.h5"
+            file_name_JF = file_rootdir + "DelMe" + "_JF4p5M.h5"
             file_name_bsread = file_rootdir + "DelMe" + ".h5"
         else:
             #FIXME hardcoded
-            file_name_JF = file_rootdir + file_name + "_JF1p5M.h5"
+            file_name_JF = file_rootdir + file_name + "_JF4p5M.h5"
             file_name_bsread = file_rootdir + file_name + ".h5"
 
         if self.pgroup == 0:
@@ -321,11 +210,17 @@ class DIAClient:
                 }
             )
 
-            self.reset()
+            #            self.reset()
+            if reset_before:
+                print("Starting reset in acquire")
+                self.reset()
+                print("Just resetted in acquire")
             self.set_config()
             #print(self.get_config())
             self.client.start()
             done = False
+
+            self.client.wait_for_status("IntegrationStatus.FINISHED")
 
             while not done:
                 stat = self.get_status()
@@ -339,10 +234,12 @@ class DIAClient:
                     done = True
                 sleep(0.1)
 
+        outputfilenames = [f"{file_name_JF}.{tcli.upper()}.h5" for tcli in self.active_clients]
+
         return Task(acquire, hold=False)
 
     def wait_done(self):
-        self.check_running()
+#        self.check_running()
         self.check_still_running()
 
 
