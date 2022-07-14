@@ -21,48 +21,73 @@ class Config:
     def __init__(self, cta_client):
         self.cta_client = cta_client
 
-    @property
-    def mode(self):
-        cfg = self.get_start_config()
-        return cfg["mode"]
 
     @property
     def divisor(self):
-        cfg = self.get_start_config()
-        return cfg["divisor"]
+        return self.get("divisor")
 
     @property
     def offset(self):
-        cfg = self.get_start_config()
-        return cfg["offset"]
+        return self.get("offset")
 
-    def get_start_config(self):
-        return self.cta_client.get_start_config()
+    @property
+    def mode(self):
+        return self.get("mode")
 
 
-    def set_start_config(self, divisor, offset):
-        if divisor == 1 and offset == 0:
-            mode = 0
+    @divisor.setter
+    def divisor(self, val):
+        self.set(divisor=val)
+
+    @offset.setter
+    def offset(self, val):
+        self.set(offset=val)
+
+    @mode.setter
+    def mode(self, val):
+        self.set(mode=val)
+
+
+    def get(self, name=None):
+        cfg = self.cta_client.get_start_config()
+        if name is None:
+            return cfg
         else:
-            mode = 1
+            return cfg[name]
+
+
+    def set(self, divisor=None, offset=None, mode=None):
+        if divisor is None or offset is None:
+            current_cfg = self.get()
+            if divisor is None:
+                divisor = current_cfg["divisor"]
+            if offset is None:
+                offset = current_cfg["offset"]
+
+        if mode is None:
+            if divisor == 1 and offset == 0:
+                mode = 0
+            else:
+                mode = 1
 
         mode = self.cta_client.StartMode(mode)
 
         #TODO: why are modulo and divisor the same?
-        cfg = dict(mode=mode, modulo=divisor, offset=offset)
+        cfg = dict(modulo=divisor, offset=offset, mode=mode)
         self.cta_client.set_start_config(cfg)
 
 
-    def set_repetitions(self, n):
-        """0 means infinite repetitions"""
-        mode = int(n > 0)
-        cfg = dict(mode=mode, n=n)
-        self.cta_client.set_repetition_config(cfg)
-
-    def get_repetitions(self):
+    @property
+    def repetitions(self):
         """0 means infinite repetitions"""
         cfg = self.cta_client.get_repetition_config()
         return 0 if cfg["mode"] == 0 else cfg["n"]
+
+    @repetitions.setter
+    def repetitions(self, n):
+        mode = int(n > 0)
+        cfg = dict(mode=mode, n=n)
+        self.cta_client.set_repetition_config(cfg)
 
 
 
