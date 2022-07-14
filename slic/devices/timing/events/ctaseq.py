@@ -1,78 +1,140 @@
 from cta_lib import CtaLib
 
 
-class CTA_sequencer:
+class CTASequencer:
 
-    def __init__(self, ID, name=None, master_frequency=100):
-        self._cta = CtaLib(ID)
-        self.sequence_local = {}
-        self.synced = False
-        self._master_frequency = master_frequency
+    def __init__(self, ID):
+        self.cta_client = cc = CtaLib(ID)
+        self.cfg = Config(cc)
+        self.seq = Sequence(cc)
+
+
+    def start(self):
+        self.cta_client.start()
+
+    def stop(self):
+        self.cta_client.stop()
+
 
     def get_active_sequence(self):
-        self.sequence_local = self._cta.download()
-        self.length = self._cta.get_length()
-        self.synced = True
+        self.seq.download()
 
     def upload_local_sequence(self):
-        self._cta.upload(self.sequence_local)
+        self.seq.upload()
 
-    def get_start_config(self, set_params=True):
-        cfg = self._cta.get_start_config()
-        if set_params:
-            self._start_immediately = cfg["mode"]
-            self.start_divisor = cfg["divisor"]
-            self.start_offset = cfg["offset"]
-        else:
-            return cfg
+    def reset_local_sequence(self):
+        self.seq.reset()
+
+    def append_singlecode(self, code, pulse_delay):
+        self.seq.append(code, pulse_delay)
+
+
+    def get_start_config(self):
+        return self.cfg.get_start_config()
+
+    def set_start_config(self, divisor, offset):
+        self.cfg.set_start_config(divisor, offset)
+
+
+    def get_repetitions(self):
+        return self.cfg.get_repetitions()
+
+    def set_repetitions(self, n):
+        self.cfg.set_repetitions(n)
+
+
+
+class Config:
+
+    def __init__(self, cta_client):
+        self.cta_client = cta_client
+
+    @property
+    def mode(self):
+        cfg = self.get_start_config()
+        return cfg["mode"]
+
+    @property
+    def divisor(self):
+        cfg = self.get_start_config()
+        return cfg["divisor"]
+
+    @property
+    def offset(self):
+        cfg = self.get_start_config()
+        return cfg["offset"]
+
+    def get_start_config(self):
+        return self.cta_client.get_start_config()
+
 
     def set_start_config(self, divisor, offset):
         if divisor == 1 and offset == 0:
             mode = 0
         else:
             mode = 1
-        self._cta.set_start_config(
-            config={
-                "mode": self._cta.StartMode(mode),
-                "modulo": divisor,
-                "offset": offset
-            }
-        )
 
-    def reset_local_sequence(self):
-        self.sequence_local = {}
+        mode = self.cta_client.StartMode(mode)
+
+        #TODO: why are modulo and divisor the same?
+        cfg = dict(mode=mode, modulo=divisor, offset=offset)
+        self.cta_client.set_start_config(cfg)
+
+
+    def set_repetitions(self, n):
+        """0 means infinite repetitions"""
+        mode = int(n > 0)
+        cfg = dict(mode=mode, n=n)
+        self.cta_client.set_repetition_config(cfg)
+
+    def get_repetitions(self):
+        """0 means infinite repetitions"""
+        cfg = self.cta_client.get_repetition_config()
+        return 0 if cfg["mode"] == 0 else cfg["n"]
+
+
+
+class Sequence:
+
+    def __init__(self, cta_client):
+        self.cta_client = cta_client
+        self.reset()
+
+    def __len__(self):
+        return self.length
+
+    def reset(self):
+        self.data = {}
         self.length = 0
         self.synced = False
 
-    def append_singlecode(self, code, pulse_delay):
-        if self.length == 0:
-            self.length = 1
-        if not code in self.sequence_local.keys():
-            self.sequence_local[code] = self.length * [0]
-        self.length += pulse_delay
-        for tc in self.sequence_local.keys():
-            self.sequence_local[tc].extend(pulse_delay * [0])
-        self.sequence_local[code][self.length - 1] = 1
+    def download(self):
+        self.data = self.cta_client.download()
+        self.length = self.cta_client.get_length()
+        self.synced = True
+
+    def upload(self):
+        self.cta_client.upload(self.data)
+        self.synced = True
+
+
+    def append(self, code, delay):
+        data = self.data
+        length = self.length or 1
+
+        if code not in data:
+            data[code] = [0] * length
+
+        length += delay
+
+        for c in data:
+            data[c].extend([0] * delay)
+
+        data[code][length - 1] = 1
+
+        self.data = data
+        self.length = length
         self.synced = False
-
-    def set_repetitions(self, n_rep):
-        """Set the number of sequence repetitions, 0 is infinite repetitions"""
-        ntim = int(n_rep > 0)
-        self._cta.set_repetition_config(config={"mode": ntim, "n": n_rep})
-
-    def get_repetitions(self):
-        """Get the number of sequence repetitions, 0 is infinite repetitions"""
-        repc = self._cta.get_repetition_config()
-        if repc["mode"] == 0:
-            return 0
-        else:
-            return repc["n"]
-
-    def start(self):
-        self._cta.start()
-
-    def stop(self):
-        self._cta.stop()
 
 
 
