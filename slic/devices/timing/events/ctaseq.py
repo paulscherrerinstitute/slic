@@ -8,39 +8,11 @@ class CTASequencer:
         self.cfg = Config(cc)
         self.seq = Sequence(cc)
 
-
     def start(self):
         self.cta_client.start()
 
     def stop(self):
         self.cta_client.stop()
-
-
-    def get_active_sequence(self):
-        self.seq.download()
-
-    def upload_local_sequence(self):
-        self.seq.upload()
-
-    def reset_local_sequence(self):
-        self.seq.reset()
-
-    def append_singlecode(self, code, pulse_delay):
-        self.seq.append(code, pulse_delay)
-
-
-    def get_start_config(self):
-        return self.cfg.get_start_config()
-
-    def set_start_config(self, divisor, offset):
-        self.cfg.set_start_config(divisor, offset)
-
-
-    def get_repetitions(self):
-        return self.cfg.get_repetitions()
-
-    def set_repetitions(self, n):
-        self.cfg.set_repetitions(n)
 
 
 
@@ -103,7 +75,7 @@ class Sequence:
     def __len__(self):
         return self.length
 
-    def reset(self):
+    def clear(self):
         self.data = {}
         self.length = 0
         self.synced = False
