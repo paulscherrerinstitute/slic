@@ -13,12 +13,12 @@ class CameraCA:
     def get_px_height(self):
         if not self.px_height:
             self.px_height = caget(self.ID + ":HEIGHT")
-        return self.px_height
+        return int(self.px_height)
 
     def get_px_width(self):
         if not self.px_width:
             self.px_width = caget(self.ID + ":WIDTH")
-        return self.px_width
+        return int(self.px_width)
 
     def get_data(self):
         w = self.get_px_width()
