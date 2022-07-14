@@ -1,50 +1,57 @@
-_cameraArrayTypes = ["monochrome", "rgb"]
+from slic.utils.hastyepics import get_pv as PV
+
+from .camerabase import CameraBase
 
 
-class CameraCA:
+class CameraCA(CameraBase):
 
-    def __init__(self, pvname, cameraArrayType="monochrome", elog=None):
-        self.ID = pvname
-        self.isBS = False
-        self.px_height = None
-        self.px_width = None
-        self.elog = elog
+    def __init__(self, ID, wait_time=0.2):
+        self.ID = ID
+        self.wait_time = wait_time
 
-    def get_px_height(self):
-        if not self.px_height:
-            self.px_height = caget(self.ID + ":HEIGHT")
-        return int(self.px_height)
-
-    def get_px_width(self):
-        if not self.px_width:
-            self.px_width = caget(self.ID + ":WIDTH")
-        return int(self.px_width)
-
-    def get_data(self):
-        w = self.get_px_width()
-        h = self.get_px_height()
-        numpix = int(caget(self.ID + ":FPICTURE.NORD"))
-        i = caget(self.ID + ":FPICTURE", count=numpix)
-        return i.reshape(h, w)
-
-    def record_images(self, fina, N_images, sleeptime=0.2):
-        with h5py.File(fina, "w") as f:
-            d = []
-            for n in range(N_images):
-                d.append(self.get_data())
-                sleep(sleeptime)
-            f["images"] = np.asarray(d)
-
-    def gui(self, guiType="xdm"):
-        """ Adjustable convention"""
-        cmd = ["caqtdm", "-macro"]
-
-        cmd.append('"NAME=%s,CAMNAME=%s"' % (self.ID, self.ID))
-        cmd.append("/sf/controls/config/qt/Camera/CameraMiniView.ui")
-        return subprocess.Popen(" ".join(cmd), shell=True)
+        self.pv_image  = PV(ID + ":FPICTURE")
+        self.pv_size   = PV(ID + ":FPICTURE.NORD")
+        self.pv_height = PV(ID + ":HEIGHT")
+        self.pv_width  = PV(ID + ":WIDTH")
 
 
-# /sf/controls/config/qt/Camera/CameraMiniView.ui" with macro "NAME=SAROP21-PPRM138,CAMNAME=SAROP21-PPRM138
+    @property
+    def size(self):
+        return int(self.pv_size.get())
+
+    @property
+    def shape(self):
+        return (self.height, self.width)
+
+    @property
+    def height(self):
+        return int(self.pv_height.get())
+
+    @property
+    def width(self):
+        return int(self.pv_width.get())
+
+
+    def get_image(self):
+        img = self.pv_image.get(count=self.size)
+        return img.reshape(self.shape)
+
+    def _iterate_receive(self, n):
+        for i in range(n):
+            img = self.get_image()
+            yield img
+            sleep(self.wait_time)
+
+
+    def gui(self):
+        ID = self.ID
+        cmd = [
+            "caqtdm",
+            "-macro",
+            f'"NAME={ID},CAMNAME={ID}"',
+            "/sf/controls/config/qt/Camera/CameraMiniView.ui"
+        ]
+        return subprocess.Popen(cmd, shell=True)
 
 
 
