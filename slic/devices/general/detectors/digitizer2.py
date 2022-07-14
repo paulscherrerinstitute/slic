@@ -4,7 +4,14 @@ class FeDigitizer:
         self.ID = ID
         self.gain = EnumWrapper(ID + "-WD-gain")
         self._bias = PV(ID + "-HV_SET")
-        self.channels = [ID + "-BG-DATA", ID + "-BG-DRS_TC", ID + "-BG-PULSEID-valid", ID + "-DATA", ID + "-DRS_TC", ID + "-PULSEID-valid"]
+        self.channels = [
+            ID + "-BG-DATA",
+            ID + "-BG-DRS_TC",
+            ID + "-BG-PULSEID-valid",
+            ID + "-DATA",
+            ID + "-DRS_TC",
+            ID + "-PULSEID-valid"
+        ]
 
     def set_bias(self, value):
         self._bias.put(value)

@@ -10,7 +10,7 @@ class FeDigitizer:
             ID + "-BG-PULSEID-valid",
             ID + "-DATA",
             ID + "-DRS_TC",
-            ID + "-PULSEID-valid",
+            ID + "-PULSEID-valid"
         ]
 
     def set_bias(self, value):
