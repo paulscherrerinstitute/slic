@@ -3,7 +3,7 @@ import numpy as np
 
 from slic.core.adjustable import PVEnumAdjustable
 from slic.core.device import Device
-from slic.devices.general.detectors_new import FeDigitizer, PvDataStream
+from slic.devices.general.detectors import FeDigitizer, PVDataStream
 from slic.devices.general.motor import Motor
 from slic.utils.hastyepics import get_pv as PV
 from slic.utils.printing import format_header, printable_dict_of_dicts

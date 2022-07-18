@@ -1,6 +1,6 @@
 from slic.core.adjustable import PVEnumAdjustable
 from slic.core.device import Device
-from slic.devices.general.detectors import CameraCA
+from slic.devices.cameras import CameraCA
 from slic.devices.general.motor import Motor
 
 

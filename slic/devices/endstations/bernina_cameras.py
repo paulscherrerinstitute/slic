@@ -1,7 +1,7 @@
 from slic.core.adjustable import PVAdjustable
 from slic.core.device import Device
 from slic.devices.general.motor import Motor
-from slic.devices.general.detectors import CameraCA, CameraBS
+from slic.devices.cameras import CameraCA, CameraBS
 
 
 class CameraSigma(Device):
