@@ -12,7 +12,7 @@ class Timer:
 
     @property
     def is_done(self):
-        if self.seconds = None:
+        if self.seconds == None:
             return None
         if self.time_start is None:
             self.start()

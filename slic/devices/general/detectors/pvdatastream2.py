@@ -1,3 +1,4 @@
+from time import sleep
 from slic.utils.hastyepics import get_pv as PV
 
 from .buffer import Buffer
@@ -10,6 +11,7 @@ class PVDataStream:
         self.name = name
         self.wait_time = wait_time
         self.pv = PV(name)
+        self.running = False
 
 
     def record(self, n, seconds=None):
@@ -17,23 +19,27 @@ class PVDataStream:
 
         current = pv.get()
         buf = Buffer.from_example(n, current)
-        tim = Timer(seconds)
-
-        running = True
 
         def on_value_change(value=None, **kwargs):
-            nonlocal running
             buf.append(value)
-            if buf.is_full or tim.is_done:
-                pv.clear_callbacks()
-                running = False
+            if buf.is_full:
+                self.stop()
 
         pv.add_callback(callback=on_value_change)
 
-        while running:
+        self.running = True
+        tim = Timer(seconds)
+        while self.running and not tim.is_done:
             sleep(self.wait_time)
 
+        self.stop()
+
         return buf.data
+
+
+    def stop(self):
+        self.pv.clear_callbacks()
+        self.running = False
 
 
 
