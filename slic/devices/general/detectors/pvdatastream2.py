@@ -1,6 +1,6 @@
-import numpy as np
-from slic.utils import get_dtype, get_shape
 from slic.utils.hastyepics import get_pv as PV
+
+from .buffer import Buffer
 
 
 class PVDataStream:
@@ -13,21 +13,16 @@ class PVDataStream:
 
     def record(self, n):
         pv = self.pv
+
         current = pv.get()
+        buf = Buffer.from_example(n, current)
 
-        shape = (n,) + get_shape(current)
-        dtype = get_dtype(current)
-
-        data = np.empty(shape=shape, dtype=dtype)
-        index = 0
         running = True
 
         def on_value_change(value=None, **kwargs):
-            nonlocal index
             nonlocal running
-            data[index] = value
-            index += 1
-            if index == n:
+            buf.append(value)
+            if buf.is_full:
                 pv.clear_callbacks()
                 running = False
 
@@ -36,7 +31,7 @@ class PVDataStream:
         while running:
             sleep(self.wait_time)
 
-        return data
+        return buf.data
 
 
 
