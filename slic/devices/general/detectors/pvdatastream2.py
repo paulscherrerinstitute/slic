@@ -1,6 +1,7 @@
 from slic.utils.hastyepics import get_pv as PV
 
 from .buffer import Buffer
+from .timer import Timer
 
 
 class PVDataStream:
@@ -11,18 +12,19 @@ class PVDataStream:
         self.pv = PV(name)
 
 
-    def record(self, n):
+    def record(self, n, seconds=None):
         pv = self.pv
 
         current = pv.get()
         buf = Buffer.from_example(n, current)
+        tim = Timer(seconds)
 
         running = True
 
         def on_value_change(value=None, **kwargs):
             nonlocal running
             buf.append(value)
-            if buf.is_full:
+            if buf.is_full or tim.is_done:
                 pv.clear_callbacks()
                 running = False
 
