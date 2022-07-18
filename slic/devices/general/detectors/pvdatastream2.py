@@ -1,7 +1,7 @@
 from time import sleep
 from slic.utils.hastyepics import get_pv as PV
 
-from .buffer import Buffer
+from .buffer import BufferInfinite, BufferFinite
 from .timer import Timer
 
 
@@ -14,11 +14,14 @@ class PVDataStream:
         self.running = False
 
 
-    def record(self, n, seconds=None):
+    def record(self, n=None, seconds=None):
         pv = self.pv
 
-        current = pv.get()
-        buf = Buffer.from_example(n, current)
+        if n is None:
+            buf = BufferInfinite()
+        else:
+            current = pv.get()
+            buf = BufferFinite.from_example(n, current)
 
         def on_value_change(value=None, **kwargs):
             buf.append(value)

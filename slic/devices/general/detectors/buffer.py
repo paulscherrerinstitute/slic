@@ -1,8 +1,31 @@
+from collections import deque
 import numpy as np
 from slic.utils import get_dtype, get_shape
 
 
-class Buffer:
+class BufferInfinite:
+
+    def __init__(self, maxlen=None):
+        self._buffer = b = deque(maxlen=maxlen)
+
+    @property
+    def data(self):
+        return np.array(self._buffer)
+
+    is_full = False
+
+    def append(self, value):
+        self._buffer.append(value)
+
+    def __len__(self):
+        return len(self._buffer)
+
+    def __repr__(self):
+        return repr(self.data)
+
+
+
+class BufferFinite:
 
     def __init__(self, n, shape, dtype):
         self.n = n
@@ -22,7 +45,6 @@ class Buffer:
 
     @property
     def is_full(self):
-#        return self._index == len(self._buffer)
         return self._index == self.n
 
     def append(self, value):
