@@ -14,7 +14,7 @@ class PVDataStream(TaskProducer):
         self.pv = PV(name)
         self.running = False
 
-        self.record, _start, self.stop, _wait =\
+        self.record, _start, _stop, _wait =\
             self._task_producer(self.record, stopper=self.stop)
 
 
