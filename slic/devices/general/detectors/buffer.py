@@ -66,3 +66,33 @@ class BufferIsFullError(RuntimeError):
 
 
 
+class RingBufferFinite(BufferFinite):
+
+    def __init__(self, *args, ordered=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ordered = ordered
+
+    is_full = False
+
+    @property
+    def data(self):
+        b = self._buffer
+        i = self._index
+        n = self.n
+        if i <= n:
+            return b[:i]
+        if not self.ordered:
+            return b
+        i %= n
+        return np.roll(b, -i)
+
+    def append(self, value):
+        i = self._index % self.n
+        self._buffer[i] = value
+        self._index += 1
+
+    def __len__(self):
+        return min(self._index, self.n)
+
+
+
