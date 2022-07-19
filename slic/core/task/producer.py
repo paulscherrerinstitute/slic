@@ -10,9 +10,10 @@ class TaskProducer:
 
 
     def _task_producer(self, func, starter=None, stopper=None):
-        @forwards_to(func, nfilled=1) # nfilled=1 to remove self
+        @forwards_to(func, nfilled=1, appended_kwargs=dict(hold=False)) # nfilled=1 to remove self
         @wraps(func)
-        def wrapper(*args, hold=False, **kwargs):
+        def wrapper(*args, **kwargs):
+            hold = kwargs.pop("hold", False)
             filled_func = lambda: func(*args, **kwargs)
             return self._as_task(filled_func, starter=starter, stopper=stopper, hold=hold)
 
