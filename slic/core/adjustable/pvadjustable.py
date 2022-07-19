@@ -95,6 +95,7 @@ class PVAdjustable(Adjustable):
 
     def _wait_for_done(self):
         if not self._pcm:
+            self._wait_until_close()
             return
 
         for _ in self._pcm.wait():
@@ -103,6 +104,11 @@ class PVAdjustable(Adjustable):
                 self.stop()
                 print("seems we are already there")
                 break
+
+
+    def _wait_until_close(self):
+        while not self._is_close():
+            sleep(self.wait_time)
 
 
     def stop(self):
