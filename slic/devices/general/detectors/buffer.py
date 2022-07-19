@@ -6,7 +6,7 @@ from slic.utils import get_dtype, get_shape
 class BufferInfinite:
 
     def __init__(self, maxlen=None):
-        self._buffer = b = deque(maxlen=maxlen)
+        self._buffer = deque(maxlen=maxlen)
 
     @property
     def data(self):
