@@ -1,7 +1,7 @@
 import inspect
 
 
-def forwards_to(func_inner, nfilled=0):
+def forwards_to(func_inner, nfilled=0, appended_kwargs=None):
     """
     Decorator inserting an explicit signature for functions that forward their arguments to other function via *args/**kwargs
 
@@ -17,6 +17,9 @@ def forwards_to(func_inner, nfilled=0):
 
         pos_comb = merge_lists_unique(pos_outer, pos_inner)
         kw_comb  = merge_dicts_unique(kw_outer, kw_inner)
+
+        if appended_kwargs:
+            kw_comb = merge_dicts_unique(kw_comb, appended_kwargs)
 
         func_outer.__signature__ = make_signature(pos_comb, kw_comb)
         return func_outer
