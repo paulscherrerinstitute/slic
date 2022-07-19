@@ -155,10 +155,7 @@ class Calibrator(Device):
 
 
 def calculate_calibration_intensity(sigs, wait_time):
-    acqs = [d.acquire(seconds=wait_time) for d in sigs]
-    data = [a.wait() for a in acqs]
-    means = [np.mean(d) for d in data]
-#    stds = [np.std(d) for d in data]
+    means = get_means(sigs)
     calib = [1 / m / 4 for m in means]
     return calib
 
@@ -168,10 +165,11 @@ def calculate_calibration_position(mot, sig1, sig2, calib_intensities, motion_ra
     raw = []
     for pos in (-border, +border):
         mot.set_target_value(pos).wait()
-        acqs = [s.acquire(seconds=wait_time) for s in (sig1, sig2)]
-        v0, v1 = [np.mean(a.wait()) * c for a, c in zip(acqs, calib_intensities)]
-        delta  = v0 - v1
-        summed = v0 + v1
+        sigs = (sig1, sig2)
+        means = get_means(sigs)
+        v1, v2 = [m * c for m, c in zip(means, calib_intensities)]
+        delta  = v1 - v2
+        summed = v1 + v2
         res = delta / summed
         raw.append(res)
 
@@ -179,6 +177,13 @@ def calculate_calibration_position(mot, sig1, sig2, calib_intensities, motion_ra
 #    calib = [np.diff(calib_intensities)[0] / np.sum(calib_intensities), grad]
     calib = [0, grad]
     return calib
+
+
+def get_means(sigs):
+    tasks = [s.record(seconds=wait_time) for s in sigs]
+    data = [t.wait() for t in tasks]
+    means = [np.mean(d) for d in data]
+    return means
 
 
 def fill_channels(chs, vals):
