@@ -1,17 +1,21 @@
 from time import sleep
+from slic.core.task import TaskProducer
 from slic.utils.hastyepics import get_pv as PV
 
-from .buffer import BufferInfinite, BufferFinite, BufferFiniteRing
+from .buffer import BufferInfinite, BufferFinite, RingBufferFinite
 from .timer import Timer
 
 
-class PVDataStream:
+class PVDataStream(TaskProducer):
 
     def __init__(self, name, wait_time=0.1):
         self.name = name
         self.wait_time = wait_time
         self.pv = PV(name)
         self.running = False
+
+        self.record, _start, self.stop, _wait =\
+            self._task_producer(self.record, stopper=self.stop)
 
 
     def record(self, n=None, seconds=None, ringbuffer=False):
