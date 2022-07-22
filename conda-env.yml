@@ -15,6 +15,7 @@ dependencies:
 # DAQ
   - paulscherrerinstitute::bsread
   - paulscherrerinstitute::cam_server_client
+  - paulscherrerinstitute::cta_lib
   - paulscherrerinstitute::data_api
 #  - paulscherrerinstitute::detector_integration_api #TODO: deprecated?
   - paulscherrerinstitute::elog
