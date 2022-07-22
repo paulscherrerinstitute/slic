@@ -39,6 +39,7 @@ class EvrOutput(Device):
         self.pulsers = pulsers
         self.source1_index = PVEnumAdjustable(ID + "_SNUMPD")
         self.source2_index = PVEnumAdjustable(ID + "_SNUMPD2")
+        self.alias = PVAdjustable(ID + "-Name-I")
 
     @property
     def source1(self):
