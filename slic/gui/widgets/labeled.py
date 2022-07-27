@@ -30,7 +30,7 @@ def make_labeled(cls):
             self.widget = widget = cls(parent, *args, **kwargs)
 
             self.Add(label,  flag=wx.EXPAND)
-            self.Add(widget, flag=wx.EXPAND)
+            self.Add(widget, flag=wx.EXPAND, proportion=1)
 
 
         def __getattr__(self, name):
