@@ -81,7 +81,7 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
 
 
     def SetValue(self, val):
-        val = "" if val is None else str(val)
+        val = "" if val is None else np.format_float_positional(val, trim="-")
         super().SetValue(val)
 
 
