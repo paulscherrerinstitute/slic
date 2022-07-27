@@ -4,7 +4,7 @@ from slic.utils import nice_arange, printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import STRETCH, TwoButtons, LabeledEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
-from .tools import AdjustableComboBox, ETADisplay, correct_n_pulses, run
+from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
 
 
 class ScanPanel(wx.Panel):
@@ -24,16 +24,7 @@ class ScanPanel(wx.Panel):
         self.scan = None
 
         # widgets:
-        self.st_adj = st_adj = wx.StaticText(self)
-
-        self.cb_adjs = cb_adjs = AdjustableComboBox(self)
-        self.on_change_adj(None) # update static text with default selection
-        cb_adjs.Bind(wx.EVT_COMBOBOX,   self.on_change_adj)
-        cb_adjs.Bind(wx.EVT_TEXT_ENTER, self.on_change_adj)
-
-        self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
-        self.timer.Start(2500) #TODO: make configurable
+        self.sel_adj = sel_adj = AdjustableSelection(self)
 
         self.le_start  = le_start  = LabeledMathEntry(self, label="Start",     value=0)
         self.le_stop   = le_stop   = LabeledMathEntry(self, label="Stop",      value=10)
@@ -70,7 +61,7 @@ class ScanPanel(wx.Panel):
         widgets = (cb_relative, cb_return)
         vb_cbs = make_filled_vbox(widgets, flag=wx.ALL) # make sure checkboxes do not expand horizontally
 
-        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
+        widgets = (sel_adj, STRETCH, hb_pos, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -91,16 +82,11 @@ class ScanPanel(wx.Panel):
         self.le_nsteps.SetToolTip(tooltip)
 
 
-    def on_change_adj(self, _event):
-        adjustable = self.cb_adjs.get()
-        self.st_adj.SetLabel(repr(adjustable))
-
-
     def on_go(self, _event):
         if self.scan:
             return
 
-        adjustable = self.cb_adjs.get()
+        adjustable = self.sel_adj.get()
         if adjustable is None:
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
@@ -127,8 +113,8 @@ class ScanPanel(wx.Panel):
             with printed_exception:
                 self.scan.run()
             self.scan = None
-#            self.on_change_adj(None) # cannot change widget from thread, post event instead:
-            post_event(wx.EVT_COMBOBOX, self.cb_adjs)
+#            self.sel_adj.on_change(None) # cannot change widget from thread, post event instead:
+            post_event(wx.EVT_COMBOBOX, self.sel_adj.select)
             post_event(wx.EVT_BUTTON,   self.btn_go.btn2)
 
         run(wait)

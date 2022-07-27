@@ -4,7 +4,7 @@ from slic.utils import nice_arange, printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import EXPANDING, MINIMIZED, STRETCH, TwoButtons, LabeledEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
-from .tools import AdjustableComboBox, ETADisplay, correct_n_pulses, run
+from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
 
 
 class Scan2DPanel(wx.Panel):
@@ -43,8 +43,8 @@ class Scan2DPanel(wx.Panel):
         if self.scan:
             return
 
-        adjustable1 = self.adjbox1.cb_adjs.get()
-        adjustable2 = self.adjbox2.cb_adjs.get()
+        adjustable1 = self.adjbox1.sel_adj.get()
+        adjustable2 = self.adjbox2.sel_adj.get()
 
         if adjustable1 is None or adjustable2 is None:
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
@@ -80,7 +80,8 @@ class Scan2DPanel(wx.Panel):
             with printed_exception:
                 self.scan.run()
             self.scan = None
-            post_event(wx.EVT_COMBOBOX, self.cb_adjs)
+            post_event(wx.EVT_COMBOBOX, self.adjbox1.sel_adj.select)
+            post_event(wx.EVT_COMBOBOX, self.adjbox2.sel_adj.select)
             post_event(wx.EVT_BUTTON,   self.btn_go.btn2)
 
         run(wait)
@@ -101,16 +102,7 @@ class AdjustableBox(wx.StaticBoxSizer):
         parent.Name = title # update name to distinguish during persisting
 
         # widgets:
-        self.st_adj = st_adj = wx.StaticText(parent)
-
-        self.cb_adjs = cb_adjs = AdjustableComboBox(parent)
-        self.on_change_adj(None) # update static text with default selection
-        cb_adjs.Bind(wx.EVT_COMBOBOX,   self.on_change_adj)
-        cb_adjs.Bind(wx.EVT_TEXT_ENTER, self.on_change_adj)
-
-        self.timer = wx.Timer(parent)
-        parent.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
-        self.timer.Start(2500) #TODO: make configurable
+        self.sel_adj = sel_adj = AdjustableSelection(parent)
 
         self.le_start  = le_start  = LabeledMathEntry(parent, label="Start",     value=0)
         self.le_stop   = le_stop   = LabeledMathEntry(parent, label="Stop",      value=10)
@@ -130,7 +122,7 @@ class AdjustableBox(wx.StaticBoxSizer):
         widgets = (le_start, le_stop, le_step, le_nsteps)
         hb_pos = make_filled_hbox(widgets)
 
-        widgets = (cb_adjs, st_adj, STRETCH, hb_pos, MINIMIZED, cb_relative)
+        widgets = (sel_adj, STRETCH, hb_pos, MINIMIZED, cb_relative)
         make_filled_vbox(widgets, border=10, box=self)
 
 
@@ -148,11 +140,6 @@ class AdjustableBox(wx.StaticBoxSizer):
             tooltip = str(steps)
         self.le_nsteps.SetValue(nsteps)
         self.le_nsteps.SetToolTip(tooltip)
-
-
-    def on_change_adj(self, _event):
-        adjustable = self.cb_adjs.get()
-        self.st_adj.SetLabel(repr(adjustable))
 
 
     def _get_pos(self):

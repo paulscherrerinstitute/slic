@@ -14,6 +14,39 @@ from ..widgets import ContainsTextCompleter
 NOMINAL_REPRATE = 100 # Hz
 
 
+
+
+
+class AdjustableSelection(wx.BoxSizer):
+
+    def __init__(self, parent):
+        super().__init__(wx.VERTICAL)
+
+        self.current = current = wx.StaticText(parent)
+
+        self.select = select = AdjustableComboBox(parent)
+        self.on_change(None) # update static text with default selection
+        select.Bind(wx.EVT_COMBOBOX,   self.on_change)
+        select.Bind(wx.EVT_TEXT_ENTER, self.on_change)
+
+        self.timer = wx.Timer(parent)
+        parent.Bind(wx.EVT_TIMER, self.on_change, self.timer)
+        self.timer.Start(2500) #TODO: make configurable
+
+        self.Add(select,  1, flag=wx.EXPAND|wx.BOTTOM, border=10)
+        self.Add(current, 1, flag=wx.EXPAND|wx.TOP,    border=10)
+
+
+    def on_change(self, _event):
+        adjustable = self.select.get()
+        self.current.SetLabel(repr(adjustable))
+
+    def get(self):
+        return self.select.get()
+
+
+
+
 class AdjustableComboBox(wx.ComboBox):
 
     def __init__(self, parent):

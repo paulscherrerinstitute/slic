@@ -6,7 +6,7 @@ from slic.utils import printed_exception
 
 from ..widgets import EXPANDING, TwoButtons, LabeledTweakEntry, LabeledMathEntry, make_filled_vbox, post_event, AutoWidthListCtrl, copy_to_clipboard
 from ..widgets.plotting import PlotDialog
-from .tools import AdjustableComboBox, run
+from .tools import AdjustableSelection, run
 
 
 TWEAK_OPERATIONS = {
@@ -32,16 +32,8 @@ class TweakPanel(wx.Panel):
         self.task = None
 
         # widgets:
-        self.st_adj  = st_adj  = wx.StaticText(self)
-        self.cb_adjs = cb_adjs = AdjustableComboBox(self)
+        self.sel_adj = sel_adj = AdjustableSelection(self)
         self.le_abs  = le_abs  = LabeledMathEntry(self, label="Absolute Position")
-
-        self.on_change_adj(None) # update static text and entry with default selection
-        cb_adjs.Bind(wx.EVT_COMBOBOX, self.on_change_adj)
-
-        self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.on_update_adj, self.timer)
-        self.timer.Start(2500) #TODO: make configurable
 
         cols = ("Timestamp", "Adjustable", "Operation", "Delta", "Readback")
         self.lc_log = lc_log = AutoWidthListCtrl(self, cols, style=wx.LC_REPORT)
@@ -64,7 +56,7 @@ class TweakPanel(wx.Panel):
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (cb_adjs, st_adj, EXPANDING, lc_log, lte, le_abs, btn_go)
+        widgets = (sel_adj, EXPANDING, lc_log, lte, le_abs, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -74,13 +66,8 @@ class TweakPanel(wx.Panel):
         self.on_update_abs(event)
 
 
-    def on_update_adj(self, _event):
-        adjustable = self.cb_adjs.get()
-        self.st_adj.SetLabel(repr(adjustable))
-
-
     def on_update_abs(self, _event):
-        adjustable = self.cb_adjs.get()
+        adjustable = self.sel_adj.get()
         if adjustable is None:
             return
 
@@ -96,7 +83,7 @@ class TweakPanel(wx.Panel):
         target = self.le_abs.GetValue()
         target = float(target)
 
-        adjustable = self.cb_adjs.get()
+        adjustable = self.sel_adj.get()
         if adjustable is None:
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
@@ -108,7 +95,7 @@ class TweakPanel(wx.Panel):
                 self.task.wait()
             self.task = None
 #            self.on_change_adj(None) # cannot change widget from thread, post event instead:
-            post_event(wx.EVT_COMBOBOX, self.cb_adjs)
+            post_event(wx.EVT_COMBOBOX, self.sel_adj.select)
             post_event(wx.EVT_BUTTON,   self.btn_go.btn2)
 
         run(wait)
@@ -140,7 +127,7 @@ class TweakPanel(wx.Panel):
 
     def _move_delta(self, direction):
         print("move delta", direction)
-        adj = self.cb_adjs.get()
+        adj = self.sel_adj.get()
         if adj is None:
             return
 
