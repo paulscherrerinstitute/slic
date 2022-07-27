@@ -14,9 +14,6 @@ from ..widgets import ContainsTextCompleter
 NOMINAL_REPRATE = 100 # Hz
 
 
-
-
-
 class AdjustableSelection(wx.BoxSizer):
 
     def __init__(self, parent):
@@ -43,7 +40,6 @@ class AdjustableSelection(wx.BoxSizer):
 
     def get(self):
         return self.select.get()
-
 
 
 
