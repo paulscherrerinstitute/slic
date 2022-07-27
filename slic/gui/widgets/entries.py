@@ -1,3 +1,4 @@
+import numpy as np
 import wx
 
 from slic.utils import arithmetic_eval, typename
@@ -183,6 +184,14 @@ class ValuesEntry(wx.TextCtrl, PersistableWidget):
             kwargs["style"] = wx.TE_MULTILINE
 
         super().__init__(*args, **kwargs)
+
+
+    def GetValue(self):
+        values = super().GetValue()
+        values = values.replace(",", " ").split()
+        values = [float(v) for v in values]
+        values = np.array(values)
+        return values
 
 
 

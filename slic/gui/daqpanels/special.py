@@ -1,4 +1,3 @@
-import numpy as np
 import wx
 
 from slic.utils import printed_exception
@@ -71,7 +70,7 @@ class SpecialScanPanel(wx.Panel):
 
     def on_change_values(self, _event):
         try:
-            steps = self._get_values()
+            steps = self.le_values.GetValue()
         except ValueError as e:
             nsteps = ""
             tooltip = str(e)
@@ -96,7 +95,7 @@ class SpecialScanPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        steps = self._get_values()
+        steps = self.le_values.GetValue()
 
         filename = self.le_fname.GetValue()
 
@@ -133,14 +132,6 @@ class SpecialScanPanel(wx.Panel):
         if self.scan:
             self.scan.stop()
             self.scan = None
-
-
-    def _get_values(self):
-        values = self.le_values.GetValue()
-        values = values.replace(",", " ").split()
-        values = [float(v) for v in values]
-        values = np.array(values)
-        return values
 
 
 
