@@ -4,7 +4,7 @@ import wx
 from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, LabeledValueEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
+from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, LabeledValuesEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
 from ..persist import PersistableWidget
 from .tools import AdjustableComboBox, ETADisplay, correct_n_pulses, run, post_event
 
@@ -29,7 +29,7 @@ class SpecialScanPanel(wx.Panel):
         self.Bind(wx.EVT_TIMER, self.on_change_adj, self.timer)
         self.timer.Start(2500) #TODO: make configurable
 
-        self.le_values = le_values = LabeledValueEntry(self, label="Values")
+        self.le_values = le_values = LabeledValuesEntry(self, label="Values")
         self.le_nsteps = le_nsteps = LabeledEntry(self, label="#Steps")
 
         le_nsteps.Disable()
