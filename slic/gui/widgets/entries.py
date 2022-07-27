@@ -186,7 +186,7 @@ class ValuesEntry(wx.TextCtrl, PersistableWidget):
         super().__init__(*args, **kwargs)
 
 
-    def GetValue(self):
+    def get_values(self):
         values = super().GetValue()
         values = values.replace(",", " ").split()
         values = [float(v) for v in values]

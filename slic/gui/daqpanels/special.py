@@ -61,7 +61,7 @@ class SpecialScanPanel(wx.Panel):
 
     def on_change_values(self, _event):
         try:
-            steps = self.le_values.GetValue()
+            steps = self.le_values.get_values()
         except ValueError as e:
             nsteps = ""
             tooltip = str(e)
@@ -81,7 +81,7 @@ class SpecialScanPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        steps = self.le_values.GetValue()
+        steps = self.le_values.get_values()
 
         filename = self.le_fname.GetValue()
 
