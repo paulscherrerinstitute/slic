@@ -59,12 +59,13 @@ class ConfigPanel(wx.Panel):
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument)
         le_pgroup     = LabeledEntry(self, label="pgroup", value=pgroup)
 
-        btn_update = wx.Button(self, label="Update!")
+#        btn_update = wx.Button(self, label="Update!")
+        btn_update = STRETCH #TODO: place a stretch space instead of the button until the button does something
 
         #TODO: disabled until working
         le_instrument.Disable()
         le_pgroup.Disable()
-        btn_update.Disable()
+#        btn_update.Disable()
 
         # sizers:
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
