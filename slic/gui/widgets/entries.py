@@ -174,9 +174,22 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
 
 
 
+class ValueEntry(wx.TextCtrl, PersistableWidget):
+
+    def __init__(self, *args, **kwargs):
+        if "style" in kwargs:
+            kwargs["style"] |= wx.TE_MULTILINE
+        else:
+            kwargs["style"] = wx.TE_MULTILINE
+
+        super().__init__(*args, **kwargs)
+
+
+
 LabeledEntry         = make_labeled(wx.TextCtrl)
 LabeledMathEntry     = make_labeled(MathEntry)
 LabeledFilenameEntry = make_labeled(FilenameEntry)
+LabeledValueEntry    = make_labeled(ValueEntry)
 
 
 

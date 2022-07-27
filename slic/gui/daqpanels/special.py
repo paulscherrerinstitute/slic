@@ -4,41 +4,9 @@ import wx
 from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
+from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, LabeledValueEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
 from ..persist import PersistableWidget
 from .tools import AdjustableComboBox, ETADisplay, correct_n_pulses, run, post_event
-
-
-class LabeledValueEntry(wx.BoxSizer): #TODO: largely copy of LabeledEntry
-
-    def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
-        super().__init__(wx.VERTICAL)
-
-        value = str(value)
-        name = label
-
-        self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = ValueEntry(parent, value=value, name=name)
-
-        self.Add(label, flag=wx.EXPAND)
-        self.Add(text,  flag=wx.EXPAND, proportion=1)
-
-
-    def __getattr__(self, name):
-        return getattr(self.text, name)
-
-
-
-class ValueEntry(wx.TextCtrl, PersistableWidget):
-
-    def __init__(self, *args, **kwargs):
-        if "style" in kwargs:
-            kwargs["style"] |= wx.TE_MULTILINE
-        else:
-            kwargs["style"] = wx.TE_MULTILINE
-
-        super().__init__(*args, **kwargs)
-
 
 
 class SpecialScanPanel(wx.Panel):
