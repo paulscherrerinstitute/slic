@@ -1,7 +1,7 @@
 import numpy as np
 import wx
 
-from slic.utils import arithmetic_eval, typename
+from slic.utils import arithmetic_eval, typename, nice_arange
 
 from ..persist import PersistableWidget
 from .tools import make_filled_hbox
@@ -13,6 +13,51 @@ ADJUSTMENTS = {
     wx.WXK_UP:   increase,
     wx.WXK_DOWN: decrease
 }
+
+
+class StepsRangeEntry(wx.BoxSizer):
+
+    def __init__(self, parent):
+        super().__init__(wx.HORIZONTAL)
+
+        self.start  = start  = LabeledMathEntry(parent, label="Start",     value=0)
+        self.stop   = stop   = LabeledMathEntry(parent, label="Stop",      value=10)
+        self.step   = step   = LabeledMathEntry(parent, label="Step Size", value=0.1)
+
+        self.nsteps = nsteps = LabeledEntry(parent, label="#Steps")
+
+        nsteps.Disable()
+        self.on_change(None) # initialize #Steps
+
+        widgets = (start, stop, step)
+        for w in widgets:
+            w.Bind(wx.EVT_TEXT, self.on_change)
+
+        widgets = (start, stop, step, nsteps)
+        make_filled_hbox(widgets, box=self)
+
+
+    def on_change(self, _event):
+        try:
+            start_pos, end_pos, step_size = self.get_values()
+            if step_size == 0:
+                raise ValueError
+        except ValueError:
+            nsteps = ""
+            tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
+        else:
+            steps = nice_arange(start_pos, end_pos, step_size)
+            nsteps = str(len(steps))
+            tooltip = str(steps)
+        self.nsteps.SetValue(nsteps)
+        self.nsteps.SetToolTip(tooltip)
+
+
+    def get_values(self):
+        start_pos = self.start.GetValue()
+        end_pos   = self.stop.GetValue()
+        step_size = self.step.GetValue()
+        return float(start_pos), float(end_pos), float(step_size)
 
 
 

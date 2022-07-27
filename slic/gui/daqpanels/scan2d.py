@@ -3,7 +3,7 @@ import wx
 from slic.utils import nice_arange, printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import EXPANDING, MINIMIZED, STRETCH, TwoButtons, LabeledEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, make_filled_hbox, post_event
+from ..widgets import EXPANDING, MINIMIZED, STRETCH, TwoButtons, StepsRangeEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
 from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
 
 
@@ -27,7 +27,7 @@ class Scan2DPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, adjbox1.le_nsteps, adjbox2.le_nsteps, le_npulses, le_nrepeat)
+        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, adjbox1.adj_range.nsteps, adjbox2.adj_range.nsteps, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
@@ -50,8 +50,8 @@ class Scan2DPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        start_pos1, end_pos1, step_size1 = self.adjbox1._get_pos()
-        start_pos2, end_pos2, step_size2 = self.adjbox2._get_pos()
+        start_pos1, end_pos1, step_size1 = self.adjbox1.adj_range.get_values()
+        start_pos2, end_pos2, step_size2 = self.adjbox2.adj_range.get_values()
 
         filename = self.le_fname.GetValue()
 
@@ -103,50 +103,14 @@ class AdjustableBox(wx.StaticBoxSizer):
 
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(parent)
-
-        self.le_start  = le_start  = LabeledMathEntry(parent, label="Start",     value=0)
-        self.le_stop   = le_stop   = LabeledMathEntry(parent, label="Stop",      value=10)
-        self.le_step   = le_step   = LabeledMathEntry(parent, label="Step Size", value=0.1)
-        self.le_nsteps = le_nsteps = LabeledEntry(parent, label="#Steps")
-
-        le_nsteps.Disable()
-        self.on_change_pos(None) # update #Steps
-
-        for le in (le_start, le_stop, le_step):
-            le.Bind(wx.EVT_TEXT, self.on_change_pos)
+        self.adj_range = adj_range = StepsRangeEntry(parent)
 
         self.cb_relative = cb_relative = wx.CheckBox(parent, label="Relative to current position")
         cb_relative.SetValue(False)
 
         # sizers:
-        widgets = (le_start, le_stop, le_step, le_nsteps)
-        hb_pos = make_filled_hbox(widgets)
-
-        widgets = (sel_adj, STRETCH, hb_pos, MINIMIZED, cb_relative)
+        widgets = (sel_adj, STRETCH, adj_range, MINIMIZED, cb_relative)
         make_filled_vbox(widgets, border=10, box=self)
-
-
-    def on_change_pos(self, _event):
-        try:
-            start_pos, end_pos, step_size = self._get_pos()
-            if step_size == 0:
-                raise ValueError
-        except ValueError:
-            nsteps = ""
-            tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
-        else:
-            steps = nice_arange(start_pos, end_pos, step_size)
-            nsteps = str(len(steps))
-            tooltip = str(steps)
-        self.le_nsteps.SetValue(nsteps)
-        self.le_nsteps.SetToolTip(tooltip)
-
-
-    def _get_pos(self):
-        start_pos = self.le_start.GetValue()
-        end_pos   = self.le_stop.GetValue()
-        step_size = self.le_step.GetValue()
-        return float(start_pos), float(end_pos), float(step_size)
 
 
 
