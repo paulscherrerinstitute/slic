@@ -77,23 +77,16 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
 
     def GetValue(self):
         val = super().GetValue()
-        if val == "":
-            val = None
-        else:
-            val = arithmetic_eval(val)
-        return val
+        return None if val == "" else arithmetic_eval(val)
 
 
     def SetValue(self, val):
-        if val is None:
-            val == ""
-        else:
-            val = str(val)
+        val = "" if val is None else str(val)
         super().SetValue(val)
 
 
     def on_enter(self, event):
-        val = self.GetValue()
+        val = super().GetValue() # get the raw text
 
         self._unset_alarm()
 
