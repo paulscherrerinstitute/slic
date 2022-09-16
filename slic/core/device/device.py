@@ -18,6 +18,11 @@ class Device(BaseDevice):
         head = self.description or self.name or self.ID
         return printable_dict(to_print, head)
 
+    def __iter__(self):
+        adjs = recursive_adjustables(self)
+        for k in sorted(adjs.keys()):
+            yield adjs[k]
+
 
 
 def decide_z(chan, z):
@@ -43,7 +48,7 @@ def recursive_adjustables(dev, base_keys=None, seen_devs=None):
         this_key = ".".join(combined_keys)
 
         if isinstance(item, Adjustable):
-            res[this_key] = str(item)
+            res[this_key] = item
         elif isinstance(item, Device):
             item_id = id(item)
             if item_id in seen_devs:
