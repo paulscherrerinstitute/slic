@@ -43,6 +43,8 @@ class PVEnumAdjustable(Adjustable):
 class Enum:
 
     def __init__(self, seq):
+        if seq is None:
+            seq = ()
         self.data = {s:n for n, s in enumerate(seq)}
 
     def get(self, value):
