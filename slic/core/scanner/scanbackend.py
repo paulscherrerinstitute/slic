@@ -32,9 +32,12 @@ class ScanBackend:
         #SFDAQ: sf_daq takes the raw filename
         self.filename_sfdaq = filename_sfdaq = filename
 
-        #SFDAQ: others use the modified filename
-        filename_generator = RunFilenameGenerator(scan_info_dir)
-        self.filename = filename = filename_generator.get_next_run_filename(filename)
+        if not is_only_sfdaq(acquisitions):
+            #SFDAQ: others use the modified filename
+            filename_generator = RunFilenameGenerator(scan_info_dir)
+            filename = filename_generator.get_next_run_filename(filename)
+
+        self.filename = filename
 
         self.detectors = detectors #SFDAQ: only for sf_daq (see also in arguments)
         self.channels = channels
