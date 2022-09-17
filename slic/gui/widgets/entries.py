@@ -57,7 +57,7 @@ class StepsRangeEntry(wx.BoxSizer):
         start_pos = self.start.GetValue()
         end_pos   = self.stop.GetValue()
         step_size = self.step.GetValue()
-        return float(start_pos), float(end_pos), float(step_size)
+        return start_pos, end_pos, step_size
 
 
 

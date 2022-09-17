@@ -72,7 +72,7 @@ class TweakPanel(wx.Panel):
             return
 
         value = adjustable.get_current_value()
-        self.le_abs.SetValue(str(value))
+        self.le_abs.SetValue(value)
 
 
     def on_go(self, event):
@@ -81,7 +81,6 @@ class TweakPanel(wx.Panel):
             return
 
         target = self.le_abs.GetValue()
-        target = float(target)
 
         adjustable = self.sel_adj.get()
         if adjustable is None:
@@ -132,14 +131,9 @@ class TweakPanel(wx.Panel):
             return
 
         current = adj.get_current_value()
-
         delta = self.lte.GetValue()
-        delta = float(delta)
-
         delta *= direction
-
         target = current + delta
-        target = str(target)
 
         self.le_abs.SetValue(target)
         post_event(wx.EVT_BUTTON, self.btn_go.btn1)
