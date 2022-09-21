@@ -1,6 +1,8 @@
 from slic.core.adjustable import PVAdjustable
 from slic.utils import typename
 
+from .shutterctx import ShutterContextMixin
+
 
 #REQUEST
 # 0: close
@@ -15,7 +17,7 @@ from slic.utils import typename
 # 1: TRUE
 
 
-class Shutter:
+class Shutter(ShutterContextMixin):
 
     def __init__(self, ID):
         self.ID = ID
