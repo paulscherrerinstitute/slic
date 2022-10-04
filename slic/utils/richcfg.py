@@ -20,7 +20,7 @@ def replace_ipython_inspect():
         else:
             title = f"{oname} = {obj}"
         methods = (detail_level > 0)
-        rich.inspect(obj, title=title, methods=methods)
+        rich.inspect(obj, title=title, help=True, methods=methods)
 
     ipy.inspector.pinfo = _inspect
 
