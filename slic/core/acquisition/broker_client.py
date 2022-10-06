@@ -217,7 +217,7 @@ def retrieve(address, *args, **kwargs):
 
 def get_config_pvs(address):
     requrl = address.rstrip("/") + "/get_pvlist"
-    response = get_request(requrl)
+    response = requests.get(requrl).json()
     return response.get("pv_list")
 
 def set_config_pvs(address, pvs):
