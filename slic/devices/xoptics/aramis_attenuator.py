@@ -35,12 +35,12 @@ class Attenuator(Device):
         return self.trans3rd.get_current_value()
 
     def set_transmission(self, value, energy=None):
-        self.energy.set(energy)
-        self.trans1st.get_current_value(value).wait()
+        self.energy.set_target_value(energy).wait()
+        self.trans1st.set_target_value(value).wait()
 
     def set_transmission_third_harmonic(self, value, energy=None):
-        self.energy.set(energy)
-        self.trans3rd.get_current_value(value).wait()
+        self.energy.set_target_value(energy).wait()
+        self.trans3rd.set_target_value(value).wait()
 
 
 
@@ -77,7 +77,7 @@ class Transmission(PVAdjustable):
 
     def set_target_value(self, *args, **kwargs):
         self.set_third_order_toggle()
-        super().set_target_value(*args, **kwargs)
+        super().set_target_value(*args, **kwargs).wait()
 
     def set_third_order_toggle(self):
         self.pvs.third_order_toggle.put(self.third_order)
@@ -114,7 +114,7 @@ class LimitedEnergy(PVAdjustable):
             value = None
             sleep(wait_time)
 
-        super().set_target_value(value)
+        super().set_target_value(value).wait()
         print(f"Set attenuator energy to {value} eV")
 
 
