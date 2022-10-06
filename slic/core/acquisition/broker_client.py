@@ -34,6 +34,13 @@ class BrokerClient:
         return self.config.to_dict(*args)
 
 
+    def get_config_pvs(self):
+        return get_config_pvs(self.address)
+
+    def set_config_pvs(self, pvs):
+        set_config_pvs(self.address, pvs)
+
+
     def start(self):
         current_pulseid = get_current_pulseid()
         n_pulses = self.n_pulses

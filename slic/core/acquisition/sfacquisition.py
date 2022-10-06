@@ -108,6 +108,29 @@ class SFAcquisition(BaseAcquisition):
         return "SF DAQ on {} (status: {}, last run: {})".format(self.client.address, self.client.status, self.client.run_number)
 
 
+    def get_config_pvs(self):
+        return self.client.get_config_pvs()
+
+    def set_config_pvs(self, pvs=None):
+        if pvs is None:
+            pvs = self.default_pvs
+        return self.client.set_config_pvs(pvs)
+
+    def update_config_pvs(self, pvs=None):
+        if pvs is None:
+            pvs = self.default_pvs
+        current = self.get_config_pvs()
+        pvs = set(pvs) | set(current)
+        pvs = sorted(pvs)
+        return self.client.set_config_pvs(pvs)
+
+    def diff_config_pvs(self, pvs=None):
+        if pvs is None:
+            pvs = self.default_pvs
+        current = self.get_config_pvs()
+        only_remote = set(current) - set(pvs)
+        only_local  = set(pvs) - set(current)
+        return {"only remote": sorted(only_remote), "only local": sorted(only_local)}
 
 
 
