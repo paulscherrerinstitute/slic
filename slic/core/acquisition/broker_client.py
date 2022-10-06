@@ -215,6 +215,17 @@ def retrieve(address, *args, **kwargs):
     return res
 
 
+def get_config_pvs(address):
+    requrl = address.rstrip("/") + "/get_pvlist"
+    response = get_request(requrl)
+    return response.get("pv_list")
+
+def set_config_pvs(address, pvs):
+    params = {"pv_list": pvs}
+    requrl = address.rstrip("/") + "/set_pvlist"
+    post_request(requrl, params)
+
+
 def post_request(requrl, params, timeout=10):
     params = json_validate(params)
     response = requests.post(requrl, json=params, timeout=timeout).json()
