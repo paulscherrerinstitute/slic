@@ -1,4 +1,3 @@
-import pickle as pkl
 from datetime import datetime, timedelta
 from pathlib import Path
 from threading import Thread
@@ -9,6 +8,7 @@ from logzero import logger as log
 
 from .utils import typename
 from .hastyepics import get_pv
+from .picklio import pickle, unpickle
 
 
 fn = ".slic_pvpreload"
@@ -62,15 +62,6 @@ def file_age(fn):
     now = datetime.now()
     delta = now - mtime
     return delta
-
-
-def pickle(obj, fn):
-    with open(fn, "wb") as f:
-        pkl.dump(obj, f)
-
-def unpickle(fn):
-    with open(fn, "rb") as f:
-        return pkl.load(f)
 
 
 
