@@ -65,7 +65,11 @@ class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience, NumericConvenien
     def _printable_value(self):
         value = self.get_current_value()
         units = self.units
-        return f"{value} {units}" if units is not None else str(value)
+        if units is None:
+            return str(value)
+        if units.casefold() in ["deg", "°"]:
+            return f"{value}°"
+        return f"{value} {units}"
 
 
 
