@@ -131,13 +131,12 @@ class PVAdjustable(Adjustable):
 
 
     def _is_close(self):
+        if self.accuracy is None:
+            return True
         setvalue = self.pvs.setvalue.get()
         readback = self.pvs.readback.get()
-        if self.accuracy is not None:
-            delta = abs(setvalue - readback)
-            return (delta <= self.accuracy)
-        else:
-            return setvalue == readback
+        delta = abs(setvalue - readback)
+        return (delta <= self.accuracy)
 
 
     def _get_pv(self, name):
