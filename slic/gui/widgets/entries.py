@@ -220,16 +220,32 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
         self.SetInsertionPoint(ins)
 
 
-    def on_key_lift(self, _event):
+    def on_key_lift(self, event):
         self.check_value()
+        self.on_escape(event)
+
+
+    def on_escape(self, event):
+        code = event.GetKeyCode()
+        if code != wx.WXK_ESCAPE:
+            event.Skip()
+            return
+
+        if self._alarm:
+            cleaned = "".join(i for i in self.GetValue() if i in ALLOWED_CHARS)
+            self.SetValue(cleaned)
+            self._unset_alarm()
 
 
     def check_value(self):
+        msg_allowed = "\nPlease use only ASCII letters (a–z and A–Z), digits (0–9), minus (-) or underscore (_)."
+        msg_remove  = "\nPress escape to remove unsupported characters."
+
         value = self.GetValue()
         leftover = set(value) - ALLOWED_CHARS
         if leftover:
             leftover = "".join(sorted(leftover))
-            msg = f"Cannot use the following characters: {leftover}\nPlease use only ASCII letters (a–z and A–Z), digits (0–9), minus (-) or underscore (_)."
+            msg = f"Cannot use the following characters: {leftover}" + msg_allowed + msg_remove
             self._set_alarm(msg)
         else:
             self._unset_alarm()
