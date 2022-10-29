@@ -1,3 +1,4 @@
+import string
 import numpy as np
 import wx
 
@@ -13,6 +14,10 @@ ADJUSTMENTS = {
     wx.WXK_UP:   increase,
     wx.WXK_DOWN: decrease
 }
+
+ALLOWED_CHARS = set(
+    string.ascii_letters + string.digits + "_-"
+)
 
 
 class StepsRangeEntry(wx.BoxSizer):
@@ -99,7 +104,21 @@ class LabeledTweakEntry(wx.BoxSizer):
 
 
 
-class MathEntry(wx.TextCtrl, PersistableWidget):
+class AlarmMixin:
+
+    def _set_alarm(self, msg):
+        self._alarm = True
+        self.SetToolTip(msg)
+        self.SetForegroundColour(wx.RED)
+
+    def _unset_alarm(self):
+        self._alarm = False
+        self.SetToolTip(None)
+        self.SetForegroundColour(wx.NullColour)
+
+
+
+class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
 
     def __init__(self, *args, **kwargs):
         if "style" in kwargs:
@@ -133,23 +152,25 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
     def on_enter(self, event):
         val = super().GetValue() # get the raw text
 
-        self._unset_alarm()
+        msg_revert = "\nPress escape to revert to the last good entry."
 
         try:
             val = arithmetic_eval(val)
         except SyntaxError as e:
             en = typename(e)
             msg = e.args[0]
-            msg = f"{en}: {msg}"
+            msg = f"{en}: {msg}" + msg_revert
             self._set_alarm(msg)
             self.SetInsertionPoint(e.offset)
         except Exception as e:
             en = typename(e)
-            msg = f"{en}: {e}"
+            msg = f"{en}: {e}" + msg_revert
             self._set_alarm(msg)
             self.SetInsertionPointEnd()
         else:
+            self._unset_alarm()
             self.SetValue(val)
+            self.SetInsertionPointEnd()
             self._last_good_value = val
 
         event.Skip()
@@ -166,19 +187,8 @@ class MathEntry(wx.TextCtrl, PersistableWidget):
             self._unset_alarm()
 
 
-    def _set_alarm(self, msg):
-        self._alarm = True
-        self.SetToolTip(msg)
-        self.SetForegroundColour(wx.RED)
 
-    def _unset_alarm(self):
-        self._alarm = False
-        self.SetToolTip(None)
-        self.SetForegroundColour(wx.NullColour)
-
-
-
-class FilenameEntry(wx.TextCtrl, PersistableWidget):
+class FilenameEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
 
     def __init__(self, *args, **kwargs):
         if "style" in kwargs:
@@ -189,6 +199,7 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
         super().__init__(*args, **kwargs)
 
         self.Bind(wx.EVT_KEY_DOWN, self.on_key_press)
+        self.Bind(wx.EVT_KEY_UP, self.on_key_lift)
 
 
     def on_key_press(self, event):
@@ -208,8 +219,28 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget):
         self.SetValue(val)
         self.SetInsertionPoint(ins)
 
+
+    def on_key_lift(self, _event):
+        self.check_value()
+
+
+    def check_value(self):
+        value = self.GetValue()
+        leftover = set(value) - ALLOWED_CHARS
+        if leftover:
+            leftover = "".join(sorted(leftover))
+            msg = f"Cannot use the following characters: {leftover}\nPlease use only ASCII letters (a–z and A–Z), digits (0–9), minus (-) or underscore (_)."
+            self._set_alarm(msg)
+        else:
+            self._unset_alarm()
+
+
     def GetValue(self):
         return super().GetValue().strip()
+
+    def SetValue(self, value):
+        super().SetValue(value)
+        self.check_value()
 
 
 
