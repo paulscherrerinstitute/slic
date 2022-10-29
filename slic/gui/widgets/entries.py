@@ -116,6 +116,10 @@ class AlarmMixin:
         self.SetToolTip(None)
         self.SetForegroundColour(wx.NullColour)
 
+    def _reset(self, value):
+        self.SetValue(value)
+        self._unset_alarm()
+
 
 
 class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
@@ -136,7 +140,7 @@ class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
         self._last_good_value = self.GetValue()
 
         self.Bind(wx.EVT_TEXT_ENTER, self.on_enter)
-        self.Bind(wx.EVT_KEY_UP, self.on_escape)
+        self.Bind(wx.EVT_KEY_UP, self.on_key_up)
 
 
     def GetValue(self):
@@ -176,15 +180,18 @@ class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
         event.Skip()
 
 
-    def on_escape(self, event):
-        code = event.GetKeyCode()
-        if code != wx.WXK_ESCAPE:
-            event.Skip()
+    def on_key_up(self, event):
+        key = event.GetKeyCode()
+        if key == wx.WXK_ESCAPE:
+            self.on_escape()
             return
 
+        event.Skip()
+
+
+    def on_escape(self):
         if self._alarm:
-            self.SetValue(self._last_good_value)
-            self._unset_alarm()
+            self._reset(self._last_good_value)
 
 
 
@@ -198,43 +205,16 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
 
         super().__init__(*args, **kwargs)
 
-        self.Bind(wx.EVT_KEY_DOWN, self.on_key_press)
-        self.Bind(wx.EVT_KEY_UP, self.on_key_lift)
+        self.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
+        self.Bind(wx.EVT_KEY_UP, self.on_key_up)
 
 
-    def on_key_press(self, event):
-        key = event.GetKeyCode()
-        if key not in ADJUSTMENTS:
-            event.Skip()
-            return
+    def GetValue(self):
+        return super().GetValue().strip()
 
-        adjust = ADJUSTMENTS[key]
-        self._update_value(adjust)
-
-
-    def _update_value(self, adjust):
-        ins = self.GetInsertionPoint()
-        val = self.GetValue()
-        val = adjust(val, ins)
-        self.SetValue(val)
-        self.SetInsertionPoint(ins)
-
-
-    def on_key_lift(self, event):
+    def SetValue(self, value):
+        super().SetValue(value)
         self.check_value()
-        self.on_escape(event)
-
-
-    def on_escape(self, event):
-        code = event.GetKeyCode()
-        if code != wx.WXK_ESCAPE:
-            event.Skip()
-            return
-
-        if self._alarm:
-            cleaned = "".join(i for i in self.GetValue() if i in ALLOWED_CHARS)
-            self.SetValue(cleaned)
-            self._unset_alarm()
 
 
     def check_value(self):
@@ -251,12 +231,39 @@ class FilenameEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
             self._unset_alarm()
 
 
-    def GetValue(self):
-        return super().GetValue().strip()
+    def on_key_down(self, event):
+        key = event.GetKeyCode()
+        if key in ADJUSTMENTS:
+            adjust = ADJUSTMENTS[key]
+            self._update_value(adjust)
+            return
 
-    def SetValue(self, value):
-        super().SetValue(value)
+        event.Skip()
+
+
+    def _update_value(self, adjust):
+        ins = self.GetInsertionPoint()
+        val = self.GetValue()
+        val = adjust(val, ins)
+        self.SetValue(val)
+        self.SetInsertionPoint(ins)
+
+
+    def on_key_up(self, event):
         self.check_value()
+
+        key = event.GetKeyCode()
+        if key == wx.WXK_ESCAPE:
+            self.on_escape()
+            return
+
+        event.Skip()
+
+
+    def on_escape(self):
+        if self._alarm:
+            cleaned = "".join(i for i in self.GetValue() if i in ALLOWED_CHARS)
+            self._reset(cleaned)
 
 
 
