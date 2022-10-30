@@ -25,6 +25,13 @@ def forgiving_eval(value):
         return value
 
 
+def defaulting_eval(value, default=None):
+    try:
+        return arithmetic_eval(value)
+    except:
+        return default
+
+
 def arithmetic_eval(s):
     node = ast.parse(s, mode="eval")
     return ast_node_eval(node.body)
