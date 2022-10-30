@@ -44,9 +44,13 @@ class StepsRangeEntry(wx.BoxSizer):
 
     def on_change(self, _event):
         try:
-            start_pos, end_pos, step_size = self.get_values()
-            if step_size == 0:
+            try:
+                start_pos, end_pos, step_size = self.get_values()
+            except:
                 raise ValueError
+            else:
+                if step_size == 0:
+                    raise ValueError
         except ValueError:
             nsteps = ""
             tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
@@ -137,15 +141,19 @@ class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
         wx.TextCtrl.__init__(self, *args, **kwargs)
 
         self._alarm = False
-        self._last_good_value = self.GetValue()
+
+        try:
+            self._last_good_value = self.GetValue()
+        except:
+            self._last_good_value = None
 
         self.Bind(wx.EVT_TEXT_ENTER, self.on_enter)
         self.Bind(wx.EVT_KEY_UP, self.on_key_up)
 
 
     def GetValue(self):
-        val = super().GetValue()
-        return None if val == "" else arithmetic_eval(val)
+        raw = super().GetValue()
+        return arithmetic_eval(raw)
 
 
     def SetValue(self, val):
@@ -154,12 +162,12 @@ class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
 
 
     def on_enter(self, event):
-        val = super().GetValue() # get the raw text
+        raw = super().GetValue()
 
         msg_revert = "\nPress escape to revert to the last good entry."
 
         try:
-            val = arithmetic_eval(val)
+            val = arithmetic_eval(raw)
         except SyntaxError as e:
             en = typename(e)
             msg = e.args[0]
