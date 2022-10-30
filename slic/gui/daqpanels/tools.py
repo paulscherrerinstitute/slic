@@ -138,7 +138,12 @@ class ETADisplay(PVDisplay):
     def update(self, _event):
         factor = 1
         for tc in self.textctrls:
-            val = tc.GetValue()
+            try:
+                val = tc.GetValue()
+            except:
+                # if any of the values is missing, cannot calculate factor
+                factor = None
+                break
             try:
                 val = int(val)
             except (ValueError, TypeError):
