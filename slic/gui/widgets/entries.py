@@ -8,6 +8,7 @@ from ..persist import PersistableWidget
 from .tools import make_filled_hbox
 from .fname import increase, decrease
 from .labeled import make_labeled
+from .nope import Nope
 
 
 ADJUSTMENTS = {
@@ -150,6 +151,8 @@ class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
         self.Bind(wx.EVT_TEXT_ENTER, self.on_enter)
         self.Bind(wx.EVT_KEY_UP, self.on_key_up)
 
+        self.nope = Nope(self)
+
 
     def GetValue(self):
         raw = super().GetValue()
@@ -174,11 +177,13 @@ class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
             msg = f"{en}: {msg}" + msg_revert
             self._set_alarm(msg)
             self.SetInsertionPoint(e.offset)
+            self.nope()
         except Exception as e:
             en = typename(e)
             msg = f"{en}: {e}" + msg_revert
             self._set_alarm(msg)
             self.SetInsertionPointEnd()
+            self.nope()
         else:
             self._unset_alarm()
             self.SetValue(val)
