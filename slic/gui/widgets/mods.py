@@ -26,5 +26,13 @@ class NotebookDX(wx.Notebook):
         index = self.FindPage(panel)
         self.SetSelection(index)
 
+    def SelectPageByName(self, name):
+        n = self.GetPageCount()
+        for i in range(n):
+            p = self.GetPage(i)
+            if p.GetName() == name:
+                self.SetSelection(i)
+                return
+
 
 
