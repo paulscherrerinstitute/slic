@@ -57,22 +57,25 @@ class PlotDialog(wx.Dialog):
 
 class PlotPanel(wx.Panel):
 
-    def __init__(self, parent):
+    def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent)
 
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = sizer = wx.BoxSizer(wx.VERTICAL)
 
+        self.figure = Figure(*args, **kwargs)
+        self.make_axes()
         self.add_canvas()
         self.add_toolbar()
 
-        self.SetSizerAndFit(self.sizer)
+        self.SetSizerAndFit(sizer)
 
+
+    def make_axes(self):
+        self.axes = self.figure.add_subplot(111)
 
     def add_canvas(self):
-        self.figure = figure = Figure()
-        self.axes = self.make_axes()
-        self.canvas = FigureCanvas(self, wx.ID_ANY, figure)
-        self.sizer.Add(self.canvas, 1, wx.LEFT|wx.TOP|wx.EXPAND)
+        self.canvas = canvas = FigureCanvas(self, wx.ID_ANY, self.figure)
+        self.sizer.Add(canvas, 1, wx.LEFT|wx.TOP|wx.EXPAND)
 
     def add_toolbar(self):
         self.toolbar = toolbar = NavigationToolbarX(self.canvas)
@@ -82,9 +85,6 @@ class PlotPanel(wx.Panel):
 
     def __getattr__(self, name):
         return getattr(self.axes, name)
-
-    def make_axes(self):
-        return self.figure.add_subplot(111)
 
     def reset(self):
         self.figure.clear()
