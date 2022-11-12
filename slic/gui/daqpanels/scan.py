@@ -33,8 +33,8 @@ class ScanPanel(wx.Panel):
         cb_relative.SetValue(False)
         cb_return.SetValue(True)
 
-        self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses",  value=100)
-        self.le_nrepeat = le_nrepeat = LabeledMathEntry(self, label="#Repetitions",  value=1)
+        self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses", value=100)
+        self.le_nrepeat = le_nrepeat = LabeledMathEntry(self, label="#Repetitions", value=1)
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
