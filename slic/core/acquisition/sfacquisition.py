@@ -33,7 +33,7 @@ class SFAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, continuous=False, is_scan_step=False, wait=True):
+    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, n_repeat=1, is_scan_step=False, wait=True):
         if not is_scan_step:
             run_number = self.client.next_run()
             print(f"Advanced run number to {run_number}.")
@@ -73,7 +73,7 @@ class SFAcquisition(BaseAcquisition):
         paths = SwissFELPaths(self.instrument, self.pgroup)
 
         def _acquire():
-            res = client.start_continuous() if continuous else client.start()
+            res = client.start() if n_repeat == 1 else client.start_continuous(n_repeat=n_repeat)
             res = transpose_dicts(res) #TODO: only for continuous?
             filenames = res.pop("filenames")
             print_response(res)

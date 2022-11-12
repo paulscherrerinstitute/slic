@@ -70,8 +70,9 @@ class RunPanel(wx.Panel):
         n_pulses = correct_n_pulses(rate, n_pulses)
 
         continuous = self.cb_contin.IsChecked()
+        n_repeat = None if continuous else 1
 
-        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, continuous=continuous, wait=False)
+        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, n_repeat=n_repeat, wait=False)
 
         def wait():
             with printed_exception:

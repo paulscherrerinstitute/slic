@@ -4,7 +4,7 @@ from time import sleep
 from tqdm import trange
 
 from slic.core.task import DAQTask
-from slic.utils import typename
+from slic.utils import typename, xrange
 
 from .baseacquisition import BaseAcquisition
 
@@ -35,7 +35,7 @@ class FakeAcquisition(BaseAcquisition):
         self._stop()
 
 
-    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, continuous=False, is_scan_step=False, wait=True):
+    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, n_repeat=1, is_scan_step=False, wait=True):
         if not is_scan_step:
             run_number = self.client.next_run()
             print(f"Advanced run number to {run_number}.")
@@ -55,9 +55,9 @@ class FakeAcquisition(BaseAcquisition):
             print("acquire({})".format(args))
             print(f"fake acquire to {filename}:")
             self.running = True
-            n = 0
-            while self.running and (continuous or n == 0):
-                n += 1
+            for n in xrange(n_repeat):
+                if not self.running:
+                    break
                 for i in trange(n_pulses):
                     if not self.running:
                         break
