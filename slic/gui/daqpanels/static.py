@@ -22,17 +22,18 @@ class StaticPanel(wx.Panel):
 
         # widgets:
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses", value="100")
+        self.le_nrepeat = le_nrepeat = LabeledMathEntry(self, label="#Repetitions", value=1)
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_npulses)
+        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        widgets = (STRETCH, le_npulses, le_fname, eta, btn_go)
+        widgets = (STRETCH, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -46,10 +47,13 @@ class StaticPanel(wx.Panel):
         n_pulses = self.le_npulses.GetValue()
         n_pulses = int(n_pulses)
 
+        n_repeat = self.le_nrepeat.GetValue()
+        n_repeat = int(n_repeat)
+
         rate = self.eta.value
         n_pulses = correct_n_pulses(rate, n_pulses)
 
-        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, wait=False)
+        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, n_repeat=n_repeat, wait=False)
 
         def wait():
             with printed_exception:
