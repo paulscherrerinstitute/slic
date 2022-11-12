@@ -35,7 +35,7 @@ class Scanner:
 
 
     #SFDAQ: detectors and pvs only for sf_daq
-    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, return_to_initial_values=None, repeat=1):
+    def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, return_to_initial_values=None, n_repeat=1):
         """N-dimensional scan
 
         Parameters:
@@ -52,7 +52,7 @@ class Scanner:
             start_immediately (bool, optional): If True (default), start the scan immediately. If False, the returned scan can be started via its run method.
             step_info: Arbitrary data that is appended to the ScanInfo in each step.
             return_to_initial_values: (bool or None, optional): Return to initial values after scan. If None (default) ask for user input.
-            repeat: (int): Number of times the scan is repeated. If 1 (default), the filename will be used verbatim. If >1, a three-digit counter will be appended.
+            n_repeat: (int or None, optional): Number of times the scan is repeated. If 1 (default), the filename will be used verbatim. If >1, a three-digit counter will be appended. None is interpreted as infinity.
 
         Returns:
             ScanBackend: Scan instance.
@@ -61,7 +61,7 @@ class Scanner:
             acquisitions = self.default_acquisitions
 
         #SFDAQ: detectors and pvs only for sf_daq
-        scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition, return_to_initial_values=return_to_initial_values, repeat=repeat)
+        scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat)
 
         if start_immediately:
             scan.run(step_info=step_info)

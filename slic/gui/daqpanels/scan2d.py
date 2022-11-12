@@ -73,7 +73,7 @@ class Scan2DPanel(wx.Panel):
             adjustable2, start_pos2, end_pos2, step_size2, 
             n_pulses, filename, 
             relative1=relative1, relative2=relative2, 
-            return_to_initial_values=return_to_initial_values, repeat=n_repeat, start_immediately=False
+            return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False
         )
 
         def wait():

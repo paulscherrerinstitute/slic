@@ -1,7 +1,7 @@
 import os
 import colorama
 
-from slic.utils import make_missing_dir, printable_exception
+from slic.utils import make_missing_dir, printable_exception, xrange
 from slic.utils.printing import printable_dict, itemize, format_header, printable_table
 from slic.utils.ask_yes_no import ask_Yes_no
 from slic.utils.trinary import check_trinary
@@ -24,7 +24,7 @@ def is_only_sfdaq(acquisitions):
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values, repeat):
+    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values, n_repeat):
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
@@ -55,7 +55,7 @@ class ScanBackend:
         check_trinary(return_to_initial_values)
         self.return_to_initial_values = return_to_initial_values
 
-        self.repeat = repeat
+        self.n_repeat = n_repeat
 
         self.store_initial_values()
 
@@ -67,8 +67,7 @@ class ScanBackend:
         self.store_initial_values()
         self.create_output_dirs()
 
-        #TODO which test? None for infinite? 0?
-        scan_loop = self.repeated_scan_loop if self.repeat > 1 else self.scan_loop
+        scan_loop = self.scan_loop if self.n_repeat == 1 else self.repeated_scan_loop
 
         self.running = True
 
@@ -102,11 +101,11 @@ class ScanBackend:
         base_fn       = self.filename
         base_fn_sfdaq = self.filename_sfdaq
 
-        nreps = self.repeat
-        for i in range(nreps):
+        nreps = self.n_repeat
+        for i in xrange(nreps):
             if not self.running:
                 break
-            print("Repetition {} of {}".format(i+1, nreps))
+            print("Repetition {} of {}".format(i+1, "∞" if nreps is None else nreps))
             suffix = f"_{i+1:03}"
 
             fn       = base_fn       + suffix
@@ -262,12 +261,14 @@ class ScanBackend:
     def _make_summary(self, **kwargs):
         res = ""
 
-        repeat = self.repeat
-        if repeat > 1:
-            printable_repeat = f"repeat the following scan {repeat} times"
+        nreps = self.n_repeat
+        if nreps is None:
+            printable_nreps = "repeat the following scan forever"
+        elif nreps == 1:
+            printable_nreps = "perform the following scan"
         else:
-            printable_repeat = "perform the following scan"
-        res += format_header(printable_repeat, line="=") + "\n\n"
+            printable_nreps = f"repeat the following scan {nreps} times"
+        res += format_header(printable_nreps, line="=") + "\n\n"
 
         vals = self.values
         adjs = [repr(a) for a in self.adjustables]

@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     class Scanner:
 
-        def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, return_to_initial_values=None, repeat=1):
+        def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, return_to_initial_values=None, n_repeat=1):
             pass
 
         @forwards_to(make_scan, nfilled=3)
