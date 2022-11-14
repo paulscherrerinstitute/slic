@@ -10,7 +10,7 @@ from .baseacquisition import BaseAcquisition
 from .sfpaths import SwissFELPaths
 from .bschannels import BSChannels
 
-from .broker_client import BrokerClient
+from .broker_client import BrokerClient, align_pid_left, align_pid_right
 from .detcfg import DetectorConfig
 
 
@@ -100,7 +100,7 @@ class SFAcquisition(BaseAcquisition):
         client = self.client
 
         rate_multiplicator = client.config.rate_multiplicator
-        start_pulseid = align_pid_left(current_pulseid, rate_multiplicator)
+        start_pulseid = align_pid_left(start_pulseid, rate_multiplicator)
         stop_pulseid = align_pid_right(stop_pulseid, rate_multiplicator)
 
         client.config.set(filename, detectors=self.default_detectors, channels=self.default_channels, pvs=self.default_pvs)
