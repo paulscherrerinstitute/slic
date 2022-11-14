@@ -91,6 +91,37 @@ class SFAcquisition(BaseAcquisition):
         return task
 
 
+
+    #TODO: only a first try
+    def retrieve(self, filename, pulseids):
+        start_pulseid = min(pulseids)
+        stop_pulseid  = max(pulseids)
+
+        client = self.client
+
+        rate_multiplicator = client.config.rate_multiplicator
+        start_pulseid = align_pid_left(current_pulseid, rate_multiplicator)
+        stop_pulseid = align_pid_right(stop_pulseid, rate_multiplicator)
+
+        client.config.set(filename, detectors=self.default_detectors, channels=self.default_channels, pvs=self.default_pvs)
+
+        run_number = client.next_run()
+
+        params = client.get_config(run_number, start_pulseid, stop_pulseid)
+        params["selected_pulse_ids"] = pulseids #TODO: only if not continuous range of values
+        res = retrieve(client.address, params, timeout=client.timeout)
+
+        res_run_number = res["run_number"]
+        assert res_run_number == run_number, f"received {res_run_number} and expected {run_number} run numbers not identical"
+
+        res = transpose_dicts(res)
+        filenames = res.pop("filenames")
+        print_response(res)
+
+        return res
+
+
+
     @property
     def pgroup(self):
         return self.client.config.pgroup
