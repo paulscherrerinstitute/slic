@@ -3,7 +3,7 @@ from slic.core.device import Device, SimpleDevice
 from slic.devices.general.motor import Motor
 from slic.devices.general.delay_stage import DelayStage, Delay
 from slic.devices.general.smaract import SmarActAxis
-from slic.devices.timing.lasertiming import ETiming
+from slic.devices.timing.lasertiming import ETiming, LXTPumpProbe
 
 
 class ExpLaser(Device):
@@ -49,6 +49,7 @@ class ExpLaser(Device):
 
         # Globi electronic timing PV from Edwin
         self.eTiming = ETiming(ID + "-eTiming")
+        self.lxt_pp = LXTPumpProbe("SLAAR01-LTIM-PDLY:DELAYNS", pvname_done_moving="SLAAR01-LTIM-PDLY:WAITING")
 
         # FROG
         frog_motor = SmarActAxis("SLAAR11-LMTS-FROG1")

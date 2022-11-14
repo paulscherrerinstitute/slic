@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from abc import ABC, abstractmethod
 import numpy as np
 
-from slic.core.adjustable import Adjustable
+from slic.core.adjustable import Adjustable, PVAdjustable
 from slic.devices.general.motor import check_pos_type
 from slic.utils import typename
 from slic.utils.hastyepics import get_pv as PV
@@ -133,6 +133,16 @@ class LXT(Adjustable):
         delay = nice_time_to_str(delay)
         res += f" ({delay})"
         return res
+
+
+
+class LXTPumpProbe(PVAdjustable):
+
+    def get_current_value(self):
+        return -super().get_current_value()
+
+    def set_target_value(self, value):
+        return super().set_target_value(-value)
 
 
 
