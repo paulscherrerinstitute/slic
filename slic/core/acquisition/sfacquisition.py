@@ -24,9 +24,13 @@ class SFAcquisition(BaseAcquisition):
             paths = SwissFELPaths(instrument, pgroup)
             default_channels = BSChannels.from_file(paths.default_channel_list)
 
-        self.default_detectors = DetectorConfig(default_detectors) #TODO: here?
-        self.default_channels = default_channels
-        self.default_pvs = default_pvs
+        #TODO: convert here?
+        if not isinstance(default_detectors, DetectorConfig):
+            default_detectors = DetectorConfig(default_detectors)
+
+        self.default_detectors = default_detectors
+        self.default_channels  = default_channels
+        self.default_pvs       = default_pvs
 
         self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, append_user_tag_to_data_dir=append_user_tag_to_data_dir, client_name="slic")
 
