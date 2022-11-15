@@ -16,9 +16,10 @@ from .detcfg import DetectorConfig
 
 class SFAcquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1, append_user_tag_to_data_dir=False):
+    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1, append_user_tag_to_data_dir=False, spreadsheet=None):
         self.instrument = instrument
         self.default_data_base_dir = default_data_base_dir
+        self.spreadsheet = spreadsheet
 
         if not default_channels:
             paths = SwissFELPaths(instrument, pgroup)
@@ -77,6 +78,9 @@ class SFAcquisition(BaseAcquisition):
         paths = SwissFELPaths(self.instrument, self.pgroup)
 
         def _acquire():
+            if not is_scan_step:
+                if self.spreadsheet is not None:
+                    self.spreadsheet.add(run_number, filename, n_pulses)
             res = client.start() if n_repeat == 1 else client.start_continuous(n_repeat=n_repeat)
             res = transpose_dicts(res) #TODO: only for continuous?
             filenames = res.pop("filenames")
