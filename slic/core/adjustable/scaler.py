@@ -30,7 +30,7 @@ class Scaler(Adjustable):
 
 
     def is_moving(self):
-        return any(m.is_moving() for m in self.magnets)
+        return any(a.is_moving() for a in self.adjs)
 
 
 
