@@ -116,7 +116,10 @@ class SFAcquisition(BaseAcquisition):
         run_number = client.next_run()
 
         params = client.get_config(run_number, start_pulseid, stop_pulseid)
-        params["selected_pulse_ids"] = pulseids #TODO: only if not continuous range of values
+
+        if not is_continuous(pulseids):
+            params["selected_pulse_ids"] = pulseids
+
         res = retrieve(client.address, params, timeout=client.timeout)
 
         res_run_number = res["run_number"]
@@ -198,6 +201,12 @@ def print_response(res):
         to_print[k] = v
 
     print(printable_dict(to_print, sorter=None))
+
+
+
+def is_continuous(arr, step=1):
+    udeltas = np.unique(np.diff(arr))
+    return np.array_equal(udeltas, [step])
 
 
 
