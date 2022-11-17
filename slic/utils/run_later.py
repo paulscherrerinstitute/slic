@@ -1,15 +1,41 @@
 from datetime import datetime, timedelta
 from time import sleep
 
+from collections.abc import Sequence
+from functools import update_wrapper
+
 from .tqdm_mod import tqdm_mod
 
 
+class MatMulTrick:
+
+    def __init__(self, func):
+        self.func = func
+        update_wrapper(self, datetime)
+
+    def __repr__(self):
+        return repr(self.func)
+
+    def __matmul__(self, other):
+        if isinstance(other, Sequence):
+            return self.func(*other)
+        else:
+            return self.func(other)
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+
+
+
+@MatMulTrick
 def tomorrow(*args, **kwargs):
     return today(*args, **kwargs) + timedelta(days=1)
 
+@MatMulTrick
 def yesterday(*args, **kwargs):
     return today(*args, **kwargs) - timedelta(days=1)
 
+@MatMulTrick
 def today(*args, **kwargs):
     now = datetime.now()
     return datetime(now.year, now.month, now.day, *args, **kwargs)
