@@ -73,7 +73,7 @@ class ScanBackend:
 
         try:
             scan_loop(step_info=step_info)
-        except Exception as e:
+        except BaseException as e:
             if isinstance(e, KeyboardInterrupt):
                 print() # print new line after ^C
             else:
@@ -131,11 +131,9 @@ class ScanBackend:
                 run_number = acq.client.next_run()
                 print(f"Advanced run number to {run_number} for {acq}.")
                 if acq.spreadsheet is not None:
-                    vals = self.values
                     acq.spreadsheet.add(
                         run_number, self.filename, self.n_pulses_per_step,
-                        scanned_adjs=self.adjustables,
-                        v_min=min(vals), v_max=max(vals), n_steps=len(vals)
+                        scanned_adjs=self.adjustables, scan_values=self.values
                     )
 
         values = self.values
