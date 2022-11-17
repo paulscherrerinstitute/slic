@@ -17,7 +17,7 @@ class Condition(BaseCondition):
         self.time_start = None
         self.required_fraction = required_fraction
 
-        self._repeater_gen = self._repeater()
+        self.reset_repeater()
 
         self.data = []
         self.running = False
@@ -56,6 +56,7 @@ class Condition(BaseCondition):
     def stop(self):
         self.running = False
         self.stop_counting()
+        self.reset_repeater()
 
     def stop_counting_and_analyze(self):
         self.stop_counting()
@@ -135,6 +136,9 @@ class Condition(BaseCondition):
 
     def wants_repeat(self):
         return next(self._repeater_gen)
+
+    def reset_repeater(self):
+        self._repeater_gen = self._repeater()
 
     def _repeater(self):
         # outer loop keeps generator alive
