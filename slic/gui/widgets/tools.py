@@ -10,6 +10,13 @@ class STRETCH: pass
 
 
 
+class AlarmMixin:
+
+    def alarm(self):
+        wx.GetTopLevelParent(self).Raise()
+
+
+
 def post_event(event, source):
     evt = wx.PyCommandEvent(event.typeId, source.GetId())
     wx.PostEvent(source, evt)
