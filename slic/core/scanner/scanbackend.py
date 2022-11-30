@@ -130,7 +130,7 @@ class ScanBackend:
             if is_sfdaq(acq):
                 run_number = acq.client.next_run()
                 print(f"Advanced run number to {run_number} for {acq}.")
-                if acq.spreadsheet is not None:
+                if hasattr(acq, "spreadsheet") and acq.spreadsheet is not None:
                     acq.spreadsheet.add(
                         run_number, self.filename, self.n_pulses_per_step,
                         scanned_adjs=self.adjustables, scan_values=self.values
