@@ -1,7 +1,8 @@
 import wx
 
 from .exc2warn import exception_to_warning
-from .tools import post_event, AlarmMixin
+from .tools import post_event
+from .alarm import AlarmMixin
 
 
 class TwoButtons(wx.BoxSizer, AlarmMixin):
