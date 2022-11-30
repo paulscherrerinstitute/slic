@@ -5,7 +5,7 @@ import wx
 from slic.utils import arithmetic_eval, typename, nice_arange
 
 from ..persist import PersistableWidget
-from .tools import make_filled_hbox
+from .boxes import make_filled_hbox
 from .fname import increase, decrease
 from .labeled import make_labeled
 from .nope import Nope

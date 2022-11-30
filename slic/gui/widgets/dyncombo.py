@@ -1,6 +1,6 @@
 import wx
 
-from .tools import make_filled_vbox
+from .boxes import make_filled_vbox
 from .labeled import make_labeled
 
 
