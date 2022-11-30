@@ -4,6 +4,7 @@ from .argfwd import forwards_to
 from .channels import load_channels, Channels
 from .cprint import cprint
 from .config import Config
+from .dbusnotify import DBusNotify
 from .elog import Elog
 from .eval import arithmetic_eval, defaulting_eval, forgiving_eval
 from .exceptions import ChainedException, printable_exception, printed_exception
