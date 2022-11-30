@@ -1,10 +1,10 @@
 import wx
 
 from .exc2warn import exception_to_warning
-from .tools import post_event
+from .tools import post_event, AlarmMixin
 
 
-class TwoButtons(wx.BoxSizer):
+class TwoButtons(wx.BoxSizer, AlarmMixin):
 
     def __init__(self, parent, id=wx.ID_ANY, label1="Go!", label2="Stop!"):
         super().__init__(wx.HORIZONTAL)
@@ -30,6 +30,7 @@ class TwoButtons(wx.BoxSizer):
 
     def Bind2(self, event, handler, *args, **kwargs):
         def wrapped(*args, **kwargs):
+            self.alarm(self.btn1) #TODO: is there a better place?
             self.Disable2()
             try:
                 return handler(*args, **kwargs)
