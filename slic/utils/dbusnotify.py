@@ -6,6 +6,9 @@ OBJECT_PATH = "/org/freedesktop/Notifications"
 
 
 class DBusNotify:
+    """
+    specs: https://developer-old.gnome.org/notification-spec/
+    """
 
     def __init__(self):
         bus = dbus.SessionBus()
