@@ -1,5 +1,4 @@
-from pathlib import Path
-from slic.utils import typename, json_save, json_load
+from slic.utils import typename, json_save, json_load, DotDir
 
 
 def skip_on_error(f):
@@ -22,8 +21,8 @@ class PersistableWidget:
 class Persistence:
 
     def __init__(self, fname, managed):
-        home = Path.home()
-        self.fname = home / fname
+        dot = DotDir()
+        self.fname = dot(fname)
         self.managed = managed
 
     @skip_on_error
@@ -42,10 +41,14 @@ def get_values(obj):
     values = {}
     children = get_good_children(obj)
     for child in children:
-        value = child.GetValue()
         name = get_long_name(child)
-#        print(name, value, sep="\t")
-        values[name] = value
+        try:
+            value = child.GetValue()
+        except Exception as e:
+            print(f"Warning: could not get value from: \"{name}\" due to:", e)
+        else:
+#            print(name, value, sep="\t")
+            values[name] = value
     return values
 
 def set_values(values, obj):
@@ -55,8 +58,9 @@ def set_values(values, obj):
         try:
             value = values[name]
         except KeyError:
-            print(f"Warning: no previous value for: {name}")
+            print(f"Warning: no previous value for: \"{name}\"")
         else:
+#            print(name, value, sep="\t")
             child.SetValue(value)
 
 

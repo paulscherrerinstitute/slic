@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pathlib import Path
 from threading import Thread
 from time import sleep
 
@@ -7,14 +6,13 @@ import epics
 from logzero import logger as log
 
 from .utils import typename
+from .dotdir import DotDir
 from .hastyepics import get_pv
 from .picklio import pickle, unpickle
 
 
-fn = ".slic_pvpreload"
-
-home = Path.home()
-fn = home / fn
+dot = DotDir()
+fn = dot("pvpreload")
 
 delay = 23 # seconds
 lifetime = timedelta(hours=1)

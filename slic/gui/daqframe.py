@@ -49,7 +49,7 @@ class DAQFrame(wx.Frame):
         sizer.Add(panel_main, proportion=1, flag=wx.EXPAND)
         self.SetSizerAndFit(sizer)
 
-        self.persist = persist = Persistence(".neatdaq", self)
+        self.persist = persist = Persistence("neatdaq", self)
         persist.load()
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
