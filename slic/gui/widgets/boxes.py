@@ -42,6 +42,8 @@ def make_filled_box(orient, widgets, proportion, flag, border, box):
             if minimal:
                 minimal = False # apply only once
                 iflag = wx.ALL #TODO: calculate actual flag without wx.EXPAND?
+            if i is None:
+                continue
             box.Add(i, proportion=iprop, flag=iflag, border=border)
 
     return box
