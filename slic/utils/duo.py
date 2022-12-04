@@ -47,22 +47,27 @@ class PickledDict:
 
 
 
-URL = "https://duo.psi.ch/duo/api.php/v1/PGroupAttributes/getProposalInfos/"
+URL = "https://duo.psi.ch/duo/api.php/v1/CalendarInfos/pgroup/"
 
 KEY = Secrets().get("duo")
 
 
 def get_pgroup_proposer_and_title(p):
     data = get_pgroup(p)
-    return extract_from_proposal(data)
+    if data["proposals"]: #"proposals" in data and 
+        props = data["proposals"]
+        assert len(props) == 1 # can there be more than one?
+        prop = props[0]
+        return extract_from_proposal(prop)
+    else:
+        group = data["group"]
+        return extract_from_pgroup(group)
 
 
 def get_pgroup(p):
     url = URL + p
     headers = {"x-api-secret": KEY}
-    resp = requests.get(url, headers=headers).json()
-    assert len(resp) == 1
-    return resp[0]
+    return requests.get(url, headers=headers).json()
 
 
 def extract_from_proposal(data):
@@ -83,6 +88,19 @@ def extract_from_proposal(data):
     title = f"{title} ({proposal})"
 
     return name, title
+
+
+def extract_from_pgroup(data):
+    owner = data["owner"]
+    name = extract_from_owner(owner)
+    title = data["comments"].strip()
+    return name, title
+
+
+def extract_from_owner(data):
+    firstname = data["firstname"].strip()
+    lastname = data["lastname"].strip()
+    return f"{firstname} {lastname}"
 
 
 
