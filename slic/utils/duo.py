@@ -49,7 +49,10 @@ class PickledDict:
 
 URL = "https://duo.psi.ch/duo/api.php/v1/CalendarInfos/pgroup/"
 
-KEY = Secrets().get("duo")
+try:
+    KEY = Secrets().get("duo")
+except:
+    KEY = None
 
 
 def get_pgroup_proposer_and_title(p):
@@ -65,6 +68,8 @@ def get_pgroup_proposer_and_title(p):
 
 
 def get_pgroup(p):
+    if KEY is None:
+        raise ValueError("no secret for duo known")
     url = URL + p
     headers = {"x-api-secret": KEY}
     return requests.get(url, headers=headers).json()
