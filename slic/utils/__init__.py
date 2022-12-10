@@ -11,6 +11,7 @@ from .eval import arithmetic_eval, defaulting_eval, forgiving_eval
 from .exceptions import ChainedException, printable_exception, printed_exception
 from .ipy import devices
 from .jsonext import json_save, json_load, json_validate
+from .logign import ignore_log_msg
 from .marker import Marker, markers
 from .namespace import Namespace
 from .npy import nice_linspace, nice_arange, fraction_to_percentage, within, within_fraction, get_dtype, get_shape, is_array
