@@ -11,9 +11,11 @@ class Sensor(BaseSensor):
         self.aggregation = aggregation
         self._cache = []
 
-
-    #TODO: should this be get_LAST_value?
+    #TODO: is this mandatory?
     def get_current_value(self):
+        raise NotImplementedError
+
+    def get_last_value(self):
         try:
             return self._cache[-1]
         except IndexError:
@@ -25,7 +27,7 @@ class Sensor(BaseSensor):
         except Exception:
             return None
 
-    get = get_aggregate #TODO: should get return the aggregation result or the current value!?
+    get = get_aggregate
 
 
     def _collect(self, value):
