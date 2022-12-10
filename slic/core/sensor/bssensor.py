@@ -1,6 +1,10 @@
 from threading import Thread, Event
 from bsread import source, dispatcher
 from .sensor import Sensor
+from slic.utils import ignore_log_msg
+
+
+MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-point number float64 (default)."
 
 
 class BSSensor(Sensor):
@@ -29,7 +33,8 @@ class BSSourceThread(Thread):
         channels = [name]
         with source(channels=channels, receive_timeout=-1) as src:
             while running.is_set():
-                msg = src.receive()
+                with ignore_log_msg("bsread.data.helpers", lvl="warning", msg=MSG_MISSING_TYPE):
+                    msg = src.receive()
                 data = msg.data.data
                 value = data[name].value
                 self.callback(value)
