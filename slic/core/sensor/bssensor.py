@@ -1,5 +1,5 @@
 from threading import Thread, Event
-from bsread import source, dispatcher
+from bsread import source
 from .sensor import Sensor
 from slic.utils import ignore_log_msg
 
@@ -10,7 +10,7 @@ MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-poi
 class BSSensor(Sensor):
 
     def start(self):
-        self.thread = thread = BSSourceThread(self.name, self._collect)
+        self.thread = thread = BSMonitorThread(self.name, self._collect)
         thread.start()
 
     def stop(self):
@@ -18,7 +18,7 @@ class BSSensor(Sensor):
 
 
 
-class BSSourceThread(Thread):
+class BSMonitorThread(Thread):
 
     def __init__(self, name, callback):
         super().__init__()
@@ -29,14 +29,9 @@ class BSSourceThread(Thread):
     def run(self):
         running = self.running
         running.set()
-        name = self.name
-        channels = [name]
-        with source(channels=channels, receive_timeout=-1) as src:
+        with BSChannel(self.name) as chan:
             while running.is_set():
-                with ignore_log_msg("bsread.data.helpers", lvl="warning", msg=MSG_MISSING_TYPE):
-                    msg = src.receive()
-                data = msg.data.data
-                value = data[name].value
+                value = chan.get()
                 self.callback(value)
         running.clear()
 
@@ -46,10 +41,32 @@ class BSSourceThread(Thread):
 
 
 
+class BSChannel(source):
+
+    def __init__(self, name, receive_timeout=-1, **kwargs):
+        self.name = name
+        channels = [name]
+        super().__init__(channels=channels, receive_timeout=receive_timeout, **kwargs)
+
+    def get(self):
+        with ignore_log_msg("bsread.data.helpers", lvl="warning", msg=MSG_MISSING_TYPE):
+            msg = self.source.receive()
+        data = msg.data.data
+        value = data[self.name].value
+        return value
+
+    def __enter__(self):
+        self.source.connect()
+        return self
+
+
+
+
+
 if __name__ == "__main__":
     from time import sleep
 
-    s = BSSensor("SARES11-CVME-EVR0:CALCS")
+    s = BSSensor("SATMA01-DBPM010:SMP-PULSE-ID")
     s.start()
     sleep(1)
     print(1, len(s._cache))
