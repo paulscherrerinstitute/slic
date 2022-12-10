@@ -1,3 +1,4 @@
+import atexit
 from threading import Thread, Event
 from bsread import source
 from .sensor import Sensor
@@ -28,7 +29,8 @@ class BSSensor(Sensor):
 class BSMonitorThread(Thread):
 
     def __init__(self, name, callback):
-        super().__init__()
+        super().__init__(daemon=True) # atexit seems to only work for deamon threads
+        atexit.register(self.stop)
         self.name = name
         self.callback = callback
         self.use_callback = Event()
@@ -47,6 +49,7 @@ class BSMonitorThread(Thread):
         running.clear()
 
     def stop(self):
+        self.disable_callback()
         self.running.clear()
         self.join()
 
