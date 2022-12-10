@@ -1,6 +1,6 @@
 import atexit
 from threading import Thread, Event
-from bsread import source
+from bsread import Source
 from .sensor import Sensor
 from slic.utils import ignore_log_msg
 
@@ -61,12 +61,12 @@ class BSMonitorThread(Thread):
 
 
 
-class BSChannel(source):
+class BSChannel:
 
     def __init__(self, name, receive_timeout=-1, **kwargs):
         self.name = name
         channels = [name]
-        super().__init__(channels=channels, receive_timeout=receive_timeout, **kwargs)
+        self.source = Source(channels=channels, receive_timeout=receive_timeout, **kwargs)
 
     def get(self):
         with ignore_log_msg("bsread.data.helpers", lvl="warning", msg=MSG_MISSING_TYPE):
@@ -78,6 +78,9 @@ class BSChannel(source):
     def __enter__(self):
         self.source.connect()
         return self
+
+    def __exit__(self, _exc_type, _exc_value, _exc_traceback):
+        self.source.disconnect()
 
 
 
