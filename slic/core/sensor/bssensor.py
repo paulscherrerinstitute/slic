@@ -14,6 +14,9 @@ class BSSensor(Sensor):
         self.thread = thread = BSMonitorThread(name, self._collect)
         thread.start()
 
+    def get_current_value(self):
+        return self.thread.value
+
     def start(self):
         self.thread.enable_callback()
 
@@ -30,6 +33,7 @@ class BSMonitorThread(Thread):
         self.callback = callback
         self.use_callback = Event()
         self.running = Event()
+        self.value = None
 
     def run(self):
         use_callback = self.use_callback
@@ -37,7 +41,7 @@ class BSMonitorThread(Thread):
         running.set()
         with BSChannel(self.name) as chan:
             while running.is_set():
-                value = chan.get()
+                self.value = value = chan.get()
                 if use_callback.is_set():
                     self.callback(value)
         running.clear()
