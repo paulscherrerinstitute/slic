@@ -9,12 +9,16 @@ MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-poi
 
 class BSSensor(Sensor):
 
-    def start(self):
-        self.thread = thread = BSMonitorThread(self.name, self._collect)
+    def __init__(self, name, **kwargs):
+        super().__init__(name, **kwargs)
+        self.thread = thread = BSMonitorThread(name, self._collect)
         thread.start()
 
+    def start(self):
+        self.thread.enable_callback()
+
     def stop(self):
-        self.thread.stop()
+        self.thread.disable_callback()
 
 
 
@@ -24,20 +28,29 @@ class BSMonitorThread(Thread):
         super().__init__()
         self.name = name
         self.callback = callback
+        self.use_callback = Event()
         self.running = Event()
 
     def run(self):
+        use_callback = self.use_callback
         running = self.running
         running.set()
         with BSChannel(self.name) as chan:
             while running.is_set():
                 value = chan.get()
-                self.callback(value)
+                if use_callback.is_set():
+                    self.callback(value)
         running.clear()
 
     def stop(self):
         self.running.clear()
         self.join()
+
+    def enable_callback(self):
+        self.use_callback.set()
+
+    def disable_callback(self):
+        self.use_callback.clear()
 
 
 
