@@ -40,7 +40,7 @@ class IgnoreMessagesFilter(logging.Filter):
         lvl = self.lvl
         msg = self.msg
 
-        is_lvl = (lvl is None or lvl == record.levelno)
+        is_lvl = (lvl is None or lvl == record.levelno or lvl.upper() == record.levelname)
         is_msg = (msg is None or msg == record.msg)
 
         return not (is_lvl and is_msg)
