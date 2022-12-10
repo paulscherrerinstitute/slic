@@ -24,7 +24,6 @@ class PVSensor(Sensor):
         self._units = value
 
 
-    #TODO: might be better to use the default from Sensor
     def get_current_value(self):
         return self.pv.get()
 
