@@ -1,8 +1,9 @@
 import atexit
 from threading import Thread, Event
+from time import sleep
 from bsread import Source
 from .sensor import Sensor
-from slic.utils import ignore_log_msg
+from slic.utils import ignore_log_msg, typename
 
 
 MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-point number float64 (default)."
@@ -66,7 +67,8 @@ class BSChannel:
     def __init__(self, name, receive_timeout=-1, **kwargs):
         self.name = name
         channels = [name]
-        self.source = Source(channels=channels, receive_timeout=receive_timeout, **kwargs)
+        RetrySource = retry(Source, "connect to BS channel \"{name}\"")
+        self.source = RetrySource(channels=channels, receive_timeout=receive_timeout, **kwargs)
 
     def get(self):
         with ignore_log_msg("bsread.data.helpers", lvl="warning", msg=MSG_MISSING_TYPE):
@@ -81,6 +83,23 @@ class BSChannel:
 
     def __exit__(self, _exc_type, _exc_value, _exc_traceback):
         self.source.disconnect()
+
+
+
+def retry(func, desc, n=3, wait_time=1):
+    def wrapper(*args, **kwargs):
+        for i in range(1, n+1):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                if i >= n:
+                    raise e
+                tn = typename(e)
+                print(f"try #{i}/{n} to {desc} failed due to: {tn}: {e}")
+                sleep(wait_time)
+            else:
+              break
+    return wrapper
 
 
 
