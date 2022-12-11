@@ -20,9 +20,15 @@ class BSSensor(Sensor):
         return self.thread.value
 
     def start(self):
+        if self.thread.use_callback.is_set():
+            print("already running")
+            return
         self.thread.enable_callback()
 
     def stop(self):
+        if not self.thread.use_callback.is_set():
+            print("not started yet")
+            return
         self.thread.disable_callback()
 
 
