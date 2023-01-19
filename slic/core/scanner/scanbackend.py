@@ -24,10 +24,13 @@ def is_only_sfdaq(acquisitions):
 
 class ScanBackend:
 
-    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values, n_repeat):
+    def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values, n_repeat, sensor, remote_plot):
         self.adjustables = adjustables
         self.values = values
         self.acquisitions = acquisitions
+
+        self.sensor = sensor
+        self.remote_plot = remote_plot
 
         #SFDAQ: sf_daq takes the raw filename
         self.filename_sfdaq = filename_sfdaq = filename
@@ -66,6 +69,18 @@ class ScanBackend:
     def run(self, step_info=None):
         self.store_initial_values()
         self.create_output_dirs()
+
+        #TODO: clean up
+        sensor = self.sensor
+        if sensor:
+            cfg = {
+                "xlabel": self.adjustables[0].name,
+                "ylabel": sensor.name
+            }
+            try:
+                self.remote_plot.new_plot(self.filename, cfg)
+            except ConnectionRefusedError:
+                print("Warning: Could not create new plot")
 
         scan_loop = self.scan_loop if self.n_repeat == 1 else self.repeated_scan_loop
 
@@ -171,9 +186,27 @@ class ScanBackend:
         #SFDAQ: sf_daq needs scan info in advance, filenames are not needed
         self.scan_info_sfdaq.append(step_values, step_readbacks, None, step_info)
 
+        #TODO: clean up
+        sensor = self.sensor
+        if sensor:
+            sensor._cache.clear()
+            sensor.start()
+
         fn = self.get_filename(n_step)
         step_filenames = self.acquire_all(fn)
         print("Acquisition done")
+
+        #TODO: clean up
+        if sensor:
+            sensor.stop()
+
+            x = self.adjustables[0].get_current_value()
+            y = sensor.get_aggregate()
+
+            try:
+                self.remote_plot.append_data(self.filename, (float(x), float(y)))
+            except ConnectionRefusedError:
+                print("Warning: Could not send data to plot")
 
         if is_only_sfdaq(self.acquisitions):
             #SFDAQ: sf_daq writes scan info to /raw -> skip writing it to /res
