@@ -96,8 +96,11 @@ def extract_from_proposal(data):
 
 
 def extract_from_pgroup(data):
-    owner = data["owner"]
-    name = extract_from_owner(owner)
+    owner = data.get("owner")
+    if owner:
+        name = extract_from_owner(owner)
+    else:
+        name = "unknown"
     title = data["comments"].strip()
     return name, title
 
