@@ -57,8 +57,8 @@ except:
 
 def get_pgroup_proposer_and_title(p):
     data = get_pgroup(p)
-    if data["proposals"]: #"proposals" in data and 
-        props = data["proposals"]
+    props = data.get("proposals")
+    if props:
         assert len(props) == 1 # can there be more than one?
         prop = props[0]
         return extract_from_proposal(prop)
