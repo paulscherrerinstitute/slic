@@ -2,7 +2,7 @@ import wx
 
 from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.reprate import get_beamline, get_pvname_reprate
-from slic.utils.duo import get_pgroup_proposer_and_title
+from slic.utils.duo import get_pgroup_info
 
 from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox
 from .tools import PVDisplay
@@ -61,7 +61,9 @@ class ConfigPanel(wx.Panel):
         le_pgroup     = LabeledEntry(self, label="pgroup",     value=pgroup,     style=wx.TE_READONLY)
 
         try:
-            proposer, title = get_pgroup_proposer_and_title(pgroup)
+            pinfo = get_pgroup_info(pgroup)
+            proposer = pinfo["name"]
+            title = pinfo["title"]
         except:
             proposer = title = ""
             le_proposer = le_title = None

@@ -55,16 +55,21 @@ except:
     KEY = None
 
 
-def get_pgroup_proposer_and_title(p):
+def get_pgroup_info(p):
     data = get_pgroup(p)
+    group = data["group"]
+    stype = group["storagetype"]
     props = data.get("proposals")
+
     if props:
         assert len(props) == 1 # can there be more than one?
         prop = props[0]
-        return extract_from_proposal(prop)
+        res = extract_from_proposal(prop)
     else:
-        group = data["group"]
-        return extract_from_pgroup(group)
+        res = extract_from_pgroup(group)
+
+    res["type"] = stype
+    return res
 
 
 def get_pgroup(p):
@@ -92,7 +97,7 @@ def extract_from_proposal(data):
 
     title = f"{title} ({proposal})"
 
-    return name, title
+    return dict(name=name, title=title)
 
 
 def extract_from_pgroup(data):
@@ -101,8 +106,10 @@ def extract_from_pgroup(data):
         name = extract_from_owner(owner)
     else:
         name = "unknown"
+
     title = data["comments"].strip()
-    return name, title
+
+    return dict(name=name, title=title)
 
 
 def extract_from_owner(data):
