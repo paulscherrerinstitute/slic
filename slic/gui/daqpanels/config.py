@@ -64,12 +64,14 @@ class ConfigPanel(wx.Panel):
             pinfo = get_pgroup_info(pgroup)
             proposer = pinfo["name"]
             title = pinfo["title"]
+            ptype = pinfo["type"]
         except:
-            proposer = title = ""
-            le_proposer = le_title = None
+            proposer = title = ptype = ""
+            le_proposer = le_title = le_ptype = None
         else:
-            le_proposer   = LabeledEntry(self, label="Proposer", value=proposer, style=wx.TE_READONLY)
-            le_title      = LabeledEntry(self, label="Title",    value=title,    style=wx.TE_READONLY|wx.TE_MULTILINE)
+            le_proposer = LabeledEntry(self, label="Proposer", value=proposer, style=wx.TE_READONLY)
+            le_title    = LabeledEntry(self, label="Title",    value=title,    style=wx.TE_READONLY|wx.TE_MULTILINE)
+            le_ptype    = LabeledEntry(self, label="Type",     value=ptype,    style=wx.TE_READONLY)
 
         #TODO: place a stretch space instead of the button until the button does something
 #        btn_update = wx.Button(self, label="Update!")
@@ -79,7 +81,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, le_proposer, EXPANDING, le_title, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
