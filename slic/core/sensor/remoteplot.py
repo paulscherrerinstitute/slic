@@ -16,4 +16,8 @@ class RemotePlot(xrc.ServerProxy):
         return head + help
 
 
+    def __dir__(self):
+        return super().__dir__() + self.utils.info().keys()
+
+
 
