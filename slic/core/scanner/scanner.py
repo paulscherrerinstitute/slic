@@ -3,6 +3,7 @@ import numpy as np
 from slic.core.adjustable import DummyAdjustable
 from slic.utils import typename, nice_linspace, nice_arange, forwards_to
 from slic.core.sensor.remoteplot import RemotePlot
+from slic.utils.get_adj import ensure_adjs
 
 from .scanbackend import ScanBackend
 
@@ -42,7 +43,7 @@ class Scanner:
         """N-dimensional scan
 
         Parameters:
-            adjustables (sequence of BaseAdjustables): Adjustables to scan.
+            adjustables (sequence of BaseAdjustables or strings): Adjustables or Adjustable names to scan.
             positions (sequence of sequences): One sequence of positions to iterate through for each adjustable.
             n_pulses (int): Number of pulses per step.
             filename (str): Name of output file.
@@ -60,6 +61,8 @@ class Scanner:
         Returns:
             ScanBackend: Scan instance.
         """
+        adjustables = ensure_adjs(adjustables)
+
         if not acquisitions:
             acquisitions = self.default_acquisitions
 
