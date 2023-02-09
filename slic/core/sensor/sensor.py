@@ -5,8 +5,9 @@ from .basesensor import BaseSensor
 
 class Sensor(BaseSensor):
 
-    def __init__(self, name, units=None, aggregation=np.mean):
-        self.name = name
+    def __init__(self, ID, name=None, units=None, aggregation=np.mean):
+        self.ID = ID
+        self.name = name or ID
         self.units = units
         self.aggregation = aggregation
         self._cache = []

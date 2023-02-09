@@ -4,9 +4,9 @@ from .sensor import Sensor
 
 class PVSensor(Sensor):
 
-    def __init__(self, name, **kwargs):
-        super().__init__(name, **kwargs)
-        self.pv = PV(name)
+    def __init__(self, ID, **kwargs):
+        super().__init__(ID, **kwargs)
+        self.pv = PV(ID)
         self._cb_index = None
 
 
