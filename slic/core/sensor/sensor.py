@@ -28,7 +28,8 @@ class Sensor(BaseSensor):
         except Exception:
             return None
 
-    get = get_aggregate
+    def get(self):
+        return self.get_aggregate()
 
 
     def _collect(self, value):
