@@ -68,20 +68,15 @@ class BSMonitorThread(Thread):
 
 
 
-class BSChannel:
+class BSSourceBase:
 
-    def __init__(self, name, receive_timeout=-1, **kwargs):
-        self.name = name
-        channels = [name]
-        RetrySource = retry(Source, "connect to BS channel \"{name}\"")
-        self.source = RetrySource(channels=channels, receive_timeout=receive_timeout, **kwargs)
+    def __init__(self, names, retry_desc, receive_timeout=-1, **kwargs):
+        RetrySource = retry(Source, retry_desc)
+        self.source = RetrySource(channels=names, receive_timeout=receive_timeout, **kwargs)
 
-    def get(self):
+    def receive(self):
         with ignore_log_msg("bsread.data.helpers", lvl="warning", msg=MSG_MISSING_TYPE):
-            msg = self.source.receive()
-        data = msg.data.data
-        value = data[self.name].value
-        return value
+            return self.source.receive()
 
     def __enter__(self):
         self.source.connect()
@@ -89,6 +84,56 @@ class BSChannel:
 
     def __exit__(self, _exc_type, _exc_value, _exc_traceback):
         self.source.disconnect()
+
+
+
+class BSChannel(BSSourceBase):
+
+    def __init__(self, name, **kwargs):
+        self.name = name
+        names = [name]
+        retry_desc = f"connect to BS channel \"{name}\""
+        super().__init__(names, retry_desc, **kwargs)
+
+    def get(self):
+        msg = self.receive()
+        return unpack(msg, self.name)
+
+
+
+class BSChannels(BSSourceBase):
+
+    def __init__(self, names, **kwargs):
+        self.names = names
+        retry_desc = f"connect to BS channels \"{names}\""
+        super().__init__(names, retry_desc, **kwargs)
+
+    def get(self):
+        msg = self.receive()
+        return repack(msg)
+
+
+
+def unpack(msg, name):
+    data = msg.data.data
+    value = data[name].value
+    return value
+
+
+def repack(msg):
+    data = msg.data.data
+    pid  = msg.data.pulse_id
+
+    res = {n: v.value for n, v in data.items()}
+
+    if not res:
+        return None
+
+    if any(v is None for v in res.values()):
+        return None
+
+    res["pid"] = pid
+    return res
 
 
 
