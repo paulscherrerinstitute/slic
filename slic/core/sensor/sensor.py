@@ -5,11 +5,11 @@ from .basesensor import BaseSensor
 
 class Sensor(BaseSensor):
 
-    def __init__(self, ID, name=None, units=None, aggregation=np.mean):
+    def __init__(self, ID, name=None, units=None, aggregation=None):
         self.ID = ID
         self.name = name or ID
         self.units = units
-        self.aggregation = aggregation
+        self.aggregation = aggregation or np.mean
         self._cache = []
 
     #TODO: is this mandatory?
