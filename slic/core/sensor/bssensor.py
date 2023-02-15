@@ -2,8 +2,8 @@ import atexit
 from threading import Thread, Event
 from time import sleep
 from bsread import Source
-from .sensor import Sensor
 from slic.utils import ignore_log_msg, typename
+from .sensor import Sensor
 
 
 MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-point number float64 (default)."
@@ -11,9 +11,9 @@ MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-poi
 
 class BSSensor(Sensor):
 
-    def __init__(self, ID, **kwargs):
-        super().__init__(ID, **kwargs)
-        self.thread = thread = BSMonitorThread(ID, self._collect)
+    def __init__(self, ID, name=None, units=None, aggregation=None, **kwargs):
+        super().__init__(ID, name=name, units=units, aggregation=aggregation)
+        self.thread = thread = BSMonitorThread([ID], self._collect, **kwargs)
         thread.start()
 
     def get_current_value(self):
@@ -35,22 +35,23 @@ class BSSensor(Sensor):
 
 class BSMonitorThread(Thread):
 
-    def __init__(self, name, callback):
+    def __init__(self, names, callback, **kwargs):
         super().__init__(daemon=True) # atexit seems to only work for deamon threads
         atexit.register(self.stop)
-        self.name = name
+        self.names = names
         self.callback = callback
         self.use_callback = Event()
         self.running = Event()
         self.value = None
+        self.source = make_source(names, **kwargs)
 
     def run(self):
         use_callback = self.use_callback
         running = self.running
         running.set()
-        with BSChannel(self.name) as chan:
+        with self.source as src:
             while running.is_set():
-                self.value = value = chan.get()
+                self.value = value = src.get()
                 if use_callback.is_set():
                     self.callback(value)
         running.clear()
@@ -65,6 +66,15 @@ class BSMonitorThread(Thread):
 
     def disable_callback(self):
         self.use_callback.clear()
+
+
+
+def make_source(names, **kwargs):
+    if len(names) == 1:
+        name = names[0]
+        return BSChannel(name, **kwargs)
+    else:
+        return BSChannels(names, **kwargs)
 
 
 
@@ -149,7 +159,7 @@ def retry(func, desc, n=3, wait_time=1):
                 print(f"try #{i}/{n} to {desc} failed due to: {tn}: {e}")
                 sleep(wait_time)
             else:
-              break
+                break
     return wrapper
 
 
@@ -157,8 +167,6 @@ def retry(func, desc, n=3, wait_time=1):
 
 
 if __name__ == "__main__":
-    from time import sleep
-
     s = BSSensor("SATMA01-DBPM010:SMP-PULSE-ID")
     s.start()
     sleep(1)
