@@ -16,6 +16,10 @@ class BSSensor(Sensor):
         self.thread = thread = BSMonitorThread([ID], self._collect, **kwargs)
         thread.start()
 
+    def _collect(self, data):
+        value = data[self.ID]
+        super()._collect(value)
+
     def get_current_value(self):
         return self.thread.value
 
@@ -43,7 +47,7 @@ class BSMonitorThread(Thread):
         self.use_callback = Event()
         self.running = Event()
         self.value = None
-        self.source = make_source(names, **kwargs)
+        self.source = BSSource(names, **kwargs)
 
     def run(self):
         use_callback = self.use_callback
@@ -69,24 +73,17 @@ class BSMonitorThread(Thread):
 
 
 
-def make_source(names, **kwargs):
-    if len(names) == 1:
-        name = names[0]
-        return BSChannel(name, **kwargs)
-    else:
-        return BSChannels(names, **kwargs)
+class BSSource:
 
-
-
-class BSSourceBase:
-
-    def __init__(self, names, retry_desc, receive_timeout=-1, **kwargs):
+    def __init__(self, names, receive_timeout=-1, **kwargs):
+        retry_desc = f"connect to BS channels {names}"
         RetrySource = retry(Source, retry_desc)
         self.source = RetrySource(channels=names, receive_timeout=receive_timeout, **kwargs)
 
-    def receive(self):
+    def get(self):
         with ignore_log_msg("bsread.data.helpers", lvl="warning", msg=MSG_MISSING_TYPE):
-            return self.source.receive()
+            msg = self.source.receive()
+            return repack(msg)
 
     def __enter__(self):
         self.source.connect()
@@ -95,39 +92,6 @@ class BSSourceBase:
     def __exit__(self, _exc_type, _exc_value, _exc_traceback):
         self.source.disconnect()
 
-
-
-class BSChannel(BSSourceBase):
-
-    def __init__(self, name, **kwargs):
-        self.name = name
-        names = [name]
-        retry_desc = f"connect to BS channel \"{name}\""
-        super().__init__(names, retry_desc, **kwargs)
-
-    def get(self):
-        msg = self.receive()
-        return unpack(msg, self.name)
-
-
-
-class BSChannels(BSSourceBase):
-
-    def __init__(self, names, **kwargs):
-        self.names = names
-        retry_desc = f"connect to BS channels \"{names}\""
-        super().__init__(names, retry_desc, **kwargs)
-
-    def get(self):
-        msg = self.receive()
-        return repack(msg)
-
-
-
-def unpack(msg, name):
-    data = msg.data.data
-    value = data[name].value
-    return value
 
 
 def repack(msg):
