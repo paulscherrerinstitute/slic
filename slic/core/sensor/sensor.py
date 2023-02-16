@@ -35,6 +35,9 @@ class Sensor(BaseSensor):
     def _collect(self, value):
         self._cache.append(value)
 
+    def _clear(self):
+        self._cache.clear()
+
 
     def __enter__(self, ):
         self.start()
