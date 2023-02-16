@@ -27,6 +27,7 @@ class BSSensor(Sensor):
         if self.thread.use_callback.is_set():
             print("already running")
             return
+        self._clear()
         self.thread.enable_callback()
 
     def stop(self):

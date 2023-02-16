@@ -32,6 +32,7 @@ class PVSensor(Sensor):
         if self._cb_index is not None:
             print("already running")
             return
+        self._clear()
         self._cb_index = self.pv.add_callback(self._collect_cb)
 
     def stop(self):
