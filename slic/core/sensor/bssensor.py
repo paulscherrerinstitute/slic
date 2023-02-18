@@ -21,7 +21,7 @@ class BSSensor(Sensor):
         super()._collect(value)
 
     def get_current_value(self):
-        data = self.thread.value
+        data = self.thread.data
         return self._unpack(data)
 
     def _unpack(self, data):
@@ -51,7 +51,7 @@ class BSMonitorThread(Thread):
         self.callback = callback
         self.use_callback = Event()
         self.running = Event()
-        self.value = None
+        self.data = None
         self.source = BSSource(names, **kwargs)
 
     def run(self):
@@ -60,9 +60,9 @@ class BSMonitorThread(Thread):
         running.set()
         with self.source as src:
             while running.is_set():
-                self.value = value = src.get()
+                self.data = data = src.get()
                 if use_callback.is_set():
-                    self.callback(value)
+                    self.callback(data)
         running.clear()
 
     def stop(self):

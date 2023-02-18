@@ -16,7 +16,7 @@ class BSCombined(Sensor):
         super()._collect(value)
 
     def get_current_value(self):
-        data = self.thread.value
+        data = self.thread.data
         return self._order_and_combine(data)
 
     def _order_and_combine(self, data):
