@@ -17,11 +17,15 @@ class BSSensor(Sensor):
         thread.start()
 
     def _collect(self, data):
-        value = data[self.ID]
+        value = self._unpack(data)
         super()._collect(value)
 
     def get_current_value(self):
-        return self.thread.value[self.ID]
+        data = self.thread.value
+        return self._unpack(data)
+
+    def _unpack(self, data):
+        return data[self.ID]
 
     def start(self):
         if self.thread.use_callback.is_set():
