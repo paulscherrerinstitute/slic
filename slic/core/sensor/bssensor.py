@@ -21,7 +21,7 @@ class BSSensor(Sensor):
         super()._collect(value)
 
     def get_current_value(self):
-        return self.thread.value
+        return self.thread.value[self.ID]
 
     def start(self):
         if self.thread.use_callback.is_set():
