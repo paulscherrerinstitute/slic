@@ -11,9 +11,9 @@ MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-poi
 
 class BSMonitor(Sensor):
 
-    def __init__(self, ID, name=None, units=None, aggregation=None, **kwargs):
+    def __init__(self, ID, channels, name=None, units=None, aggregation=None, **kwargs):
         super().__init__(ID, name=name, units=units, aggregation=aggregation)
-        self.thread = thread = BSMonitorThread([ID], self._collect, **kwargs)
+        self.thread = thread = BSMonitorThread(channels, self._collect, **kwargs)
         thread.start()
 
     def _collect(self, data):
