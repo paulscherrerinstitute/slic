@@ -1,4 +1,4 @@
-from .bssensor import BSMonitor
+from .bsmonitor import BSMonitor
 
 
 class BSSensor(BSMonitor):

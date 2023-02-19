@@ -1,4 +1,5 @@
 import atexit
+from abc import abstractmethod
 from threading import Thread, Event
 from time import sleep
 from bsread import Source
@@ -131,19 +132,6 @@ def retry(func, desc, n=3, wait_time=1):
             else:
                 break
     return wrapper
-
-
-
-
-
-if __name__ == "__main__":
-    s = BSSensor("SATMA01-DBPM010:SMP-PULSE-ID")
-    s.start()
-    sleep(1)
-    print(1, len(s._cache))
-    sleep(1)
-    s.stop()
-    print(2, len(s._cache))
 
 
 
