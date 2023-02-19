@@ -9,7 +9,7 @@ from .sensor import Sensor
 MSG_MISSING_TYPE = "'type' channel field not found. Parse as 64-bit floating-point number float64 (default)."
 
 
-class BSSensor(Sensor):
+class BSMonitor(Sensor):
 
     def __init__(self, ID, name=None, units=None, aggregation=None, **kwargs):
         super().__init__(ID, name=name, units=units, aggregation=aggregation)
@@ -24,8 +24,9 @@ class BSSensor(Sensor):
         data = self.thread.data
         return self._unpack(data)
 
+    @abstractmethod
     def _unpack(self, data):
-        return data[self.ID]
+        raise NotImplementedError
 
     def start(self):
         if self.thread.use_callback.is_set():
