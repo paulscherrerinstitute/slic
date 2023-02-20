@@ -19,6 +19,7 @@ ALLOWED_PARAMS = dict(
     factor = Number,
     geometry = bool,
     remove_raw_files = bool,
+    roi = dict #TODO: check on contents of the dict?
 )
 
 
