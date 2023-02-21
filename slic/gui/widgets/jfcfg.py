@@ -112,16 +112,32 @@ class JFConfig(wx.Dialog):
         elif isinstance(value, list):
             return LabeledChoice(self, label=label, choices=value)
 
-        n = value.__name__ if isinstance(value, type) else str(value)
-        msg = f"unsupported parameter type: {n}"
-        res = LabeledEntry(self, label=label, value=msg)
-        res.Disable()
-        return res
+        return SubstituteWidget(self, label, value)
 
 
     def make_widget_disabled_modules(self, jf_name, label):
         coords = get_module_coords(jf_name)
         return LabeledNumberedToggles(self, coords, label=label)
+
+
+
+class SubstituteWidget(LabeledEntry):
+
+    def __init__(self, parent, label, value):
+        n = value.__name__ if isinstance(value, type) else str(value)
+        msg = f"unsupported parameter type: {n}"
+        super().__init__(parent, label=label, value=msg)
+        self.Disable()
+        self._value = None
+
+    # instead of the widget's SetValue/GetValue the substitute saves/returns the initial value of a parameter
+
+    def SetValue(self, value):
+        self.SetToolTip(str(value))
+        self._value = value
+
+    def GetValue(self):
+        return self._value
 
 
 
