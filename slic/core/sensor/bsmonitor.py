@@ -18,11 +18,15 @@ class BSMonitor(Sensor):
         thread.start()
 
     def _collect(self, data):
+        if data is None:
+            return
         value = self._unpack(data)
         super()._collect(value)
 
     def get_current_value(self):
         data = self.thread.data
+        if data is None:
+            return None
         return self._unpack(data)
 
     @abstractmethod
