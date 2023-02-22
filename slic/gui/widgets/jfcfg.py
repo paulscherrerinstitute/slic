@@ -4,7 +4,7 @@ import wx
 
 from slic.core.acquisition.detcfg import DetectorConfig, ALLOWED_PARAMS
 
-from .entries import LabeledEntry, LabeledMathEntry
+from .entries import LabeledEntry, LabeledMathEntry, MathEntry
 from .lists import ListDialog, ListDisplay, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
 from .labeled import make_labeled
 from .jfmodcoords import get_module_coords
@@ -103,6 +103,9 @@ class JFConfig(wx.Dialog):
         if key == "disabled_modules":
             return self.make_widget_disabled_modules(jf_name, label)
 
+        if key == "roi":
+            return ROIEditButton(self, label)
+
         if isinstance(value, type):
             if issubclass(value, bool):
                 return wx.CheckBox(self, label=label)
@@ -118,6 +121,158 @@ class JFConfig(wx.Dialog):
     def make_widget_disabled_modules(self, jf_name, label):
         coords = get_module_coords(jf_name)
         return LabeledNumberedToggles(self, coords, label=label)
+
+
+
+#TODO: ROI editor needs work
+
+N_ROI_VALS = 4
+
+
+class ROIEditButton(wx.Button):
+
+    def __init__(self, parent, label):
+        self.label = label
+        label = f"edit: {label}"
+        super().__init__(parent, label=label)
+        self.Bind(wx.EVT_BUTTON, self.on_click)
+        self._value = None
+
+    def on_click(self, _event):
+        value = {} if self._value is None else self._value
+        dlg = ROIEditorDialog(self.label, value)
+        dlg.ShowModal()
+        self._value = dlg.get()
+        dlg.Destroy()
+
+    def SetValue(self, value):
+        self._value = value
+
+    def GetValue(self):
+        return self._value
+
+
+
+class ROIEditorDialog(wx.Dialog):
+
+    def __init__(self, title, value):
+        super().__init__(None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
+
+        hbox = self._make_header()
+        self.ed = ed = ROIEditor(self, value)
+        btn_add = wx.Button(self, label="✚")
+        std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
+
+        self.vbox = vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(hbox, flag=wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, border=10)
+        vbox.Add(ed, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.EXPAND, border=10)
+        vbox.Add(btn_add, flag=wx.ALL|wx.EXPAND, border=10)
+        vbox.Add(std_dlg_btn_sizer, flag=wx.ALL|wx.CENTER, border=10)
+        self.SetSizerAndFit(vbox)
+
+        btn_add.Bind(wx.EVT_BUTTON, self.on_add)
+
+
+    def _make_header(self):
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        headers = ["name", "y start", "y stop", "x start", "x stop"] #TODO: reorder: xs then ys
+        for h in headers:
+            st = wx.StaticText(self, label=h)
+            hbox.Add(st, 1)
+
+        h = 28 #TODO: where does this come from? see also btn_delete in ROIEditorLine
+        dummy = wx.StaticText(self, label="", size=(h, h))
+        hbox.Add(dummy)
+
+        return hbox
+
+
+    def get(self):
+        return self.ed.get()
+
+    def on_add(self, _event):
+        self.ed.add_new()
+
+    def update_size(self):
+        self.Layout()
+        self.Fit()
+
+
+
+class ROIEditor(wx.BoxSizer):
+
+    def __init__(self, parent, value):
+        super().__init__(wx.VERTICAL)
+        self.parent = parent
+
+        self.widgets = []
+        for k, v in value.items():
+            self.add_new(k, v)
+
+
+    def get(self):
+        res = dict((w.get() for w in self.widgets))
+        res.pop("", None) # remove unnamed line(s) if they exist
+        return res
+
+
+    def add_new(self, name="", entries=None):
+        entries = entries or [None]*N_ROI_VALS
+        el = ROIEditorLine(self.parent, name, entries)
+
+        def delete(_event):
+            self.remove(el)
+            self.parent.update_size()
+
+        el.btn_delete.Bind(wx.EVT_BUTTON, delete)
+
+        self.add(el)
+        self.parent.update_size()
+
+
+    def add(self, w):
+        self.Add(w, flag=wx.ALL|wx.EXPAND)
+        self.widgets.append(w)
+
+    def remove(self, w):
+        self.widgets.remove(w)
+        self.Hide(w) #TODO: why does Remove not actually remove the visible widgets?
+        self.Remove(w)
+
+
+
+class ROIEditorLine(wx.BoxSizer):
+
+    def __init__(self, parent, name, entries):
+        super().__init__(wx.HORIZONTAL)
+
+        self.tc_name = tc_name = wx.TextCtrl(parent, value=name)
+        self.Add(tc_name, 1)
+
+        # ensure there are N_ROI_VALS boxes
+        entries = list(entries) + [None]*N_ROI_VALS
+        entries = entries[:N_ROI_VALS]
+
+        self.widgets = widgets = []
+        for i in entries:
+            if i is None:
+                i = ""
+            me = MathEntry(parent, value=i)
+            widgets.append(me)
+            self.Add(me, 1)
+
+        _w, h = me.GetSize()
+        self.btn_delete = btn_delete = wx.Button(parent, label="✖", size=(h, h))
+        self.Add(btn_delete)
+
+
+    def get(self):
+        name = self.tc_name.GetValue()
+        values = [w.GetValue() for w in self.widgets]
+        return name, values
+
+
 
 
 
