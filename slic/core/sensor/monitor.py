@@ -27,11 +27,13 @@ class Monitor:
         self.grum_client = grum_client
         self.cfg = cfg or {}
         self.silent = silent
-        self.stop()
-
-    def stop(self):
         self.thread = None
         self.running = False
+
+    def stop(self):
+        self.running = False
+        self.thread.join()
+        self.thread = None
 
     def start(self):
         self.thread = Thread(target=self.run)
