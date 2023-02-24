@@ -18,14 +18,15 @@ class Scanner:
     Each method returns a ScanBackend instance, which contains the actual scan logic.
     """
 
-    def __init__(self, data_base_dir="scan_data", scan_info_dir="scan_info", default_acquisitions=(), condition=None, make_scan_sub_dir=True):
+    def __init__(self, data_base_dir="scan_data", scan_info_dir="scan_info", default_acquisitions=(), condition=None, make_scan_sub_dir=True, default_sensor=None):
         """
         Parameters:
             data_base_dir (string, optional): Subfolder to collect scan data in. Will be appended to the acquisitions' default_dir.
             scan_info_dir (string, optional): Folder to store ScanInfo.
             default_acquisitions (sequence of BaseAcquisitions, optional): List of default acquisition objects to acquire from.
-            condition (BaseCondition): Condition that needs to be fullfilled to accept a recorded step of the scan.
-            make_scan_sub_dir (bool): If True (default), create a sub folder in data_base_dir in the acquisition's default_dir for each scan: scanname/scanname_step00001.h5. If False, the per-step files will be saved directly to data_base_dir in the acquisition's default_dir.
+            condition (BaseCondition, optional): Condition that needs to be fullfilled to accept a recorded step of the scan.
+            make_scan_sub_dir (bool, optional): If True (default), create a sub folder in data_base_dir in the acquisition's default_dir for each scan: scanname/scanname_step00001.h5. If False, the per-step files will be saved directly to data_base_dir in the acquisition's default_dir.
+            default_sensor: (BaseSensor, optional): Default sensor to read out and plot.
         """
         self.data_base_dir = data_base_dir
         self.scan_info_dir = scan_info_dir
@@ -35,6 +36,7 @@ class Scanner:
 
         self.current_scan = None
 
+        self.default_sensor = default_sensor
         self.remote_plot = RemotePlot("localhost", 8000)
 
 
@@ -57,14 +59,15 @@ class Scanner:
             step_info: Arbitrary data that is appended to the ScanInfo in each step.
             return_to_initial_values: (bool or None, optional): Return to initial values after scan. If None (default) ask for user input.
             n_repeat: (int or None, optional): Number of times the scan is repeated. If 1 (default), the filename will be used verbatim. If >1, a three-digit counter will be appended. None is interpreted as infinity.
+            sensor: (BaseSensor, optional): Sensor to read out and plot.
 
         Returns:
             ScanBackend: Scan instance.
         """
         adjustables = ensure_adjs(adjustables)
 
-        if not acquisitions:
-            acquisitions = self.default_acquisitions
+        acquisitions = acquisitions or self.default_acquisitions
+        sensor = sensor or self.default_sensor
 
         #SFDAQ: detectors and pvs only for sf_daq
         scan = ScanBackend(adjustables, positions, acquisitions, filename, detectors, channels, pvs, n_pulses=n_pulses, data_base_dir=self.data_base_dir, scan_info_dir=self.scan_info_dir, make_scan_sub_dir=self.make_scan_sub_dir, condition=self.condition, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, sensor=sensor, remote_plot=self.remote_plot)
