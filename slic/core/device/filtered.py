@@ -6,7 +6,7 @@ from .simpledevice import SimpleDevice
 def by_type(dev, typ):
     """
     Return a new SimpleDevice with the Adjustables removed that are not instances of typ
-    typ maybe a single type, or a sequence of types
+    typ may be a single type or a sequence of types
     """
     def cond(_k, v):
         return isinstance(v, typ)
