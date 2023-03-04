@@ -269,7 +269,15 @@ class ROIEditorLine(wx.BoxSizer):
 
     def get(self):
         name = self.tc_name.GetValue()
-        values = [w.GetValue() for w in self.widgets]
+
+        def get(wgt):
+            try:
+                return wgt.GetValue()
+            except Exception as e:
+                print(f"could not parse ROI \"{name}\":", e)
+                return None
+
+        values = [get(w) for w in self.widgets]
         return name, values
 
 
