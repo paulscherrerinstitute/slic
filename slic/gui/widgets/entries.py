@@ -156,10 +156,9 @@ class MathEntry(wx.TextCtrl, PersistableWidget, AlarmMixin):
 
     def GetValue(self):
         raw = self.GetRawValue()
-        try:
-            return arithmetic_eval(raw)
-        except Exception:
-            return None #TODO: or return raw?
+        if raw == "":
+            return None
+        return arithmetic_eval(raw)
 
     def SetValue(self, val):
         val = "" if val is None else np.format_float_positional(val, trim="-")
