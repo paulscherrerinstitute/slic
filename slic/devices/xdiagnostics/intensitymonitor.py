@@ -86,7 +86,7 @@ class Calibrator(Device):
         self.motor_y = my = Motor(ID + ":MOTOR_Y1", name="motor y")
         self._motors = (mx, my)
 
-        signals = {"signal_" + name: PvDataStream(ch) for name, ch in channels.items()}
+        signals = {"signal_" + name: PVDataStream(ch) for name, ch in channels.items()}
         self.__dict__.update(signals)
         self._signals = tuple(signals.values())
 
@@ -196,7 +196,7 @@ class CalcIntensity:
 
     def __init__(self, channels):
         for name, ch in channels.items():
-            ds = PvDataStream(ch)
+            ds = PVDataStream(ch)
             setattr(self, name, ds)
 
 
