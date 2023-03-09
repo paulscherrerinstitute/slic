@@ -146,7 +146,7 @@ class Condition(BaseCondition):
             # inner loop runs body until condition is happy
             while True:
                 self.get_ready()
-                yield True # signal condition wants a repeat (incl. the first measurement)
+                yield self.running # signal condition wants a repeat (incl. the first measurement)
                 if not self.running:
                     break
                 if self.is_happy():
