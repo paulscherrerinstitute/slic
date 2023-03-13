@@ -23,17 +23,34 @@ class Condition(BaseCondition):
         self.running = False
 
 
+    # user methods:
+
     def check(self):
         val = self.current()
         return within(val, self.vmin, self.vmax)
+
+    def long_check(self):
+        self.clear_and_start_counting()
+        self.sleep()
+        state = self.stop_counting_and_analyze()
+        return state
+
+    def stop(self):
+        self.running = False
+        self.stop_counting()
+        self.reset_repeater()
+
+
+    # internal methods:
 
     @abstractmethod
     def current(self):
         raise NotImplementedError
 
+
     def sleep(self):
         time_start = time()
-        self.running = True
+        self.running = True #TODO: should this set running?
         while time() - time_start < self.wait_time:
             if not self.running:
                 return
@@ -48,15 +65,10 @@ class Condition(BaseCondition):
     def clear(self):
         self.data.clear()
 
-
     @abstractmethod
     def start_counting(self):
         raise NotImplementedError
 
-    def stop(self):
-        self.running = False
-        self.stop_counting()
-        self.reset_repeater()
 
     def stop_counting_and_analyze(self):
         self.stop_counting()
@@ -98,6 +110,8 @@ class Condition(BaseCondition):
         return result
 
 
+    # interface according to BaseCondition
+
     def get_ready(self):
         time_start = time()
         was_ever_unhappy = False
@@ -121,18 +135,7 @@ class Condition(BaseCondition):
         return self.stop_counting_and_analyze()
 
 
-    def long_check(self):
-        self.clear_and_start_counting()
-        self.sleep()
-        state = self.stop_counting_and_analyze()
-        return state
-
-
-    def __repr__(self):
-        name = typename(self)
-        status = "happy" if self.check() else "unhappy"
-        return f"{name}: {status}" #TODO
-
+    # repeater logic -- interface currently used in ScanBackend (plus stop method)
 
     def wants_repeat(self):
         return next(self._repeater_gen)
@@ -152,6 +155,14 @@ class Condition(BaseCondition):
                 if self.is_happy():
                     break
             yield False # signal condition was happy with last repeat or stopped
+
+
+    # misc
+
+    def __repr__(self):
+        name = typename(self)
+        status = "happy" if self.check() else "unhappy"
+        return f"{name}: {status}" #TODO
 
 
 
