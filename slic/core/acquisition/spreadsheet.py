@@ -2,6 +2,7 @@ from functools import wraps
 import numpy as np
 from stand.client import Client
 from slic.utils import typename
+from slic.core.adjustable import Adjustable
 
 
 PLACEHOLDERS = (
@@ -61,7 +62,7 @@ class Spreadsheet:
 
 
     def get_adjs_values(self):
-        return {name: adj.get() for name, adj in self.adjs.items()}
+        return {name: adj.get() if isinstance(adj, Adjustable) else str(adj) for name, adj in self.adjs.items()}
 
 
 
