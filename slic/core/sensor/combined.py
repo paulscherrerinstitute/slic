@@ -10,8 +10,9 @@ class Combined(Sensor):
         #TODO: not sure how to handle the following
         del self.aggregation
         del self._cache
-        del self._collect
-        del self._clear
+        #TODO: cannot delete parent class attributes
+#        del self._collect
+#        del self._clear
 
 
     def start(self):
