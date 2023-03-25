@@ -1,6 +1,7 @@
 import os
 from time import sleep
 from collections import defaultdict
+import numpy as np
 
 from slic.utils.channels import Channels
 from slic.utils.printing import printable_dict
@@ -101,7 +102,7 @@ class SFAcquisition(BaseAcquisition):
 
 
     #TODO: only a first try
-    def retrieve(self, filename, pulseids):
+    def retrieve(self, filename, pulseids, run_number=None):
         start_pulseid = min(pulseids)
         stop_pulseid  = max(pulseids)
 
@@ -111,9 +112,10 @@ class SFAcquisition(BaseAcquisition):
         start_pulseid = align_pid_left(start_pulseid, rate_multiplicator)
         stop_pulseid = align_pid_right(stop_pulseid, rate_multiplicator)
 
-        client.config.set(filename, detectors=self.default_detectors, channels=self.default_channels, pvs=self.default_pvs)
+#        client.config.set(filename, detectors=self.default_detectors, channels=self.default_channels, pvs=self.default_pvs)
 
-        run_number = client.next_run()
+        if run_number is None:
+            run_number = client.next_run()
 
         params = client.get_config(run_number, start_pulseid, stop_pulseid)
 
@@ -125,9 +127,9 @@ class SFAcquisition(BaseAcquisition):
         res_run_number = res["run_number"]
         assert res_run_number == run_number, f"received {res_run_number} and expected {run_number} run numbers not identical"
 
-        res = transpose_dicts(res)
-        filenames = res.pop("filenames")
-        print_response(res)
+#        res = transpose_dicts(res)
+#        filenames = res.pop("filenames")
+#        print_response(res)
 
         return res
 
