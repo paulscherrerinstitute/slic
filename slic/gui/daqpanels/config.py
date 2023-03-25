@@ -16,6 +16,8 @@ class ConfigPanel(wx.Panel):
     def __init__(self, parent, acquisition, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
+        self.acquisition = acquisition
+
         instrument = acquisition.instrument
         pgroup = acquisition.pgroup
 
@@ -55,7 +57,7 @@ class ConfigPanel(wx.Panel):
         #TODO:
         # the slic pedestal taking procedure is currently out of date with what the DAQ expects
         # disable button for now
-        btn_take_pedestal.Disable()
+#        btn_take_pedestal.Disable()
 
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument, style=wx.TE_READONLY)
         le_pgroup     = LabeledEntry(self, label="pgroup",     value=pgroup,     style=wx.TE_READONLY)
