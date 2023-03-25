@@ -155,7 +155,7 @@ class TweakPanel(wx.Panel):
         index = event.GetIndex()
         readback_column = 4
         value = self.lc_log.GetItemText(index, readback_column)
-        self.le_abs.SetValue(value)
+        self.le_abs.SetRawValue(value) # skip conversion to float needed for SetValue
         copy_to_clipboard(value)
 
 
