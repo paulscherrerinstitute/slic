@@ -1,3 +1,6 @@
+from glob import glob
+import subprocess
+
 import requests
 from glob import glob
 from time import sleep
@@ -8,7 +11,7 @@ import numpy as np
 from slic.utils import xrange, tqdm_mod, tqdm_sleep
 from slic.utils import json_validate
 
-from .broker_tools import get_current_pulseid
+from .broker_tools import get_current_pulseid, get_endstation
 
 
 class BrokerClient:
@@ -163,6 +166,11 @@ class BrokerClient:
         )
 
 
+        instrument = get_endstation()
+        pattern = f"/sf/{instrument}/data/{pgroup}/raw/JF_pedestals/*.log"
+        fns_before = set(glob(pattern))
+
+
         n_pulses = 5000 # this is a constant on the broker side
         timeout = 10 + n_pulses / 100 * rate_multiplicator
 
@@ -171,24 +179,52 @@ class BrokerClient:
         response = post_request(requrl, params, timeout)
         print("done, got:", response)
 
-        print(f"waiting for {timeout} seconds")
-        tqdm_sleep(timeout)
-
-        #TODO: follow /sf/{beamline}/data/{pgroup}/raw/run_info/{(run_number//1000*1000):06}/run_{run_number:06}.PEDESTAL.log
+#        print(f"waiting for {timeout} seconds")
+#        tqdm_sleep(timeout)
 
 
-        run_number = response["run"]
-        padded_run_number = str(run_number).zfill(6)
+        while fns_before >= set(glob(pattern)):
+            print(set(glob(pattern)))
+            sleep(1)
+            print("waiting for log file")
 
-        fnames_raw = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.h5"     for det in detectors]
-        fnames_res = [f"/sf/*/data/{pgroup}/raw/JF_pedestals/run_{padded_run_number}.{det}.res.h5" for det in detectors]
+        new_fnames = set(glob(pattern)) - fns_before
+#        new_fnames = sorted(new_fnames)
+        print(f"found {len(new_fnames)} new log files")
+#        assert len(new_fnames) == 1
+        new_fname = new_fnames.pop()
+        print(new_fname)
+
+        print()
+        print("tailing log file:")
+        print("-" * 100)
+
+        f = subprocess.Popen(["tail", "-F", new_fname], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        with yaspin(Spinners.soccerHeader, timer=True) as sp:
+            while True:
+                line = f.stdout.readline()
+                line = line.decode("utf-8").rstrip()
+                print("\n" + line)
+                if "Finished. Took " in line and "seconds to complete request." in line:
+                    f.kill()
+                    break
+            sp.ok("🥅")
+
+        print("-" * 100)
+        print("end of log")
+        print()
+
+        prefix = new_fname.split("/")[-1].split(".")[0]
+
+        fnames_raw = [f"/sf/{instrument}/data/{pgroup}/raw/JF_pedestals/{prefix}.{det}.h5"     for det in detectors]
+        fnames_res = [f"/sf/{instrument}/data/{pgroup}/raw/JF_pedestals/{prefix}.{det}.res.h5" for det in detectors]
         print(fnames_raw)
         print(fnames_res)
         wait_for_files("raw files", fnames_raw)
         wait_for_files("res files", fnames_res)
 
-        print("done :)")
-        return run_number
+        print("done 🏟️")
+        return new_fname
 
 
 
