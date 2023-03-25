@@ -59,7 +59,11 @@ class Monitor:
                 fsleep(record_time)
             y = sensor.get_aggregate()
             y = float(y)
-            grum_client.append_data(name, (x, y))
+            try:
+                grum_client.append_data(name, (x, y))
+            except Exception as e: #TODO: only for connections problems?
+                tn = typename(e)
+                print(f"ignored: {tn}: {e}")
 
             if not self.running:
                 break
