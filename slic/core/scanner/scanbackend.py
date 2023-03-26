@@ -201,7 +201,7 @@ class ScanBackend:
             sensor.stop()
 
             x = self.adjustables[0].get_current_value()
-            y = sensor.get_aggregate()
+            y = sensor.get()
 
             try:
                 self.remote_plot.append_data(self.filename, (float(x), float(y)))

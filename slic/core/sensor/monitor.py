@@ -12,7 +12,7 @@ def monitor(name, sensor, record_time, grum_client, cfg=None):
         print(f"iteration #{x}")
         with sensor:
             tqdm_sleep(record_time)
-        y = sensor.get_aggregate()
+        y = sensor.get()
         y = float(y)
         grum_client.append_data(name, (x, y))
 
@@ -57,7 +57,7 @@ class Monitor:
             fprint(f"iteration #{x}")
             with sensor:
                 fsleep(record_time)
-            y = sensor.get_aggregate()
+            y = sensor.get()
             y = float(y)
             try:
                 grum_client.append_data(name, (x, y))
