@@ -13,6 +13,10 @@ class BaseSensor(RegistryABC):
     def stop(self):
         raise NotImplementedError
 
+    @abstractmethod
+    def get(self):
+        raise NotImplementedError
+
 
 
 #s = Sensor("DEVICE:NAME", aggregation="mean")
