@@ -12,13 +12,23 @@ class Sensor(BaseSensor):
         self.aggregation = aggregation or np.mean
         self._cache = []
 
+
     #TODO: is this mandatory?
-    def get_current_value(self):
+    def read_from_source(self):
         raise NotImplementedError
+
+
+    def get_current_value(self):
+        try:
+            current = self.read_from_source()
+            return self.aggregation([current])
+        except Exception:
+            return None
 
     def get_last_value(self):
         try:
-            return self._cache[-1]
+            last = self._cache[-1:]
+            return self.aggregation(last)
         except IndexError:
             return None
 
@@ -29,7 +39,10 @@ class Sensor(BaseSensor):
             return None
 
     def get(self):
-        return self.get_aggregate()
+        if self._cache:
+            return self.get_aggregate()
+        else:
+            return self.get_current_value()
 
 
     def _collect(self, value):
