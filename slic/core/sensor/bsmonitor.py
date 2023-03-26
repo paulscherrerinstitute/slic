@@ -23,7 +23,7 @@ class BSMonitor(Sensor):
         value = self._unpack(data)
         super()._collect(value)
 
-    def get_current_value(self):
+    def read_from_source(self):
         data = self.thread.data
         if data is None:
             return None
