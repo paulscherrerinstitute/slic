@@ -10,7 +10,7 @@ class Combined(Sensor):
         #TODO: not sure how to handle the following
         del self.aggregation
         del self._cache
-        #TODO: cannot delete parent class attributes
+        #TODO: cannot delete parent class attributes (overwrite methods below)
 #        del self._collect
 #        del self._clear
 
@@ -35,6 +35,15 @@ class Combined(Sensor):
     def get_aggregate(self):
         values = (s.get_aggregate() for s in self.sensors)
         return self.combination(*values)
+
+
+    #TODO: see above TODOs
+
+    def _collect(self, value):
+        raise NotImplementedError("Combined Sensor has no _cache and thus cannot _collect")
+
+    def _clear(self):
+        raise NotImplementedError("Combined Sensor has no _cache and thus cannot _clear")
 
 
 
