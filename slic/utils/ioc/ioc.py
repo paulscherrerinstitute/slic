@@ -1,4 +1,5 @@
 from pcaspy import SimpleServer
+from pcaspy.tools import ServerThread
 from .adjdrv import AdjustableDriver
 
 
@@ -13,7 +14,7 @@ DEFAULTS = {
 }
 
 
-class IOC:
+class IOC(ServerThread):
 
     def __init__(self, adjs, prefix="slic"):
         # ensure prefix ends with colon
@@ -32,10 +33,7 @@ class IOC:
 
         self.driver = AdjustableDriver(adjs)
 
-
-    def run(self):
-        while True:
-            self.server.process(0.1)
+        super().__init__(server)
 
 
 
