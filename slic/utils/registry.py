@@ -31,13 +31,16 @@ class Registry(object, metaclass=RegistryMeta):
 
 
 
-def instances(reg, recursive=True):
+def instances(reg, recursive=True, weak=False):
     """
     Return a set of all instances of reg
     If recursive=True also include instances of subclasses of reg
+    If weak=True return weakref.WeakSet instead of set
     """
     res = _collect_instances(reg, recursive=recursive)
-    return set(res)
+    if not weak:
+        res = set(res)
+    return res
 
 
 def _collect_instances(reg, recursive=True):
