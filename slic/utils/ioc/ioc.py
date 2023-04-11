@@ -1,3 +1,4 @@
+import pcaspy
 from pcaspy import SimpleServer
 from pcaspy.tools import ServerThread
 from .adjdrv import AdjustableDriver
@@ -36,13 +37,23 @@ class IOC(ServerThread):
         super().__init__(server)
 
 
+#    def run(self):
+#        while self.running:
+#            self.server.process(0.1)
+#            self.driver.sync()
+
+
 
 def mk_pvdb(adjs):
     return {n: mk_pvinfo(a) for n, a in adjs.items()}
 
 def mk_pvinfo(adj):
     typ = infer_type(adj)
-    return {"type": typ}
+    res = {
+        "type": typ,
+        "scan": 1 # triggers monitors every second
+    }
+    return res
 
 def infer_type(adj):
     val = adj.get_current_value()

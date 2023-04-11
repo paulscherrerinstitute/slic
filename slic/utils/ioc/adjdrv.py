@@ -32,4 +32,14 @@ class AdjustableDriver(Driver):
         return value
 
 
+#    def sync(self):
+#        for n, a in self.adjs.items():
+#            v_adj = a.get_current_value()
+#            v_par = self.getParam(n)
+#            if v_adj != v_par:
+#                print("sync:", n, v_adj)
+#                self.setParam(n, v_adj)
+#        self.updatePVs() # this actually triggers the monitoring
+
+
 
