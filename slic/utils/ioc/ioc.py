@@ -1,6 +1,9 @@
-import pcaspy
 from pcaspy import SimpleServer
 from pcaspy.tools import ServerThread
+
+from slic.core.adjustable import Adjustable
+from slic.utils.registry import instances
+
 from .adjdrv import AdjustableDriver
 
 
@@ -17,10 +20,14 @@ DEFAULTS = {
 
 class IOC(ServerThread):
 
-    def __init__(self, adjs, prefix="slic"):
+    def __init__(self, adjs=None, prefix="slic"):
         # ensure prefix ends with colon
         if not prefix.endswith(":"):
             prefix += ":"
+
+        # if nothing specified, collect all Adjustables
+        if adjs is None:
+            adjs = instances(Adjustable, weak=True)
 
         # allow dict with custom IDs
         if not isinstance(adjs, dict):
