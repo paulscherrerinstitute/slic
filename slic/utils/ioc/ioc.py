@@ -22,9 +22,9 @@ class IOC(ServerThread):
         if not prefix.endswith(":"):
             prefix += ":"
 
-        # allow dict with custom names
+        # allow dict with custom IDs
         if not isinstance(adjs, dict):
-            adjs = {a.name: a for a in adjs}
+            adjs = {a.ID: a for a in adjs}
 
         pvdb = mk_pvdb(adjs)
         pvdb.update(DEFAULTS)
