@@ -60,6 +60,7 @@ def mk_pvinfo(adj):
     typ = infer_type(adj)
     res = {
         "type": typ,
+        "unit": adj.units,
         "scan": SCAN # triggers monitors every SCAN second(s)
     }
     return res
