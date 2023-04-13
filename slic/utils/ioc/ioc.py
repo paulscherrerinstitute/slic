@@ -17,6 +17,8 @@ DEFAULTS = {
     "avail": {"type": "string"}
 }
 
+SCAN = 1
+
 
 class IOC(ServerThread):
 
@@ -58,7 +60,7 @@ def mk_pvinfo(adj):
     typ = infer_type(adj)
     res = {
         "type": typ,
-        "scan": 1 # triggers monitors every second
+        "scan": SCAN # triggers monitors every SCAN second(s)
     }
     return res
 
