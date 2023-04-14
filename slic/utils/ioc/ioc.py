@@ -1,5 +1,7 @@
+from threading import Thread
+
 from pcaspy import SimpleServer
-from pcaspy.tools import ServerThread
+from pcaspy.driver import manager
 
 from slic.core.adjustable import Adjustable
 from slic.utils.registry import instances
@@ -18,9 +20,10 @@ DEFAULTS = {
 }
 
 SCAN = 1
+DELAY = 0.1
 
 
-class IOC(ServerThread):
+class IOC:
 
     def __init__(self, adjs=None, prefix="slic"):
         # ensure prefix ends with colon
@@ -38,18 +41,38 @@ class IOC(ServerThread):
         pvdb = mk_pvdb(adjs)
         pvdb.update(DEFAULTS)
 
-        self.server = server = SimpleServer()
-        server.createPV(prefix, pvdb)
+        self.adjs = adjs
+        self.prefix = prefix
+        self.pvdb = pvdb
 
-        self.driver = AdjustableDriver(adjs)
+        self.running = False
+        self.thread = None
 
-        super().__init__(server)
+
+    def start(self):
+        self.thread = thread = Thread(target=self._run)
+        thread.start()
+
+    def stop(self):
+        self.running = False
+        self.thread.join()
 
 
-#    def run(self):
-#        while self.running:
-#            self.server.process(0.1)
-#            self.driver.sync()
+    def _run(self):
+        server = SimpleServer()
+        server.createPV(self.prefix, self.pvdb)
+
+        driver = AdjustableDriver(self.adjs)
+
+        self.running = True
+        while self.running:
+            server.process(DELAY)
+#            driver.sync()
+
+        # delete the managed references to driver and PVs
+        manager.driver.clear()
+        manager.pvs.clear()
+        manager.pvf.clear()
 
 
 
