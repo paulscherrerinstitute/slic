@@ -1,5 +1,6 @@
 from time import sleep, time
 from types import SimpleNamespace
+from warnings import warn
 
 from slic.utils import typename
 from slic.utils.hastyepics import get_pv as PV
@@ -144,6 +145,8 @@ class PVAdjustable(Adjustable):
 
 
 
+SUFFICES_MOVING      = ["MOVING"]
+SUFFICES_DONE_MOVING = ["DMOV", "WAITING"]
 
 
 def make_pcm(pvname_done_moving, pvname_moving):
@@ -151,12 +154,21 @@ def make_pcm(pvname_done_moving, pvname_moving):
         raise ValueError("please provide only pvname_done_moving or pvname_moving, but not both")
 
     if pvname_moving:
+        validate_suffix(pvname_moving, SUFFICES_MOVING)
         return PVChangeMonitor(pvname_moving, inverted=False)
 
     if pvname_done_moving:
+        validate_suffix(pvname_done_moving, SUFFICES_DONE_MOVING)
         return PVChangeMonitor(pvname_done_moving, inverted=True)
 
     return None
+
+
+def validate_suffix(name, expected):
+    suffix = name.split(":")[-1]
+    if suffix not in expected:
+        warn(f'suffix "{suffix}" of "{name}" is not from: {expected}', stacklevel=2)
+
 
 
 def handle_put_return_value(ret):
