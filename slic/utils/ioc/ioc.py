@@ -38,8 +38,11 @@ class IOC:
         if not isinstance(adjs, dict):
             adjs = {a.ID: a for a in adjs}
 
-        pvdb = mk_pvdb(adjs)
-        pvdb.update(DEFAULTS)
+        pvdb = {
+            **DEFAULTS,
+            **mk_pvdb(adjs),
+            **mk_pvdb_meta(adjs)
+        }
 
         self.adjs = adjs
         self.prefix = prefix
@@ -87,6 +90,29 @@ def mk_pvinfo(adj):
         "scan": SCAN # triggers monitors every SCAN second(s)
     }
     return res
+
+
+def mk_pvdb_meta(adjs):
+    return merge_dicts(mk_pvinfos_meta(n, a) for n, a in adjs.items())
+
+def merge_dicts(seq):
+    return {k: v for d in seq for k, v in d.items()}
+
+def mk_pvinfos_meta(n, adj):
+    desc = adj.name
+    egu  = adj.units
+    res = {}
+    #TODO: might be better for the PVs to always exists, but to be possibly empty
+    if desc: res[n + ".DESC"] = mk_string_entry(desc)
+    if egu:  res[n + ".EGU"]  = mk_string_entry(egu)
+    return res
+
+def mk_string_entry(value):
+    return {
+        "type": "string",
+        "value": value
+    }
+
 
 def infer_type(adj):
     val = adj.get_current_value()
