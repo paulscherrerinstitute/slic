@@ -9,15 +9,21 @@ class AdjustableDriver(Driver):
 
 
     def write(self, reason, value):
-        if reason not in self.adjs:
+        if reason == "avail":
             print("driver ignore write:", reason, value)
             return False
 
         print("driver write:", reason, value)
-#        self.setParam(reason, value)
-        a = self.adjs[reason]
-        a.set_target_value(value)
-        return True
+
+        try:
+            a = self.adjs[reason]
+        except KeyError:
+            print("driver set parameter: ", reason, value)
+            return self.setParam(reason, value)
+        else:
+            print("driver set Adjustable:", reason, value)
+            a.set_target_value(value)
+            return True
 
 
     def read(self, reason):
@@ -25,9 +31,15 @@ class AdjustableDriver(Driver):
             print("driver avail")
             return "\n".join(sorted(self.adjs))
 
-        a = self.adjs[reason]
-        value = a.get_current_value()
-#        value = self.getParam(reason)
+        try:
+            a = self.adjs[reason]
+        except KeyError:
+            print("driver get parameter: ", reason)
+            value = self.getParam(reason)
+        else:
+            print("driver get Adjustable:", reason)
+            value = a.get_current_value()
+
         print("driver read:", reason, value)
         return value
 
