@@ -52,6 +52,8 @@ class StepsRangeEntry(wx.BoxSizer):
             else:
                 if step_size == 0:
                     raise ValueError
+                if None in (start_pos, end_pos, step_size):
+                    raise ValueError
         except ValueError:
             nsteps = ""
             tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
