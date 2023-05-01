@@ -1,3 +1,4 @@
+from itertools import cycle
 from numbers import Number
 
 import wx
@@ -105,6 +106,9 @@ class JFConfig(wx.Dialog):
 
         if key == "roi":
             return ROIEditButton(self, label)
+
+        if key == "downsample":
+            return LabeledNumberSequence(self, label=label, entries=(None, None))
 
         if isinstance(value, type):
             if issubclass(value, bool):
@@ -282,6 +286,42 @@ class ROIEditorLine(wx.BoxSizer):
 
 
 
+class NumberSequence(wx.BoxSizer):
+
+    def __init__(self, parent, entries, name="NumberSequence"):
+        super().__init__(wx.HORIZONTAL)
+
+        self.typ = type(entries) # store the input type to convert back to that type in GetValue
+
+        self.widgets = widgets = []
+        for i in entries:
+            if i is None:
+                i = ""
+            me = MathEntry(parent, value=i)
+            widgets.append(me)
+            self.Add(me, 1)
+
+
+    def GetValue(self):
+        def get(wgt):
+            try:
+                return wgt.GetValue()
+            except Exception as e:
+                print(f"could not parse", e)
+                return None
+
+        values = [get(w) for w in self.widgets]
+        if set(values) == {None}:
+            return None
+        return self.typ(values)
+
+
+    def SetValue(self, entries):
+        if entries is None:
+            entries = cycle([None])
+        for w, v in zip(self.widgets, entries):
+            w.SetValue(v)
+
 
 
 class SubstituteWidget(LabeledEntry):
@@ -350,6 +390,7 @@ class ChoiceDefault(wx.Choice):
 
 LabeledNumberedToggles = make_labeled(NumberedToggles)
 LabeledChoice          = make_labeled(ChoiceDefault)
+LabeledNumberSequence  = make_labeled(NumberSequence)
 
 
 
