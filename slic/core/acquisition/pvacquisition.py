@@ -20,7 +20,6 @@ class PVAcquisition(Acquisition):
 
 def epics_to_h5_polling(filename, channels, n_pulses=100, wait_time=0.5):
     pvs = make_pvs(channels)
-
     arrays = make_arrays(pvs, n_pulses)
 
     for ivalue in range(n_pulses):
@@ -34,12 +33,10 @@ def epics_to_h5_polling(filename, channels, n_pulses=100, wait_time=0.5):
 
 def epics_to_h5_triggered(filename, channels, n_pulses=100, wait_time=0.5):
     pvs = make_pvs(channels)
+    arrays = make_arrays(pvs, n_pulses)
 
     n_channels = len(channels)
     counters = np.zeros(n_channels, dtype=int)
-
-    arrays = make_arrays(pvs, n_pulses)
-
 
     def on_value_change(pv=None, ichannel=None, value=None, **kwargs):
         ivalue = counters[ichannel]
