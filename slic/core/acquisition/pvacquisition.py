@@ -65,7 +65,7 @@ def make_pvs(channels, timeout=1):
         broken = (n for n, s in zip(channels, status) if not s)
         broken = sorted(set(broken))
         printable_broken = ", ".join(broken)
-        raise ConnectionError(f"connection to the following PVs timed out: {printable_broken}")
+        raise ConnectionError(f"connection to the following PVs timed out ({timeout} sec): {printable_broken}")
     return pvs
 
 
