@@ -19,7 +19,7 @@ class PVAcquisition(Acquisition):
 
 
 def epics_to_h5_polling(filename, channels, n_pulses=100, wait_time=0.5):
-    pvs = [PV(ch) for ch in channels]
+    pvs = make_pvs(channels)
 
     arrays = make_arrays(pvs, n_pulses)
 
@@ -33,7 +33,7 @@ def epics_to_h5_polling(filename, channels, n_pulses=100, wait_time=0.5):
 
 
 def epics_to_h5_triggered(filename, channels, n_pulses=100, wait_time=0.5):
-    pvs = [PV(ch) for ch in channels]
+    pvs = make_pvs(channels)
 
     n_channels = len(channels)
     counters = np.zeros(n_channels, dtype=int)
@@ -59,6 +59,17 @@ def epics_to_h5_triggered(filename, channels, n_pulses=100, wait_time=0.5):
 
     write_to_h5(filename, channels, arrays)
 
+
+
+def make_pvs(channels, timeout=1):
+    pvs = [PV(ch) for ch in channels]
+    status = [pv.wait_for_connection(timeout=timeout) for pv in pvs]
+    if not all(status):
+        broken = (n for n, s in zip(channels, status) if not s)
+        broken = sorted(set(broken))
+        printable_broken = ", ".join(broken)
+        raise ConnectionError(f"connection to the following PVs timed out: {printable_broken}")
+    return pvs
 
 
 def make_arrays(pvs, n_pulses):
