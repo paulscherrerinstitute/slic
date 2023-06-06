@@ -61,12 +61,13 @@ def epics_to_h5_triggered(filename, channels, n_pulses=100, wait_time=0.5, conne
 def make_pvs(channels, timeout=1):
     pvs = [PV(ch) for ch in channels]
     status = [pv.wait_for_connection(timeout=timeout) for pv in pvs]
-    if not all(status):
-        broken = (n for n, s in zip(channels, status) if not s)
-        broken = sorted(set(broken))
-        printable_broken = ", ".join(broken)
-        raise ConnectionError(f"connection to the following PVs timed out ({timeout} sec): {printable_broken}")
-    return pvs
+    if all(status):
+        return pvs
+
+    broken = (n for n, s in zip(channels, status) if not s)
+    broken = sorted(set(broken))
+    printable_broken = ", ".join(broken)
+    raise ConnectionError(f"connection to the following PVs timed out ({timeout} sec): {printable_broken}")
 
 
 def make_arrays(pvs, n_pulses):
