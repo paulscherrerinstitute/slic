@@ -10,6 +10,7 @@ import numpy as np
 
 from slic.utils import xrange, tqdm_mod, tqdm_sleep
 from slic.utils import json_validate
+from slic.utils.printing import printable_dict
 
 from .broker_tools import get_current_pulseid, get_endstation
 
@@ -304,12 +305,13 @@ class BrokerConfig:
         self.client_name = client_name
         self.set(None) #TODO: sensible defaults?
 
-    def set(self, output_dir, detectors=None, channels=None, pvs=None, scan_info=None):
+    def set(self, output_dir, detectors=None, channels=None, pvs=None, scan_info=None, **kwargs):
         self.output_dir = output_dir
         self.detectors = detectors
         self.channels = channels
         self.pvs = pvs
         self.scan_info = scan_info
+        self.kwargs = kwargs # unknown arguments will be forwarded verbatim to the broker
 
 
     def to_dict(self, run_number, start_pulseid, stop_pulseid):
@@ -344,6 +346,12 @@ class BrokerConfig:
 
         if self.scan_info:
             config["scan_info"] = self.scan_info
+
+        kwargs = self.kwargs
+        if kwargs:
+            header="the following unknown arguments are forwarded verbatim to the server"
+            print(printable_dict(kwargs, header=header))
+            config.update(self.kwargs)
 
         return config
 

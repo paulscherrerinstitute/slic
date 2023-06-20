@@ -39,7 +39,7 @@ class SFAcquisition(BaseAcquisition):
         self.current_task = None
 
 
-    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, n_repeat=1, is_scan_step=False, wait=True):
+    def acquire(self, filename, data_base_dir=None, detectors=None, channels=None, pvs=None, scan_info=None, n_pulses=100, n_repeat=1, is_scan_step=False, wait=True, **kwargs):
         if not is_scan_step:
             run_number = self.client.next_run()
             print(f"Advanced run number to {run_number}.")
@@ -74,7 +74,7 @@ class SFAcquisition(BaseAcquisition):
         bschs.check()
 
         client = self.client
-        client.set_config(n_pulses, filename, detectors=detectors, channels=channels, pvs=pvs, scan_info=scan_info)
+        client.set_config(n_pulses, filename, detectors=detectors, channels=channels, pvs=pvs, scan_info=scan_info, **kwargs)
 
         paths = SwissFELPaths(self.instrument, self.pgroup)
 
