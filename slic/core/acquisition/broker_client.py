@@ -298,11 +298,12 @@ class BrokerError(Exception):
 
 class BrokerConfig:
 
-    def __init__(self, pgroup, rate_multiplicator=1, append_user_tag_to_data_dir=False, client_name=None):
+    def __init__(self, pgroup, rate_multiplicator=1, append_user_tag_to_data_dir=False, client_name=None, **kwargs):
         self.pgroup = pgroup
         self.rate_multiplicator = rate_multiplicator #TODO: can we read that from epics?
         self.append_user_tag_to_data_dir = append_user_tag_to_data_dir
         self.client_name = client_name
+        self.kwargs_init = kwargs # unknown arguments will be forwarded verbatim to the broker
         self.set(None) #TODO: sensible defaults?
 
     def set(self, output_dir, detectors=None, channels=None, pvs=None, scan_info=None, **kwargs):
@@ -311,7 +312,7 @@ class BrokerConfig:
         self.channels = channels
         self.pvs = pvs
         self.scan_info = scan_info
-        self.kwargs = kwargs # unknown arguments will be forwarded verbatim to the broker
+        self.kwargs_set = kwargs # unknown arguments will be forwarded verbatim to the broker
 
 
     def to_dict(self, run_number, start_pulseid, stop_pulseid):
@@ -347,11 +348,11 @@ class BrokerConfig:
         if self.scan_info:
             config["scan_info"] = self.scan_info
 
-        kwargs = self.kwargs
+        kwargs = {**self.kwargs_init, **self.kwargs_set}
         if kwargs:
             header="the following unknown arguments are forwarded verbatim to the server"
             print(printable_dict(kwargs, header=header))
-            config.update(self.kwargs)
+            config.update(kwargs)
 
         return config
 
