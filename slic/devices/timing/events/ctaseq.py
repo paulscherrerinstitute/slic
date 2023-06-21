@@ -95,7 +95,7 @@ class Sequence:
 
     def __init__(self, cta_client):
         self.cta_client = cta_client
-        self.reset()
+        self.clear()
 
     def __len__(self):
         return self.length
