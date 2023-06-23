@@ -17,6 +17,8 @@ class MatMulTrick:
         return repr(self.func)
 
     def __matmul__(self, other):
+        if isinstance(other, str):
+            other = [int(i) for i in other.split(":")]
         if isinstance(other, Sequence):
             return self.func(*other)
         else:
