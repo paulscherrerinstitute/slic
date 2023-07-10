@@ -62,7 +62,7 @@ class Delay(Adjustable):
 
     def set_target_value(self, value, *args, **kwargs):
         pos = self._delay_to_pos(value)
-        return self._motor.set_target_value(pos, *args, **kwargs)
+        self._motor.set_target_value(pos, *args, **kwargs).wait()
 
 
     def _delay_to_pos(self, delay):
