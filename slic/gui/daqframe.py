@@ -42,7 +42,8 @@ class DAQFrame(wx.Frame):
         if show_run:    notebook.AddPage(panel_run)
         if show_sfx:    notebook.AddPage(panel_sfx)
 
-        if   show_spec:   notebook.SelectPage(panel_spec)
+        if   show_sfx:    notebook.SelectPage(panel_sfx)
+        elif show_spec:   notebook.SelectPage(panel_spec)
         elif show_scan:   notebook.SelectPage(panel_scan)
         elif show_static: notebook.SelectPage(panel_static)
         else:             notebook.SelectPage(panel_config)
