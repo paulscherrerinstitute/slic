@@ -7,16 +7,21 @@ from slic.utils.reprate import get_pvname_reprate
 from ..widgets import STRETCH, TwoButtons, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
 from .tools import ETADisplay, correct_n_pulses, run
 from ..widgets.labeled import make_labeled
+from ..persist import PersistableWidget
 
 
-class Choice(wx.Choice):
+class Choice(wx.Choice, PersistableWidget):
 
     def GetValue(self):
-        sel = self.GetSelection()
-        res = self.GetString(sel)
+        idx = self.GetSelection()
+        res = self.GetString(idx)
         if not res:
             return None
         return res
+
+    def SetValue(self, value):
+        idx = self.FindString(value or "")
+        self.SetSelection(idx)
 
 
 LabeledChoice = make_labeled(Choice)
