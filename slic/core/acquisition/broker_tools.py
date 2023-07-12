@@ -5,7 +5,7 @@ import epics
 from logzero import logger as log
 
 from slic.utils import singleton
-from slic.utils import cprint
+from slic.utils.cprint import cprint, red, green
 
 
 #TODO: these should probably move to different IOCs
@@ -115,8 +115,24 @@ def clean_output_dir(s, default="_", allowed=ALLOWED_CHARS):
     return res
 
 def warn_output_dir(old, new):
-    msg = f'output dir contains forbidden characters. will adjust:\n"{old}"\n==>\n"{new}"'
-    cprint(msg, color="cyan")
+    old, new = mark_differences(old, new)
+    cprint("output dir contains forbidden characters. will adjust:", color="cyan")
+    print(old)
+    cprint("==>", color="cyan")
+    print(new)
+
+def mark_differences(a, b):
+    a2 = []
+    b2 = []
+    for i, j in zip(a, b):
+        if i != j:
+            i = red(i)
+            j = green(j)
+        a2.append(i)
+        b2.append(j)
+    a = "".join(a2)
+    b = "".join(b2)
+    return a, b
 
 
 
