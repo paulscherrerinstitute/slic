@@ -40,3 +40,17 @@ def _print(color, text, sep, kwargs):
 
 
 
+# the following creates functions from the COLORS dict which wrap their argument string in a color/reset pair
+
+def _mk_color_func(color):
+    def func(text):
+        return color + text + Fore.RESET
+    return func
+
+for name, color in COLORS.items():
+    if name is None:
+        continue
+    locals()[name] = _mk_color_func(color)
+
+
+
