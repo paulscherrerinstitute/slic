@@ -102,7 +102,7 @@ class SFXPanel(wx.Panel):
 
         cell_name = self.lc_cell_name.GetValue()
 
-        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, n_repeat=n_repeat, wait=False, cell_file=cell_name)
+        self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, n_repeat=n_repeat, wait=False, cell_name=cell_name)
 
         def wait():
             with printed_exception:
