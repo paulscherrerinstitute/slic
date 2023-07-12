@@ -1,9 +1,11 @@
 from datetime import datetime
 import socket
+import string
 import epics
 from logzero import logger as log
 
 from slic.utils import singleton
+from slic.utils import cprint
 
 
 #TODO: these should probably move to different IOCs
@@ -29,6 +31,10 @@ IP_TO_ENDSTATION = {
 REFERENCE_DATETIME = datetime(2020, 5, 8, 8, 29, 52)
 REFERENCE_PID = 11718051371
 
+#TODO: remove the same from gui code
+ALLOWED_CHARS = set(
+    string.ascii_letters + string.digits + "_-"
+)
 
 
 def decide_get_current_pulseid():
@@ -97,6 +103,20 @@ class get_current_pulseid():
 
     def __call__(self):
         return int(self.get())
+
+
+
+def clean_output_dir(s, default="_", allowed=ALLOWED_CHARS):
+    if s is None:
+        return None
+    res = "".join(i if i in allowed else default for i in s)
+    if res != s:
+        warn_output_dir(s, res)
+    return res
+
+def warn_output_dir(old, new):
+    msg = f'output dir contains forbidden characters. will adjust:\n"{old}"\n==>\n"{new}"'
+    cprint(msg, color="cyan")
 
 
 

@@ -12,7 +12,7 @@ from slic.utils import xrange, tqdm_mod, tqdm_sleep
 from slic.utils import json_validate
 from slic.utils.printing import printable_dict
 
-from .broker_tools import get_current_pulseid, get_endstation
+from .broker_tools import get_current_pulseid, get_endstation, clean_output_dir
 
 
 class BrokerClient:
@@ -306,7 +306,12 @@ class BrokerConfig:
         self.kwargs_init = kwargs # unknown arguments will be forwarded verbatim to the broker
         self.set(None) #TODO: sensible defaults?
 
+
     def set(self, output_dir, detectors=None, channels=None, pvs=None, scan_info=None, **kwargs):
+        # output dir needs to be cleaned if used as part of the folder name
+        if self.append_user_tag_to_data_dir:
+            output_dir = clean_output_dir(output_dir)
+
         self.output_dir = output_dir
         self.detectors = detectors
         self.channels = channels
