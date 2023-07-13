@@ -109,6 +109,7 @@ class get_current_pulseid():
 def clean_output_dir(s, default="_", allowed=ALLOWED_CHARS):
     if s is None:
         return None
+    s = s.strip()
     res = "".join(i if i in allowed else default for i in s)
     if res != s:
         warn_output_dir(s, res)
@@ -117,9 +118,9 @@ def clean_output_dir(s, default="_", allowed=ALLOWED_CHARS):
 def warn_output_dir(old, new):
     old, new = mark_differences(old, new)
     cprint("output dir contains forbidden characters. will adjust:", color="cyan")
-    print(old)
+    print(f'"{old}"')
     cprint("==>", color="cyan")
-    print(new)
+    print(f'"{new}"')
 
 def mark_differences(a, b):
     a2 = []
