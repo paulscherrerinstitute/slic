@@ -51,7 +51,7 @@ class StaticPanel(wx.Panel):
         n_repeat = int(n_repeat)
 
         rate = self.eta.value
-        n_pulses = correct_n_pulses(rate, n_pulses)
+        n_pulses = correct_n_pulses(rate, n_pulses, self.acquisition.client.config.rate_multiplicator)
 
         self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, n_repeat=n_repeat, wait=False)
 

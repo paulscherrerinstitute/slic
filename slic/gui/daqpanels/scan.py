@@ -73,7 +73,7 @@ class ScanPanel(wx.Panel):
         n_repeat = int(n_repeat)
 
         rate = self.eta.value
-        n_pulses = correct_n_pulses(rate, n_pulses)
+        n_pulses = correct_n_pulses(rate, n_pulses, self.scanner.default_acquisitions[0].client.config.rate_multiplicator)
 
         relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
