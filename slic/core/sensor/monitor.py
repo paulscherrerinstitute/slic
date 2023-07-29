@@ -52,7 +52,11 @@ class Monitor:
         fprint = dont_print if silent else print
         fsleep = sleep if silent else tqdm_sleep
 
-        grum_client.new_plot(name, self.cfg)
+        cfg = self.cfg.copy()
+        cfg.setdefault("xlabel", f"samples taken every {self.record_time} seconds")
+        cfg.setdefault("ylabel", sensor.name)
+
+        grum_client.new_plot(name, cfg)
         for x in count():
             fprint(f"iteration #{x}")
             with sensor:
