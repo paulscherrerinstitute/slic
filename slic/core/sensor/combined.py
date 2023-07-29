@@ -37,6 +37,14 @@ class Combined(Sensor):
         return self.combination(*values)
 
 
+    #TODO: this needs to be fixed
+    def get(self):
+        if all(i._cache for i in self.sensors):
+            return self.get_aggregate()
+        else:
+            return self.get_current_value()
+
+
     #TODO: see above TODOs
 
     def _collect(self, value):
