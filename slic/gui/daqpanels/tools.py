@@ -182,13 +182,14 @@ def run(fn): # TODO
 
 
 
-def correct_n_pulses(rate, n_pulses, rate_multiplicator):
+def correct_n_pulses(n_pulses, rate, rate_multiplicator):
+    print(f"uncorrected: n_pulses={n_pulses}, rate={rate}, rate_multiplicator={rate_multiplicator}")
     if not rate:
         raise ValueError(f"cannot calculate #Pulses for Rep. Rate = {rate}")
     multiplier = NOMINAL_REPRATE / rate / rate_multiplicator
     n_pulses *= multiplier
     n_pulses = int(n_pulses)
-    print(f"rate={rate}, multiplier={multiplier}, n_pulses={n_pulses}, rate_multiplicator={rate_multiplicator}")
+    print(f"corrected:   n_pulses={n_pulses}, multiplier={multiplier}")
     return n_pulses
 
 

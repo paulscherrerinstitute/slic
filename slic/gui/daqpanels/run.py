@@ -67,7 +67,7 @@ class RunPanel(wx.Panel):
         n_pulses = int(n_pulses)
 
         rate = self.eta.value
-        n_pulses = correct_n_pulses(rate, n_pulses, self.acquisition.client.config.rate_multiplicator)
+        n_pulses = correct_n_pulses(n_pulses, rate, self.acquisition.client.config.rate_multiplicator)
 
         continuous = self.cb_contin.IsChecked()
         n_repeat = None if continuous else 1
