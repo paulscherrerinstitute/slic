@@ -21,6 +21,10 @@ class ConfigPanel(wx.Panel):
         instrument = acquisition.instrument
         pgroup = acquisition.pgroup
 
+        #SFDAQ: rate_multiplicator only for sf_daq
+        rate_multiplicator = acquisition.client.config.rate_multiplicator
+        rate_multiplicator = str(rate_multiplicator)
+
         self.chans_det = chans_det = acquisition.default_detectors
         self.chans_bsc = chans_bsc = acquisition.default_channels
         self.chans_pvs = chans_pvs = acquisition.default_pvs
@@ -62,6 +66,8 @@ class ConfigPanel(wx.Panel):
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument, style=wx.TE_READONLY)
         le_pgroup     = LabeledEntry(self, label="pgroup",     value=pgroup,     style=wx.TE_READONLY)
 
+        le_rate_multi = LabeledEntry(self, label="Rate Multiplicator", value=rate_multiplicator, style=wx.TE_READONLY)
+
         try:
             pinfo = get_pgroup_info(pgroup)
             proposer = pinfo["name"]
@@ -83,7 +89,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
