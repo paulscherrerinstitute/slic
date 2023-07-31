@@ -4,7 +4,7 @@ from slic.utils import nice_arange, printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import STRETCH, TwoButtons, StepsRangeEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
-from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
+from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, NOMINAL_REPRATE, run
 
 
 class ScanPanel(wx.Panel):
@@ -76,8 +76,9 @@ class ScanPanel(wx.Panel):
         n_repeat = self.le_nrepeat.GetValue()
         n_repeat = int(n_repeat)
 
-        rate = self.eta.value
-        n_pulses = correct_n_pulses(n_pulses, rate, self.acquisition.client.config.rate_multiplicator)
+        rate = self.eta.value if self.config.is_checked_correct_by_rate() else NOMINAL_REPRATE
+        rm = self.acquisition.client.config.rate_multiplicator if self.config.is_checked_correct_by_rm() else 1
+        n_pulses = correct_n_pulses(n_pulses, rate, rm)
 
         relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
