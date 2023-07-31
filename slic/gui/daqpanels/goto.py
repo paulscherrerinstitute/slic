@@ -9,7 +9,7 @@ from .tools import run
 
 class GoToPanel(wx.Panel):
 
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, _config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         markers   = sorted(instances(Marker),   key=repr)

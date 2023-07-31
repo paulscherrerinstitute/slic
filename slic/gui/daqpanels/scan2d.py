@@ -9,10 +9,12 @@ from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
 
 class Scan2DPanel(wx.Panel):
 
-    def __init__(self, parent, scanner, instrument, *args, **kwargs):
+    def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.scanner = scanner
+        self.scanner = config.scanner
+        instrument = config.instrument
+
         self.scan = None
 
         # widgets:

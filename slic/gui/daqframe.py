@@ -15,22 +15,21 @@ class DAQFrame(wx.Frame):
         wx.Frame.__init__(self, None, title=title)#, size=(350,200))
         self.SetIcon(get_wx_icon())
 
-        acquisition = scanner.default_acquisitions[0] #TODO loop!
-        instrument = acquisition.instrument
-
         panel_main = MainPanel(self)
         notebook = NotebookDX(panel_main)
         panel_main.wrap(notebook)
 
-        panel_config = ConfigPanel(     notebook, acquisition,             name="Config")
-        panel_static = StaticPanel(     notebook, acquisition, instrument, name="Static")
-        panel_scan   = ScanPanel(       notebook, scanner, instrument,     name="Scan")
-        panel_spec   = SpecialScanPanel(notebook, scanner, instrument,     name="Special")
-        panel_scan2D = Scan2DPanel(     notebook, scanner, instrument,     name="Scan2D")
-        panel_tweak  = TweakPanel(      notebook,                          name="Tweak")
-        panel_goto   = GoToPanel(       notebook,                          name="GoTo")
-        panel_run    = RunPanel(        notebook, acquisition, instrument, name="Run")
-        panel_sfx    = SFXPanel(        notebook, acquisition, instrument, name="SFX")
+        panel_config = cfg = ConfigPanel(notebook, scanner, name="Config")
+
+        panel_static = StaticPanel(     notebook, cfg, name="Static")
+        panel_scan   = ScanPanel(       notebook, cfg, name="Scan")
+        panel_spec   = SpecialScanPanel(notebook, cfg, name="Special")
+        panel_scan2D = Scan2DPanel(     notebook, cfg, name="Scan2D")
+        panel_tweak  = TweakPanel(      notebook, cfg, name="Tweak")
+        panel_goto   = GoToPanel(       notebook, cfg, name="GoTo")
+        panel_run    = RunPanel(        notebook, cfg, name="Run")
+        panel_sfx    = SFXPanel(        notebook, cfg, name="SFX")
+
 
         notebook.AddPage(panel_config)
         if show_static: notebook.AddPage(panel_static)

@@ -15,10 +15,12 @@ class RunPanel(wx.Panel):
     # continuous=False
     # wait=True
 
-    def __init__(self, parent, acquisition, instrument, *args, **kwargs):
+    def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.acquisition = acquisition
+        self.acquisition = config.acquisition
+        instrument = config.instrument
+
         self.task = None
 
         # widgets:

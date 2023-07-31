@@ -35,10 +35,13 @@ class SFXPanel(wx.Panel):
     # continuous=False
     # wait=True
 
-    def __init__(self, parent, acquisition, instrument, *args, **kwargs):
+    def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.acquisition = acquisition
+        self.acquisition = config.acquisition
+        instrument = config.instrument
+        pgroup = config.pgroup
+
         self.task = None
 
         # widgets:
@@ -48,7 +51,7 @@ class SFXPanel(wx.Panel):
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses", value="100")
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
-        fn_pattern = f"/sf/{acquisition.instrument}/data/{acquisition.pgroup}/res/automatic/CELL/*.cell"
+        fn_pattern = f"/sf/{instrument}/data/{pgroup}/res/automatic/CELL/*.cell"
         fns = sorted(iglob(fn_pattern))
         cell_names = [
             fn.split("/")[-1].split(".")[0] for fn in fns

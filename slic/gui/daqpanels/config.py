@@ -13,13 +13,13 @@ class ConfigPanel(wx.Panel):
     # instrument
     # pgroup
 
-    def __init__(self, parent, acquisition, *args, **kwargs):
+    def __init__(self, parent, scanner, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.acquisition = acquisition
-
-        instrument = acquisition.instrument
-        pgroup = acquisition.pgroup
+        self.scanner = scanner
+        self.acquisition = acquisition = scanner.default_acquisitions[0] #TODO loop!
+        self.instrument = instrument = acquisition.instrument
+        self.pgroup = pgroup = acquisition.pgroup
 
         #SFDAQ: rate_multiplicator only for sf_daq
         rate_multiplicator = acquisition.client.config.rate_multiplicator

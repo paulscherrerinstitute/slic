@@ -17,10 +17,12 @@ class ScanPanel(wx.Panel):
     # start_immediately=True, step_info=None
     # return_to_initial_values=None
 
-    def __init__(self, parent, scanner, instrument, *args, **kwargs):
+    def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.scanner = scanner
+        self.scanner = config.scanner
+        instrument = config.instrument
+
         self.scan = None
 
         # widgets:
