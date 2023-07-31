@@ -18,6 +18,7 @@ class RunPanel(wx.Panel):
     def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
+        self.config = config
         self.acquisition = config.acquisition
         instrument = config.instrument
 

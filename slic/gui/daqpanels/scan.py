@@ -20,6 +20,8 @@ class ScanPanel(wx.Panel):
     def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
+        self.config = config
+        self.acquisition = config.acquisition
         self.scanner = config.scanner
         instrument = config.instrument
 
@@ -75,7 +77,7 @@ class ScanPanel(wx.Panel):
         n_repeat = int(n_repeat)
 
         rate = self.eta.value
-        n_pulses = correct_n_pulses(n_pulses, rate, self.scanner.default_acquisitions[0].client.config.rate_multiplicator)
+        n_pulses = correct_n_pulses(n_pulses, rate, self.acquisition.client.config.rate_multiplicator)
 
         relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
