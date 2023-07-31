@@ -71,8 +71,8 @@ class ConfigPanel(wx.Panel):
 
         box_cb = wx.StaticBoxSizer(wx.VERTICAL, self, "Correct #Pulses by ...")
 
-        cb_correct_rate = wx.CheckBox(self, label="FEL rate")
-        cb_correct_rm   = wx.CheckBox(self, label="Rate Multiplicator")
+        self.cb_correct_rate = cb_correct_rate = wx.CheckBox(self, label="FEL rate")
+        self.cb_correct_rm   = cb_correct_rm   = wx.CheckBox(self, label="Rate Multiplicator")
 
         cb_correct_rate.SetValue(True)
         cb_correct_rm.SetValue(True)
@@ -107,6 +107,14 @@ class ConfigPanel(wx.Panel):
         widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, box_cb, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
+
+
+
+    def is_checked_correct_by_rate(self):
+        return self.cb_correct_rate.GetValue()
+
+    def is_checked_correct_by_rm(self):
+        return self.cb_correct_rm.GetValue()
 
 
     def on_chans_det(self, _event):
