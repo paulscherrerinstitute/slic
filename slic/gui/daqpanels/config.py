@@ -66,7 +66,22 @@ class ConfigPanel(wx.Panel):
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument, style=wx.TE_READONLY)
         le_pgroup     = LabeledEntry(self, label="pgroup",     value=pgroup,     style=wx.TE_READONLY)
 
+
+        #SFDAQ: rate_multiplicator only for sf_daq
+
+        box_cb = wx.StaticBoxSizer(wx.VERTICAL, self, "Correct #Pulses by ...")
+
+        cb_correct_rate = wx.CheckBox(self, label="FEL rate")
+        cb_correct_rm   = wx.CheckBox(self, label="Rate Multiplicator")
+
+        cb_correct_rate.SetValue(True)
+        cb_correct_rm.SetValue(True)
+
+        widgets = (cb_correct_rate, cb_correct_rm)
+        make_filled_vbox(widgets, border=5, box=box_cb)
+
         le_rate_multi = LabeledEntry(self, label="Rate Multiplicator", value=rate_multiplicator, style=wx.TE_READONLY)
+
 
         try:
             pinfo = get_pgroup_info(pgroup)
@@ -89,7 +104,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, box_cb, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
