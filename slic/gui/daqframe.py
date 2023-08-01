@@ -29,11 +29,13 @@ DEFAULT_SHOW = [
     "Tweak"
 ]
 
+DEFAULT_HIDE = []
+
 
 
 class DAQFrame(wx.Frame):
 
-    def __init__(self, scanner, title="Neat DAQ", tabs=DEFAULT_TABS, start_tab=DEFAULT_START_TAB, show=DEFAULT_SHOW
+    def __init__(self, scanner, title="Neat DAQ", tabs=DEFAULT_TABS, start_tab=DEFAULT_START_TAB, show=DEFAULT_SHOW, hide=DEFAULT_HIDE
 #        show_static=True, show_scan=True, show_spec=False, show_scan2D=True, show_tweak=True, show_goto=False, show_run=False, show_sfx=False
     ):
         wx.Frame.__init__(self, None, title=title)#, size=(350,200))
@@ -48,6 +50,8 @@ class DAQFrame(wx.Frame):
 
         for name, PanelType in tabs.items():
             if name not in show:
+                continue
+            if name in hide:
                 continue
             p = PanelType(notebook, panel_config, name=name)
             notebook.AddPage(p)
