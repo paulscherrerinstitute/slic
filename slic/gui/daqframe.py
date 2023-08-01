@@ -50,6 +50,7 @@ class DAQFrame(wx.Frame):
         panel_config = ConfigPanel(notebook, scanner, name="Config")
         notebook.AddPage(panel_config)
 
+        tabs = parse_tabs(tabs)
         for name, PanelType in tabs.items():
             if name not in show:
                 continue
@@ -58,6 +59,7 @@ class DAQFrame(wx.Frame):
             p = PanelType(notebook, panel_config, name=name)
             notebook.AddPage(p)
 
+        extras = parse_tabs(extras)
         for name, PanelType in extras.items():
             p = PanelType(notebook, panel_config, name=name)
             notebook.AddPage(p)
@@ -78,6 +80,15 @@ class DAQFrame(wx.Frame):
     def on_close(self, event):
         self.persist.save()
         event.Skip() # forward the close event
+
+
+
+def parse_tabs(tabs):
+    res = {}
+    for name, desc in tabs.items():
+        PanelType = DEFAULT_TABS.get(desc, desc)
+        res[name] = PanelType
+    return res
 
 
 
