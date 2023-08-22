@@ -17,7 +17,7 @@ ADJUSTMENTS = {
 }
 
 ALLOWED_CHARS = set(
-    string.ascii_letters + string.digits + "_-"
+    string.ascii_letters + string.digits + "_-+."
 )
 
 

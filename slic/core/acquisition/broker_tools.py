@@ -33,7 +33,7 @@ REFERENCE_PID = 11718051371
 
 #TODO: remove the same from gui code
 ALLOWED_CHARS = set(
-    string.ascii_letters + string.digits + "_-"
+    string.ascii_letters + string.digits + "_-+."
 )
 
 
