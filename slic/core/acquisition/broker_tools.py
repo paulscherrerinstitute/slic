@@ -12,10 +12,10 @@ from slic.utils.cprint import cprint, red, green
 ENDSTATION_TO_PULSEID_PVS = {
     "alvra"  :     "SLAAR11-LTIM01-EVR0:RX-PULSEID",
     "bernina":     "SLAAR21-LTIM01-EVR0:RX-PULSEID",
-    "cristallina": "SLAAR21-LTIM01-EVR0:RX-PULSEID", # fallback to bernina
-    "diavolezza":  "SLAAT31-LTIM01-EVR0:RX-PULSEID", # fallback to furka
-    "maloja" :     "SLAAT21-CVME-EVR0:RX-PULSEID",
-    "furka":       "SLAAT31-LTIM01-EVR0:RX-PULSEID"
+    "cristallina": "SARES30-LTIM01-EVR0:RX-PULSEID",
+    "diavolezza":  "SATES30-CVME-EVR0:RX-PULSEID", # fallback to furka
+    "maloja" :     "SATES20-CVME-EVR0:RX-PULSEID",
+    "furka":       "SATES30-CVME-EVR0:RX-PULSEID"
 }
 
 IP_TO_ENDSTATION = {
