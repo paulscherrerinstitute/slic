@@ -5,7 +5,7 @@ from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, LabeledValuesEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
 from ..persist import PersistableWidget
-from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, NOMINAL_REPRATE, run, post_event
+from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run, post_event
 
 
 class SpecialScanPanel(wx.Panel):
@@ -95,8 +95,8 @@ class SpecialScanPanel(wx.Panel):
         n_repeat = self.le_nrepeat.GetValue()
         n_repeat = int(n_repeat)
 
-        rate = self.eta.value if self.config.is_checked_correct_by_rate() else NOMINAL_REPRATE
-        rm = self.acquisition.client.config.rate_multiplicator if self.config.is_checked_correct_by_rm() else 1
+        rate = self.config.get_rate()
+        rm = self.config.get_rm()
         n_pulses = correct_n_pulses(n_pulses, rate, rm)
 
         relative = self.cb_relative.GetValue()

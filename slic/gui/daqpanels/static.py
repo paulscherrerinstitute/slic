@@ -4,7 +4,7 @@ from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import STRETCH, TwoButtons, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
-from .tools import ETADisplay, correct_n_pulses, NOMINAL_REPRATE, run
+from .tools import ETADisplay, correct_n_pulses, run
 
 
 class StaticPanel(wx.Panel):
@@ -53,8 +53,8 @@ class StaticPanel(wx.Panel):
         n_repeat = self.le_nrepeat.GetValue()
         n_repeat = int(n_repeat)
 
-        rate = self.eta.value if self.config.is_checked_correct_by_rate() else NOMINAL_REPRATE
-        rm = self.acquisition.client.config.rate_multiplicator if self.config.is_checked_correct_by_rm() else 1
+        rate = self.config.get_rate()
+        rm = self.config.get_rm()
         n_pulses = correct_n_pulses(n_pulses, rate, rm)
 
         self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, n_repeat=n_repeat, wait=False)
