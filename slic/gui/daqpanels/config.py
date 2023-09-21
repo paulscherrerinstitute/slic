@@ -4,7 +4,7 @@ from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.reprate import get_beamline, get_pvname_reprate
 from slic.utils.duo import get_pgroup_info
 
-from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox
+from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox, CheckBox
 from .tools import PVDisplay, NOMINAL_REPRATE
 from ..widgets.jfcfg import show_list_jf
 
@@ -71,8 +71,8 @@ class ConfigPanel(wx.Panel):
 
         box_cb = wx.StaticBoxSizer(wx.VERTICAL, self, "Correct #Pulses by ...")
 
-        self.cb_correct_rate = cb_correct_rate = wx.CheckBox(self, label="FEL rate")
-        self.cb_correct_rm   = cb_correct_rm   = wx.CheckBox(self, label="Rate Multiplicator")
+        self.cb_correct_rate = cb_correct_rate = CheckBox(self, label="FEL rate")
+        self.cb_correct_rm   = cb_correct_rm   = CheckBox(self, label="Rate Multiplicator")
 
         cb_correct_rate.SetValue(True)
         cb_correct_rm.SetValue(True)
