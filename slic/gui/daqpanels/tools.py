@@ -171,18 +171,24 @@ class ETADisplay(PVDisplay):
             rate = self.value
             units = self.units
 
-        rate = rate if self.config.is_checked_correct_by_rate() else NOMINAL_REPRATE
-        rm = self.config.acquisition.client.config.rate_multiplicator if self.config.is_checked_correct_by_rm() else 1
-        rate /= rm
+        cfg_rate = self.config.get_rate()
+        cfg_rm = self.config.get_rm()
+        if cfg_rate and cfg_rm:
+            cfg_rate /= cfg_rm
+        else:
+            cfg_rate = 0
 
         if units != "Hz":
             log.warning(f"Units of repetition rate PV are {units} and not Hz")
+
+        # use rate for the check to show infinity even if correction for FEL rate is disabled
+        # use cfg_rate for the calculation to handle corrections correctly
 
         if rate == 0 or factor is None:
             secs = "∞"
             tooltip = "Consider getting a cup of coffee ..."
         else:
-            secs = factor / rate
+            secs = factor / cfg_rate
             tooltip = str(secs)
             secs = readable_seconds(secs)
 
