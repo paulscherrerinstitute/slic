@@ -5,7 +5,7 @@ from slic.utils.reprate import get_beamline, get_pvname_reprate
 from slic.utils.duo import get_pgroup_info
 
 from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox
-from .tools import PVDisplay
+from .tools import PVDisplay, NOMINAL_REPRATE
 from ..widgets.jfcfg import show_list_jf
 
 
@@ -108,6 +108,13 @@ class ConfigPanel(wx.Panel):
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
+
+
+    def get_rate(self):
+        return self.pvd_reprate.value if self.is_checked_correct_by_rate() else NOMINAL_REPRATE
+
+    def get_rm(self):
+        return self.acquisition.client.config.rate_multiplicator if self.is_checked_correct_by_rm() else 1
 
 
     def is_checked_correct_by_rate(self):
