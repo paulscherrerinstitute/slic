@@ -126,7 +126,8 @@ class PVDisplay(wx.BoxSizer):
 
 class ETADisplay(PVDisplay):
 
-    def __init__(self, parent, label, pvname, *textctrls, **kwargs):
+    def __init__(self, parent, config, pvname, *textctrls, label="Estimated time needed",**kwargs):
+        self.config = config
         self.textctrls = textctrls #TODO why does only this order work?
 
         super().__init__(parent, label, pvname, **kwargs)
@@ -134,8 +135,19 @@ class ETADisplay(PVDisplay):
         for tc in textctrls:
             tc.Bind(wx.EVT_TEXT, self.update)
 
+        cbs = [
+            config.cb_correct_rate,
+            config.cb_correct_rm
+        ]
 
-    def update(self, _event):
+        for cb in cbs:
+            cb.Bind(wx.EVT_CHECKBOX, self.update)
+
+
+    def update(self, event):
+        if event:
+            event.Skip() # allow further processing in other checkboxes/textctrls
+
         factor = 1
         for tc in self.textctrls:
             try:
@@ -158,6 +170,10 @@ class ETADisplay(PVDisplay):
         else:
             rate = self.value
             units = self.units
+
+        rate = rate if self.config.is_checked_correct_by_rate() else NOMINAL_REPRATE
+        rm = self.config.acquisition.client.config.rate_multiplicator if self.config.is_checked_correct_by_rm() else 1
+        rate /= rm
 
         if units != "Hz":
             log.warning(f"Units of repetition rate PV are {units} and not Hz")

@@ -60,7 +60,7 @@ class SFXPanel(wx.Panel):
         self.lc_cell_name = lc_cell_name = LabeledChoice(self, label="Cell Name", choices=choices)
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_npulses)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, le_npulses)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)

@@ -42,7 +42,7 @@ class SpecialScanPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_nsteps, le_npulses, le_nrepeat)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, le_nsteps, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
