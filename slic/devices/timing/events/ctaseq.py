@@ -1,18 +1,85 @@
+from time import sleep, time
+from types import SimpleNamespace
+
 from cta_lib import CtaLib
+
+from slic.utils import typename
+from slic.utils.hastyepics import get_pv as PV
 
 
 class CTASequencer:
 
-    def __init__(self, ID):
+    def __init__(self, ID, wait_time=1):
+        self.ID = ID
+        self.wait_time = wait_time
+
         self.cta_client = cc = CtaLib(ID)
         self.cfg = Config(cc)
         self.seq = Sequence(cc)
+
+        pvname_start_pid = ID + ":seq0Ctrl-StartedAt-O"
+        pvname_length    = ID + ":seq0Ctrl-Length-I"
+
+        pv_start_pid = PV(pvname_start_pid)
+        pv_length    = PV(pvname_length)
+
+        self.pvnames = SimpleNamespace(
+            start_pid = pvname_start_pid,
+            length    = pvname_length
+        )
+
+        self.pvs = SimpleNamespace(
+            start_pid = pv_start_pid,
+            length    = pv_length
+        )
+
+
+    def run(self):
+        try:
+            self.start()
+            time_start = time()
+            while self.is_running():
+                sleep(self.wait_time)
+                delta_time = time() - time_start
+                print(f"Waiting since {delta_time} seconds for CTA sequence to finish")
+        except Exception:
+            self.stop()
+            raise
 
     def start(self):
         self.cta_client.start()
 
     def stop(self):
         self.cta_client.stop()
+
+
+    def __repr__(self):
+        tn = typename(self)
+        return f"{tn} \"{self.ID}\": {self.status}"
+
+    @property
+    def status(self):
+        if self.is_running():
+            return "running"
+        return "idle"
+
+    def is_running(self):
+        return self.cta_client.is_running()
+
+    running = property(is_running)
+
+
+    def get_start_pid(self):
+        start_pid = self.pvs.start_pid.get()
+        return int(start_pid)
+
+    def get_stop_pid(self):
+        start_pid = self.get_start_pid()
+        length    = self.get_length()
+        return start_pid + length - 1
+
+    def get_length(self):
+        return self.pvs.length.get()
 
 
 
@@ -90,6 +157,12 @@ class Config:
         self.cta_client.set_repetition_config(cfg)
 
 
+    def __repr__(self):
+        cfg = self.cta_client.get_start_config()
+        cfg["repetitions"] = self.repetitions
+        return repr(cfg)
+
+
 
 class Sequence:
 
@@ -132,6 +205,10 @@ class Sequence:
         self.data = data
         self.length = length
         self.synced = False
+
+
+    def __repr__(self):
+        return repr(self.data)
 
 
 
