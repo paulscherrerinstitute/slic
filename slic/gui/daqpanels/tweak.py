@@ -31,6 +31,10 @@ class TweakPanel(wx.Panel):
 
         self.task = None
 
+        # used for handing over log entries from _move_delta to on_go
+        self.next_entry_line = None
+        self.next_entry_color = None
+
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(self)
         self.le_abs  = le_abs  = LabeledMathEntry(self, label="Absolute Position")
@@ -87,6 +91,9 @@ class TweakPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
+        if self.next_entry_line is None:
+            delta = target - adjustable.get_current_value()
+
         self.task = adjustable.set_target_value(target)
 
         def wait():
@@ -98,6 +105,25 @@ class TweakPanel(wx.Panel):
             post_event(wx.EVT_BUTTON,   self.btn_go.btn2)
 
         run(wait)
+
+        def update_log():
+            if self.next_entry_line is not None:
+                entry = self.next_entry_line
+                color = self.next_entry_color
+                self.next_entry_line = None
+                self.next_entry_color = None
+            else:
+                timestamp = datetime.now()
+                adjname = adjustable.name
+                operation = "="
+                delta_pm = "{:+g}".format(delta)
+                entry = [timestamp, adjname, operation, delta_pm]
+                color = None
+            readback = adjustable.get_current_value()
+            entry.append(readback)
+            self.lc_log.Prepend(entry, color=color)
+
+        wx.CallAfter(update_log)
 
 
     def on_stop(self, _event):
@@ -135,20 +161,17 @@ class TweakPanel(wx.Panel):
         delta *= direction
         target = current + delta
 
+        timestamp = datetime.now()
+        adjname = adj.name
+        operation = TWEAK_OPERATIONS.get(direction, direction)
+        delta_pm = "{:+g}".format(delta)
+        entry = [timestamp, adjname, operation, delta_pm]
+        color = TWEAK_COLORS.get(direction)
+        self.next_entry_line = entry
+        self.next_entry_color = color
+
         self.le_abs.SetValue(target)
         post_event(wx.EVT_BUTTON, self.btn_go.btn1)
-
-        def update_log():
-            timestamp = datetime.now()
-            adjname = adj.name
-            operation = TWEAK_OPERATIONS.get(direction, direction)
-            delta_pm = "{:+g}".format(delta)
-            readback = adj.get_current_value()
-            entry = (timestamp, adjname, operation, delta_pm, readback)
-            color = TWEAK_COLORS.get(direction)
-            self.lc_log.Prepend(entry, color=color)
-
-        wx.CallAfter(update_log)
 
 
     def on_double_click_log_entry(self, event):
