@@ -59,6 +59,7 @@ class ScanPanel(wx.Panel):
 
         adjustable = self.sel_adj.get()
         if adjustable is None:
+            self.sel_adj.nope()
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 

@@ -7,8 +7,7 @@ from slic.core.adjustable import Adjustable
 from slic.utils.registry import instances
 from slic.utils import readable_seconds
 
-from ..widgets import post_event
-from ..widgets import ContainsTextCompleter
+from ..widgets import post_event, ContainsTextCompleter, Nope
 
 
 NOMINAL_REPRATE = 100 # Hz
@@ -32,6 +31,8 @@ class AdjustableSelection(wx.BoxSizer):
 
         self.Add(select,  1, flag=wx.EXPAND|wx.BOTTOM, border=10)
         self.Add(current, 1, flag=wx.EXPAND|wx.TOP,    border=10)
+
+        self.nope = Nope(self.select)
 
 
     def on_change(self, _event):

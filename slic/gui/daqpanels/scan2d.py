@@ -44,7 +44,12 @@ class Scan2DPanel(wx.Panel):
             return
 
         adjustable1 = self.adjbox1.sel_adj.get()
+        if adjustable1 is None:
+            self.adjbox1.sel_adj.nope()
+
         adjustable2 = self.adjbox2.sel_adj.get()
+        if adjustable2 is None:
+            self.adjbox2.sel_adj.nope()
 
         if adjustable1 is None or adjustable2 is None:
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)

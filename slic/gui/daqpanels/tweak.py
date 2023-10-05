@@ -88,6 +88,7 @@ class TweakPanel(wx.Panel):
 
         adjustable = self.sel_adj.get()
         if adjustable is None:
+            self.sel_adj.nope()
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
@@ -154,6 +155,7 @@ class TweakPanel(wx.Panel):
         print("move delta", direction)
         adj = self.sel_adj.get()
         if adj is None:
+            self.sel_adj.nope()
             return
 
         current = adj.get_current_value()
