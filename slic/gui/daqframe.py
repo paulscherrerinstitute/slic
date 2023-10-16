@@ -100,10 +100,15 @@ class DAQFrame(wx.Frame):
         sizer.Add(panel_main, proportion=1, flag=wx.EXPAND)
         self.SetSizerAndFit(sizer)
 
-        #TODO: prepend the DEFAULT_TITLE for custom titles?
+        if title == DEFAULT_TITLE:
+            fn = DEFAULT_TITLE
+        else:
+            fn = DEFAULT_TITLE + "-" + title
+
         #TODO: might need deeper cleaning
-        fn = title.casefold()
+        fn = fn.casefold()
         fn = remove_whitespace(fn)
+
         self.persist = persist = Persistence(fn, self)
         persist.load()
 
