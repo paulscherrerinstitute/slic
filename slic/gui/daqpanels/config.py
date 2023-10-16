@@ -75,7 +75,7 @@ class ConfigPanel(wx.Panel):
         self.cb_correct_rm   = cb_correct_rm   = CheckBox(self, label="Rate Multiplicator")
 
         cb_correct_rate.SetValue(True)
-        cb_correct_rm.SetValue(True)
+        cb_correct_rm.SetValue(False)
 
         widgets = (cb_correct_rate, cb_correct_rm)
         make_filled_vbox(widgets, border=5, box=box_cb)
