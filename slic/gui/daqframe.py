@@ -9,6 +9,9 @@ from .icon import get_wx_icon
 from .persist import Persistence
 
 
+DEFAULT_TITLE = "Neat DAQ"
+
+
 DEFAULT_TABS = {
     "Static":  StaticPanel,
     "Scan":    ScanPanel,
@@ -61,7 +64,7 @@ KWARGS_CORRECTION = {
 
 class DAQFrame(wx.Frame):
 
-    def __init__(self, scanner, title="Neat DAQ", tabs=DEFAULT_TABS, start_tab=DEFAULT_START_TAB, show=DEFAULT_SHOW, hide=DEFAULT_HIDE, extras=DEFAULT_EXTRAS, **kwargs):
+    def __init__(self, scanner, title=DEFAULT_TITLE, tabs=DEFAULT_TABS, start_tab=DEFAULT_START_TAB, show=DEFAULT_SHOW, hide=DEFAULT_HIDE, extras=DEFAULT_EXTRAS, **kwargs):
         wx.Frame.__init__(self, None, title=title)#, size=(350,200))
         self.SetIcon(get_wx_icon())
 
@@ -97,7 +100,11 @@ class DAQFrame(wx.Frame):
         sizer.Add(panel_main, proportion=1, flag=wx.EXPAND)
         self.SetSizerAndFit(sizer)
 
-        self.persist = persist = Persistence("neatdaq", self)
+        #TODO: prepend the DEFAULT_TITLE for custom titles?
+        #TODO: might need deeper cleaning
+        fn = title.casefold()
+        fn = remove_whitespace(fn)
+        self.persist = persist = Persistence(fn, self)
         persist.load()
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
@@ -129,6 +136,9 @@ def parse_kwargs(kwargs):
         which = show if value else hide
         which.append(name)
     return show, hide
+
+def remove_whitespace(s):
+    return "".join(s.split())
 
 
 
