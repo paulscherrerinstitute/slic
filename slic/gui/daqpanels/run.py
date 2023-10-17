@@ -15,10 +15,13 @@ class RunPanel(wx.Panel):
     # continuous=False
     # wait=True
 
-    def __init__(self, parent, acquisition, instrument, *args, **kwargs):
+    def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.acquisition = acquisition
+        self.config = config
+        self.acquisition = config.acquisition
+        instrument = config.instrument
+
         self.task = None
 
         # widgets:
@@ -29,7 +32,7 @@ class RunPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_npulses)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, le_npulses)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
@@ -66,8 +69,9 @@ class RunPanel(wx.Panel):
         n_pulses = self.le_npulses.GetValue()
         n_pulses = int(n_pulses)
 
-        rate = self.eta.value
-        n_pulses = correct_n_pulses(rate, n_pulses)
+        rate = self.config.get_rate()
+        rm = self.config.get_rm()
+        n_pulses = correct_n_pulses(n_pulses, rate, rm)
 
         continuous = self.cb_contin.IsChecked()
         n_repeat = None if continuous else 1

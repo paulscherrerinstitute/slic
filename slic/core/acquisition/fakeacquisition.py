@@ -92,12 +92,20 @@ def shuffle(seq):
 
 class FakeClient:
 
-    run_number = 0
+    def __init__(self):
+        self.run_number = 0
+        self.config = FakeConfig()
 
     def next_run(self):
         self.run_number += 1
         print("run number is", self.run_number)
         return self.run_number
+
+
+
+class FakeConfig:
+
+    rate_multiplicator = 1
 
 
 

@@ -14,10 +14,13 @@ class StaticPanel(wx.Panel):
     # n_pulses=100
     # wait=True
 
-    def __init__(self, parent, acquisition, instrument, *args, **kwargs):
+    def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.acquisition = acquisition
+        self.config = config
+        self.acquisition = config.acquisition
+        instrument = config.instrument
+
         self.task = None
 
         # widgets:
@@ -26,7 +29,7 @@ class StaticPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, le_npulses, le_nrepeat)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
@@ -50,8 +53,9 @@ class StaticPanel(wx.Panel):
         n_repeat = self.le_nrepeat.GetValue()
         n_repeat = int(n_repeat)
 
-        rate = self.eta.value
-        n_pulses = correct_n_pulses(rate, n_pulses)
+        rate = self.config.get_rate()
+        rm = self.config.get_rm()
+        n_pulses = correct_n_pulses(n_pulses, rate, rm)
 
         self.task = self.acquisition.acquire(filename, n_pulses=n_pulses, n_repeat=n_repeat, wait=False)
 

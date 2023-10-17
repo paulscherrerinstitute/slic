@@ -127,7 +127,8 @@ class PVDisplay(wx.BoxSizer):
 
 class ETADisplay(PVDisplay):
 
-    def __init__(self, parent, label, pvname, *textctrls, **kwargs):
+    def __init__(self, parent, config, pvname, *textctrls, label="Estimated time needed",**kwargs):
+        self.config = config
         self.textctrls = textctrls #TODO why does only this order work?
 
         super().__init__(parent, label, pvname, **kwargs)
@@ -135,8 +136,19 @@ class ETADisplay(PVDisplay):
         for tc in textctrls:
             tc.Bind(wx.EVT_TEXT, self.update)
 
+        cbs = [
+            config.cb_correct_rate,
+            config.cb_correct_rm
+        ]
 
-    def update(self, _event):
+        for cb in cbs:
+            cb.Bind(wx.EVT_CHECKBOX, self.update)
+
+
+    def update(self, event):
+        if event:
+            event.Skip() # allow further processing in other checkboxes/textctrls
+
         factor = 1
         for tc in self.textctrls:
             try:
@@ -160,14 +172,24 @@ class ETADisplay(PVDisplay):
             rate = self.value
             units = self.units
 
+        cfg_rate = self.config.get_rate()
+        cfg_rm = self.config.get_rm()
+        if cfg_rate and cfg_rm:
+            cfg_rate /= cfg_rm
+        else:
+            cfg_rate = 0
+
         if units != "Hz":
             log.warning(f"Units of repetition rate PV are {units} and not Hz")
+
+        # use rate for the check to show infinity even if correction for FEL rate is disabled
+        # use cfg_rate for the calculation to handle corrections correctly
 
         if rate == 0 or factor is None:
             secs = "∞"
             tooltip = "Consider getting a cup of coffee ..."
         else:
-            secs = factor / rate
+            secs = factor / cfg_rate
             tooltip = str(secs)
             secs = readable_seconds(secs)
 
@@ -183,13 +205,14 @@ def run(fn): # TODO
 
 
 
-def correct_n_pulses(rate, n_pulses):
+def correct_n_pulses(n_pulses, rate, rate_multiplicator):
+    print(f"uncorrected: n_pulses={n_pulses}, rate={rate}, rate_multiplicator={rate_multiplicator}")
     if not rate:
         raise ValueError(f"cannot calculate #Pulses for Rep. Rate = {rate}")
-    multiplier = NOMINAL_REPRATE / rate
+    multiplier = NOMINAL_REPRATE / rate / rate_multiplicator
     n_pulses *= multiplier
     n_pulses = int(n_pulses)
-    print(f"rate={rate}, multiplier={multiplier}, n_pulses={n_pulses}")
+    print(f"corrected:   n_pulses={n_pulses}, multiplier={multiplier}")
     return n_pulses
 
 

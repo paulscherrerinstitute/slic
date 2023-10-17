@@ -4,8 +4,8 @@ from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.reprate import get_beamline, get_pvname_reprate
 from slic.utils.duo import get_pgroup_info
 
-from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox
-from .tools import PVDisplay
+from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox, CheckBox
+from .tools import PVDisplay, NOMINAL_REPRATE
 from ..widgets.jfcfg import show_list_jf
 
 
@@ -13,13 +13,17 @@ class ConfigPanel(wx.Panel):
     # instrument
     # pgroup
 
-    def __init__(self, parent, acquisition, *args, **kwargs):
+    def __init__(self, parent, scanner, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.acquisition = acquisition
+        self.scanner = scanner
+        self.acquisition = acquisition = scanner.default_acquisitions[0] #TODO loop!
+        self.instrument = instrument = acquisition.instrument
+        self.pgroup = pgroup = acquisition.pgroup
 
-        instrument = acquisition.instrument
-        pgroup = acquisition.pgroup
+        #SFDAQ: rate_multiplicator only for sf_daq
+        rate_multiplicator = acquisition.client.config.rate_multiplicator
+        rate_multiplicator = str(rate_multiplicator)
 
         self.chans_det = chans_det = acquisition.default_detectors
         self.chans_bsc = chans_bsc = acquisition.default_channels
@@ -62,6 +66,23 @@ class ConfigPanel(wx.Panel):
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument, style=wx.TE_READONLY)
         le_pgroup     = LabeledEntry(self, label="pgroup",     value=pgroup,     style=wx.TE_READONLY)
 
+
+        #SFDAQ: rate_multiplicator only for sf_daq
+
+        box_cb = wx.StaticBoxSizer(wx.VERTICAL, self, "Correct #Pulses by ...")
+
+        self.cb_correct_rate = cb_correct_rate = CheckBox(self, label="FEL rate")
+        self.cb_correct_rm   = cb_correct_rm   = CheckBox(self, label="Rate Multiplicator")
+
+        cb_correct_rate.SetValue(True)
+        cb_correct_rm.SetValue(False)
+
+        widgets = (cb_correct_rate, cb_correct_rm)
+        make_filled_vbox(widgets, border=5, box=box_cb)
+
+        le_rate_multi = LabeledEntry(self, label="Rate Multiplicator", value=rate_multiplicator, style=wx.TE_READONLY)
+
+
         try:
             pinfo = get_pgroup_info(pgroup)
             proposer = pinfo["name"]
@@ -83,9 +104,24 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, box_cb, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
+
+
+
+    def get_rate(self):
+        return self.pvd_reprate.value if self.is_checked_correct_by_rate() else NOMINAL_REPRATE
+
+    def get_rm(self):
+        return self.acquisition.client.config.rate_multiplicator if self.is_checked_correct_by_rm() else 1
+
+
+    def is_checked_correct_by_rate(self):
+        return self.cb_correct_rate.GetValue()
+
+    def is_checked_correct_by_rm(self):
+        return self.cb_correct_rm.GetValue()
 
 
     def on_chans_det(self, _event):

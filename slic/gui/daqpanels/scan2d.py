@@ -9,10 +9,14 @@ from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
 
 class Scan2DPanel(wx.Panel):
 
-    def __init__(self, parent, scanner, instrument, *args, **kwargs):
+    def __init__(self, parent, config, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.scanner = scanner
+        self.config = config
+        self.acquisition = config.acquisition
+        self.scanner = config.scanner
+        instrument = config.instrument
+
         self.scan = None
 
         # widgets:
@@ -27,7 +31,7 @@ class Scan2DPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, "Estimated time needed", pvname_reprate, adjbox1.adj_range.nsteps, adjbox2.adj_range.nsteps, le_npulses, le_nrepeat)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, adjbox1.adj_range.nsteps, adjbox2.adj_range.nsteps, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
@@ -66,8 +70,9 @@ class Scan2DPanel(wx.Panel):
         n_repeat = self.le_nrepeat.GetValue()
         n_repeat = int(n_repeat)
 
-        rate = self.eta.value
-        n_pulses = correct_n_pulses(rate, n_pulses)
+        rate = self.config.get_rate()
+        rm = self.config.get_rm()
+        n_pulses = correct_n_pulses(n_pulses, rate, rm)
 
         relative1 = self.adjbox1.cb_relative.GetValue()
         relative2 = self.adjbox2.cb_relative.GetValue()
