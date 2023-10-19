@@ -21,7 +21,7 @@ class AlarmMixin:
         wx.GetTopLevelParent(obj).Raise()
         if dbn:
             timestamp = datetime.now()
-            dbn.notify(f"Current task is done...", str(timestamp), app_icon=icon)
+            dbn.notify("Current task is done...", str(timestamp), app_icon=icon)
 
 
 
