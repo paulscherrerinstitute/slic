@@ -18,15 +18,30 @@ IDS = {
     "controls":     "CS"
 }
 
+IDS_INVERSE = {v: k for k, v in IDS.items()}
+
 
 class OperationMessages:
 
     def __init__(self):
-        self.oms = {name: OperationMessage(ID) for name, ID in IDS.items()}
+        self._oms = oms = {name: OperationMessage(ID) for name, ID in IDS.items()}
+
+        for name, om in oms.items():
+            name = name.replace(" ", "_")
+            setattr(self, name, om)
+
+
+    def __getitem__(self, key):
+        key = IDS_INVERSE.get(key, key)
+        return self._oms[key]
+
+    def _ipython_key_completions_(self):
+        return self._oms.keys()
+
 
     def __repr__(self):
         res = []
-        for name, om in self.oms.items():
+        for name, om in self._oms.items():
             length = len(name)
             res.append(name)
             res.append("-" * length)
