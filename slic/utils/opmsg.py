@@ -1,7 +1,7 @@
 from .hastyepics import get_pv as PV
 
 
-N_MSG_HISTORY = 3
+N_MSG_HISTORY = 3 # actual limit is 10
 
 IDS = {
     "control room": "CR",
@@ -26,7 +26,7 @@ class OperationMessages:
 
     def __repr__(self):
         res = []
-        for name, om in self.oms:
+        for name, om in self.oms.items():
             length = len(name)
             res.append(name)
             res.append("-" * length)
@@ -44,7 +44,7 @@ class OperationMessage:
         pvname_send = f"{prefix}:OP-MSG-tmp"
         self.pv_send = PV(pvname_send)
 
-        self.entries = [OperationMessageEntry(prefix, i) for i in range(N_MSG_HISTORY)]
+        self.entries = [OperationMessageEntry(prefix, i+1) for i in range(N_MSG_HISTORY)]
 
 
     def update(self, msg):
