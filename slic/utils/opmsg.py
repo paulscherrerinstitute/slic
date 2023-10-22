@@ -1,21 +1,22 @@
 from .hastyepics import get_pv as PV
+from .printing import itemize
 
 
 N_MSG_HISTORY = 3 # actual limit is 10
 
 IDS = {
-    "control room": "CR",
+    "Control Room": "CR",
 
-    "alvra":        "ESA",
-    "bernina":      "ESB",
-    "cristallina":  "ESC",
+    "Alvra":        "ESA",
+    "Bernina":      "ESB",
+    "Cristallina":  "ESC",
 
-    "diavolezza":   "ESD",
-    "maloja":       "ESE",
-    "furka":        "ESF",
+    "Diavolezza":   "ESD",
+    "Maloja":       "ESE",
+    "Furka":        "ESF",
 
-    "gun laser":    "SLG",
-    "controls":     "CS"
+    "Gun Laser":    "SLG",
+    "Controls":     "CS"
 }
 
 IDS_INVERSE = {v: k for k, v in IDS.items()}
@@ -24,49 +25,61 @@ IDS_INVERSE = {v: k for k, v in IDS.items()}
 class OperationMessages:
 
     def __init__(self):
-        self._oms = oms = {name: OperationMessage(ID) for name, ID in IDS.items()}
+        self.entries = entries = {}
+        self._items = items = {}
 
-        for name, om in oms.items():
-            name = name.replace(" ", "_")
-            setattr(self, name, om)
+        for name, ID in IDS.items():
+            om = OperationMessage(ID)
+            entries[name] = om
+
+            # attach as attribute
+            attr_name = name.lower().replace(" ", "_")
+            setattr(self, attr_name, om)
+
+            # fill second dict with alternative key formats
+            ID = IDS.get(name, name)
+            items[ID] = items[name] = items[name.lower()] = items[attr_name] = om
 
 
     def __getitem__(self, key):
-        key = IDS_INVERSE.get(key, key)
-        return self._oms[key]
+        return self._items[key]
 
     def _ipython_key_completions_(self):
-        return self._oms.keys()
+        return self._items.keys()
 
 
     def __repr__(self):
-        res = []
-        for name, om in self._oms.items():
-            length = len(name)
-            res.append(name)
-            res.append("-" * length)
-            res.append(repr(om))
-            res.append(" " * length)
-        return "\n".join(res)
+        entries = (repr(i) for i in self.entries.values())
+        return "\n\n".join(entries)
 
 
 
 class OperationMessage:
 
-    def __init__(self, ID):
-        prefix = f"SF-OP:{ID}-MSG"
+    def __init__(self, ID_or_name):
+        self.ID   = ID   = IDS.get(ID_or_name, ID_or_name)
+        self.name = name = IDS_INVERSE.get(ID, ID_or_name)
+
+        self.prefix = prefix = f"SF-OP:{ID}-MSG"
 
         pvname_send = f"{prefix}:OP-MSG-tmp"
         self.pv_send = PV(pvname_send)
 
-        self.entries = [OperationMessageEntry(prefix, i+1) for i in range(N_MSG_HISTORY)]
+        self.entries = [
+            OperationMessageEntry(prefix, i+1) for i in range(N_MSG_HISTORY)
+        ]
 
 
     def update(self, msg):
         self.pv_send.put(msg)
 
+    def __getitem__(self, index):
+        return self.entries[index]
+
     def __repr__(self):
-        return "\n".join(repr(i) for i in self.entries)
+        header = f"{self.name} ({self.ID})"
+        entries = (repr(i) for i in self.entries)
+        return itemize(entries, header=header)
 
 
 
