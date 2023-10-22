@@ -47,7 +47,7 @@ class OperationMessages:
             attr_name = clean_name(name)
             setattr(self, attr_name, om)
 
-            # fill second dict with alternative key formats
+            # fill second dict with cleaned keys
             cleaned_ID = clean_name(ID)
             items[cleaned_ID] = items[attr_name] = om
 
@@ -90,6 +90,8 @@ class OperationMessage:
         pvname_send = f"{prefix}:OP-MSG-tmp"
         self.pv_send = PV(pvname_send)
 
+        self.status = OperationMessageStatus(prefix)
+
         self.entries = [
             OperationMessageEntry(prefix, i+1) for i in range(N_MSG_HISTORY)
         ]
@@ -103,7 +105,7 @@ class OperationMessage:
 
     def __repr__(self):
         header = f"{self.name} ({self.ID})"
-        entries = (repr(i) for i in self.entries)
+        entries = [self.status] + [repr(i) for i in self.entries]
         return itemize(entries, header=header)
 
 
@@ -131,12 +133,56 @@ class OperationMessageEntry:
 
 
 
-#TODO:
+class OperationMessageStatus:
 
-# status:
-#
-# status dropdown/enum: SF-OP:{ID}-MSG:STATUS
-# status change date:   SF-OP:{ID}-MSG:STATUS-DATE
+    def __init__(self, prefix):
+        pvname_date   = f"{prefix}:STATUS-DATE"
+        pvname_status = f"{prefix}:STATUS"
+
+        self.pv_date   = PV(pvname_date)
+        self.pv_status = PV(pvname_status)
+
+
+    @property
+    def date(self):
+        return self.pv_date.get()
+
+    @property
+    def status(self):
+        return self.pv_status.get(as_string=True)
+
+    def __repr__(self):
+        return f"{self.date} {self.status}"
+
+
+    #TODO: auto generate those?
+
+    def set_offline(self):
+        self.update("OFFLINE")
+
+    def set_preparation(self):
+        self.update("PREPARATION")
+
+    def set_remote(self):
+        self.update("REMOTE")
+
+    def set_attended(self):
+        self.update("ATTENDED")
+
+
+    def update(self, value):
+        value = value.upper()
+        allowed = self.get_allowed()
+        if value not in allowed:
+            raise ValueError(f'value "{value}" is not from allowed values: {allowed}')
+        self.pv_status.put(value)
+
+    def get_allowed(self):
+        return self.pv_status.enum_strs
+
+
+
+#TODO:
 
 # machine:
 #
