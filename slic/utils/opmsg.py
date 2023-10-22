@@ -19,6 +19,11 @@ IDS = {
     "Controls":     "CS"
 }
 
+BEAMLINES = [
+    "ARAMIS",
+    "ATHOS"
+]
+
 
 IDS_INVERSE = {v: k for k, v in IDS.items()}
 
@@ -182,17 +187,33 @@ class OperationMessageStatus:
 
 
 
-#TODO:
+class MachineStatus:
 
-# machine:
-#
-# SF-STATUS-{BL}:CATEGORY
-#
-# SF-STATUS-{BL}:DOWNTIME
-#     0 Uptime
-#     1 Downtime
-#
-# BL = ARAMIS or ATHOS
+    def __init__(self, beamline):
+        self.beamline = beamline = beamline.upper()
+
+        if beamline not in BEAMLINES:
+            raise ValueError(f'beamline "{beamline}" must be from: {BEAMLINES}')
+
+        prefix = f"SF-STATUS-{beamline}"
+
+        pvname_category = f"{prefix}:CATEGORY"
+        pvname_downtime = f"{prefix}:DOWNTIME"
+
+        self.pv_category = PV(pvname_category)
+        self.pv_downtime = PV(pvname_downtime)
+
+
+    @property
+    def category(self):
+        return self.pv_category.get(as_string=True)
+
+    @property
+    def downtime(self):
+        return self.pv_downtime.get(as_string=True)
+
+    def __repr__(self):
+        return f"{self.category} {self.downtime}"
 
 
 
