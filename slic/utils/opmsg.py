@@ -19,7 +19,18 @@ IDS = {
     "Controls":     "CS"
 }
 
+
 IDS_INVERSE = {v: k for k, v in IDS.items()}
+
+def clean_name(n):
+    return n.lower().replace(" ", "_")
+
+NAMES_CLEANED = {clean_name(n): n for n in IDS}
+
+def harmonize_name(name):
+    n = clean_name(name)
+    return NAMES_CLEANED.get(n, name)
+
 
 
 class OperationMessages:
@@ -29,24 +40,27 @@ class OperationMessages:
         self._items = items = {}
 
         for name, ID in IDS.items():
-            om = OperationMessage(ID)
+            om = OperationMessage(name=name, ID=ID)
             entries[name] = om
 
             # attach as attribute
-            attr_name = name.lower().replace(" ", "_")
+            attr_name = clean_name(name)
             setattr(self, attr_name, om)
 
             # fill second dict with alternative key formats
-            ID = IDS.get(name, name)
-            items[ID] = items[name] = items[name.lower()] = items[attr_name] = om
+            cleaned_ID = clean_name(ID)
+            items[cleaned_ID] = items[attr_name] = om
 
 
     def __getitem__(self, key):
+        key = clean_name(key)
         return self._items[key]
 
     def _ipython_key_completions_(self):
         return self._items.keys()
 
+    def __iter__(self):
+        return iter(self.entries.values())
 
     def __repr__(self):
         entries = (repr(i) for i in self.entries.values())
@@ -56,9 +70,20 @@ class OperationMessages:
 
 class OperationMessage:
 
-    def __init__(self, ID_or_name):
-        self.ID   = ID   = IDS.get(ID_or_name, ID_or_name)
-        self.name = name = IDS_INVERSE.get(ID, ID_or_name)
+    def __init__(self, name=None, ID=None):
+        if name is None and ID is None:
+            raise ValueError("please provide name or ID")
+
+        if ID is not None:
+            ID = ID.upper()
+            if name is None:
+                name = IDS_INVERSE.get(ID, ID)
+        else:
+            canonical_name = harmonize_name(name)
+            ID = IDS[canonical_name]
+
+        self.name = name
+        self.ID = ID
 
         self.prefix = prefix = f"SF-OP:{ID}-MSG"
 
