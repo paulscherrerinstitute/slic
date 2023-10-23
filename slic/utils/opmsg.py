@@ -213,7 +213,9 @@ class MachineStatus:
         return self.pv_downtime.get(as_string=True)
 
     def __repr__(self):
-        return f"{self.category} {self.downtime}"
+        header = self.beamline
+        entries = [f"{self.category} {self.downtime}"]
+        return itemize(entries, header=header)
 
 
 
