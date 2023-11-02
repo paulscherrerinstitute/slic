@@ -141,7 +141,7 @@ class Config:
 
         #TODO: why are modulo and divisor the same?
         cfg = dict(modulo=divisor, offset=offset, mode=mode)
-        self.cta_client.set_start_config(cfg)
+        self.cta_client.set_start_config(config=cfg)
 
 
     @property
@@ -154,7 +154,7 @@ class Config:
     def repetitions(self, n):
         mode = int(n > 0)
         cfg = dict(mode=mode, n=n)
-        self.cta_client.set_repetition_config(cfg)
+        self.cta_client.set_repetition_config(config=cfg)
 
 
     def __repr__(self):
