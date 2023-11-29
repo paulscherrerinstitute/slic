@@ -15,7 +15,7 @@ class CTASequencer:
 
         self.cta_client = cc = CtaLib(ID)
         self.cfg = Config(cc)
-        self.seq = Sequence(cc)
+        self.seq = Sequences(cc)
 
         pvname_start_pid = ID + ":seq0Ctrl-StartedAt-O"
         pvname_length    = ID + ":seq0Ctrl-Length-I"
@@ -164,23 +164,21 @@ class Config:
 
 
 
-class Sequence:
+class Sequences:
 
     def __init__(self, cta_client):
         self.cta_client = cta_client
         self.clear()
 
-    def __len__(self):
-        return self.length
 
     def clear(self):
         self.data = {}
-        self.length = 0
+#        self.length = 0
         self.synced = False
 
     def download(self):
         self.data = self.cta_client.download()
-        self.length = self.cta_client.get_length()
+#        self.length = self.cta_client.get_length()
         self.synced = True
 
     def upload(self):
@@ -193,22 +191,98 @@ class Sequence:
         length = self.length or 1
 
         if code not in data:
-            data[code] = [0] * length
+            v = [0] * length
+            data[code] = Sequence(v)
 
         length += delay
 
-        for c in data:
-            data[c].extend([0] * delay)
+        for code in data:
+            v = [0] * delay
+            data[code].extend(v)
 
         data[code][length - 1] = 1
 
         self.data = data
-        self.length = length
+#        self.length = length
         self.synced = False
 
 
+    def pad(self, value=0, length=None):
+        if length is None:
+            length = self.length
+        for v in self.data.values():
+            while len(v) < length:
+                v.append(value)
+
+    def get_used_data(self):
+        return {
+            k: v for k, v in self.data.items() if is_used(v)
+        }
+
+    @property
+    def length(self):
+        data = self.get_used_data()
+        lengths = [len(v) for v in data.values()]
+        if not lengths:
+            return 0
+        return max(lengths)
+
+
+    def __getitem__(self, key):
+        try:
+            return self.data[key]
+        except KeyError:
+            self.data[key] = res = Sequence()
+            return res
+
+    def __setitem__(self, key, value):
+        self.data[key] = Sequence(value)
+
+    def __len__(self):
+        return self.length
+
     def __repr__(self):
-        return repr(self.data)
+        data = self.get_used_data()
+        res = []
+        for k, v in sorted(data.items()):
+            res.append(f"{k}: {v}")
+        res = "\n".join(res)
+        if not res:
+            return "empty"
+        return res
+
+
+
+class Sequence(list):
+
+    def is_unused(self):
+        return set(self) <= {0}
+
+    def set(self, data):
+        data = [int(i) for i in data]
+        validate(data)
+        self.clear()
+        self.extend(data)
+
+
+
+
+
+def is_used(data):
+    return not is_unused(data)
+
+def is_unused(data):
+    unique = set(data)
+    return unique <= {0}
+
+def validate(data):
+    unique = set(data)
+    is_valid = (unique <= {0, 1})
+    if is_valid:
+        return
+    bad = unique - {0, 1}
+    bad = sorted(bad)
+    raise ValueError(f"data can only contain 0 or 1 but contains {bad}")
 
 
 
