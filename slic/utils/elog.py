@@ -13,8 +13,7 @@ class Elog:
         self.read = self.log.read
 
     def post(self, *args, **kwargs):
-        if "Author" not in kwargs:
-            kwargs["Author"] = self.user
+        kwargs.setdefault("Author", self.user)
         return self.log.post(*args, **kwargs)
 
     def screenshot(self, message="", window=False, desktop=False, delay=3, **kwargs):
@@ -24,22 +23,21 @@ class Elog:
 
 
 def get_default_elog_instance(url, **kwargs):
-    home = str(Path.home())
-
-    if "user" not in kwargs:
-        kwargs["user"] = getuser()
+    kwargs.setdefault("user", getuser())
+    user = kwargs["user"]
 
     if "password" not in kwargs:
         try:
-            with open(os.path.join(home, ".elog_psi"), "r") as f:
+            home = Path.home()
+            fn = home / ".elog_psi"
+            with fn.open() as f:
                 pw = f.read().strip()
         except Exception:
-            user = kwargs["user"]
             print(f"Enter elog password for user: {user}")
             pw = getpass()
         kwargs["password"] = pw
 
-    return elog.open(url, **kwargs), kwargs["user"]
+    return elog.open(url, **kwargs), user
 
 
 
