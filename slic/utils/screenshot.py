@@ -4,6 +4,9 @@ from datetime import datetime
 from getpass import getuser
 
 
+TIMESTAMP_FORMAT = "%Y-%m-%d_%H-%M-%S"
+
+
 class Screenshot:
 
     def __init__(self, screenshot_directory="", user=None):
@@ -26,8 +29,8 @@ class Screenshot:
         else:
             cmd.append("-a")
 
-        ts = datetime.now().timetuple()[:6]
-        fn = "{}-{}-{}_{}-{}-{}".format(*ts)
+        ts = datetime.now()
+        fn = ts.strftime(TIMESTAMP_FORMAT)
 
         author = kwargs.get("Author", self.user)
         fn += f"_{author}"
