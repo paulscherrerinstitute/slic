@@ -1,43 +1,46 @@
-import elog as _elog_ha
-from getpass import getuser as _getuser
-from getpass import getpass as _getpass
+import elog
+from getpass import getuser
+from getpass import getpass
 import os
 from .screenshot import Screenshot
+from pathlib import Path
 
 
-def getDefaultElogInstance(url, **kwargs):
-    from pathlib import Path
+def get_default_elog_instance(url, **kwargs):
     home = str(Path.home())
-    if not ('user' in kwargs.keys()):
-        kwargs.update(dict(user=_getuser()))
 
-    if not ('password' in kwargs.keys()):
+    if "user" not in kwargs:
+        kwargs["user"] = getuser()
+
+    if "password" not in kwargs:
         try:
-            with open(os.path.join(home,'.elog_psi'),'r') as f:
-                _pw = f.read().strip()
-        except:
-            print('Enter elog password for user: %s'%kwargs['user'])
-            _pw = _getpass()
-        kwargs.update(dict(password=_pw))
+            with open(os.path.join(home, ".elog_psi"), "r") as f:
+                pw = f.read().strip()
+        except Exception:
+            user = kwargs["user"]
+            print(f"Enter elog password for user: {user}")
+            pw = getpass()
+        kwargs["password"] = pw
 
-    return _elog_ha.open(url,**kwargs),kwargs['user']
+    return elog.open(url, **kwargs), kwargs["user"]
+
 
 class Elog:
-    def __init__(self, url, screenshot_directory='', **kwargs):
-        self._log,self.user = getDefaultElogInstance(url,**kwargs)
-        self._screenshot = Screenshot(screenshot_directory)
-        self.read = self._log.read
 
-    def post(self,*args,**kwargs):
-        """
-        """
-        if not ('Author' in kwargs):
-            kwargs['Author'] = self.user
-        return self._log.post(*args,**kwargs)
+    def __init__(self, url, screenshot_directory="", **kwargs):
+        self.elog, self.user = get_default_elog_instance(url, **kwargs)
+        self.screenshot = Screenshot(screenshot_directory)
+        self.read = self.log.read
 
-    def screenshot(self,message='', window=False, desktop=False, delay=3, **kwargs):
-        filepath = self._screenshot.shoot()[0]
-        kwargs.update({'attachments':[filepath]})
-        self.post(message,**kwargs)
+    def post(self, *args, **kwargs):
+        if "Author" not in kwargs:
+            kwargs["Author"] = self.user
+        return self.log.post(*args, **kwargs)
+
+    def screenshot(self, message="", window=False, desktop=False, delay=3, **kwargs):
+        filepath = self.screenshot.shoot()[0]
+        kwargs["attachments"] = [filepath]
+        self.post(message, **kwargs)
+
 
 
