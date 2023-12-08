@@ -1,7 +1,7 @@
 
-allowed_values = (True, False, None)
+ALLOWED_VALUES = (True, False, None)
 
-def check_trinary(val):
+def check_trinary(val, allowed_values=ALLOWED_VALUES):
     if val not in allowed_values:
         raise ValueError("Trinary {} not in {}".format(repr(val), allowed_values))
 
