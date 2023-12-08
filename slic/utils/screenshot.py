@@ -6,20 +6,17 @@ from getpass import getuser
 
 class Screenshot:
 
-    def __init__(self, screenshot_directory="", **kwargs):
+    def __init__(self, screenshot_directory="", user=None):
         self.screenshot_directory = screenshot_directory
-        if "user" not in kwargs:
-            self.user = getuser()
-        else:
-            self.user = kwargs["user"]
+        self.user = user or getuser()
 
 
     def show_directory(self):
         cmd = ["nautilus", self.screenshot_directory]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
-    def shoot(self, message="", window=False, desktop=False, delay=3, **kwargs):
+    def shoot(self, window=False, desktop=False, delay=3, **kwargs):
         cmd = ["gnome-screenshot"]
         if window:
             cmd.append("-w")
@@ -30,22 +27,18 @@ class Screenshot:
             cmd.append("-a")
 
         ts = datetime.now().timetuple()[:6]
-        fn = "%s-%s-%s_%s-%s-%s" % ts
+        fn = "{}-{}-{}_{}-{}-{}".format(*ts)
 
-        if "Author" in kwargs:
-            author = kwargs["Author"]
-        else:
-            author = self.user
-
+        author = kwargs.get("Author", self.user)
         fn += f"_{author}"
         fn += ".png"
 
-        filepath = os.path.join(self.screenshot_directory, fn)
+        fn = os.path.join(self.screenshot_directory, fn)
         cmd.append("--file")
-        cmd.append(filepath)
+        cmd.append(fn)
 
         p = subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return filepath, p
+        return fn, p
 
 
 
