@@ -1,4 +1,5 @@
 from slic.utils import typename
+from slic.utils.debug import Traceable
 from slic.core.task import TaskProducer
 from .baseadjustable import BaseAdjustable
 from .error import AdjustableError
@@ -6,7 +7,7 @@ from .convenience import SpecConvenience, NumericConvenience
 from .limited import Limited
 
 
-class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience, NumericConvenience, Limited):
+class Adjustable(BaseAdjustable, TaskProducer, SpecConvenience, NumericConvenience, Limited, Traceable):
 
     stop = None #TODO: might be better to make this callable
 
