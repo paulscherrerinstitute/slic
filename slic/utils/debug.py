@@ -2,6 +2,9 @@ from logzero import logger as log
 
 
 class Traceable:
+    """
+    Mixin that logs creation of objects via log.trace()
+    """
 
     def __new__(cls, *args, **kwargs):
         cls_name = cls.__name__
