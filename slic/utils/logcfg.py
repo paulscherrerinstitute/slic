@@ -24,6 +24,9 @@ def add_log_Level(logger, level_name, level_value, func_name=None, color=None):
     logging.addLevelName(level_value, level_name)
 
     def log_func_for_class(self, *args, **kwargs):
+        stacklevel = kwargs.get("stacklevel", 1)
+        stacklevel += 3 # 4 logcfg => 3 debug => 2 registry => 1 actual location
+        kwargs["stacklevel"] = stacklevel
         self.log(level_value, *args, **kwargs)
 
     def log_func_for_module(*args, **kwargs):
