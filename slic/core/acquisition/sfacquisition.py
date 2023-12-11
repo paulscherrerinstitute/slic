@@ -112,7 +112,7 @@ class SFAcquisition(BaseAcquisition):
         start_pulseid = align_pid_left(start_pulseid, rate_multiplicator)
         stop_pulseid = align_pid_right(stop_pulseid, rate_multiplicator)
 
-#        client.config.set(filename, detectors=self.default_detectors, channels=self.default_channels, pvs=self.default_pvs)
+        client.config.set(filename, detectors=self.default_detectors, channels=self.default_channels, pvs=self.default_pvs)
 
         if run_number is None:
             run_number = client.next_run()
