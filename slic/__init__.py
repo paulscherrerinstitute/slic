@@ -1,7 +1,6 @@
 
 from . import core
-from . import devices
-from . import utils
+
 
 from .utils.termtitle import termtitle as _termtitle
 _termtitle("⊚slic")
@@ -18,5 +17,9 @@ try:
     _richcfg()
 except Exception as e:
     print("setting up rich failed:", e)
+
+
+from . import devices
+from . import utils
 
 
