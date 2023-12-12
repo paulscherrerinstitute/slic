@@ -22,7 +22,7 @@ class Traceable:
 
 
 
-def short_repr(string, cutoff=20):
+def short_repr(string, cutoff=50):
     res = repr(string)
     if len(res) > cutoff:
         res = res[:cutoff] + "..."
