@@ -25,9 +25,9 @@ def add_log_Level(logger, level_name, level_value, func_name=None, color=None):
     logging.addLevelName(level_value, level_name)
 
     def log_func_for_class(self, *args, **kwargs):
+        stacklevel = kwargs.pop("stacklevel", 1)
+        stacklevel += 2 # 0 here => 1 call to log.trace() => 2 actual location
         if sys.version_info >= (3,8): #TODO: how to do this for <=3.7
-            stacklevel = kwargs.get("stacklevel", 1)
-            stacklevel += 2 # 0 here => 1 call to log.trace() => 2 actual location
             kwargs["stacklevel"] = stacklevel
         self.log(level_value, *args, **kwargs)
 
