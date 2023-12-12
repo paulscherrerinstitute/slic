@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import logzero
 from logzero import logger as log
@@ -24,9 +25,10 @@ def add_log_Level(logger, level_name, level_value, func_name=None, color=None):
     logging.addLevelName(level_value, level_name)
 
     def log_func_for_class(self, *args, **kwargs):
-        stacklevel = kwargs.get("stacklevel", 1)
-        stacklevel += 3 # 4 logcfg => 3 debug => 2 registry => 1 actual location
-        kwargs["stacklevel"] = stacklevel
+        if sys.version_info >= (3,8): #TODO: how to do this for <=3.7
+            stacklevel = kwargs.get("stacklevel", 1)
+            stacklevel += 3 # 4 logcfg => 3 debug => 2 registry => 1 actual location
+            kwargs["stacklevel"] = stacklevel
         self.log(level_value, *args, **kwargs)
 
     def log_func_for_module(*args, **kwargs):
@@ -44,8 +46,29 @@ def add_log_Level(logger, level_name, level_value, func_name=None, color=None):
         logzero.DEFAULT_COLORS[level_value] = color
 
 
+def setup_import_logging():
+    import builtins
+
+    orig_import = builtins.__import__
+
+    imports_cache = set()
+
+    def import_with_log(*args, **kwargs):
+        module = orig_import(*args, **kwargs)
+
+        name = module.__name__
+        if name not in imports_cache:
+            imports_cache.add(name)
+            log.trace(f"importing: {name}")
+
+        return module
+
+    builtins.__import__ = import_with_log
+
+
 
 add_log_Level(log, "TRACE", logging.DEBUG-1, color="magenta")
+setup_import_logging()
 
 
 
