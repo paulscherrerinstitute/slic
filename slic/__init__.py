@@ -5,6 +5,10 @@ from . import core
 from .utils.termtitle import termtitle as _termtitle
 _termtitle("⊚slic")
 
+import atexit
+DEFAULT_TERM_TITLE = "Terminal"
+atexit.register(lambda: _termtitle(DEFAULT_TERM_TITLE))
+
 from .utils.logcfg import logcfg as _logcfg
 _logcfg()
 
