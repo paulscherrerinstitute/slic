@@ -16,7 +16,7 @@ class Traceable:
         combined = ", ".join(combined)
 
         line = f"{cls_name}({combined})"
-        log.trace(f"creating: {line}")
+        log.trace(f"creating: {line}", stacklevel=2) # increase stacklevel by 1 to skip Registry
 
         return super().__new__(cls)
 
