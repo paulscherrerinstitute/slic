@@ -1,5 +1,7 @@
+import builtins
 import os
 import sys
+
 import logging
 import logzero
 from logzero import logger as log
@@ -47,8 +49,6 @@ def add_log_Level(logger, level_name, level_value, func_name=None, color=None):
 
 
 def setup_import_logging():
-    import builtins
-
     orig_import = builtins.__import__
 
     imports_cache = set()
