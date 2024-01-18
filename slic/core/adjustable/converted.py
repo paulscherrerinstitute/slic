@@ -16,7 +16,7 @@ class Converted(Adjustable):
 
     def set_target_value(self, value):
         value = self.conv_set(value)
-        self.adj.set_target_value(value)
+        self.adj.set_target_value(value).wait()
 
     def is_moving(self):
         return self.adj.is_moving()
