@@ -52,7 +52,7 @@ class SFXPanel(wx.Panel):
         self.le_npulses = le_npulses = LabeledMathEntry(self, label="#Pulses", value="100")
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
-        fn_pattern = f"/sf/{instrument}/data/{pgroup}/res/automatic/CELL/*.cell"
+        fn_pattern = f"/sf/{instrument}/data/{pgroup}/res/ap_config/CELL/*.cell"
         fns = sorted(iglob(fn_pattern))
         cell_names = [
             fn.split("/")[-1].split(".")[0] for fn in fns
