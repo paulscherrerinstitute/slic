@@ -127,9 +127,9 @@ class Config:
         if divisor is None or offset is None:
             current_cfg = self.get()
             if divisor is None:
-                divisor = current_cfg["divisor"]
+                divisor = current_cfg.get("divisor", 1)
             if offset is None:
-                offset = current_cfg["offset"]
+                offset = current_cfg.get("offset", 0)
 
         if mode is None:
             if divisor == 1 and offset == 0:
