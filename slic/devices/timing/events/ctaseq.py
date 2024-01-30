@@ -7,6 +7,14 @@ from slic.utils import typename
 from slic.utils.hastyepics import get_pv as PV
 
 
+DEFAULT_CONFIG = {
+    "divisor": 1,
+    "offset": 0,
+    "mode": 0
+}
+
+
+
 class CTASequencer:
 
     def __init__(self, ID, wait_time=1):
@@ -116,7 +124,9 @@ class Config:
 
 
     def get(self, name=None):
-        cfg = self.cta_client.get_start_config()
+        cfg_from_client = self.cta_client.get_start_config()
+        cfg = DEFAULT_CONFIG.copy()
+        cfg.update(cfg_from_client)
         if name is None:
             return cfg
         else:
@@ -127,9 +137,9 @@ class Config:
         if divisor is None or offset is None:
             current_cfg = self.get()
             if divisor is None:
-                divisor = current_cfg.get("divisor", 1)
+                divisor = current_cfg["divisor"]
             if offset is None:
-                offset = current_cfg.get("offset", 0)
+                offset = current_cfg["offset"]
 
         if mode is None:
             if divisor == 1 and offset == 0:
