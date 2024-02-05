@@ -18,7 +18,7 @@ ENDSTATION_TO_PULSEID_PVS = {
     "furka":       "SATES30-CVME-EVR0:RX-PULSEID"
 }
 
-IP_TO_ENDSTATION = {
+SUBNET_TO_ENDSTATION = {
     "129.129.242": "alvra",
     "129.129.243": "bernina",
     "129.129.244": "cristallina",
@@ -66,7 +66,7 @@ def get_endstation():
     ip = socket.gethostbyname(name)
     key = cut_after_nth(ip, ".", 3)
     try:
-        return IP_TO_ENDSTATION[key]
+        return SUBNET_TO_ENDSTATION[key]
     except KeyError as e:
         raise RuntimeError(f"cannot assign endstation to IP {ip} ({name})") from e
 
