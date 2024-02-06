@@ -21,7 +21,10 @@ class AlarmMixin:
         wx.GetTopLevelParent(obj).Raise()
         if dbn:
             timestamp = datetime.now()
-            dbn.notify("Current task is done...", str(timestamp), app_icon=icon)
+            try:
+                dbn.notify("Current task is done...", str(timestamp), app_icon=icon)
+            except Exception as e:
+                print("could not send notification via DBusNotify:", e)
 
 
 
