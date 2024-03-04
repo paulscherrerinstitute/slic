@@ -206,7 +206,7 @@ class BrokerClient:
                 line = f.stdout.readline()
                 line = line.decode("utf-8").rstrip()
                 print("\n" + line)
-                if "Finished. Took " in line and "seconds to complete request." in line:
+                if "processing request took " in line and " seconds" in line:
                     f.kill()
                     break
             sp.ok("🥅")
