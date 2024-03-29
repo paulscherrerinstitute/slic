@@ -38,11 +38,11 @@ class BrokerClient:
         return self.config.to_dict(*args)
 
 
-    def get_config_pvs(self):
-        return get_config_pvs(self.address)
+    def get_config_pvs(self, *args, **kwargs):
+        return get_config_pvs(self.address, *args, **kwargs)
 
-    def set_config_pvs(self, pvs):
-        return set_config_pvs(self.address, pvs)
+    def set_config_pvs(self, pvs, *args, **kwargs):
+        return set_config_pvs(self.address, pvs, *args, **kwargs)
 
 
     def start(self):
@@ -129,8 +129,8 @@ class BrokerClient:
         self.running_continuously = False
 
 
-    def next_run(self):
-        self.run_number = run_number = advance_run_number(self.address, self.config.pgroup)
+    def next_run(self, *args, **kwargs):
+        self.run_number = run_number = advance_run_number(self.address, self.config.pgroup, *args, **kwargs)
         return run_number
 
 
@@ -175,9 +175,8 @@ class BrokerClient:
         n_pulses = 5000 # this is a constant on the broker side
         timeout = 10 + n_pulses / 100 * rate_multiplicator
 
-        requrl = self.address.rstrip("/") + "/take_pedestal"
-        print("posting:", requrl, params)
-        response = post_request(requrl, params, timeout)
+        print("posting:", params)
+        response = post_request(self.address, "take_pedestal", params, timeout=timeout)
         print("done, got:", response)
 
 #        print(f"waiting for {timeout} seconds")
@@ -231,25 +230,21 @@ class BrokerClient:
 
 def advance_run_number(address, pgroup, *args, **kwargs):
     params = {"pgroup": pgroup}
-    requrl = address.rstrip("/") + "/advance_run_number"
-    response = post_request(requrl, params, *args, **kwargs)
+    response = post_request(address, "advance_run_number", params, *args, **kwargs)
     run_number = response["run_number"]
     run_number = int(run_number)
     return run_number
 
-
 def get_run_number(address, pgroup, *args, **kwargs):
     params = {"pgroup": pgroup}
-    requrl = address.rstrip("/") + "/get_current_run_number"
-    response = get_request(requrl, params, *args, **kwargs)
+    response = get_request(address, "get_current_run_number", params, *args, **kwargs)
     run_number = response["run_number"]
     run_number = int(run_number)
     return run_number
 
 
 def retrieve(address, *args, **kwargs):
-    requrl = address.rstrip("/") + "/retrieve_from_buffers"
-    response = post_request(requrl, *args, **kwargs)
+    response = post_request(address, "retrieve_from_buffers", *args, **kwargs)
     res = dict(
         run_number       = int(response["run_number"]),
         acq_number       = int(response["acquisition_number"]),
@@ -259,28 +254,33 @@ def retrieve(address, *args, **kwargs):
     return res
 
 
-def get_config_pvs(address):
+def get_config_pvs(address, *args, **kwargs):
     params = {}
-    requrl = address.rstrip("/") + "/get_pvlist"
-    response = get_request(requrl, params)
+    response = get_request(address, "get_pvlist", params, *args, **kwargs)
     return response.get("pv_list")
 
-def set_config_pvs(address, pvs):
+def set_config_pvs(address, pvs, *args, **kwargs):
     params = {"pv_list": pvs}
-    requrl = address.rstrip("/") + "/set_pvlist"
-    response = post_request(requrl, params)
+    response = post_request(address, "set_pvlist", params, *args, **kwargs)
     return response.get("pv_list")
 
 
-def post_request(requrl, params, timeout=10):
+def post_request(address, endpoint, params, timeout=10):
+    requrl = make_requrl(address, endpoint)
     params = json_validate(params)
     response = requests.post(requrl, json=params, timeout=timeout).json()
     return validate_response(response)
 
-def get_request(requrl, params, timeout=10):
+def get_request(address, endpoint, params, timeout=10):
+    requrl = make_requrl(address, endpoint)
     params = json_validate(params)
     response = requests.get(requrl, json=params, timeout=timeout).json()
     return validate_response(response)
+
+
+def make_requrl(address, endpoint):
+    address = address.rstrip("/")
+    return f"{address}/{endpoint}"
 
 
 def validate_response(resp):
