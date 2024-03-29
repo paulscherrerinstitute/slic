@@ -2,11 +2,9 @@ from glob import glob
 import subprocess
 
 import requests
-from glob import glob
 from time import sleep
 from yaspin import yaspin
 from yaspin.spinners import Spinners
-import numpy as np
 
 from slic.utils import xrange, tqdm_mod, tqdm_sleep
 from slic.utils import json_validate
