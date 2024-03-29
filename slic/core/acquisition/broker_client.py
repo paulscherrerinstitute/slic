@@ -286,7 +286,7 @@ def validate_response(resp):
         return resp
 
     message = resp.get("message", "Unknown error")
-    msg = "An error happened on the server:\n{}".format(message)
+    msg = f"An error happened on the server:\n{message}"
     raise BrokerError(msg)
 
 
