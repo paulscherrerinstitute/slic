@@ -231,18 +231,18 @@ class BrokerClient:
 
 def advance_run_number(address, pgroup, *args, **kwargs):
     params = {"pgroup": pgroup}
-    requrl = address.rstrip("/") + "/get_next_run_number"
-    response = get_request(requrl, params, *args, **kwargs)
-    run_number = response["message"]
+    requrl = address.rstrip("/") + "/advance_run_number"
+    response = post_request(requrl, params, *args, **kwargs)
+    run_number = response["run_number"]
     run_number = int(run_number)
     return run_number
 
 
 def get_run_number(address, pgroup, *args, **kwargs):
     params = {"pgroup": pgroup}
-    requrl = address.rstrip("/") + "/get_last_run_number"
+    requrl = address.rstrip("/") + "/get_current_run_number"
     response = get_request(requrl, params, *args, **kwargs)
-    run_number = response["message"]
+    run_number = response["run_number"]
     run_number = int(run_number)
     return run_number
 
