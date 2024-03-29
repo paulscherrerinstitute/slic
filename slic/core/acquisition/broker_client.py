@@ -42,7 +42,7 @@ class BrokerClient:
         return get_config_pvs(self.address)
 
     def set_config_pvs(self, pvs):
-        set_config_pvs(self.address, pvs)
+        return set_config_pvs(self.address, pvs)
 
 
     def start(self):
@@ -260,14 +260,16 @@ def retrieve(address, *args, **kwargs):
 
 
 def get_config_pvs(address):
+    params = {}
     requrl = address.rstrip("/") + "/get_pvlist"
-    response = requests.get(requrl).json()
+    response = get_request(requrl, params)
     return response.get("pv_list")
 
 def set_config_pvs(address, pvs):
     params = {"pv_list": pvs}
     requrl = address.rstrip("/") + "/set_pvlist"
-    post_request(requrl, params)
+    response = post_request(requrl, params)
+    return response.get("pv_list")
 
 
 def post_request(requrl, params, timeout=10):
