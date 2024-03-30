@@ -63,6 +63,10 @@ class ConfigPanel(wx.Panel):
             btn_power_on.Disable()
             btn_take_pedestal.Disable()
 
+        box_btns_dets = wx.StaticBoxSizer(wx.HORIZONTAL, self, "Detectors")
+        widgets = (btn_power_on, btn_take_pedestal)
+        make_filled_hbox(widgets, border=5, box=box_btns_dets)
+
         #TODO:
         # the slic pedestal taking procedure is currently out of date with what the DAQ expects
         # disable button for now
@@ -109,7 +113,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_power_on, btn_take_pedestal, le_instrument, le_pgroup, box_cb, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, box_btns_dets, le_instrument, le_pgroup, box_cb, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
