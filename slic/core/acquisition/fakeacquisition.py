@@ -101,6 +101,12 @@ class FakeClient:
         print("run number is", self.run_number)
         return self.run_number
 
+    def take_pedestal(self, *args, **kwargs):
+        print("take pedestal:", args, kwargs)
+
+    def power_on(self, *args, **kwargs):
+        print("power on:", args, kwargs)
+
 
 
 class FakeConfig:
