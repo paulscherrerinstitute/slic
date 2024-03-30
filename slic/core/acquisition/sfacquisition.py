@@ -1,9 +1,7 @@
-import os
-from time import sleep
 from collections import defaultdict
 import numpy as np
 
-from slic.utils.channels import Channels
+#from slic.utils.channels import Channels
 from slic.utils.printing import printable_dict
 from slic.core.task import DAQTask
 
@@ -76,7 +74,7 @@ class SFAcquisition(BaseAcquisition):
         client = self.client
         client.set_config(n_pulses, filename, detectors=detectors, channels=channels, pvs=pvs, scan_info=scan_info, **kwargs)
 
-        paths = SwissFELPaths(self.instrument, self.pgroup)
+#        paths = SwissFELPaths(self.instrument, self.pgroup)
 
         def _acquire():
             if not is_scan_step:
