@@ -2,7 +2,7 @@ from time import sleep
 
 from slic.utils import xrange, tqdm_mod#, tqdm_sleep
 
-from .brokerconfig import BrokerConfig
+from .brokerconfig import BrokerConfig, flatten_detectors
 from .pedestal import take_pedestal
 from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
 from .restapi import advance_run_number, retrieve, power_on_detector, get_config_pvs, set_config_pvs
@@ -140,8 +140,17 @@ class BrokerClient:
     def take_pedestal(self, detectors=None, rate=None):
         take_pedestal(self.address, self.config, detectors=detectors, rate=rate)
 
-    def power_on_detector(self, detector, *args, **kwargs):
-        power_on_detector(self.address, detector, *args, **kwargs)
+
+    def power_on(self, detectors=None, **kwargs):
+        if detectors is None:
+            detectors = self.config.detectors
+
+        if not detectors:
+            raise ValueError(f"Need at least one detector to power on (got: {detectors})")
+
+        detectors = flatten_detectors(detectors)
+        for d in detectors:
+            power_on_detector(self.address, d, **kwargs)
 
 
 
