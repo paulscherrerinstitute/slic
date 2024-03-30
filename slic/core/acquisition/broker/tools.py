@@ -6,7 +6,6 @@ import epics
 from logzero import logger as log
 
 from slic.utils import singleton
-from slic.utils.cprint import cprint, green, red
 
 
 #TODO: these should probably move to different IOCs
@@ -104,37 +103,6 @@ class get_current_pulseid():
 
     def __call__(self):
         return int(self.get())
-
-
-
-def clean_output_dir(s, default="_", allowed=ALLOWED_CHARS):
-    if s is None:
-        return None
-    s = s.strip()
-    res = "".join(i if i in allowed else default for i in s)
-    if res != s:
-        warn_output_dir(s, res)
-    return res
-
-def warn_output_dir(old, new):
-    old, new = mark_differences(old, new)
-    cprint("output dir contains forbidden characters. will adjust:", color="cyan")
-    print(f'"{old}"')
-    cprint("==>", color="cyan")
-    print(f'"{new}"')
-
-def mark_differences(a, b):
-    a2 = []
-    b2 = []
-    for i, j in zip(a, b):
-        if i != j:
-            i = red(i)
-            j = green(j)
-        a2.append(i)
-        b2.append(j)
-    a = "".join(a2)
-    b = "".join(b2)
-    return a, b
 
 
 
