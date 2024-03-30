@@ -53,10 +53,15 @@ class ConfigPanel(wx.Panel):
         if not chans_bsc: btn_chans_bsc.Disable()
         if not chans_pvs: btn_chans_pvs.Disable()
 
+        btn_power_on = wx.Button(self, label="Power On!")
+        btn_power_on.Bind(wx.EVT_BUTTON, self.on_power_on)
+
         btn_take_pedestal = wx.Button(self, label="Take Pedestal!")
         btn_take_pedestal.Bind(wx.EVT_BUTTON, self.on_take_pedestal)
 
-        if not chans_det: btn_take_pedestal.Disable()
+        if not chans_det:
+            btn_power_on.Disable()
+            btn_take_pedestal.Disable()
 
         #TODO:
         # the slic pedestal taking procedure is currently out of date with what the DAQ expects
@@ -104,7 +109,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_take_pedestal, le_instrument, le_pgroup, box_cb, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
+        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, btn_power_on, btn_take_pedestal, le_instrument, le_pgroup, box_cb, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -136,6 +141,9 @@ class ConfigPanel(wx.Panel):
         chans = PVChannels(*self.chans_pvs)
         online, offline = chans.status
         show_two_lists("PVs", online, offline, header1="channels online", header2="channels offline")
+
+    def on_power_on(self, _event):
+        self.acquisition.client.power_on(self.chans_det)
 
     def on_take_pedestal(self, _event):
         self.acquisition.client.take_pedestal(self.chans_det, self.pvd_reprate.value)
