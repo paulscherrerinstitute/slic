@@ -5,7 +5,7 @@ from slic.utils import xrange, tqdm_mod#, tqdm_sleep
 from .brokerconfig import BrokerConfig
 from .pedestal import take_pedestal
 from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
-from .restapi import advance_run_number, retrieve, get_config_pvs, set_config_pvs
+from .restapi import advance_run_number, retrieve, power_on_detector, get_config_pvs, set_config_pvs
 from .tools import get_current_pulseid
 
 
@@ -139,6 +139,9 @@ class BrokerClient:
 
     def take_pedestal(self, detectors=None, rate=None):
         take_pedestal(self.address, self.config, detectors=detectors, rate=rate)
+
+    def power_on_detector(self, detector, *args, **kwargs):
+        power_on_detector(self.address, detector, *args, **kwargs)
 
 
 
