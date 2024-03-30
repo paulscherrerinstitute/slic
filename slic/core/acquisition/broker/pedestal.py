@@ -1,13 +1,13 @@
-from glob import glob
 import subprocess
+from glob import glob
 from time import sleep
 
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
 from .brokerconfig import flatten_detectors
-from .tools import get_endstation
 from .restapi import post_request
+from .tools import get_endstation
 
 
 #TODO: this needs work

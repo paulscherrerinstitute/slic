@@ -3,10 +3,10 @@ from time import sleep
 from slic.utils import xrange, tqdm_mod#, tqdm_sleep
 
 from .brokerconfig import BrokerConfig
-from .pids import aligned_pid_and_n, align_pid_left, align_pid_right
-from .tools import get_current_pulseid
-from .restapi import advance_run_number, retrieve, get_config_pvs, set_config_pvs
 from .pedestal import take_pedestal
+from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
+from .restapi import advance_run_number, retrieve, get_config_pvs, set_config_pvs
+from .tools import get_current_pulseid
 
 
 class BrokerClient:

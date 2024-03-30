@@ -1,11 +1,12 @@
-from datetime import datetime
 import socket
 import string
+from datetime import datetime
+
 import epics
 from logzero import logger as log
 
 from slic.utils import singleton
-from slic.utils.cprint import cprint, red, green
+from slic.utils.cprint import cprint, green, red
 
 
 #TODO: these should probably move to different IOCs
