@@ -11,9 +11,9 @@ from .tools import get_endstation
 
 
 #TODO: this needs work
-def take_pedestal(self, detectors=None, rate=None):
+def take_pedestal(address, config, detectors=None, rate=None):
     if detectors is None:
-        detectors = self.config.detectors
+        detectors = config.detectors
 
     if not detectors:
         raise ValueError(f"Need at least one detector to take pedestal (got: {detectors})")
@@ -21,11 +21,11 @@ def take_pedestal(self, detectors=None, rate=None):
     detectors = flatten_detectors(detectors)
 
     if rate is None:
-        rate_multiplicator = self.config.rate_multiplicator
+        rate_multiplicator = config.rate_multiplicator
     else:
         rate_multiplicator = int(round(100. / rate))
 
-    pgroup = self.config.pgroup
+    pgroup = config.pgroup
 
     params = dict(
         detectors=detectors,
@@ -43,7 +43,7 @@ def take_pedestal(self, detectors=None, rate=None):
     timeout = 10 + n_pulses / 100 * rate_multiplicator
 
     print("posting:", params)
-    response = post_request(self.address, "take_pedestal", params, timeout=timeout)
+    response = post_request(address, "take_pedestal", params, timeout=timeout)
     print("done, got:", response)
 
 #    print(f"waiting for {timeout} seconds")
