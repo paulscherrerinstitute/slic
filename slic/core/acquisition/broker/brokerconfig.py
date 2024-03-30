@@ -1,5 +1,14 @@
+import string
+
 from slic.utils.cprint import cprint, green, red
 from slic.utils.printing import printable_dict
+
+
+#TODO: remove the same from gui code
+ALLOWED_CHARS = set(
+    string.ascii_letters + string.digits + "_-+."
+)
+
 
 
 class BrokerConfig:

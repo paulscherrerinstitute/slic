@@ -1,5 +1,4 @@
 import socket
-import string
 from datetime import datetime
 
 import epics
@@ -31,10 +30,6 @@ SUBNET_TO_ENDSTATION = {
 REFERENCE_DATETIME = datetime(2020, 5, 8, 8, 29, 52)
 REFERENCE_PID = 11718051371
 
-#TODO: remove the same from gui code
-ALLOWED_CHARS = set(
-    string.ascii_letters + string.digits + "_-+."
-)
 
 
 def decide_get_current_pulseid():
