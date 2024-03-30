@@ -6,7 +6,7 @@ from numbers import Number
 
 from slic.utils.printing import printable_dict_of_dicts, printable_dict
 
-from .broker_client import flatten_detectors #TODO: should probably move here
+from .broker.brokerconfig import flatten_detectors #TODO: should probably move here
 
 
 ALLOWED_PARAMS = dict(
