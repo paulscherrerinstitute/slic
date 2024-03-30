@@ -11,7 +11,7 @@ from .baseacquisition import BaseAcquisition
 from .sfpaths import SwissFELPaths
 from .bschannels import BSChannels
 
-from .broker_client import BrokerClient, align_pid_left, align_pid_right, retrieve
+from .broker import BrokerClient, align_pid_left, align_pid_right, retrieve
 from .detcfg import DetectorConfig
 
 
