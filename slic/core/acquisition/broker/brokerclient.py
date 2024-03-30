@@ -9,8 +9,8 @@ from yaspin.spinners import Spinners
 from slic.utils import xrange, tqdm_mod, tqdm_sleep
 from slic.utils import json_validate
 
-from .broker_config import BrokerConfig, flatten_detectors
-from .broker_tools import get_current_pulseid, get_endstation
+from .brokerconfig import BrokerConfig, flatten_detectors
+from .tools import get_current_pulseid, get_endstation
 
 
 class BrokerClient:

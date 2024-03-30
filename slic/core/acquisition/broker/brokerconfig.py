@@ -1,6 +1,6 @@
 from slic.utils.printing import printable_dict
 
-from .broker_tools import clean_output_dir
+from .tools import clean_output_dir
 
 
 class BrokerConfig:
