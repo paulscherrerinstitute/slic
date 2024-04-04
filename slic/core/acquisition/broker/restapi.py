@@ -42,7 +42,8 @@ def set_config_pvs(address, pvs, *args, **kwargs):
 
 def power_on_detector(address, detector, *args, **kwargs):
     params = {"detector_name": detector}
-    post_request(address, "power_on_detector", params, *args, **kwargs)
+    response = post_request(address, "power_on_detector", params, *args, **kwargs)
+    return response.get("message")
 
 
 def post_request(address, endpoint, params, timeout=10):

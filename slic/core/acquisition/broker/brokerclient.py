@@ -150,7 +150,8 @@ class BrokerClient:
 
         detectors = flatten_detectors(detectors)
         for d in detectors:
-            power_on_detector(self.address, d, **kwargs)
+            msg = power_on_detector(self.address, d, **kwargs)
+            print(f"{d}: {msg}")
 
 
 
