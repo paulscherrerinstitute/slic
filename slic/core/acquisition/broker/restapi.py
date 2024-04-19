@@ -47,12 +47,12 @@ def power_on_detector(address, detector, *args, **kwargs):
 
 def get_running_detectors(address, *args, **kwargs):
     params = {}
-    response = post_request(address, "get_running_detectors", params, *args, **kwargs)
+    response = get_request(address, "get_running_detectors", params, *args, **kwargs)
     return response.get("detectors")
 
 def get_allowed_detectors(address, *args, **kwargs):
     params = {}
-    response = post_request(address, "get_allowed_detectors", params, *args, **kwargs)
+    response = get_request(address, "get_allowed_detectors", params, *args, **kwargs)
     return response.get("detectors")
 
 def close_pgroup(address, pgroup, *args, **kwargs):
