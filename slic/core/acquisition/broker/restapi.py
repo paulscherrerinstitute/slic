@@ -20,12 +20,12 @@ def get_run_number(address, pgroup, *args, **kwargs):
 
 def retrieve(address, *args, **kwargs):
     response = post_request(address, "retrieve_from_buffers", *args, **kwargs)
-    res = dict(
-        run_number       = int(response["run_number"]),
-        acq_number       = int(response["acquisition_number"]),
-        total_acq_number = int(response["unique_acquisition_number"]),
-        filenames = response["files"]
-    )
+    res = {
+        "run_number":       int(response["run_number"]),
+        "acq_number":       int(response["acquisition_number"]),
+        "total_acq_number": int(response["unique_acquisition_number"]),
+        "filenames": response["files"]
+    }
     return res
 
 
@@ -44,6 +44,22 @@ def power_on_detector(address, detector, *args, **kwargs):
     params = {"detector_name": detector}
     response = post_request(address, "power_on_detector", params, *args, **kwargs)
     return response.get("message")
+
+def get_running_detectors(address, *args, **kwargs):
+    params = {}
+    response = post_request(address, "get_running_detectors", params, *args, **kwargs)
+    return response.get("detectors")
+
+def get_allowed_detectors(address, *args, **kwargs):
+    params = {}
+    response = post_request(address, "get_allowed_detectors", params, *args, **kwargs)
+    return response.get("detectors")
+
+def close_pgroup(address, pgroup, *args, **kwargs):
+    params = {"pgroup": pgroup}
+    response = post_request(address, "close_pgroup_writing", params, *args, **kwargs)
+    return response.get("message")
+
 
 
 def post_request(address, endpoint, params, timeout=10):
