@@ -23,7 +23,10 @@ def take_pedestal(address, config, detectors=None, rate=None):
     if rate is None:
         rate_multiplicator = config.rate_multiplicator
     else:
-        rate_multiplicator = int(round(100. / rate))
+        if rate == 0:
+            rate_multiplicator = 1
+        else:
+            rate_multiplicator = int(round(100. / rate))
 
     pgroup = config.pgroup
 
