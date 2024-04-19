@@ -149,7 +149,9 @@ class ConfigPanel(wx.Panel):
         self.acquisition.client.power_on(self.chans_det)
 
     def on_take_pedestal(self, _event):
-        self.acquisition.client.take_pedestal(self.chans_det, self.pvd_reprate.value)
+        rate = self.get_rate()
+        rm = self.get_rm()
+        self.acquisition.client.take_pedestal(self.chans_det, rate / rm)
 
 
 
