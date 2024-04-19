@@ -60,6 +60,15 @@ def close_pgroup(address, pgroup, *args, **kwargs):
     response = post_request(address, "close_pgroup_writing", params, *args, **kwargs)
     return response.get("message")
 
+def take_pedestal(address, pgroup, detectors, *args, rate_multiplicator=1, **kwargs):
+    params = {
+        "pgroup": pgroup,
+        "detectors": detectors,
+        "rate_multiplicator": rate_multiplicator
+    }
+    response = post_request(address, "take_pedestal", params, *args, **kwargs)
+    return response.get("message")
+
 
 
 def post_request(address, endpoint, params, timeout=10):
