@@ -5,8 +5,8 @@ from time import sleep
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
+from . import restapi
 from .brokerconfig import flatten_detectors
-from .restapi import post_request
 from .tools import get_endstation
 
 
@@ -30,13 +30,6 @@ def take_pedestal(address, config, detectors=None, rate=None):
 
     pgroup = config.pgroup
 
-    params = dict(
-        detectors=detectors,
-        rate_multiplicator=rate_multiplicator,
-        pgroup=pgroup
-    )
-
-
     instrument = get_endstation()
     pattern = f"/sf/{instrument}/data/{pgroup}/raw/JF_pedestals/*.log"
     fns_before = set(glob(pattern))
@@ -45,8 +38,8 @@ def take_pedestal(address, config, detectors=None, rate=None):
     n_pulses = 5000 # this is a constant on the broker side
     timeout = 10 + n_pulses / 100 * rate_multiplicator
 
-    print("posting:", params)
-    response = post_request(address, "take_pedestal", params, timeout=timeout)
+    print(f"posting:\n{detectors}\npgroup: {pgroup}\nrate_multiplicator: {rate_multiplicator}")
+    response = restapi.take_pedestal(address, pgroup, detectors, rate_multiplicator=rate_multiplicator, timeout=timeout)
     print("done, got:", response)
 
 #    print(f"waiting for {timeout} seconds")
