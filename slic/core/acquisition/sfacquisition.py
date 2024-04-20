@@ -9,7 +9,7 @@ from .baseacquisition import BaseAcquisition
 from .sfpaths import SwissFELPaths
 from .bschannels import BSChannels
 
-from .broker import BrokerClient, align_pid_left, align_pid_right, retrieve
+from .broker import BrokerClient, align_pid_left, align_pid_right, restapi
 from .detcfg import DetectorConfig
 
 
@@ -120,7 +120,7 @@ class SFAcquisition(BaseAcquisition):
         if not is_continuous(pulseids):
             params["selected_pulse_ids"] = pulseids
 
-        res = retrieve(client.address, params, timeout=client.timeout)
+        res = restapi.retrieve(client.address, params, timeout=client.timeout)
 
         res_run_number = res["run_number"]
         assert res_run_number == run_number, f"received {res_run_number} and expected {run_number} run numbers not identical"

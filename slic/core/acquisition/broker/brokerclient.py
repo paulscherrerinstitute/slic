@@ -2,10 +2,10 @@ from time import sleep
 
 from slic.utils import xrange, tqdm_mod#, tqdm_sleep
 
+from . import restapi
 from .brokerconfig import BrokerConfig, flatten_detectors
 from .pedestal import take_pedestal
 from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
-from .restapi import advance_run_number, retrieve, power_on_detector, get_config_pvs, set_config_pvs
 from .tools import get_current_pulseid
 
 
@@ -33,10 +33,10 @@ class BrokerClient:
 
 
     def get_config_pvs(self, *args, **kwargs):
-        return get_config_pvs(self.address, *args, **kwargs)
+        return restapi.get_config_pvs(self.address, *args, **kwargs)
 
     def set_config_pvs(self, pvs, *args, **kwargs):
-        return set_config_pvs(self.address, pvs, *args, **kwargs)
+        return restapi.set_config_pvs(self.address, pvs, *args, **kwargs)
 
 
     def start(self):
@@ -110,7 +110,7 @@ class BrokerClient:
         self.running = False
 
         params = self.get_config(self.run_number, start_pulseid, stop_pulseid)
-        res = retrieve(self.address, params, timeout=self.timeout)
+        res = restapi.retrieve(self.address, params, timeout=self.timeout)
 
         run_number = res["run_number"]
         assert run_number == self.run_number, f"received {run_number} and expected {self.run_number} run numbers not identical" #TODO: raise proper exception
@@ -124,7 +124,7 @@ class BrokerClient:
 
 
     def next_run(self, *args, **kwargs):
-        self.run_number = run_number = advance_run_number(self.address, self.config.pgroup, *args, **kwargs)
+        self.run_number = run_number = restapi.advance_run_number(self.address, self.config.pgroup, *args, **kwargs)
         return run_number
 
 
@@ -150,7 +150,7 @@ class BrokerClient:
 
         detectors = flatten_detectors(detectors)
         for d in detectors:
-            msg = power_on_detector(self.address, d, **kwargs)
+            msg = restapi.power_on_detector(self.address, d, **kwargs)
             print(f"{d}: {msg}")
 
 
