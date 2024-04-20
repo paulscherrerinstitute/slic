@@ -71,6 +71,45 @@ def take_pedestal(address, pgroup, detectors, *args, rate_multiplicator=1, **kwa
 
 
 
+def get_jfctrl_monitor(address, detector, *args, **kwargs):
+    params = {"detector_name": detector}
+    response = get_request(address, "get_jfctrl_monitor", params, *args, **kwargs)
+    return response.get("parameters")
+
+def get_detector_temperatures(address, detector, *args, **kwargs):
+    params = {"detector_name": detector}
+    response = get_request(address, "get_detector_temperatures", params, *args, **kwargs)
+    return response.get("temperatures")
+
+
+def get_detector_settings(address, detector, *args, **kwargs):
+    params = {"detector_name": detector}
+    response = get_request(address, "get_detector_settings", params, *args, **kwargs)
+    return response.get("parameters")
+
+def set_detector_settings(address, detector, *args, delay=None, detector_mode=None, exptime=None, gain_mode=None, **kwargs):
+    parameters = {
+        "delay": delay,
+        "detector_mode": detector_mode,
+        "exptime": exptime,
+        "gain_mode": gain_mode
+    }
+    parameters = {k: v for k, v in parameters.items() if v is not None}
+    params = {
+        "detector_name": detector,
+        "parameters": parameters
+    }
+    response = post_request(address, "set_detector_settings", params, *args, **kwargs)
+    return response.get("changed_parameters")
+
+
+def get_dap_settings(address, detector, *args, **kwargs):
+    params = {"detector_name": detector}
+    response = get_request(address, "get_dap_settings", params, *args, **kwargs)
+    return response.get("parameters")
+
+
+
 def post_request(address, endpoint, params, timeout=10):
     requrl = make_requrl(address, endpoint)
     params = json_validate(params)
