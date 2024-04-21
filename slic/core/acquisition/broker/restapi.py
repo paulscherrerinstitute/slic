@@ -87,7 +87,15 @@ def get_detector_settings(address, detector, *args, **kwargs):
     response = get_request(address, "get_detector_settings", params, *args, **kwargs)
     return response.get("parameters")
 
-def set_detector_settings(address, detector, *args, delay=None, detector_mode=None, exptime=None, gain_mode=None, **kwargs):
+def set_detector_settings(address, detector, parameters, *args, **kwargs):
+    params = {
+        "detector_name": detector,
+        "parameters": parameters
+    }
+    response = post_request(address, "set_detector_settings", params, *args, **kwargs)
+    return response.get("changed_parameters")
+
+def make_detector_parameters(delay=None, detector_mode=None, exptime=None, gain_mode=None):
     parameters = {
         "delay": delay,
         "detector_mode": detector_mode,
@@ -95,12 +103,7 @@ def set_detector_settings(address, detector, *args, delay=None, detector_mode=No
         "gain_mode": gain_mode
     }
     parameters = {k: v for k, v in parameters.items() if v is not None}
-    params = {
-        "detector_name": detector,
-        "parameters": parameters
-    }
-    response = post_request(address, "set_detector_settings", params, *args, **kwargs)
-    return response.get("changed_parameters")
+    return parameters
 
 
 def get_dap_settings(address, detector, *args, **kwargs):
