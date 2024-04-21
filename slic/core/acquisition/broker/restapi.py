@@ -71,6 +71,19 @@ def take_pedestal(address, pgroup, detectors, *args, rate_multiplicator=1, **kwa
 
 
 
+def copy_user_files(address, pgroup, run_number, fnames, timeout=10):
+    endpoint = "copy_user_files"
+    requrl = make_requrl(address, endpoint)
+    params = {
+        "pgroup": pgroup,
+        "run_number": run_number,
+        "files": fnames
+    }
+    params = json_validate(params)
+    response = requests.post(requrl, json=params, timeout=timeout).json()
+    return response
+
+
 def get_jfctrl_monitor(address, detector, *args, **kwargs):
     params = {"detector_name": detector}
     response = get_request(address, "get_jfctrl_monitor", params, *args, **kwargs)
