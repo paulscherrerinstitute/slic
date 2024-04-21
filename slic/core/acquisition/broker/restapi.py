@@ -228,15 +228,25 @@ def make_requrl(address, endpoint):
 def validate_response(resp):
     if resp.get("status") == "ok":
         return resp
-
-    message = resp.get("message", "Unknown error")
-    msg = f"An error happened on the server:\n{message}"
-    raise BrokerError(msg)
+    raise BrokerError(resp)
 
 
 
 class BrokerError(Exception):
-    pass
+
+    def __init__(self, response):
+        self.response = response
+
+        printable_response = json.dumps(response, indent=4)
+
+        message = response.get("message", "unknown error")
+        exception = response.get("exception")
+
+        if exception:
+            message = f"{exception}: {message}"
+
+        message = f"an error happened on the server:\n{message}\n\nfull response: {printable_response}"
+        super().__init__(message)
 
 
 
