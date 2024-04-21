@@ -95,23 +95,102 @@ def set_detector_settings(address, detector, parameters, *args, **kwargs):
     response = post_request(address, "set_detector_settings", params, *args, **kwargs)
     return response.get("changed_parameters")
 
-def make_detector_parameters(delay=None, detector_mode=None, exptime=None, gain_mode=None):
+def make_detector_parameters(
+        delay = None,
+        detector_mode = None,
+        exptime = None,
+        gain_mode = None
+    ):
     parameters = _make_parameters(
-        delay=delay,
-        detector_mode=detector_mode,
-        exptime=exptime,
-        gain_mode=gain_mode
+        delay = delay,
+        detector_mode = detector_mode,
+        exptime = exptime,
+        gain_mode = gain_mode
     )
     return parameters
-
-def _make_parameters(**kwargs):
-    return {k: v for k, v in kwargs.items() if v is not None}
 
 
 def get_dap_settings(address, detector, *args, **kwargs):
     params = {"detector_name": detector}
     response = get_request(address, "get_dap_settings", params, *args, **kwargs)
     return response.get("parameters")
+
+def set_dap_settings(address, detector, parameters, *args, **kwargs):
+    params = {
+        "detector_name": detector,
+        "parameters": parameters
+    }
+    response = post_request(address, "set_dap_settings", params, *args, **kwargs)
+    return response.get("changed_parameters")
+
+def make_dap_parameters(
+        aggregation_max = None,
+        apply_additional_mask = None,
+        apply_aggregation = None,
+        apply_threshold = None,
+        beam_center_x = None,
+        beam_center_y = None,
+        beam_energy = None,
+        detector_distance = None,
+        detector_rate = None,
+        disabled_modules = None,
+        do_peakfinder_analysis = None,
+        do_radial_integration = None,
+        do_spi_analysis = None,
+        double_pixels = None,
+        hitfinder_adc_thresh = None,
+        hitfinder_min_pix_count = None,
+        hitfinder_min_snr = None,
+        laser_mode = None,
+        npeaks_threshold_hit = None,
+        radial_integration_silent_max = None,
+        radial_integration_silent_min = None,
+        roi_x1 = None,
+        roi_x2 = None,
+        roi_y1 = None,
+        roi_y2 = None,
+        select_only_ppicker_events = None,
+        spi_limit = None,
+        threshold_max = None,
+        threshold_min = None,
+        threshold_value = None
+    ):
+    parameters = _make_parameters(
+        aggregation_max = aggregation_max,
+        apply_additional_mask = apply_additional_mask,
+        apply_aggregation = apply_aggregation,
+        apply_threshold = apply_threshold,
+        beam_center_x = beam_center_x,
+        beam_center_y = beam_center_y,
+        beam_energy = beam_energy,
+        detector_distance = detector_distance,
+        detector_rate = detector_rate,
+        disabled_modules = disabled_modules,
+        do_peakfinder_analysis = do_peakfinder_analysis,
+        do_radial_integration = do_radial_integration,
+        do_spi_analysis = do_spi_analysis,
+        double_pixels = double_pixels,
+        hitfinder_adc_thresh = hitfinder_adc_thresh,
+        hitfinder_min_pix_count = hitfinder_min_pix_count,
+        hitfinder_min_snr = hitfinder_min_snr,
+        laser_mode = laser_mode,
+        npeaks_threshold_hit = npeaks_threshold_hit,
+        radial_integration_silent_max = radial_integration_silent_max,
+        radial_integration_silent_min = radial_integration_silent_min,
+        roi_x1 = roi_x1,
+        roi_x2 = roi_x2,
+        roi_y1 = roi_y1,
+        roi_y2 = roi_y2,
+        select_only_ppicker_events = select_only_ppicker_events,
+        spi_limit = spi_limit,
+        threshold_max = threshold_max,
+        threshold_min = threshold_min,
+        threshold_value = threshold_value
+    )
+    return parameters
+
+def _make_parameters(**kwargs):
+    return {k: v for k, v in kwargs.items() if v is not None}
 
 
 
