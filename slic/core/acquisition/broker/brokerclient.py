@@ -137,8 +137,8 @@ class BrokerClient:
         return "idle"
 
 
-    def take_pedestal(self, detectors=None, rate=None):
-        take_pedestal(self.address, self.config, detectors=detectors, rate=rate)
+    def take_pedestal(self, detectors=None, rate=None, pedestalmode=False):
+        take_pedestal(self.address, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
 
 
     def power_on(self, detectors=None, **kwargs):
