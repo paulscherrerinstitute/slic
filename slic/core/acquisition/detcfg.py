@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from collections.abc import Mapping
 from collections.abc import Sequence
 from numbers import Number
