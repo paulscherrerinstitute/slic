@@ -25,9 +25,7 @@ def post_retrieve(addr, endstation, pgroup, run, acqs=None, continue_run=False):
     else:
         fns = mk_fns_acqs(dir_run_meta, acqs)
 
-    updates = mk_updates(addr, pgroup, continue_run)
-
-    post_retrieve_fns_acqs(addr, fns, updates)
+    post_retrieve_fns_acqs(addr, fns, continue_run=continue_run)
 
 
 def mk_dir_run_meta(endstation, pgroup, run):
@@ -62,19 +60,23 @@ def mk_updates(addr, pgroup, continue_run):
     return updates
 
 
-def post_retrieve_fns_acqs(addr, fns, updates):
+def post_retrieve_fns_acqs(addr, fns, continue_run=False):
     for fn in fns:
-        post_retrieve_fn_acq(addr, fn, updates)
+        post_retrieve_fn_acq(addr, fn, continue_run=continue_run)
         sleep(WAIT_BETWEEN_REQUESTS)
 
-def post_retrieve_fn_acq(addr, fn, updates):
+def post_retrieve_fn_acq(addr, fn, continue_run=False):
     print("🛠️  working on:", fn)
     req = json_load(fn)
     print("🔎 read original request:", pretty_dict(req))
+
+    pgroup = req["pgroup"]
+    updates = mk_updates(addr, pgroup, continue_run)
     if updates:
         print("🖊️  updating request:", pretty_dict(updates))
         req.update(updates)
         print("🪥  new request:", pretty_dict(req))
+
     resp = restapi.retrieve(addr, req)
     print("💌 response:", pretty_dict(resp))
     print()
