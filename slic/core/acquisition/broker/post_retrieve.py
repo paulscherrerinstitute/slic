@@ -110,7 +110,10 @@ def main():
 
 
     endstations = tuple(SUBNET_TO_ENDSTATION.values())
-    endstation = get_endstation()
+    try:
+        endstation = get_endstation()
+    except RuntimeError:
+        endstation = None
 
 
     def validate_pgroup(pgroup):
@@ -125,7 +128,12 @@ def main():
 
     required = parser.add_argument_group("required arguments")
 
-    parser.add_argument("-e", "--endstation", choices=endstations, default=endstation, help=f"endstation name (default: {endstation})")
+
+    if endstation:
+        parser.add_argument("-e", "--endstation", choices=endstations, default=endstation, help=f"endstation name (default: {endstation})")
+    else:
+        required.add_argument("-e", "--endstation", required=True, choices=endstations, help=f"endstation name")
+
     required.add_argument("-p", "--pgroup", required=True, type=validate_pgroup, help="pattern: p12345")
     required.add_argument("-r", "--run", required=True, type=int, help="integer run number")
     parser.add_argument("-a", "--acq", nargs="*", type=int, help="integer acquisition number(s) (default: all acquisition numbers of the selected run)")
