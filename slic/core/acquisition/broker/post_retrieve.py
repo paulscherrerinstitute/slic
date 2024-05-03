@@ -1,12 +1,14 @@
 import json
 from functools import partial
 from glob import glob
+from time import sleep
 
 from slic.core.acquisition.broker import restapi
 from slic.utils import json_load
 
 
 API_ADDR = "http://sf-daq:10002"
+WAIT_BETWEEN_REQUESTS = 0.1 # seconds
 
 
 
@@ -61,6 +63,7 @@ def mk_updates(addr, pgroup, continue_run):
 def post_retrieve_fns_acqs(addr, fns, updates):
     for fn in fns:
         post_retrieve_fn_acq(addr, fn, updates)
+        sleep(WAIT_BETWEEN_REQUESTS)
 
 def post_retrieve_fn_acq(addr, fn, updates):
     print("🛠️  working on:", fn)
