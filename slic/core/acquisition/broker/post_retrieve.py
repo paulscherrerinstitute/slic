@@ -56,19 +56,19 @@ def post_retrieve_fns_acqs(addr, fns, continue_run=False):
         sleep(WAIT_BETWEEN_REQUESTS)
 
 def post_retrieve_fn_acq(addr, fn, continue_run=False):
-    print("🛠️  working on:", fn)
+    vprint(0, "🛠️  working on:", fn)
     req = json_load(fn)
-    print("🔎 read original request:", pretty_dict(req))
+    vprint(2, "🔎 read original request:", pretty_dict(req))
 
     updates = mk_updates(addr, req, continue_run)
     if updates:
-        print("🖊️  updating request:", pretty_dict(updates))
+        vprint(1, "🖊️  updating request:", pretty_dict(updates))
         req.update(updates)
-        print("🪥  new request:", pretty_dict(req))
+        vprint(2, "🪥  new request:", pretty_dict(req))
 
     resp = restapi.retrieve(addr, req)
-    print("💌 response:", pretty_dict(resp))
-    print()
+    vprint(0, "💌 response:", pretty_dict(resp))
+    vprint(1)
 
 
 def mk_updates(addr, req, continue_run):
@@ -114,6 +114,20 @@ restapi = DryRunner(restapi)
 
 
 
+class VerbosePrinter:
+
+    def __init__(self, level=0):
+        self.level = level
+
+    def __call__(self, level, *args, **kwargs):
+        if level <= self.level:
+            print(*args, **kwargs)
+
+
+vprint = VerbosePrinter()
+
+
+
 
 
 def main():
@@ -156,11 +170,12 @@ def main():
 
     parser.add_argument("-c", "--continue", dest="continue_run", action="store_true", help="append to existing run (default: create new run)")
     parser.add_argument("-d", "--dry-run", action="store_true", help="enable dry run")
-#    parser.add_argument("-v", "--verbose", action="store_true", help="enable verbose mode")
+    parser.add_argument("-v", "--verbose", action="count", default=0, help="enable verbose mode (multiple -v options increase the verbosity up to a maximum of 3)")
 
     clargs = parser.parse_args()
 
     restapi.dry_run = clargs.dry_run
+    vprint.level = clargs.verbose
 
     post_retrieve(
         clargs.broker,
