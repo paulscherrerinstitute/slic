@@ -75,10 +75,17 @@ def mk_updates(addr, req, continue_run):
     updates = {
         "client_name": "post_retrieve"
     }
+
     if not continue_run:
+        # append old run number to user tag
+        run_number = req["run_number"]
+        user_tag   = req["user_tag"]
+        updates["user_tag"] = f"{user_tag}_rerun{run_number:04}"
+        # replace old run number with next run number from the DAQ
         pgroup = req["pgroup"]
         run_number = restapi.advance_run_number(addr, pgroup)
         updates["run_number"] = run_number
+
     return updates
 
 
