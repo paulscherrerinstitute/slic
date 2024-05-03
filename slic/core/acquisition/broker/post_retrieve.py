@@ -50,16 +50,6 @@ def mk_fn_acq(dir_run_meta, acq):
     return f"{dir_run_meta}/acq{acq:04}.json"
 
 
-def mk_updates(addr, pgroup, continue_run):
-    updates = {
-        "client_name": "post_retrieve"
-    }
-    if not continue_run:
-        run_number = restapi.advance_run_number(addr, pgroup)
-        updates["run_number"] = run_number
-    return updates
-
-
 def post_retrieve_fns_acqs(addr, fns, continue_run=False):
     for fn in fns:
         post_retrieve_fn_acq(addr, fn, continue_run=continue_run)
@@ -80,6 +70,16 @@ def post_retrieve_fn_acq(addr, fn, continue_run=False):
     resp = restapi.retrieve(addr, req)
     print("💌 response:", pretty_dict(resp))
     print()
+
+
+def mk_updates(addr, pgroup, continue_run):
+    updates = {
+        "client_name": "post_retrieve"
+    }
+    if not continue_run:
+        run_number = restapi.advance_run_number(addr, pgroup)
+        updates["run_number"] = run_number
+    return updates
 
 
 
