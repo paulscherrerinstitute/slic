@@ -63,13 +63,13 @@ def post_retrieve_fns_acqs(addr, fns, updates):
         post_retrieve_fn_acq(addr, fn, updates)
 
 def post_retrieve_fn_acq(addr, fn, updates):
-    print("🛠️ working on:", fn)
+    print("🛠️  working on:", fn)
     req = json_load(fn)
     print("🔎 read original request:", pretty_dict(req))
     if updates:
-        print("🖊️ updating request:", pretty_dict(updates))
+        print("🖊️  updating request:", pretty_dict(updates))
         req.update(updates)
-        print("🪥 new request:", pretty_dict(req))
+        print("🪥  new request:", pretty_dict(req))
     resp = restapi.retrieve(addr, req)
     print("💌 response:", pretty_dict(resp))
     print()
