@@ -53,7 +53,9 @@ def mk_fn_acq(dir_run_meta, acq):
 
 
 def mk_updates(addr, pgroup, continue_run):
-    updates = {}
+    updates = {
+        "client_name": "post_retrieve"
+    }
     if not continue_run:
         run_number = restapi.advance_run_number(addr, pgroup)
         updates["run_number"] = run_number
