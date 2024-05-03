@@ -106,7 +106,7 @@ class DryRunner:
 
     def __getattr__(self, name):
         if self.dry_run:
-            return partial(print, f"🚱 dry run -- skipping: {name}")
+            return partial(vprint, 3, f"🚱 dry run -- skipping: {name}")
         return getattr(self.wrapped, name)
 
 
