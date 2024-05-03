@@ -60,8 +60,7 @@ def post_retrieve_fn_acq(addr, fn, continue_run=False):
     req = json_load(fn)
     print("🔎 read original request:", pretty_dict(req))
 
-    pgroup = req["pgroup"]
-    updates = mk_updates(addr, pgroup, continue_run)
+    updates = mk_updates(addr, req, continue_run)
     if updates:
         print("🖊️  updating request:", pretty_dict(updates))
         req.update(updates)
@@ -72,11 +71,12 @@ def post_retrieve_fn_acq(addr, fn, continue_run=False):
     print()
 
 
-def mk_updates(addr, pgroup, continue_run):
+def mk_updates(addr, req, continue_run):
     updates = {
         "client_name": "post_retrieve"
     }
     if not continue_run:
+        pgroup = req["pgroup"]
         run_number = restapi.advance_run_number(addr, pgroup)
         updates["run_number"] = run_number
     return updates
