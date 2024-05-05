@@ -25,7 +25,29 @@ def post_retrieve(addr, endstation, pgroup, run, acqs=None, continue_run=False):
     else:
         fns = mk_fns_acqs(dir_run_meta, acqs)
 
-    post_retrieve_fns_acqs(addr, fns, continue_run=continue_run)
+    reqs = load_reqs(fns)
+
+    first_fn = fns[0]
+    first_req = reqs[first_fn]
+
+    updates_run = mk_updates_run(addr, first_req, continue_run)
+
+    for fn, req in reqs.items():
+        vprint(0, "🛠️  working on:", fn)
+        vprint(2, "🔎 read original request:", pretty_dict(req))
+
+        updates_acq = mk_updates_acq(addr, req, continue_run)
+        updates_acq.update(updates_run)
+        if updates_acq:
+            vprint(1, "🖊️  updating request:", pretty_dict(updates_acq))
+            req.update(updates_acq)
+            vprint(2, "🪥  new request:", pretty_dict(req))
+
+        resp = restapi.retrieve(addr, req)
+        vprint(0, "💌 response:", pretty_dict(resp))
+        vprint(1)
+
+        sleep(WAIT_BETWEEN_REQUESTS)
 
 
 def mk_dir_run_meta(endstation, pgroup, run):
@@ -50,41 +72,41 @@ def mk_fn_acq(dir_run_meta, acq):
     return f"{dir_run_meta}/acq{acq:04}.json"
 
 
-def post_retrieve_fns_acqs(addr, fns, continue_run=False):
+#TODO:
+#def post_retrieve_fns_acqs(addr, fns, continue_run=False):
+#def post_retrieve_fn_acq(addr, fn, continue_run=False):
+
+
+def load_reqs(fns):
+    res = {}
     for fn in fns:
-        post_retrieve_fn_acq(addr, fn, continue_run=continue_run)
-        sleep(WAIT_BETWEEN_REQUESTS)
-
-def post_retrieve_fn_acq(addr, fn, continue_run=False):
-    vprint(0, "🛠️  working on:", fn)
-    req = json_load(fn)
-    vprint(2, "🔎 read original request:", pretty_dict(req))
-
-    updates = mk_updates(addr, req, continue_run)
-    if updates:
-        vprint(1, "🖊️  updating request:", pretty_dict(updates))
-        req.update(updates)
-        vprint(2, "🪥  new request:", pretty_dict(req))
-
-    resp = restapi.retrieve(addr, req)
-    vprint(0, "💌 response:", pretty_dict(resp))
-    vprint(1)
+        req = json_load(fn)
+        res[fn] = req
+    return res
 
 
-def mk_updates(addr, req, continue_run):
+def mk_updates_run(addr, req, continue_run):
     updates = {
         "client_name": "post_retrieve"
     }
+
+    if not continue_run:
+        # replace old run number with next run number from the DAQ
+        pgroup = req["pgroup"]
+        run_number = restapi.advance_run_number(addr, pgroup)
+        updates["run_number"] = run_number
+
+    return updates
+
+
+def mk_updates_acq(_addr, req, continue_run):
+    updates = {}
 
     if not continue_run:
         # append old run number to user tag
         run_number = req["run_number"]
         user_tag   = req["user_tag"]
         updates["user_tag"] = f"{user_tag}_rerun{run_number:04}"
-        # replace old run number with next run number from the DAQ
-        pgroup = req["pgroup"]
-        run_number = restapi.advance_run_number(addr, pgroup)
-        updates["run_number"] = run_number
 
     return updates
 
@@ -160,7 +182,7 @@ def main():
     if endstation:
         parser.add_argument("-e", "--endstation", choices=endstations, default=endstation, help=f"endstation name (default: {endstation})")
     else:
-        required.add_argument("-e", "--endstation", required=True, choices=endstations, help=f"endstation name")
+        required.add_argument("-e", "--endstation", required=True, choices=endstations, help="endstation name")
 
     required.add_argument("-p", "--pgroup", required=True, type=validate_pgroup, help="pattern: p12345")
     required.add_argument("-r", "--run", required=True, type=int, help="integer run number")
