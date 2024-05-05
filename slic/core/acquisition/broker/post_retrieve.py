@@ -25,6 +25,10 @@ def post_retrieve(addr, endstation, pgroup, run, acqs=None, continue_run=False):
     else:
         fns = mk_fns_acqs(dir_run_meta, acqs)
 
+    post_retrieve_fns_acqs(addr, fns, continue_run=continue_run)
+
+
+def post_retrieve_fns_acqs(addr, fns, continue_run=False):
     reqs = load_reqs(fns)
 
     first_fn = fns[0]
@@ -70,11 +74,6 @@ def mk_fns_acqs(dir_run_meta, acqs):
 
 def mk_fn_acq(dir_run_meta, acq):
     return f"{dir_run_meta}/acq{acq:04}.json"
-
-
-#TODO:
-#def post_retrieve_fns_acqs(addr, fns, continue_run=False):
-#def post_retrieve_fn_acq(addr, fn, continue_run=False):
 
 
 def load_reqs(fns):
