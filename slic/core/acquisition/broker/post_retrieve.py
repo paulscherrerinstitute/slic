@@ -29,6 +29,11 @@ def post_retrieve(addr, endstation, pgroup, run, acqs=None, continue_run=False):
 
 
 def post_retrieve_acq_jsons(addr, fns, continue_run=False):
+    """
+    post retrieve data from sf-daq
+    fns: sequence of acq json file names
+    continue_run: append to existing run (default: create new run)
+    """
     reqs = load_reqs(fns)
 
     first_fn = fns[0]
@@ -40,7 +45,7 @@ def post_retrieve_acq_jsons(addr, fns, continue_run=False):
         vprint(0, "🛠️  working on:", fn)
         vprint(2, "🔎 read original request:", pretty_dict(req))
 
-        updates_acq = mk_updates_acq(addr, req, continue_run)
+        updates_acq = mk_updates_acq(req, continue_run)
         updates_acq.update(updates_run)
         if updates_acq:
             vprint(1, "🖊️  updating request:", pretty_dict(updates_acq))
@@ -98,7 +103,7 @@ def mk_updates_run(addr, req, continue_run):
     return updates
 
 
-def mk_updates_acq(_addr, req, continue_run):
+def mk_updates_acq(req, continue_run):
     updates = {}
 
     if not continue_run:
