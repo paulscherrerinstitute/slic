@@ -25,10 +25,10 @@ def post_retrieve(addr, endstation, pgroup, run, acqs=None, continue_run=False):
     else:
         fns = mk_fns_acqs(dir_run_meta, acqs)
 
-    post_retrieve_fns_acqs(addr, fns, continue_run=continue_run)
+    post_retrieve_acq_jsons(addr, fns, continue_run=continue_run)
 
 
-def post_retrieve_fns_acqs(addr, fns, continue_run=False):
+def post_retrieve_acq_jsons(addr, fns, continue_run=False):
     reqs = load_reqs(fns)
 
     first_fn = fns[0]
