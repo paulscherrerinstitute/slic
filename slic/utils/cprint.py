@@ -16,7 +16,7 @@ COLORS = {
 
 def cprint(*objects, color=None, sep=" ", **kwargs):
     text = flatten_strings(objects, sep)
-    return _print(color, text, sep, kwargs)
+    return _print(color, text, kwargs)
 
 def colored(text, color=None):
     color = get_color(color)
@@ -35,9 +35,9 @@ def get_color(color):
 def flatten_strings(objects, sep):
     return sep.join(str(i) for i in objects)
 
-def _print(color, text, sep, kwargs):
+def _print(color, text, kwargs):
     text = colored(text, color=color)
-    return print(text, sep=sep, **kwargs)
+    return print(text, **kwargs)
 
 
 
