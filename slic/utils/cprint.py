@@ -18,6 +18,13 @@ def cprint(*objects, color=None, sep=" ", **kwargs):
     text = flatten_strings(objects, sep)
     return _print(color, text, kwargs)
 
+def flatten_strings(objects, sep):
+    return sep.join(str(i) for i in objects)
+
+def _print(color, text, kwargs):
+    text = colored(text, color=color)
+    return print(text, **kwargs)
+
 def colored(text, color=None):
     color = get_color(color)
     if color is None:
@@ -31,13 +38,6 @@ def get_color(color):
         color = repr(color)
         allowed = tuple(COLORS.keys())
         raise ValueError(f"{color} not from {allowed}") from exc
-
-def flatten_strings(objects, sep):
-    return sep.join(str(i) for i in objects)
-
-def _print(color, text, kwargs):
-    text = colored(text, color=color)
-    return print(text, **kwargs)
 
 
 
