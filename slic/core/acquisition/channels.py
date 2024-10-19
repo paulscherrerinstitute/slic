@@ -2,13 +2,7 @@ from abc import ABC, abstractmethod
 from collections import namedtuple
 from slic.utils.printing import itemize
 from slic.utils.channels import load_channels
-
-
-import colorama
-
-COLOR_GOOD  = colorama.Fore.GREEN
-COLOR_BAD   = colorama.Fore.RED + colorama.Style.BRIGHT
-COLOR_RESET = colorama.Fore.RESET
+from slic.utils.cprint import cprint
 
 
 Status = namedtuple("Status", ("online", "offline"))
@@ -43,21 +37,14 @@ class Channels(set, ABC):
         try:
             online, offline = self.status
         except Exception as e:
-            print(COLOR_BAD, end="")
-            print("Channel status check failed due to:")
-            print(e)
-            print(COLOR_RESET)
+            cprint("Channel status check failed due to:", e, sep="\n", color="red")
             return
 
         if print_online and online:
-            print(COLOR_GOOD, end="")
-            print(itemize(online, header="Online Channels"))
-            print(COLOR_RESET)
+            cprint(itemize(online, header="Online Channels"), color="green")
 
         if print_offline and offline:
-            print(COLOR_BAD, end="")
-            print(itemize(offline, header="Offline Channels"))
-            print(COLOR_RESET)
+            cprint(itemize(offline, header="Offline Channels"), color="red")
 
 
     @property
