@@ -1,5 +1,4 @@
 import os
-import colorama
 
 from slic.utils import make_missing_dir, printable_exception, xrange
 from slic.utils.printing import printable_dict, itemize, format_header, printable_table
@@ -158,19 +157,13 @@ class ScanBackend:
             if not self.running:
                 n -= 1 # stopped before this iteration
                 break
-            print(colorama.Fore.GREEN, end="")
-            print("Scan step {} of {}".format(n+1, ntotal))
-            print(colorama.Fore.RESET, end="")
+            cprint("Scan step {} of {}".format(n+1, ntotal), color="green")
             do_step(n, val, step_info=step_info)
 
         if self.running and n+1 == ntotal:
-            print(colorama.Fore.GREEN, end="")
-            print("All scan steps done")
-            print(colorama.Fore.RESET, end="")
+            cprint("All scan steps done", color="green")
         else:
-            print(colorama.Fore.RED, end="")
-            print("Stopped during scan step {} of {}".format(n+1, ntotal))
-            print(colorama.Fore.RESET, end="")
+            cprint("Stopped during scan step {} of {}".format(n+1, ntotal), color="red")
 
 
     def do_checked_step(self, *args, **kwargs):
