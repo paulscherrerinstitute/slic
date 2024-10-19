@@ -5,6 +5,7 @@ from slic.utils import make_missing_dir, printable_exception, xrange
 from slic.utils.printing import printable_dict, itemize, format_header, printable_table
 from slic.utils.ask_yes_no import ask_Yes_no
 from slic.utils.trinary import check_trinary
+from slic.utils.cprint import cprint
 
 from .runname import RunFilenameGenerator
 from .scaninfo import ScanInfo
@@ -92,7 +93,7 @@ class ScanBackend:
             if isinstance(e, KeyboardInterrupt):
                 print() # print new line after ^C
             else:
-                print("Stopping because of:", printable_exception(e))
+                cprint("Stopping because of:", printable_exception(e), color="red")
             self.stop()
             print("Stopped current DAQ tasks:")
             for t in self.current_tasks:
@@ -356,7 +357,7 @@ def stop_all(tasks):
         try:
             t.stop()
         except Exception as e:
-            print("Stopping caused:", printable_exception(e))
+            cprint("Stopping caused:", printable_exception(e), color="red")
 
 
 
