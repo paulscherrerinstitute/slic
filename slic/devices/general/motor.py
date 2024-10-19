@@ -1,7 +1,6 @@
 import subprocess
 from types import SimpleNamespace
 from contextlib import contextmanager
-import colorama
 import numpy as np
 
 from slic.core.adjustable import Adjustable, AdjustableError
