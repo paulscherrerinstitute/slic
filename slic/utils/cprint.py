@@ -14,13 +14,15 @@ COLORS = {
 }
 
 
-def ncprint(*objects, color=None, sep=" ", **kwargs):
-    return cprint(*objects, color=None, sep=sep, **kwargs)
-
 def cprint(*objects, color=None, sep=" ", **kwargs):
-    color = get_color(color)
     text = flatten_strings(objects, sep)
     return _print(color, text, sep, kwargs)
+
+def colored(text, color=None):
+    color = get_color(color)
+    if color is None:
+        return text
+    return color + text + Fore.RESET
 
 def get_color(color):
     try:
@@ -34,8 +36,7 @@ def flatten_strings(objects, sep):
     return sep.join(str(i) for i in objects)
 
 def _print(color, text, sep, kwargs):
-    if color is not None:
-        text = color + text + Fore.RESET
+    text = colored(text, color=color)
     return print(text, sep=sep, **kwargs)
 
 
