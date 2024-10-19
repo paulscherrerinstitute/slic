@@ -1,17 +1,44 @@
-from colorama import Fore
+from colorama import Fore, Style
 
 
-COLORS = {
-    "black":   Fore.BLACK,
-    "blue":    Fore.BLUE,
-    "cyan":    Fore.CYAN,
-    "green":   Fore.GREEN,
-    "magenta": Fore.MAGENTA,
-    "red":     Fore.RED,
-    "white":   Fore.WHITE,
-    "yellow":  Fore.YELLOW,
-    None: None
-}
+_COLOR_NAMES = (
+    "black",
+    "blue",
+    "cyan",
+    "green",
+    "magenta",
+    "red",
+    "white",
+    "yellow"
+)
+
+
+def _load_color_variants(name):
+    basename = name.upper()
+    lightname = f"LIGHT{basename}_EX"
+
+    basecolor = getattr(Fore, basename)
+    lightcolor = getattr(Fore, lightname)
+
+    # this is ordered according to brightness skipping lightcolor for symmetry
+    res ={
+        name + "--": basecolor + Style.DIM,
+        name + "-":  lightcolor + Style.DIM,
+        name + "":   basecolor,
+        name + "+":  basecolor + Style.BRIGHT,
+#        name + "++": lightcolor,
+        name + "++": lightcolor + Style.BRIGHT
+    }
+
+    return res
+
+
+COLORS = {}
+for name in _COLOR_NAMES:
+    COLORS.update(_load_color_variants(name))
+
+COLORS[None] = None
+
 
 
 def cprint(*objects, color=None, sep=" ", **kwargs):
@@ -29,7 +56,7 @@ def colored(text, color=None):
     color = get_color(color)
     if color is None:
         return text
-    return color + text + Fore.RESET
+    return color + text + Style.RESET_ALL
 
 def get_color(color):
     try:
@@ -45,7 +72,7 @@ def get_color(color):
 
 def _mk_color_func(color):
     def func(text):
-        return color + text + Fore.RESET
+        return color + text + Style.RESET_ALL
     return func
 
 for name, color in COLORS.items():
