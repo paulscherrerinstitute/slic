@@ -1,6 +1,6 @@
 from time import sleep
 
-from slic.utils import xrange, tqdm_mod#, tqdm_sleep
+from slic.utils import xrange, tqdm_mod
 
 from . import restapi
 from .brokerconfig import BrokerConfig, flatten_detectors

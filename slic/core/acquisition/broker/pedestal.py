@@ -5,6 +5,8 @@ from time import sleep
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
+#from slic.utils import tqdm_sleep
+
 from . import restapi
 from .brokerconfig import flatten_detectors
 from .tools import get_endstation
