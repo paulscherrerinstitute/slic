@@ -1,4 +1,9 @@
-from .pbarrich import pbar
+try:
+    import rich
+except ImportError:
+    from .pbartqdm import pbar
+else:
+    from .pbarrich import pbar
 
 
 
@@ -28,7 +33,7 @@ if __name__ == "__main__":
                 pb.update(advance=1)
 
     def test2D():
-        with pbar(description="test1", total=10) as pb1, pbar(description="test2", total=20) as pb2:
+        with pbar(description="[green]test1", total=10) as pb1, pbar(description="[blue]test2", total=20) as pb2:
             for i1 in range(10):
                 pb2.update(completed=0)
                 for i2 in range(20):
@@ -37,13 +42,14 @@ if __name__ == "__main__":
                 pb1.update(advance=1)
 
     def test2Dnested():
-        with pbar(description="test1", total=10) as pb1:
+        with pbar(description="[green]test1", total=10) as pb1:
             for i1 in range(10):
-                with pbar(description="test2", total=20) as pb2:
+                with pbar(description="[blue]test2", total=20) as pb2:
                     for i2 in range(20):
                         sleep(0.1)
                         pb2.update(advance=1)
                 pb1.update(advance=1)
+
 
 
     acquire(50)
