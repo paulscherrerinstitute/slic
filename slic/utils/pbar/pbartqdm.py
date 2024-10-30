@@ -17,6 +17,11 @@ def separate_color_and_text(string):
 
 
 class ProgressBar():
+    """
+    ProgressBar wraps a tqdm.tqdm mimicking the ProgressBar using rich
+    rich-style strings with [color] are parsed and converted to the equivalent tqdm bar color
+    """
+
     def __init__(self, iterable=None, description="", **kwargs):
         self.iterable = iterable
         self.description = description
