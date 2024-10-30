@@ -32,7 +32,8 @@ class ProgressBar():
         self.task.update(n=n)
 
     def set(self, n):
-        raise NotImplementedError(f"cannot set completed to {completed} in tqdm")
+        self.task.n = n
+        self.task.refresh()
 
     def reset(self):
         self.task.reset()
