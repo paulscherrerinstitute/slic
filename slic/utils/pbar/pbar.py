@@ -51,6 +51,13 @@ if __name__ == "__main__":
                 pb1.advance()
 
 
+    def test_set():
+        with pbar(total=10) as pb:
+            for i in range(10):
+                sleep(0.1)
+                pb.set(i+1)
+
+
 
     acquire(50)
     move(30000)
@@ -63,6 +70,8 @@ if __name__ == "__main__":
     test1D()
     test2D()
     test2Dnested()
+
+    test_set()
 
 
 
