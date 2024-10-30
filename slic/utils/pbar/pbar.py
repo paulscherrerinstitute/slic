@@ -30,16 +30,16 @@ if __name__ == "__main__":
         with pbar(description="test", total=10) as pb:
             for i in range(10):
                 sleep(0.1)
-                pb.update(advance=1)
+                pb.advance()
 
     def test2D():
         with pbar(description="[green]test1", total=10) as pb1, pbar(description="[blue]test2", total=20) as pb2:
             for i1 in range(10):
-                pb2.update(completed=0)
+                pb2.reset()
                 for i2 in range(20):
                     sleep(0.1)
-                    pb2.update(advance=1)
-                pb1.update(advance=1)
+                    pb2.advance()
+                pb1.advance()
 
     def test2Dnested():
         with pbar(description="[green]test1", total=10) as pb1:
@@ -47,8 +47,8 @@ if __name__ == "__main__":
                 with pbar(description="[blue]test2", total=20) as pb2:
                     for i2 in range(20):
                         sleep(0.1)
-                        pb2.update(advance=1)
-                pb1.update(advance=1)
+                        pb2.advance()
+                pb1.advance()
 
 
 

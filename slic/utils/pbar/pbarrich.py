@@ -16,8 +16,14 @@ class ProgressBar:
         self.kwargs = kwargs
         self.task = None
 
-    def update(self, *args, **kwargs):
-        self.pbm.progress.update(self.task, *args, **kwargs)
+    def advance(self, n=1):
+        self.pbm.progress.advance(self.task, advance=n)
+
+    def set(self, n):
+        self.pbm.progress.update(self.task, completed=n)
+
+    def reset(self):
+        self.pbm.progress.reset(self.task)
 
     def __enter__(self):
         self.pbm.start_progress()
@@ -34,7 +40,7 @@ class ProgressBar:
         with self:
             for i in iterable:
                 yield i
-                self.update(advance=1)
+                self.advance()
 
 
 class ProgressBarManager:

@@ -28,25 +28,14 @@ class ProgressBar():
         self.kwargs = kwargs
         self.task = None
 
-    def update(self, *args, **kwargs):
-        if "advance" in kwargs:
-            advance = kwargs.pop("advance")
-            self.task.update(n=advance)
-        if "completed" in kwargs:
-            completed = kwargs.pop("completed")
-            if completed == 0:
-                self.task.reset()
-            else:
-                raise NotImplementedError(f"cannot set completed to {completed} in tqdm")
-        if "description" in kwargs:
-            description = kwargs.pop("description")
-            self.task.set_description(description)
-        if "total" in kwargs:
-            total = kwargs.pop("total")
-            self.task.total = total
-        if kwargs:
-            printable_kwargs = ", ".join(f"{k}={v}" for k, v in kwargs.items())
-            raise NotImplementedError(f"cannot handle the following parameters in tqdm: {printable_kwargs}")
+    def advance(self, n=1):
+        self.task.update(n=n)
+
+    def set(self, n):
+        raise NotImplementedError(f"cannot set completed to {completed} in tqdm")
+
+    def reset(self):
+        self.task.reset()
 
     def __enter__(self):
         self.task = task = self._mk_tqdm()
