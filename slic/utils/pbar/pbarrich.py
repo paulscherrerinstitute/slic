@@ -36,11 +36,20 @@ class ProgressBar:
 
     def __iter__(self):
         iterable = self.iterable
-        self.kwargs.setdefault("total", len(iterable))
+        self.kwargs.setdefault("total", get_len(iterable))
         with self:
             for i in iterable:
                 yield i
                 self.advance()
+
+
+
+def get_len(iterable):
+    try:
+        return len(iterable)
+    except TypeError:
+        return None
+
 
 
 class ProgressBarManager:
