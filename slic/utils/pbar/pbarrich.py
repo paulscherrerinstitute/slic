@@ -1,5 +1,5 @@
 import functools
-from .progress import Progress
+from .rich_mod import Progress
 
 
 class ProgressBar:
