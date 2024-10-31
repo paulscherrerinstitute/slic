@@ -1,6 +1,6 @@
 import re
 
-from tqdm import tqdm
+from .tqdm_mod import tqdm_mod as tqdm
 
 
 PATTERN_COLOR_AND_TEXT = re.compile(r"\[(.*?)\](.*)")
