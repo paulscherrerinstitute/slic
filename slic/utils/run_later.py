@@ -4,7 +4,7 @@ from time import sleep
 from collections.abc import Sequence
 from functools import update_wrapper
 
-from .tqdm_mod import tqdm_mod
+from .pbar import pbar
 
 
 class MatMulTrick:
@@ -98,12 +98,12 @@ def run_at(when, func, *args, **kwargs):
     total = when - start
     total_secs = total.total_seconds()
 
-    with tqdm_mod(total=total_secs) as pbar:
+    with pbar(total=total_secs, description="Waiting to run later") as pb:
         while True:
             now = datetime.now()
             delta = now - start
             delta_secs = delta.total_seconds()
-            pbar.set(delta_secs)
+            pb.set(delta_secs)
             if now >= when:
                 break
             sleep(0.1) # update bar at 10 Hz

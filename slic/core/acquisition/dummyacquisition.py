@@ -1,5 +1,6 @@
 from time import sleep
-from tqdm import trange
+
+from slic.utils import pbrange
 
 from .acquisition import Acquisition
 
@@ -12,7 +13,7 @@ class DummyAcquisition(Acquisition):
         args = ", ".join(repr(i) for i in args)
         print(f"acquire({args})")
         print(f"dummy acquire to {filename}:")
-        for i in trange(n_pulses):
+        for i in pbrange(n_pulses, description="Acquiring..."):
             sleep(1/100)
 
 

@@ -1,6 +1,6 @@
 from time import sleep
 
-from slic.utils import xrange, tqdm_mod
+from slic.utils import xrange, pbar
 
 from . import restapi
 from .brokerconfig import BrokerConfig, flatten_detectors
@@ -94,11 +94,11 @@ class BrokerClient:
 
         self.running = True
 
-        with tqdm_mod(total=n_pulses) as pbar:
+        with pbar(total=n_pulses, description="Acquiring...") as pb:
             while self.running:
                 current_pulseid = get_current_pulseid()
                 delta_n = (current_pulseid - start_pulseid) // rate_multiplicator
-                pbar.set(delta_n)
+                pb.set(delta_n)
                 if current_pulseid > stop_pulseid:
                     break
                 sleep(self.wait_time)

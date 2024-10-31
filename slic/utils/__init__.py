@@ -23,7 +23,6 @@ from .readable import readable_seconds
 from .screenshot import Screenshot
 from .shortcut import Shortcut, shortcuts, as_shortcut
 from .snapshot import snapshot
-from .tqdm_mod import tqdm_mod, tqdm_sleep
 from .xrange import xrange
 
 

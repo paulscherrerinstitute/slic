@@ -2,7 +2,7 @@ from itertools import count
 from threading import Thread
 from time import sleep
 
-from slic.utils import tqdm_sleep, typename
+from slic.utils import pbsleep, typename
 
 
 def monitor(name, sensor, record_time, grum_client, cfg=None):
@@ -11,7 +11,7 @@ def monitor(name, sensor, record_time, grum_client, cfg=None):
     for x in count():
         print(f"iteration #{x}")
         with sensor:
-            tqdm_sleep(record_time)
+            pbsleep(record_time)
         y = sensor.get()
         y = float(y)
         grum_client.append_data(name, (x, y))
@@ -50,7 +50,7 @@ class Monitor:
 
         dont_print = lambda *a: None
         fprint = dont_print if silent else print
-        fsleep = sleep if silent else tqdm_sleep
+        fsleep = sleep if silent else pbsleep
 
         cfg = self.cfg.copy()
         cfg.setdefault("xlabel", f"samples taken every {self.record_time} seconds")

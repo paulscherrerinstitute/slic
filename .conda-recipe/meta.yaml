@@ -29,6 +29,7 @@ requirements:
         - logzero
         - pyepics
         - tqdm
+        - rich
         - yaspin
 
 

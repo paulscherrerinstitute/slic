@@ -1,10 +1,9 @@
 import os
 import random
 from time import sleep
-from tqdm import trange
 
 from slic.core.task import DAQTask
-from slic.utils import typename, xrange
+from slic.utils import typename, xrange, pbrange
 
 from .baseacquisition import BaseAcquisition
 
@@ -58,7 +57,7 @@ class FakeAcquisition(BaseAcquisition):
             for n in xrange(n_repeat):
                 if not self.running:
                     break
-                for i in trange(n_pulses):
+                for i in pbrange(n_pulses, description="Acquiring..."):
                     if not self.running:
                         break
                     sleep(1/100)

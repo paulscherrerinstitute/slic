@@ -5,7 +5,7 @@ from time import sleep
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
-#from slic.utils import tqdm_sleep
+#from slic.utils import pbsleep
 
 from . import restapi
 from .brokerconfig import flatten_detectors
@@ -44,8 +44,7 @@ def take_pedestal(address, config, detectors=None, rate=None, pedestalmode=False
     response = restapi.take_pedestal(address, pgroup, detectors, rate_multiplicator=rate_multiplicator, pedestalmode=pedestalmode, timeout=timeout)
     print("done, got:", response)
 
-#    print(f"waiting for {timeout} seconds")
-#    tqdm_sleep(timeout)
+#    pbsleep(timeout, f"Waiting for {timeout} seconds")
 
 
     while fns_before >= set(glob(pattern)):
