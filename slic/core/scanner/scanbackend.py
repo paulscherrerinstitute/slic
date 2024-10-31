@@ -1,6 +1,6 @@
 import os
 
-from slic.utils import make_missing_dir, printable_exception, xrange
+from slic.utils import make_missing_dir, printable_exception, xrange, pbar
 from slic.utils.printing import printable_dict, itemize, format_header, printable_table
 from slic.utils.ask_yes_no import ask_Yes_no
 from slic.utils.trinary import check_trinary
@@ -118,7 +118,7 @@ class ScanBackend:
 
         nreps = self.n_repeat
         printable_nreps = "∞" if nreps is None else nreps
-        for i in xrange(nreps):
+        for i in pbar(xrange(nreps), "Repeating..."):
             if not self.running:
                 break
             print(f"Repetition {n+1} of {printable_nreps}")
@@ -154,7 +154,7 @@ class ScanBackend:
 
         values = self.values
         ntotal = len(values)
-        for n, val in enumerate(values):
+        for n, val in enumerate(pbar(values, "Scanning ...")):
             if not self.running:
                 n -= 1 # stopped before this iteration
                 break
