@@ -13,6 +13,7 @@ class tqdm_mod(tqdm.tqdm):
         res = super().format_meter(*args, **kwargs)
         # these have to have the same length otherwise the combined line gets messed up
         res = res.replace("@/s", " Hz")
+        res = res.replace("s/@", " s")
         return res
 
 
