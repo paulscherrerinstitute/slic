@@ -73,6 +73,22 @@ def take_pedestal(address, pgroup, detectors, *args, rate_multiplicator=1, pedes
     return response.get("message")
 
 
+def power_on_modules(address, detector, modules, *args, **kwargs):
+    params = {
+        "detector_name": detector,
+        "modules": modules
+    }
+    response = post_request(address, "power_on_modules", params, *args, **kwargs)
+    return response.get("message")
+
+def power_off_modules(address, detector, modules, *args, **kwargs):
+    params = {
+        "detector_name": detector,
+        "modules": modules
+    }
+    response = post_request(address, "power_off_modules", params, *args, **kwargs)
+    return response.get("message")
+
 
 def copy_user_files(address, pgroup, run_number, fnames, timeout=10):
     endpoint = "copy_user_files"
