@@ -5,5 +5,6 @@ from . import dcm
 from . import kb
 from . import pulsepicker
 from . import slits
+from . import offsetmirrors
 
 
