@@ -50,7 +50,16 @@ def power_on_detector(address, detector, *args, **kwargs):
 def get_running_detectors(address, *args, **kwargs):
     params = {}
     response = get_request(address, "get_running_detectors", params, *args, **kwargs)
-    return response.get("detectors")
+    target_keys = (
+        "missing_detectors",
+        "running_detectors",
+        "limping_detectors"
+    )
+    res = {k: response[k] for k in target_keys & response.keys()}
+    if res:
+        return res
+    else:
+        return response.get("detectors") #TODO: remove, kept for backwards compatibility
 
 def get_allowed_detectors(address, *args, **kwargs):
     params = {}
