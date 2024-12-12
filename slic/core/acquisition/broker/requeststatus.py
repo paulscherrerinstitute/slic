@@ -20,7 +20,8 @@ class RequestStatus:
     )
 
 
-    def __init__(self, broker_url=DEFAULT_BROKER_URL):
+    def __init__(self, instrument=None, broker_url=DEFAULT_BROKER_URL):
+        self.instrument = instrument
         self.broker_url = broker_url
 
         for i in self.ENTRIES:
@@ -59,6 +60,10 @@ class RequestStatus:
 
         body = body.decode()
         request = json.loads(body)
+
+        instrument = request.get("metadata", {}).get("general/instrument")
+        if instrument is not None and self.instrument is not None and instrument != self.instrument:
+            return
 
         action = headers["action"]
 
