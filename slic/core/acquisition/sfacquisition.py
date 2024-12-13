@@ -12,6 +12,13 @@ from .bschannels import BSChannels
 from .broker import BrokerClient, align_pid_left, align_pid_right, restapi
 from .detcfg import DetectorConfig
 
+#TODO: install pika everywhere and remove the following
+# handle cases where pika is not available
+try:
+    from .broker.requeststatus import RequestStatus
+except ImportError:
+    RequestStatus = None
+
 
 class SFAcquisition(BaseAcquisition):
 
@@ -33,6 +40,14 @@ class SFAcquisition(BaseAcquisition):
         self.default_pvs       = default_pvs
 
         self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, append_user_tag_to_data_dir=append_user_tag_to_data_dir, client_name="slic", **kwargs)
+
+        #TODO: install pika everywhere and remove the following
+        # handle cases where pika is not available
+        if RequestStatus is None:
+            self.status = None
+        else:
+            status_address = api_address.split("/")[-1].split(":")[0] #TODO does this always work? would be better to have host and port as two arguments and assemble as needed
+            self.status = RequestStatus(instrument=instrument, address=status_address)
 
         self.current_task = None
 
@@ -141,10 +156,6 @@ class SFAcquisition(BaseAcquisition):
     def pgroup(self, value):
         self.client.config.pgroup = value
 
-
-    @property
-    def status(self):
-        return self.client.status
 
     def __repr__(self):
         return "SF DAQ on {} (status: {}, last run: {})".format(self.client.address, self.client.status, self.client.run_number)
