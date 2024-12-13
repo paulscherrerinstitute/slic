@@ -129,7 +129,7 @@ class BrokerClient:
 
 
     def __repr__(self):
-        return "SF DAQ on {} (status: {}, last run: {})".format(self.address, self.status, self.run_number)
+        return f"SF DAQ on {self.address} (status: {self.status}, last run: {self.run_number})"
 
 
     @property
