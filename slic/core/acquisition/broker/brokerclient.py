@@ -128,6 +128,10 @@ class BrokerClient:
         return run_number
 
 
+    def __repr__(self):
+        return "SF DAQ on {} (status: {}, last run: {})".format(self.address, self.status, self.run_number)
+
+
     @property
     def status(self):
         if self.running:

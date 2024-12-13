@@ -158,7 +158,7 @@ class SFAcquisition(BaseAcquisition):
 
 
     def __repr__(self):
-        return "SF DAQ on {} (status: {}, last run: {})".format(self.client.address, self.client.status, self.client.run_number)
+        return repr(self.client)
 
 
     def get_config_pvs(self):
