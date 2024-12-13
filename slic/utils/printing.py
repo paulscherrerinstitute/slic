@@ -9,7 +9,7 @@ def printable_dict_of_dicts(d, sorter=sorted_naturally):
 
 def printable_dict(d, header=None, sorter=sorted_naturally):
     length = maxstrlen(d) + 1
-    lines = ("{}:{}{}".format(k, " "*(length-strlen(k)), v) for k, v in d.items())
+    lines = ("{}:{}{}".format(k, mk_pad(k, length), v) for k, v in d.items())
 
     if sorter:
         lines = sorter(lines)
@@ -26,9 +26,12 @@ def maxstrlen(seq):
     return maxlen(seq)
 
 def maxlen(seq):
-    if not seq: # max of empty sequence is a ValueError
+    if not seq: # max of empty sequence raises a ValueError
         return 0
     return max(len(i) for i in seq)
+
+def mk_pad(x, length):
+    return " " * (length - strlen(x))
 
 def strlen(x):
     return len(str(x))
