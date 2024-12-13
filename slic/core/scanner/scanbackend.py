@@ -117,10 +117,11 @@ class ScanBackend:
         base_fn_sfdaq = self.filename_sfdaq
 
         nreps = self.n_repeat
+        printable_nreps = "∞" if nreps is None else nreps
         for i in xrange(nreps):
             if not self.running:
                 break
-            print("Repetition {} of {}".format(i+1, "∞" if nreps is None else nreps))
+            print(f"Repetition {n+1} of {printable_nreps}")
             suffix = f"_{i+1:03}"
 
             fn       = base_fn       + suffix
