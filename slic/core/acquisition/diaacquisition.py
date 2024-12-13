@@ -33,7 +33,7 @@ class DIAAcquisition(BaseAcquisition):
         self.default_dir = default_dir
 
         if not api_address:
-            api_address = "http://sf-daq-{}:10000".format(instrument)
+            api_address = f"http://sf-daq-{instrument}:10000"
 
         self.api_address = api_address
         self.client = DetectorIntegrationClient(api_address)
@@ -91,7 +91,7 @@ class DIAAcquisition(BaseAcquisition):
         res = []
         for client in self.active_clients:
             client = client.upper()
-            fn = "{}.{}.h5".format(base, client)
+            fn = f"{base}.{client}.h5"
             res.append(fn)
         return res
 
@@ -146,7 +146,7 @@ class DIAAcquisition(BaseAcquisition):
     def __repr__(self):
         clients = self.active_clients
         clients = ", ".join(clients)
-        return "Detector Integration API on {} (status: {})\nClients: {}".format(self.api_address, self.status, clients)
+        return f"Detector Integration API on {self.api_address} (status: {self.status})\nClients: {clients}"
 
 
 

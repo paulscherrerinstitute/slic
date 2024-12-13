@@ -64,7 +64,7 @@ class Task(BaseTask):
 
     def __repr__(self):
         name = typename(self)
-        return "{}: {}".format(name, self.status)
+        return f"{name}: {self.status}"
 
 
 

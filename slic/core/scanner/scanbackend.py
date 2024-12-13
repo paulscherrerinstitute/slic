@@ -157,13 +157,13 @@ class ScanBackend:
             if not self.running:
                 n -= 1 # stopped before this iteration
                 break
-            cprint("Scan step {} of {}".format(n+1, ntotal), color="green")
+            cprint(f"Scan step {n+1} of {ntotal}", color="green")
             do_step(n, val, step_info=step_info)
 
         if self.running and n+1 == ntotal:
             cprint("All scan steps done", color="green")
         else:
-            cprint("Stopped during scan step {} of {}".format(n+1, ntotal), color="red")
+            cprint(f"Stopped during scan step {n+1} of {ntotal}", color="red")
 
 
     def do_checked_step(self, *args, **kwargs):
@@ -241,7 +241,7 @@ class ScanBackend:
             filebase = os.path.basename(self.filename)
             filename = os.path.join(filename, filebase)
 
-        filename += "_step{:04d}".format(istep)
+        filename += f"_step{istep:04d}"
         return filename
 
 

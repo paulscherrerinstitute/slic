@@ -52,7 +52,7 @@ def ask_yes_no(question, default=None, ctrl_c="n", ctrl_d=None):
     ctrl_d = default if ctrl_d is None else ctrl_d
 
     option_prompt = OPTION_PROMPTS[default]
-    prompt = question + "? [{}] ".format(option_prompt)
+    prompt = question + f"? [{option_prompt}] "
 
     ans = None
     while ans not in ANSWERS:

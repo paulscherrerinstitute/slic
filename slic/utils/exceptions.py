@@ -19,7 +19,7 @@ class ChainedException(Exception):
 def printable_exception(exc):
     name = typename(exc)
     message = str(exc)
-    return "{}: {}".format(name, message)
+    return f"{name}: {message}"
 
 
 
@@ -30,7 +30,7 @@ class printed_exception(AbstractContextManager):
         if exc_type is not None:
             name = exc_type.__name__
             message = exc_val or ""
-            print("{}: {}".format(name, message))
+            print(f"{name}: {message}"
         return True # this causes the with statement to suppress the exception
 
 

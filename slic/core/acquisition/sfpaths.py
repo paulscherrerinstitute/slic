@@ -34,14 +34,14 @@ class SwissFELPaths:
 
     def __repr__(self):
         lines = [
-            "raw: {}".format(self.raw),
-            "res: {}".format(self.res),
+            f"raw: {self.raw}",
+            f"res: {self.res}",
             "",
-            "gain:       {}".format(self.gain),
-            "pede:       {}".format(self.pede),
-            "pede files: {}".format(self.pede_files),
+            f"gain:       {self.gain}",
+            f"pede:       {self.pede}",
+            f"pede files: {self.pede_files}",
             "",
-            "channels: {}".format(self.default_channel_list)
+            f"channels: {self.default_channel_list}"
         ]
         return "\n".join(lines)
 

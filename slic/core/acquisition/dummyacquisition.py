@@ -10,7 +10,7 @@ class DummyAcquisition(Acquisition):
         print("extra kwargs:", kwargs)
         args = (filename, n_pulses, channels)
         args = ", ".join(repr(i) for i in args)
-        print("acquire({})".format(args))
+        print(f"acquire({args})")
         print(f"dummy acquire to {filename}:")
         for i in trange(n_pulses):
             sleep(1/100)

@@ -52,7 +52,7 @@ class FakeAcquisition(BaseAcquisition):
         def _acquire():
             args = (filename, n_pulses)
             args = ", ".join(repr(i) for i in args)
-            print("acquire({})".format(args))
+            print(f"acquire({args})")
             print(f"fake acquire to {filename}:")
             self.running = True
             for n in xrange(n_repeat):

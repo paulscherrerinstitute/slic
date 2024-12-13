@@ -72,7 +72,7 @@ class Acquisition(BaseAcquisition):
 
     def __repr__(self):
         name = typename(self)
-        return "{}: {}/{}".format(name, self.instrument, self.pgroup) #TODO
+        return f"{name}: {self.instrument}/{self.pgroup}" #TODO
 
 
 

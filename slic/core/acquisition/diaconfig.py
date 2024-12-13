@@ -19,7 +19,7 @@ class DIAConfig:
             pgroup = "p" + pgroup
 
         if len(pgroup) != 6:
-            msg = "invalid pgroup \"{}\" should have the form \"p12345\"".format(pgroup)
+            msg = f"invalid pgroup \"{pgroup}\" should have the form \"p12345\""
             raise ValueError(msg)
 
         self.pgroup = pgroup

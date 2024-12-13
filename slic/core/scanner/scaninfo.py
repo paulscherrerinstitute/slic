@@ -82,7 +82,7 @@ class ScanInfo:
 
 
     def __repr__(self):
-        return "Scan info in {}".format(self.filename)
+        return f"Scan info in {self.filename}"
 
 
 

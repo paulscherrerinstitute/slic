@@ -43,7 +43,7 @@ def find_last_pedestal(clients, directory="."):
 def extract_timestamp(fn):
     fn = strip_dir(fn)
     base = fn.split(".")[0]
-    assert base.startswith(PREFIX), "\"{}\" does not start with \"{}\"".format(base, PREFIX)
+    assert base.startswith(PREFIX), f"\"{base}\" does not start with \"{PREFIX}\""
     timestamp = base[len(PREFIX):]
     timestamp = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
     return timestamp

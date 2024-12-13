@@ -117,7 +117,7 @@ class TweakPanel(wx.Panel):
                 timestamp = datetime.now()
                 adjname = adjustable.name
                 operation = "="
-                delta_pm = "{:+g}".format(delta)
+                delta_pm = f"{delta:+g}"
                 entry = [timestamp, adjname, operation, delta_pm]
                 color = None
             readback = adjustable.get_current_value()
@@ -166,7 +166,7 @@ class TweakPanel(wx.Panel):
         timestamp = datetime.now()
         adjname = adj.name
         operation = TWEAK_OPERATIONS.get(direction, direction)
-        delta_pm = "{:+g}".format(delta)
+        delta_pm = f"{delta:+g}"
         entry = [timestamp, adjname, operation, delta_pm]
         color = TWEAK_COLORS.get(direction)
         self.next_entry_line = entry

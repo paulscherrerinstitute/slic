@@ -15,9 +15,9 @@ def can_create_file(filename):
     if not os.path.isfile(filename):
         return True
 
-    delete = ask_yes_No("File \"{}\" exists already. Would you like to delete it".format(filename))
+    delete = ask_yes_No(f"File \"{filename}\" exists already. Would you like to delete it")
     if delete:
-        print("Deleting \"{}\".".format(filename))
+        print(f"Deleting \"{filename}\".")
         os.remove(filename)
         return True
 
@@ -30,7 +30,7 @@ def make_missing_dir(p):
         return
 
     printable = p.absolute().as_posix()
-    msg = "Directory \"{}\" does not exist, creating it...".format(printable)
+    msg = f"Directory \"{printable}\" does not exist, creating it..."
     print(msg)
 
     p.mkdir(mode=0o775, parents=True, exist_ok=True)
