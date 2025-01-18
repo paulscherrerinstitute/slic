@@ -121,15 +121,12 @@ class BrokerSlowAPI(BaseAPI):
 
 
     def copy_user_files(self, pgroup, run_number, fnames, timeout=10):
-        endpoint = "copy_user_files"
-        requrl = make_requrl(self.address, endpoint)
         params = {
             "pgroup": pgroup,
             "run_number": run_number,
             "files": fnames
         }
-        params = json_validate(params)
-        response = requests.post(requrl, json=params, timeout=timeout).json()
+        response = post_request(self.address, "copy_user_files", params, *args, **kwargs)
         return response
 
 
