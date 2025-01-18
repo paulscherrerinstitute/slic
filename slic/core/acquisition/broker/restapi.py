@@ -12,6 +12,21 @@ class BaseAPI:
         self.port = port
         self.protocol = protocol
 
+    def post(self, endpoint, params, timeout=10):
+        requrl = self.url(endpoint)
+        params = json_validate(params)
+        response = requests.post(requrl, json=params, timeout=timeout).json()
+        return validate_response(response)
+
+    def get(self, endpoint, params, timeout=10):
+        requrl = self.url(endpoint)
+        params = json_validate(params)
+        response = requests.get(requrl, json=params, timeout=timeout).json()
+        return validate_response(response)
+
+    def url(self, endpoint):
+        return f"{self.address}/{endpoint}"
+
     @property
     def address(self):
         return f"{self.protocol}://{self.host}:{self.port}"
@@ -25,21 +40,21 @@ class BrokerAPI(BaseAPI):
 
     def advance_run_number(self, pgroup, *args, **kwargs):
         params = {"pgroup": pgroup}
-        response = post_request(self.address, "advance_run_number", params, *args, **kwargs)
+        response = self.post("advance_run_number", params, *args, **kwargs)
         run_number = response["run_number"]
         run_number = int(run_number)
         return run_number
 
     def get_run_number(self, pgroup, *args, **kwargs):
         params = {"pgroup": pgroup}
-        response = get_request(self.address, "get_current_run_number", params, *args, **kwargs)
+        response = self.get("get_current_run_number", params, *args, **kwargs)
         run_number = response["run_number"]
         run_number = int(run_number)
         return run_number
 
 
     def retrieve(self, *args, **kwargs):
-        response = post_request(self.address, "retrieve_from_buffers", *args, **kwargs)
+        response = self.post("retrieve_from_buffers", *args, **kwargs)
         res = {
             "run_number":       int(response["run_number"]),
             "acq_number":       int(response["acquisition_number"]),
@@ -51,23 +66,23 @@ class BrokerAPI(BaseAPI):
 
     def get_config_pvs(self, *args, **kwargs):
         params = {}
-        response = get_request(self.address, "get_pvlist", params, *args, **kwargs)
+        response = self.get("get_pvlist", params, *args, **kwargs)
         return response.get("pv_list")
 
     def set_config_pvs(self, pvs, *args, **kwargs):
         params = {"pv_list": pvs}
-        response = post_request(self.address, "set_pvlist", params, *args, **kwargs)
+        response = self.post("set_pvlist", params, *args, **kwargs)
         return response.get("pv_list")
 
 
     def power_on_detector(self, detector, *args, **kwargs):
         params = {"detector_name": detector}
-        response = post_request(self.address, "power_on_detector", params, *args, **kwargs)
+        response = self.post("power_on_detector", params, *args, **kwargs)
         return response.get("message")
 
     def get_running_detectors(self, *args, **kwargs):
         params = {}
-        response = get_request(self.address, "get_running_detectors", params, *args, **kwargs)
+        response = self.get("get_running_detectors", params, *args, **kwargs)
         target_keys = (
             "missing_detectors",
             "running_detectors",
@@ -81,12 +96,12 @@ class BrokerAPI(BaseAPI):
 
     def get_allowed_detectors(self, *args, **kwargs):
         params = {}
-        response = get_request(self.address, "get_allowed_detectors", params, *args, **kwargs)
+        response = self.get("get_allowed_detectors", params, *args, **kwargs)
         return response.get("detectors")
 
     def close_pgroup(self, pgroup, *args, **kwargs):
         params = {"pgroup": pgroup}
-        response = post_request(self.address, "close_pgroup_writing", params, *args, **kwargs)
+        response = self.post("close_pgroup_writing", params, *args, **kwargs)
         return response.get("message")
 
     def take_pedestal(self, pgroup, detectors, *args, rate_multiplicator=1, pedestalmode=False, **kwargs):
@@ -96,7 +111,7 @@ class BrokerAPI(BaseAPI):
             "rate_multiplicator": rate_multiplicator,
             "pedestalmode": pedestalmode
         }
-        response = post_request(self.address, "take_pedestal", params, *args, **kwargs)
+        response = self.post("take_pedestal", params, *args, **kwargs)
         return response.get("message")
 
 
@@ -108,7 +123,7 @@ class BrokerSlowAPI(BaseAPI):
             "detector_name": detector,
             "modules": modules
         }
-        response = post_request(self.address, "power_on_modules", params, *args, **kwargs)
+        response = self.post("power_on_modules", params, *args, **kwargs)
         return response.get("message")
 
     def power_off_modules(self, detector, modules, *args, **kwargs):
@@ -116,34 +131,34 @@ class BrokerSlowAPI(BaseAPI):
             "detector_name": detector,
             "modules": modules
         }
-        response = post_request(self.address, "power_off_modules", params, *args, **kwargs)
+        response = self.post("power_off_modules", params, *args, **kwargs)
         return response.get("message")
 
 
-    def copy_user_files(self, pgroup, run_number, fnames, timeout=10):
+    def copy_user_files(self, pgroup, run_number, fnames, *args, **kwargs):
         params = {
             "pgroup": pgroup,
             "run_number": run_number,
             "files": fnames
         }
-        response = post_request(self.address, "copy_user_files", params, *args, **kwargs)
+        response = self.post("copy_user_files", params, *args, **kwargs)
         return response
 
 
     def get_jfctrl_monitor(self, detector, *args, **kwargs):
         params = {"detector_name": detector}
-        response = get_request(self.address, "get_jfctrl_monitor", params, *args, **kwargs)
+        response = self.get("get_jfctrl_monitor", params, *args, **kwargs)
         return response.get("parameters")
 
     def get_detector_temperatures(self, detector, *args, **kwargs):
         params = {"detector_name": detector}
-        response = get_request(self.address, "get_detector_temperatures", params, *args, **kwargs)
+        response = self.get("get_detector_temperatures", params, *args, **kwargs)
         return response.get("temperatures")
 
 
     def get_detector_settings(self, detector, *args, **kwargs):
         params = {"detector_name": detector}
-        response = get_request(self.address, "get_detector_settings", params, *args, **kwargs)
+        response = self.get("get_detector_settings", params, *args, **kwargs)
         return response.get("parameters")
 
     def set_detector_settings(self, detector, parameters, *args, **kwargs):
@@ -151,13 +166,13 @@ class BrokerSlowAPI(BaseAPI):
             "detector_name": detector,
             "parameters": parameters
         }
-        response = post_request(self.address, "set_detector_settings", params, *args, **kwargs)
+        response = self.post("set_detector_settings", params, *args, **kwargs)
         return response.get("changed_parameters")
 
 
     def get_dap_settings(self, detector, *args, **kwargs):
         params = {"detector_name": detector}
-        response = get_request(self.address, "get_dap_settings", params, *args, **kwargs)
+        response = self.get("get_dap_settings", params, *args, **kwargs)
         return response.get("parameters")
 
     def set_dap_settings(self, detector, parameters, *args, **kwargs):
@@ -165,7 +180,7 @@ class BrokerSlowAPI(BaseAPI):
             "detector_name": detector,
             "parameters": parameters
         }
-        response = post_request(self.address, "set_dap_settings", params, *args, **kwargs)
+        response = self.post("set_dap_settings", params, *args, **kwargs)
         return response.get("changed_parameters")
 
 
@@ -253,24 +268,6 @@ def make_dap_parameters(
 def _make_parameters(**kwargs):
     return {k: v for k, v in kwargs.items() if v is not None}
 
-
-
-def post_request(address, endpoint, params, timeout=10):
-    requrl = make_requrl(address, endpoint)
-    params = json_validate(params)
-    response = requests.post(requrl, json=params, timeout=timeout).json()
-    return validate_response(response)
-
-def get_request(address, endpoint, params, timeout=10):
-    requrl = make_requrl(address, endpoint)
-    params = json_validate(params)
-    response = requests.get(requrl, json=params, timeout=timeout).json()
-    return validate_response(response)
-
-
-def make_requrl(address, endpoint):
-    address = address.rstrip("/")
-    return f"{address}/{endpoint}"
 
 
 def validate_response(resp):
