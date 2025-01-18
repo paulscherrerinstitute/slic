@@ -5,136 +5,173 @@ import requests
 from slic.utils import json_validate
 
 
-def advance_run_number(address, pgroup, *args, **kwargs):
-    params = {"pgroup": pgroup}
-    response = post_request(address, "advance_run_number", params, *args, **kwargs)
-    run_number = response["run_number"]
-    run_number = int(run_number)
-    return run_number
+class BaseAPI:
 
-def get_run_number(address, pgroup, *args, **kwargs):
-    params = {"pgroup": pgroup}
-    response = get_request(address, "get_current_run_number", params, *args, **kwargs)
-    run_number = response["run_number"]
-    run_number = int(run_number)
-    return run_number
+    def __init__(self, host, port, protocol="http"):
+        self.host = host
+        self.port = port
+        self.protocol = protocol
 
+    @property
+    def address(self):
+        return f"{self.protocol}://{self.host}:{self.port}"
 
-def retrieve(address, *args, **kwargs):
-    response = post_request(address, "retrieve_from_buffers", *args, **kwargs)
-    res = {
-        "run_number":       int(response["run_number"]),
-        "acq_number":       int(response["acquisition_number"]),
-        "total_acq_number": int(response["unique_acquisition_number"]),
-        "filenames": response["files"]
-    }
-    return res
+    def __repr__(self):
+        return self.address
 
 
-def get_config_pvs(address, *args, **kwargs):
-    params = {}
-    response = get_request(address, "get_pvlist", params, *args, **kwargs)
-    return response.get("pv_list")
 
-def set_config_pvs(address, pvs, *args, **kwargs):
-    params = {"pv_list": pvs}
-    response = post_request(address, "set_pvlist", params, *args, **kwargs)
-    return response.get("pv_list")
+class BrokerAPI(BaseAPI):
+
+    def advance_run_number(self, pgroup, *args, **kwargs):
+        params = {"pgroup": pgroup}
+        response = post_request(self.address, "advance_run_number", params, *args, **kwargs)
+        run_number = response["run_number"]
+        run_number = int(run_number)
+        return run_number
+
+    def get_run_number(self, pgroup, *args, **kwargs):
+        params = {"pgroup": pgroup}
+        response = get_request(self.address, "get_current_run_number", params, *args, **kwargs)
+        run_number = response["run_number"]
+        run_number = int(run_number)
+        return run_number
 
 
-def power_on_detector(address, detector, *args, **kwargs):
-    params = {"detector_name": detector}
-    response = post_request(address, "power_on_detector", params, *args, **kwargs)
-    return response.get("message")
-
-def get_running_detectors(address, *args, **kwargs):
-    params = {}
-    response = get_request(address, "get_running_detectors", params, *args, **kwargs)
-    target_keys = (
-        "missing_detectors",
-        "running_detectors",
-        "limping_detectors"
-    )
-    res = {k: response[k] for k in target_keys & response.keys()}
-    if res:
+    def retrieve(self, *args, **kwargs):
+        response = post_request(self.address, "retrieve_from_buffers", *args, **kwargs)
+        res = {
+            "run_number":       int(response["run_number"]),
+            "acq_number":       int(response["acquisition_number"]),
+            "total_acq_number": int(response["unique_acquisition_number"]),
+            "filenames": response["files"]
+        }
         return res
-    else:
-        return response.get("detectors") #TODO: remove, kept for backwards compatibility
-
-def get_allowed_detectors(address, *args, **kwargs):
-    params = {}
-    response = get_request(address, "get_allowed_detectors", params, *args, **kwargs)
-    return response.get("detectors")
-
-def close_pgroup(address, pgroup, *args, **kwargs):
-    params = {"pgroup": pgroup}
-    response = post_request(address, "close_pgroup_writing", params, *args, **kwargs)
-    return response.get("message")
-
-def take_pedestal(address, pgroup, detectors, *args, rate_multiplicator=1, pedestalmode=False, **kwargs):
-    params = {
-        "pgroup": pgroup,
-        "detectors": detectors,
-        "rate_multiplicator": rate_multiplicator,
-        "pedestalmode": pedestalmode
-    }
-    response = post_request(address, "take_pedestal", params, *args, **kwargs)
-    return response.get("message")
 
 
-def power_on_modules(address, detector, modules, *args, **kwargs):
-    params = {
-        "detector_name": detector,
-        "modules": modules
-    }
-    response = post_request(address, "power_on_modules", params, *args, **kwargs)
-    return response.get("message")
+    def get_config_pvs(self, *args, **kwargs):
+        params = {}
+        response = get_request(self.address, "get_pvlist", params, *args, **kwargs)
+        return response.get("pv_list")
 
-def power_off_modules(address, detector, modules, *args, **kwargs):
-    params = {
-        "detector_name": detector,
-        "modules": modules
-    }
-    response = post_request(address, "power_off_modules", params, *args, **kwargs)
-    return response.get("message")
+    def set_config_pvs(self, pvs, *args, **kwargs):
+        params = {"pv_list": pvs}
+        response = post_request(self.address, "set_pvlist", params, *args, **kwargs)
+        return response.get("pv_list")
 
 
-def copy_user_files(address, pgroup, run_number, fnames, timeout=10):
-    endpoint = "copy_user_files"
-    requrl = make_requrl(address, endpoint)
-    params = {
-        "pgroup": pgroup,
-        "run_number": run_number,
-        "files": fnames
-    }
-    params = json_validate(params)
-    response = requests.post(requrl, json=params, timeout=timeout).json()
-    return response
+    def power_on_detector(self, detector, *args, **kwargs):
+        params = {"detector_name": detector}
+        response = post_request(self.address, "power_on_detector", params, *args, **kwargs)
+        return response.get("message")
+
+    def get_running_detectors(self, *args, **kwargs):
+        params = {}
+        response = get_request(self.address, "get_running_detectors", params, *args, **kwargs)
+        target_keys = (
+            "missing_detectors",
+            "running_detectors",
+            "limping_detectors"
+        )
+        res = {k: response[k] for k in target_keys & response.keys()}
+        if res:
+            return res
+        else:
+            return response.get("detectors") #TODO: remove, kept for backwards compatibility
+
+    def get_allowed_detectors(self, *args, **kwargs):
+        params = {}
+        response = get_request(self.address, "get_allowed_detectors", params, *args, **kwargs)
+        return response.get("detectors")
+
+    def close_pgroup(self, pgroup, *args, **kwargs):
+        params = {"pgroup": pgroup}
+        response = post_request(self.address, "close_pgroup_writing", params, *args, **kwargs)
+        return response.get("message")
+
+    def take_pedestal(self, pgroup, detectors, *args, rate_multiplicator=1, pedestalmode=False, **kwargs):
+        params = {
+            "pgroup": pgroup,
+            "detectors": detectors,
+            "rate_multiplicator": rate_multiplicator,
+            "pedestalmode": pedestalmode
+        }
+        response = post_request(self.address, "take_pedestal", params, *args, **kwargs)
+        return response.get("message")
 
 
-def get_jfctrl_monitor(address, detector, *args, **kwargs):
-    params = {"detector_name": detector}
-    response = get_request(address, "get_jfctrl_monitor", params, *args, **kwargs)
-    return response.get("parameters")
 
-def get_detector_temperatures(address, detector, *args, **kwargs):
-    params = {"detector_name": detector}
-    response = get_request(address, "get_detector_temperatures", params, *args, **kwargs)
-    return response.get("temperatures")
+class BrokerSlowAPI(BaseAPI):
+
+    def power_on_modules(self, detector, modules, *args, **kwargs):
+        params = {
+            "detector_name": detector,
+            "modules": modules
+        }
+        response = post_request(self.address, "power_on_modules", params, *args, **kwargs)
+        return response.get("message")
+
+    def power_off_modules(self, detector, modules, *args, **kwargs):
+        params = {
+            "detector_name": detector,
+            "modules": modules
+        }
+        response = post_request(self.address, "power_off_modules", params, *args, **kwargs)
+        return response.get("message")
 
 
-def get_detector_settings(address, detector, *args, **kwargs):
-    params = {"detector_name": detector}
-    response = get_request(address, "get_detector_settings", params, *args, **kwargs)
-    return response.get("parameters")
+    def copy_user_files(self, pgroup, run_number, fnames, timeout=10):
+        endpoint = "copy_user_files"
+        requrl = make_requrl(self.address, endpoint)
+        params = {
+            "pgroup": pgroup,
+            "run_number": run_number,
+            "files": fnames
+        }
+        params = json_validate(params)
+        response = requests.post(requrl, json=params, timeout=timeout).json()
+        return response
 
-def set_detector_settings(address, detector, parameters, *args, **kwargs):
-    params = {
-        "detector_name": detector,
-        "parameters": parameters
-    }
-    response = post_request(address, "set_detector_settings", params, *args, **kwargs)
-    return response.get("changed_parameters")
+
+    def get_jfctrl_monitor(self, detector, *args, **kwargs):
+        params = {"detector_name": detector}
+        response = get_request(self.address, "get_jfctrl_monitor", params, *args, **kwargs)
+        return response.get("parameters")
+
+    def get_detector_temperatures(self, detector, *args, **kwargs):
+        params = {"detector_name": detector}
+        response = get_request(self.address, "get_detector_temperatures", params, *args, **kwargs)
+        return response.get("temperatures")
+
+
+    def get_detector_settings(self, detector, *args, **kwargs):
+        params = {"detector_name": detector}
+        response = get_request(self.address, "get_detector_settings", params, *args, **kwargs)
+        return response.get("parameters")
+
+    def set_detector_settings(self, detector, parameters, *args, **kwargs):
+        params = {
+            "detector_name": detector,
+            "parameters": parameters
+        }
+        response = post_request(self.address, "set_detector_settings", params, *args, **kwargs)
+        return response.get("changed_parameters")
+
+
+    def get_dap_settings(self, detector, *args, **kwargs):
+        params = {"detector_name": detector}
+        response = get_request(self.address, "get_dap_settings", params, *args, **kwargs)
+        return response.get("parameters")
+
+    def set_dap_settings(self, detector, parameters, *args, **kwargs):
+        params = {
+            "detector_name": detector,
+            "parameters": parameters
+        }
+        response = post_request(self.address, "set_dap_settings", params, *args, **kwargs)
+        return response.get("changed_parameters")
+
+
 
 def make_detector_parameters(
         delay = None,
@@ -149,20 +186,6 @@ def make_detector_parameters(
         gain_mode = gain_mode
     )
     return parameters
-
-
-def get_dap_settings(address, detector, *args, **kwargs):
-    params = {"detector_name": detector}
-    response = get_request(address, "get_dap_settings", params, *args, **kwargs)
-    return response.get("parameters")
-
-def set_dap_settings(address, detector, parameters, *args, **kwargs):
-    params = {
-        "detector_name": detector,
-        "parameters": parameters
-    }
-    response = post_request(address, "set_dap_settings", params, *args, **kwargs)
-    return response.get("changed_parameters")
 
 def make_dap_parameters(
         aggregation_max = None,
