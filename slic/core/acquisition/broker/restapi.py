@@ -53,8 +53,8 @@ class BrokerAPI(BaseAPI):
         return run_number
 
 
-    def retrieve(self, *args, **kwargs):
-        response = self.post("retrieve_from_buffers", *args, **kwargs)
+    def retrieve(self, params, *args, **kwargs):
+        response = self.post("retrieve_from_buffers", params, *args, **kwargs)
         res = {
             "run_number":       int(response["run_number"]),
             "acq_number":       int(response["acquisition_number"]),
