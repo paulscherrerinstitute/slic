@@ -2,7 +2,41 @@ import json
 
 import requests
 
-from slic.utils import json_validate
+from slic.utils import json_validate, typename
+
+
+class RESTAPI:
+    """
+    Combined BrokerAPI (host:port) and BrokerSlowAPI (host_slow:port_slow)
+    BrokerAPI takes precdence during attribute resolution
+    host_slow defaults to host
+    port_slow defaults to port+1
+    """
+
+    def __init__(self, host="sf-daq", port=10002, host_slow=None, port_slow=None):
+        host_slow = host_slow or host
+        port_slow = port_slow or port + 1
+        self.broker_api = BrokerAPI(host, port)
+        self.broker_slow_api = BrokerSlowAPI(host_slow, port_slow)
+        self.apis = (self.broker_api, self.broker_slow_api)
+
+    def __getattr__(self, name):
+        for api in self.apis:
+            try:
+                return getattr(api, name)
+            except AttributeError:
+                pass
+        tn = typename(self)
+        raise AttributeError(f"'{tn}' object has no attribute '{name}'")
+
+    def __dir__(self):
+        this_dir = list(super().__dir__())
+        api_dirs = (dir(api) for api in self.apis)
+        return sorted(set(sum(api_dirs, start=this_dir)))
+
+    def __repr__(self):
+        return "\n".join(repr(api) for api in self.apis)
+
 
 
 class BaseAPI:
@@ -32,7 +66,8 @@ class BaseAPI:
         return f"{self.protocol}://{self.host}:{self.port}"
 
     def __repr__(self):
-        return self.address
+        tn = typename(self)
+        return f"{tn} @ {self.address}"
 
 
 
