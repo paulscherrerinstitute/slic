@@ -5,7 +5,7 @@ from threading import Thread
 from pika import BlockingConnection, ConnectionParameters
 
 
-DEFAULT_ADDRESS = "sf-daq"
+DEFAULT_HOST = "sf-daq"
 STATUS_EXCHANGE = "status"
 
 
@@ -20,9 +20,9 @@ class RequestStatus:
     )
 
 
-    def __init__(self, instrument=None, address=DEFAULT_ADDRESS):
+    def __init__(self, instrument=None, host=DEFAULT_HOST):
         self.instrument = instrument
-        self.address = address
+        self.host = host
 
         for i in self.ENTRIES:
             setattr(self, i, {})
@@ -38,7 +38,7 @@ class RequestStatus:
 
 
     def _run(self):
-        connection = BlockingConnection(ConnectionParameters(self.address))
+        connection = BlockingConnection(ConnectionParameters(self.host))
 
         channel = connection.channel()
         channel.exchange_declare(exchange=STATUS_EXCHANGE, exchange_type="fanout")
