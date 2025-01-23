@@ -5,13 +5,12 @@ from time import sleep
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
-from . import restapi
 from .brokerconfig import flatten_detectors
 from .tools import get_endstation
 
 
 #TODO: this needs work
-def take_pedestal(address, config, detectors=None, rate=None, pedestalmode=False):
+def take_pedestal(restapi, config, detectors=None, rate=None, pedestalmode=False):
     if detectors is None:
         detectors = config.detectors
 
@@ -39,7 +38,7 @@ def take_pedestal(address, config, detectors=None, rate=None, pedestalmode=False
     timeout = 10 + n_pulses / 100 * rate_multiplicator
 
     print(f"posting:\n{detectors}\npgroup: {pgroup}\nrate_multiplicator: {rate_multiplicator}\npedestalmode: {pedestalmode}")
-    response = restapi.take_pedestal(address, pgroup, detectors, rate_multiplicator=rate_multiplicator, pedestalmode=pedestalmode, timeout=timeout)
+    response = restapi.take_pedestal(pgroup, detectors, rate_multiplicator=rate_multiplicator, pedestalmode=pedestalmode, timeout=timeout)
     print("done, got:", response)
 
 #    print(f"waiting for {timeout} seconds")

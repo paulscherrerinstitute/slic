@@ -9,7 +9,7 @@ from .baseacquisition import BaseAcquisition
 from .sfpaths import SwissFELPaths
 from .bschannels import BSChannels
 
-from .broker import BrokerClient, align_pid_left, align_pid_right, restapi
+from .broker import BrokerClient, align_pid_left, align_pid_right
 from .detcfg import DetectorConfig
 
 #TODO: install pika everywhere and remove the following
@@ -22,7 +22,11 @@ except ImportError:
 
 class SFAcquisition(BaseAcquisition):
 
-    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address="http://sf-daq:10002", rate_multiplicator=1, append_user_tag_to_data_dir=False, spreadsheet=None, **kwargs):
+    def __init__(self, instrument, pgroup, default_data_base_dir="static_data", default_detectors=None, default_channels=None, default_pvs=None, api_address=None, api_host="sf-daq", api_port=10002, rate_multiplicator=1, append_user_tag_to_data_dir=False, spreadsheet=None, **kwargs):
+        #TODO: remove this check once migrated everywhere
+        if api_address is not None:
+            raise DeprecationWarning("api_address is deprecated, use api_host and api_port instead")
+
         self.instrument = instrument
         self.default_data_base_dir = default_data_base_dir
         self.spreadsheet = spreadsheet
@@ -39,15 +43,14 @@ class SFAcquisition(BaseAcquisition):
         self.default_channels  = default_channels
         self.default_pvs       = default_pvs
 
-        self.client = BrokerClient(pgroup, address=api_address, rate_multiplicator=rate_multiplicator, append_user_tag_to_data_dir=append_user_tag_to_data_dir, client_name="slic", **kwargs)
+        self.client = BrokerClient(pgroup, host=api_host, port=api_port, rate_multiplicator=rate_multiplicator, append_user_tag_to_data_dir=append_user_tag_to_data_dir, client_name="slic", **kwargs)
 
         #TODO: install pika everywhere and remove the following
         # handle cases where pika is not available
         if RequestStatus is None:
             self.status = None
         else:
-            status_address = api_address.split("/")[-1].split(":")[0] #TODO does this always work? would be better to have host and port as two arguments and assemble as needed
-            self.status = RequestStatus(instrument=instrument, address=status_address)
+            self.status = RequestStatus(instrument=instrument, address=api_host)
 
         self.current_task = None
 
@@ -135,7 +138,7 @@ class SFAcquisition(BaseAcquisition):
         if not is_continuous(pulseids):
             params["selected_pulse_ids"] = pulseids
 
-        res = restapi.retrieve(client.address, params, timeout=client.timeout)
+        res = self.client.restapi.retrieve(params, timeout=client.timeout)
 
         res_run_number = res["run_number"]
         assert res_run_number == run_number, f"received {res_run_number} and expected {run_number} run numbers not identical"

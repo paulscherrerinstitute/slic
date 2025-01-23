@@ -2,7 +2,7 @@ from time import sleep
 
 from slic.utils import xrange, tqdm_mod#, tqdm_sleep
 
-from . import restapi
+from .restapi import RESTAPI
 from .brokerconfig import BrokerConfig, flatten_detectors
 from .pedestal import take_pedestal
 from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
@@ -11,10 +11,15 @@ from .tools import get_current_pulseid
 
 class BrokerClient:
 
-    def __init__(self, *args, address="http://sf-daq:10002", wait_time=0.1, **kwargs):
+    def __init__(self, *args, address=None, host="sf-daq", port=10002, wait_time=0.1, **kwargs):
+        #TODO: remove this check once migrated everywhere
+        if address is not None:
+            raise DeprecationWarning("address is deprecated, use host and port instead")
+
         self.config = BrokerConfig(*args, **kwargs)
-        self.address = address
         self.wait_time = wait_time
+
+        self.restapi = RESTAPI(host=host, port=port)
 
         self.set_config(0, None) #TODO: sensible defaults?
 
@@ -33,10 +38,10 @@ class BrokerClient:
 
 
     def get_config_pvs(self, *args, **kwargs):
-        return restapi.get_config_pvs(self.address, *args, **kwargs)
+        return self.restapi.get_config_pvs(*args, **kwargs)
 
     def set_config_pvs(self, pvs, *args, **kwargs):
-        return restapi.set_config_pvs(self.address, pvs, *args, **kwargs)
+        return self.restapi.set_config_pvs(pvs, *args, **kwargs)
 
 
     def start(self):
@@ -110,7 +115,7 @@ class BrokerClient:
         self.running = False
 
         params = self.get_config(self.run_number, start_pulseid, stop_pulseid)
-        res = restapi.retrieve(self.address, params, timeout=self.timeout)
+        res = self.restapi.retrieve(params, timeout=self.timeout)
 
         run_number = res["run_number"]
         assert run_number == self.run_number, f"received {run_number} and expected {self.run_number} run numbers not identical" #TODO: raise proper exception
@@ -124,12 +129,12 @@ class BrokerClient:
 
 
     def next_run(self, *args, **kwargs):
-        self.run_number = run_number = restapi.advance_run_number(self.address, self.config.pgroup, *args, **kwargs)
+        self.run_number = run_number = self.restapi.advance_run_number(self.config.pgroup, *args, **kwargs)
         return run_number
 
 
     def __repr__(self):
-        return f"SF DAQ on {self.address} (status: {self.status}, last run: {self.run_number})"
+        return f"SF DAQ (status: {self.status}, last run: {self.run_number})\n{self.restapi}"
 
 
     @property
@@ -142,7 +147,7 @@ class BrokerClient:
 
 
     def take_pedestal(self, detectors=None, rate=None, pedestalmode=False):
-        take_pedestal(self.address, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
+        take_pedestal(self.restapi, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
 
 
     def power_on(self, detectors=None, **kwargs):
@@ -154,7 +159,7 @@ class BrokerClient:
 
         detectors = flatten_detectors(detectors)
         for d in detectors:
-            msg = restapi.power_on_detector(self.address, d, **kwargs)
+            msg = self.restapi.power_on_detector(d, **kwargs)
             print(f"{d}: {msg}")
 
 

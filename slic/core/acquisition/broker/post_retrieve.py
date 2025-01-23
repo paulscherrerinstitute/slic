@@ -3,16 +3,17 @@ from functools import partial
 from glob import glob
 from time import sleep
 
-from slic.core.acquisition.broker import restapi
+from slic.core.acquisition.broker import RESTAPI
 from slic.utils import json_load
 
 
-API_ADDR = "http://sf-daq:10002"
+API_HOST = "sf-daq"
+API_PORT = 10002
 WAIT_BETWEEN_REQUESTS = 0.1 # seconds
 
 
 
-def post_retrieve(addr, endstation, pgroup, run, acqs=None, continue_run=False):
+def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=False):
     """
     post retrieve data from sf-daq
     acqs: sequence of integer acquisition numbers or None (default: all acquisition numbers of the selected run)
@@ -25,10 +26,10 @@ def post_retrieve(addr, endstation, pgroup, run, acqs=None, continue_run=False):
     else:
         fns = mk_fns_acqs(dir_run_meta, acqs)
 
-    post_retrieve_acq_jsons(addr, fns, continue_run=continue_run)
+    post_retrieve_acq_jsons(restapi, fns, continue_run=continue_run)
 
 
-def post_retrieve_acq_jsons(addr, fns, continue_run=False):
+def post_retrieve_acq_jsons(restapi, fns, continue_run=False):
     """
     post retrieve data from sf-daq
     fns: sequence of acq json file names
@@ -39,7 +40,7 @@ def post_retrieve_acq_jsons(addr, fns, continue_run=False):
     first_fn = fns[0]
     first_req = reqs[first_fn]
 
-    updates_run = mk_updates_run(addr, first_req, continue_run)
+    updates_run = mk_updates_run(restapi, first_req, continue_run)
 
     for fn, req in reqs.items():
         vprint(0, "🛠️  working on:", fn)
@@ -52,7 +53,7 @@ def post_retrieve_acq_jsons(addr, fns, continue_run=False):
             req.update(updates_acq)
             vprint(2, "🪥  new request:", pretty_dict(req))
 
-        resp = restapi.retrieve(addr, req)
+        resp = restapi.retrieve(req)
         vprint(0, "💌 response:", pretty_dict(resp))
         vprint(1)
 
@@ -89,7 +90,7 @@ def load_reqs(fns):
     return res
 
 
-def mk_updates_run(addr, req, continue_run):
+def mk_updates_run(restapi, req, continue_run):
     updates = {
         "client_name": "post_retrieve"
     }
@@ -97,7 +98,7 @@ def mk_updates_run(addr, req, continue_run):
     if not continue_run:
         # replace old run number with next run number from the DAQ
         pgroup = req["pgroup"]
-        run_number = restapi.advance_run_number(addr, pgroup)
+        run_number = restapi.advance_run_number(pgroup)
         updates["run_number"] = run_number
 
     return updates
@@ -134,9 +135,6 @@ class DryRunner:
         if self.dry_run:
             return partial(vprint, 3, f"🚱 dry run -- skipping: {name}")
         return getattr(self.wrapped, name)
-
-
-restapi = DryRunner(restapi)
 
 
 
@@ -192,7 +190,8 @@ def main():
     required.add_argument("-r", "--run", required=True, type=int, help="integer run number")
     parser.add_argument("-a", "--acq", nargs="*", type=int, help="integer acquisition number(s) (default: all acquisition numbers of the selected run)")
 
-    parser.add_argument("-b", "--broker", default=API_ADDR, help=f"broker REST-API address (default: {API_ADDR})")
+    parser.add_argument("--host", default=API_HOST, help=f"broker REST-API host (default: {API_HOST})")
+    parser.add_argument("--port", default=API_PORT, help=f"broker REST-API port (default: {API_PORT})")
 
     parser.add_argument("-c", "--continue", dest="continue_run", action="store_true", help="append to existing run (default: create new run)")
     parser.add_argument("-d", "--dry-run", action="store_true", help="enable dry run")
@@ -200,11 +199,13 @@ def main():
 
     clargs = parser.parse_args()
 
-    restapi.dry_run = clargs.dry_run
+    restapi = RESTAPI(clargs.host, clargs.port)
+    restapi = DryRunner(restapi, dry_run=clargs.dry_run)
+
     vprint.level = clargs.verbose
 
     post_retrieve(
-        clargs.broker,
+        restapi,
         clargs.endstation,
         clargs.pgroup,
         clargs.run,
