@@ -20,9 +20,10 @@ class RequestStatus:
     )
 
 
-    def __init__(self, instrument=None, host=DEFAULT_HOST):
+    def __init__(self, instrument=None, host=DEFAULT_HOST, **kwargs):
         self.instrument = instrument
         self.host = host
+        self.kwargs = kwargs
 
         for i in self.ENTRIES:
             setattr(self, i, {})
@@ -38,7 +39,7 @@ class RequestStatus:
 
 
     def _run(self):
-        connection = BlockingConnection(ConnectionParameters(self.host))
+        connection = BlockingConnection(ConnectionParameters(self.host, **self.kwargs))
 
         channel = connection.channel()
         channel.exchange_declare(exchange=STATUS_EXCHANGE, exchange_type="fanout")
