@@ -162,13 +162,13 @@ class ROIEditorDialog(wx.Dialog):
     def __init__(self, title, value):
         super().__init__(None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
-        hbox = self._make_header()
+        self.header = header = self._make_header()
         self.ed = ed = ROIEditor(self, value)
         btn_add = wx.Button(self, label="✚")
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
 
         self.vbox = vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(hbox, flag=wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, border=10)
+        vbox.Add(header, flag=wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, border=10)
         vbox.Add(ed, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.EXPAND, border=10)
         vbox.Add(btn_add, flag=wx.ALL|wx.EXPAND, border=10)
         vbox.Add(std_dlg_btn_sizer, flag=wx.ALL|wx.CENTER, border=10)
@@ -214,6 +214,9 @@ class ROIEditor(wx.BoxSizer):
         for k, v in value.items():
             self.add_new(k, v)
 
+        # only show the header if there is at least one widget
+        self.parent.header.ShowItems(bool(self.widgets))
+
 
     def get(self):
         res = dict((w.get() for w in self.widgets))
@@ -222,6 +225,8 @@ class ROIEditor(wx.BoxSizer):
 
 
     def add_new(self, name="", entries=None):
+        self.parent.header.ShowItems(True)
+
         entries = entries or [None]*N_ROI_VALS
         el = ROIEditorLine(self.parent, name, entries)
 
@@ -243,6 +248,10 @@ class ROIEditor(wx.BoxSizer):
         self.widgets.remove(w)
         self.Hide(w) #TODO: why does Remove not actually remove the visible widgets?
         self.Remove(w)
+
+        # hide the header if this was the last widget
+        if not self.widgets:
+            self.parent.header.ShowItems(False)
 
 
 
