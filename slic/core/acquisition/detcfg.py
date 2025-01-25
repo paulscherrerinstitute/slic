@@ -7,7 +7,7 @@ from slic.utils.dictext import AttrDict, DictUpdateMixin
 from .broker.brokerconfig import flatten_detectors #TODO: should probably move here
 
 
-ALLOWED_PARAMS = dict(
+ALLOWED_DETECTOR_PARAMS = dict(
     adc_to_energy = bool,
     compression = bool,
     crystfel_lists_laser = bool,
@@ -22,9 +22,9 @@ ALLOWED_PARAMS = dict(
 )
 
 
-ALLOWED_PARAMS_FORMATTED_TYPES = {k: v.__name__ if isinstance(v, type) else str(v) for k, v in ALLOWED_PARAMS.items()}
-ALLOWED_PARAMS_TABLE = "\n".join(f"- {k} = {v}" for k, v in ALLOWED_PARAMS_FORMATTED_TYPES.items())
-ALLOWED_PARAMS_ADD_DOCSTRING = f"kwargs can be any of:\n{ALLOWED_PARAMS_TABLE}"
+ALLOWED_DETECTOR_PARAMS_FORMATTED_TYPES = {k: v.__name__ if isinstance(v, type) else str(v) for k, v in ALLOWED_DETECTOR_PARAMS.items()}
+ALLOWED_DETECTOR_PARAMS_TABLE = "\n".join(f"- {k} = {v}" for k, v in ALLOWED_DETECTOR_PARAMS_FORMATTED_TYPES.items())
+ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING = f"kwargs can be any of:\n{ALLOWED_DETECTOR_PARAMS_TABLE}"
 
 
 class DetectorConfig(DictUpdateMixin, dict):
@@ -46,7 +46,7 @@ class DetectorConfig(DictUpdateMixin, dict):
     def add(self, name, **kwargs):
         self[name] = kwargs
 
-    add.__doc__ = ALLOWED_PARAMS_ADD_DOCSTRING
+    add.__doc__ = ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING
 
     def remove(self, name):
         del self[name]
@@ -67,7 +67,7 @@ class DetectorConfig(DictUpdateMixin, dict):
 class DetectorParams(DictUpdateMixin, AttrDict):
 
     def __dir__(self):
-        return tuple(ALLOWED_PARAMS)
+        return tuple(ALLOWED_DETECTOR_PARAMS)
 
     def __setitem__(self, key, value):
         self._check_consistency(key, value)
@@ -77,11 +77,11 @@ class DetectorParams(DictUpdateMixin, AttrDict):
         return printable_dict(self)
 
     def _check_consistency(self, k, v):
-        if k not in ALLOWED_PARAMS:
-            printable_allowed_params = str(tuple(ALLOWED_PARAMS))
-            raise ValueError(f"parameter {repr(k)} is not from the allowed parameters {printable_allowed_params}")
+        if k not in ALLOWED_DETECTOR_PARAMS:
+            printable_ALLOWED_DETECTOR_PARAMS = str(tuple(ALLOWED_DETECTOR_PARAMS))
+            raise ValueError(f"parameter {repr(k)} is not from the allowed parameters {printable_ALLOWED_DETECTOR_PARAMS}")
 
-        typ = ALLOWED_PARAMS[k]
+        typ = ALLOWED_DETECTOR_PARAMS[k]
         if isinstance(typ, list):
             if v not in typ:
                 raise ValueError(f"value of parameter {repr(k)} ({v}) has to be from {typ}")
