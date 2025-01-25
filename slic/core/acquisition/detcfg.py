@@ -64,9 +64,12 @@ class DetectorConfig(DictUpdateMixin, dict):
 
 
 
-class DetectorParams(DictUpdateMixin, AttrDict):
+class _Params(DictUpdateMixin, AttrDict):
 
-    allowed_params = ALLOWED_DETECTOR_PARAMS
+    # this class is not meant to be used directly
+    # overwrite allowed_params in a subclass
+
+    allowed_params = {}
 
     def __dir__(self):
         return tuple(self.allowed_params)
@@ -94,6 +97,12 @@ class DetectorParams(DictUpdateMixin, AttrDict):
             tn_right = typ.__name__
             tn_wrong = type(v).__name__
             raise TypeError(f"value of parameter {repr(k)} ({v}) has to be of type {tn_right} but is {tn_wrong}")
+
+
+
+class DetectorParams(_Params):
+
+    allowed_params = ALLOWED_DETECTOR_PARAMS
 
 
 
