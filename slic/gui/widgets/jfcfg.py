@@ -316,7 +316,7 @@ class NumberSequence(wx.BoxSizer):
             try:
                 return wgt.GetValue()
             except Exception as e:
-                print(f"could not parse", e)
+                print("could not parse:", e)
                 return None
 
         values = [get(w) for w in self.widgets]
@@ -363,7 +363,7 @@ class NumberedToggles(wx.GridBagSizer):
         for label, pos in coords.items():
             btn = wx.ToggleButton(parent, label=str(label), size=button_size)
             self.Add(btn, pos=pos)
-            self.buttons[label] = btn
+            buttons[label] = btn
 
 
     def GetValue(self):
