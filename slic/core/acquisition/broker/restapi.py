@@ -27,7 +27,7 @@ class RESTAPI:
             except AttributeError:
                 pass
         tn = typename(self)
-        raise AttributeError(f"'{tn}' object has no attribute '{name}'")
+        raise AttributeError(f"{repr(tn)} object has no attribute {repr(name)}")
 
     def __dir__(self):
         this_dir = list(super().__dir__())
