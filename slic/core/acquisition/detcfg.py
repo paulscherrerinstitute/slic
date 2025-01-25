@@ -72,6 +72,8 @@ class DetectorParams(_Params):
 
 class DetectorConfig(DictUpdateMixin, dict):
 
+    ParamsClass = DetectorParams
+
     def __init__(self, *args, **kwargs):
         if len(args) == 1:
             args = args[0]
@@ -99,7 +101,7 @@ class DetectorConfig(DictUpdateMixin, dict):
         return list(self.keys())
 
     def __setitem__(self, key, value):
-        value = DetectorParams(**value)
+        value = self.ParamsClass(**value)
         super().__setitem__(key, value)
 
     def __repr__(self):
