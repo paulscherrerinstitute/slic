@@ -60,7 +60,7 @@ class DetectorConfig(DictUpdateMixin, dict):
         super().__setitem__(key, value)
 
     def __repr__(self):
-        return printable_dict_of_dicts(self)
+        return printable_dict_of_dicts(self) or "no detectors configured"
 
 
 
@@ -74,7 +74,7 @@ class DetectorParams(DictUpdateMixin, AttrDict):
         super().__setitem__(key, value)
 
     def __repr__(self):
-        return printable_dict(self)
+        return printable_dict(self) or "no parameters configured"
 
     def _check_consistency(self, k, v):
         if k not in ALLOWED_DETECTOR_PARAMS:
