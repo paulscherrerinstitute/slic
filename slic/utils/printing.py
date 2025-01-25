@@ -18,7 +18,10 @@ def printable_dict(d, header=None, sorter=sorted_naturally):
         header = format_header(header)
         lines = [header] + lines
 
-    return "\n".join(lines) + "\n"
+    if lines:
+        lines.append("")
+
+    return "\n".join(lines)
 
 
 def maxstrlen(seq):
