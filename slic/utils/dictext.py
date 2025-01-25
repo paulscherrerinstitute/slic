@@ -1,5 +1,7 @@
 from collections.abc import Mapping
 
+from slic.utils import typename
+
 
 class AttrDict(dict):
     """
@@ -25,7 +27,7 @@ class AttrDict(dict):
             self._raise_missing_attribute(name)
 
     def _raise_missing_attribute(self, name):
-        tn = type(self).__name__
+        tn = typename(self)
         raise AttributeError(f"{repr(tn)} object has no attribute {repr(name)}")
 
 
