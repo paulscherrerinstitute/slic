@@ -66,8 +66,10 @@ class DetectorConfig(DictUpdateMixin, dict):
 
 class DetectorParams(DictUpdateMixin, AttrDict):
 
+    allowed_params = ALLOWED_DETECTOR_PARAMS
+
     def __dir__(self):
-        return tuple(ALLOWED_DETECTOR_PARAMS)
+        return tuple(self.allowed_params)
 
     def __setitem__(self, key, value):
         self._check_consistency(key, value)
@@ -77,11 +79,13 @@ class DetectorParams(DictUpdateMixin, AttrDict):
         return printable_dict(self) or "no parameters configured"
 
     def _check_consistency(self, k, v):
-        if k not in ALLOWED_DETECTOR_PARAMS:
-            printable_ALLOWED_DETECTOR_PARAMS = str(tuple(ALLOWED_DETECTOR_PARAMS))
-            raise ValueError(f"parameter {repr(k)} is not from the allowed parameters {printable_ALLOWED_DETECTOR_PARAMS}")
+        allowed_params = self.allowed_params
 
-        typ = ALLOWED_DETECTOR_PARAMS[k]
+        if k not in allowed_params:
+            printable_allowed_params = str(tuple(allowed_params))
+            raise ValueError(f"parameter {repr(k)} is not from the allowed parameters {printable_allowed_params}")
+
+        typ = allowed_params[k]
         if isinstance(typ, list):
             if v not in typ:
                 raise ValueError(f"value of parameter {repr(k)} ({v}) has to be from {typ}")
