@@ -27,42 +27,6 @@ ALLOWED_DETECTOR_PARAMS_TABLE = "\n".join(f"- {k} = {v}" for k, v in ALLOWED_DET
 ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING = f"kwargs can be any of:\n{ALLOWED_DETECTOR_PARAMS_TABLE}"
 
 
-class DetectorConfig(DictUpdateMixin, dict):
-
-    def __init__(self, *args, **kwargs):
-        if len(args) == 1:
-            args = args[0]
-            if args is None:
-                args = []
-        dets_args   = flatten_detectors(args)
-        dets_kwargs = flatten_detectors(kwargs)
-        dets = dict(**dets_args, **dets_kwargs)
-        for k, v in dets.items():
-            self.add(k, **v)
-
-    def __dir__(self):
-        return ["add", "remove", "names"]
-
-    def add(self, name, **kwargs):
-        self[name] = kwargs
-
-    add.__doc__ = ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING
-
-    def remove(self, name):
-        del self[name]
-
-    @property
-    def names(self):
-        return list(self.keys())
-
-    def __setitem__(self, key, value):
-        value = DetectorParams(**value)
-        super().__setitem__(key, value)
-
-    def __repr__(self):
-        return printable_dict_of_dicts(self) or "no detectors configured"
-
-
 
 class _Params(DictUpdateMixin, AttrDict):
 
@@ -103,6 +67,43 @@ class _Params(DictUpdateMixin, AttrDict):
 class DetectorParams(_Params):
 
     allowed_params = ALLOWED_DETECTOR_PARAMS
+
+
+
+class DetectorConfig(DictUpdateMixin, dict):
+
+    def __init__(self, *args, **kwargs):
+        if len(args) == 1:
+            args = args[0]
+            if args is None:
+                args = []
+        dets_args   = flatten_detectors(args)
+        dets_kwargs = flatten_detectors(kwargs)
+        dets = dict(**dets_args, **dets_kwargs)
+        for k, v in dets.items():
+            self.add(k, **v)
+
+    def __dir__(self):
+        return ["add", "remove", "names"]
+
+    def add(self, name, **kwargs):
+        self[name] = kwargs
+
+    add.__doc__ = ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING
+
+    def remove(self, name):
+        del self[name]
+
+    @property
+    def names(self):
+        return list(self.keys())
+
+    def __setitem__(self, key, value):
+        value = DetectorParams(**value)
+        super().__setitem__(key, value)
+
+    def __repr__(self):
+        return printable_dict_of_dicts(self) or "no detectors configured"
 
 
 
