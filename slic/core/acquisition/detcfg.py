@@ -70,28 +70,26 @@ class DetectorParams(DictUpdateMixin, AttrDict):
         return tuple(ALLOWED_PARAMS)
 
     def __setitem__(self, key, value):
-        check_consistency(key, value)
+        self._check_consistency(key, value)
         super().__setitem__(key, value)
 
     def __repr__(self):
         return printable_dict(self)
 
+    def _check_consistency(self, k, v):
+        if k not in ALLOWED_PARAMS:
+            printable_allowed_params = str(tuple(ALLOWED_PARAMS))
+            raise ValueError(f"parameter {repr(k)} is not from the allowed parameters {printable_allowed_params}")
 
+        typ = ALLOWED_PARAMS[k]
+        if isinstance(typ, list):
+            if v not in typ:
+                raise ValueError(f"value of parameter {repr(k)} ({v}) has to be from {typ}")
 
-def check_consistency(k, v):
-    if k not in ALLOWED_PARAMS:
-        printable_allowed_params = str(tuple(ALLOWED_PARAMS))
-        raise ValueError(f"parameter {repr(k)} is not from the allowed parameters {printable_allowed_params}")
-
-    typ = ALLOWED_PARAMS[k]
-    if isinstance(typ, list):
-        if v not in typ:
-            raise ValueError(f"value of parameter {repr(k)} ({v}) has to be from {typ}")
-
-    elif not isinstance(v, typ):
-        tn_right = typ.__name__
-        tn_wrong = type(v).__name__
-        raise TypeError(f"value of parameter {repr(k)} ({v}) has to be of type {tn_right} but is {tn_wrong}")
+        elif not isinstance(v, typ):
+            tn_right = typ.__name__
+            tn_wrong = type(v).__name__
+            raise TypeError(f"value of parameter {repr(k)} ({v}) has to be of type {tn_right} but is {tn_wrong}")
 
 
 
