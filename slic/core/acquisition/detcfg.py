@@ -22,7 +22,7 @@ ALLOWED_PARAMS = dict(
 )
 
 
-ALLOWED_PARAMS_FORMATTED_TYPES = {k: v.__name__ if isinstance(v, type) else v for k, v in ALLOWED_PARAMS.items()}
+ALLOWED_PARAMS_FORMATTED_TYPES = {k: v.__name__ if isinstance(v, type) else str(v) for k, v in ALLOWED_PARAMS.items()}
 ALLOWED_PARAMS_TABLE = "\n".join(f"- {k} = {v}" for k, v in ALLOWED_PARAMS_FORMATTED_TYPES.items())
 PARAMS_ADD_DOCSTRING = f"kwargs can be any of:\n{ALLOWED_PARAMS_TABLE}"
 
