@@ -70,9 +70,12 @@ class DetectorParams(_Params):
 
 
 
-class DetectorConfig(DictUpdateMixin, dict):
+class _Config(DictUpdateMixin, dict):
 
-    ParamsClass = DetectorParams
+    # this class is not meant to be used directly
+    # overwrite ParamsClass in a subclass
+
+    ParamsClass = _Params
 
     def __init__(self, *args, **kwargs):
         if len(args) == 1:
@@ -91,7 +94,7 @@ class DetectorConfig(DictUpdateMixin, dict):
     def add(self, name, **kwargs):
         self[name] = kwargs
 
-    add.__doc__ = ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING
+    add.__doc__ = "there are no allowed kwargs for this base class"
 
     def remove(self, name):
         del self[name]
@@ -106,6 +109,20 @@ class DetectorConfig(DictUpdateMixin, dict):
 
     def __repr__(self):
         return printable_dict_of_dicts(self) or "no detectors configured"
+
+
+
+class DetectorConfig(_Config):
+
+    ParamsClass = DetectorParams
+
+    #TODO:
+    # if there is no duplicate function here, the following changes the docstring of the parent class
+    # how to allow a dynamic docstring without re-defining the function?
+    def add(self, *args, **kwargs):
+        super().add(*args, **kwargs)
+
+    add.__doc__ = ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING
 
 
 
