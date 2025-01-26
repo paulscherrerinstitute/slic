@@ -3,7 +3,7 @@ from numbers import Number
 
 import wx
 
-from slic.core.acquisition.detcfg import DetectorConfig, ALLOWED_PARAMS
+from slic.core.acquisition.detcfg import ALLOWED_DETECTOR_PARAMS
 
 from .entries import LabeledEntry, LabeledMathEntry, MathEntry
 from .lists import ListDialog, ListDisplay, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
@@ -59,7 +59,7 @@ class JFConfig(wx.Dialog):
 
         vbox_cbs.AddSpacer(border)
 
-        for k, v in sorted(ALLOWED_PARAMS.items()):
+        for k, v in sorted(ALLOWED_DETECTOR_PARAMS.items()):
             widgets[k] = w = self.make_widget(title, k, v)
 
             if isinstance(w, wx.CheckBox):
