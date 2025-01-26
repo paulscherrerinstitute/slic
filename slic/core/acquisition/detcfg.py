@@ -64,12 +64,6 @@ class _Params(DictUpdateMixin, AttrDict):
 
 
 
-class DetectorParams(_Params):
-
-    allowed_params = ALLOWED_DETECTOR_PARAMS
-
-
-
 class _Config(DictUpdateMixin, dict):
 
     # this class is not meant to be used directly
@@ -109,6 +103,12 @@ class _Config(DictUpdateMixin, dict):
 
     def __repr__(self):
         return printable_dict_of_dicts(self) or "no detectors configured"
+
+
+
+class DetectorParams(_Params):
+
+    allowed_params = ALLOWED_DETECTOR_PARAMS
 
 
 
