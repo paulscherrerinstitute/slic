@@ -22,9 +22,10 @@ ALLOWED_DETECTOR_PARAMS = dict(
 )
 
 
-ALLOWED_DETECTOR_PARAMS_FORMATTED_TYPES = {k: v.__name__ if isinstance(v, type) else str(v) for k, v in ALLOWED_DETECTOR_PARAMS.items()}
-ALLOWED_DETECTOR_PARAMS_TABLE = "\n".join(f"- {k} = {v}" for k, v in ALLOWED_DETECTOR_PARAMS_FORMATTED_TYPES.items())
-ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING = f"kwargs can be any of:\n{ALLOWED_DETECTOR_PARAMS_TABLE}"
+def _make_add_docstring(params):
+    formatted_types = {k: v.__name__ if isinstance(v, type) else str(v) for k, v in params.items()}
+    table = "\n".join(f"- {k} = {v}" for k, v in formatted_types.items())
+    return f"kwargs can be any of:\n{table}"
 
 
 
@@ -122,7 +123,7 @@ class DetectorConfig(_Config):
     def add(self, *args, **kwargs):
         super().add(*args, **kwargs)
 
-    add.__doc__ = ALLOWED_DETECTOR_PARAMS_ADD_DOCSTRING
+    add.__doc__ = _make_add_docstring(ALLOWED_DETECTOR_PARAMS)
 
 
 
