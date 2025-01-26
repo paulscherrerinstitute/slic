@@ -54,6 +54,13 @@ ALLOWED_DAP_PARAMS = dict(
     threshold_value = [0, "NaN"]
 )
 
+ALLOWED_HARDWARE_PARAMS = dict(
+    delay = Number,
+    detector_mode = ["normal", "low_noise"],
+    exptime = Number,
+    gain_mode = ["dynamic", "fixed_gain1", "fixed_gain2"]
+)
+
 
 
 def _make_add_docstring(params):
@@ -170,6 +177,26 @@ class DAPParams(_Params):
 class DAPConfig(_Config):
 
     ParamsClass = DAPParams
+
+    #TODO:
+    # if there is no duplicate function here, the following changes the docstring of the parent class
+    # how to allow a dynamic docstring without re-defining the function?
+    def add(self, *args, **kwargs):
+        super().add(*args, **kwargs)
+
+    add.__doc__ = _make_add_docstring(ParamsClass.allowed_params)
+
+
+
+class HardwareParams(_Params):
+
+    allowed_params = ALLOWED_HARDWARE_PARAMS
+
+
+
+class HardwareConfig(_Config):
+
+    ParamsClass = HardwareParams
 
     #TODO:
     # if there is no duplicate function here, the following changes the docstring of the parent class
