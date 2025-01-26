@@ -123,7 +123,7 @@ class DetectorConfig(_Config):
     def add(self, *args, **kwargs):
         super().add(*args, **kwargs)
 
-    add.__doc__ = _make_add_docstring(ALLOWED_DETECTOR_PARAMS)
+    add.__doc__ = _make_add_docstring(ParamsClass.allowed_params)
 
 
 
