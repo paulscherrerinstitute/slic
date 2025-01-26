@@ -21,6 +21,40 @@ ALLOWED_DETECTOR_PARAMS = dict(
     save_dap_results = bool
 )
 
+ALLOWED_DAP_PARAMS = dict(
+    aggregation_max = int,
+    apply_additional_mask = bool,
+    apply_aggregation = bool,
+    apply_threshold = bool,
+    beam_center_x = Number,
+    beam_center_y = Number,
+    beam_energy = Number,
+    detector_distance = Number,
+    detector_rate = int,
+    disabled_modules = Sequence,
+    do_peakfinder_analysis = bool,
+    do_radial_integration = bool,
+    do_spi_analysis = bool,
+    double_pixels = ["mask", "interp", "keep"],
+    hitfinder_adc_thresh = Number,
+    hitfinder_min_pix_count = Number,
+    hitfinder_min_snr = Number,
+    laser_on = bool,
+    npeaks_threshold_hit = Number,
+    radial_integration_silent_max = Number,
+    radial_integration_silent_min = Number,
+    roi_x1 = Sequence,
+    roi_x2 = Sequence,
+    roi_y1 = Sequence,
+    roi_y2 = Sequence,
+    select_only_ppicker_events = bool,
+    spi_limit = Sequence,
+    threshold_max = Number,
+    threshold_min = Number,
+    threshold_value = [0, "NaN"]
+)
+
+
 
 def _make_add_docstring(params):
     formatted_types = {k: v.__name__ if isinstance(v, type) else str(v) for k, v in params.items()}
@@ -116,6 +150,26 @@ class DetectorParams(_Params):
 class DetectorConfig(_Config):
 
     ParamsClass = DetectorParams
+
+    #TODO:
+    # if there is no duplicate function here, the following changes the docstring of the parent class
+    # how to allow a dynamic docstring without re-defining the function?
+    def add(self, *args, **kwargs):
+        super().add(*args, **kwargs)
+
+    add.__doc__ = _make_add_docstring(ParamsClass.allowed_params)
+
+
+
+class DAPParams(_Params):
+
+    allowed_params = ALLOWED_DAP_PARAMS
+
+
+
+class DAPConfig(_Config):
+
+    ParamsClass = DAPParams
 
     #TODO:
     # if there is no duplicate function here, the following changes the docstring of the parent class
