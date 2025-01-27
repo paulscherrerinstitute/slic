@@ -14,6 +14,8 @@ def printable_dict(d, header=None, sorter=sorted_naturally):
     if sorter:
         lines = sorter(lines)
 
+    lines = list(lines)
+
     if header:
         header = format_header(header)
         lines = [header] + lines
