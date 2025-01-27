@@ -13,8 +13,8 @@ from .pvchangemon import PVChangeMonitor
 class PVAdjustable(Adjustable):
 
     def __init__(self,
-        pvname_setvalue, pvname_readback=None, pvname_stop=None, pvname_done_moving=None, pvname_moving=None, 
-        accuracy=None, active_move=False, process_time=0, wait_time=0.1, timeout=60, 
+        pvname_setvalue, pvname_readback=None, pvname_stop=None, pvname_done_moving=None, pvname_moving=None,
+        accuracy=None, active_move=False, warn_moving_suffix=False, process_time=0, wait_time=0.1, timeout=60,
         ID=None, name=None, units=None, internal=False
     ):
         pv_setvalue = PV(pvname_setvalue)
@@ -46,7 +46,7 @@ class PVAdjustable(Adjustable):
             self.pvnames.stop = pvname_stop
             self.pvs.stop = pv_stop
 
-        self._pcm = make_pcm(pvname_done_moving, pvname_moving)
+        self._pcm = make_pcm(pvname_done_moving, pvname_moving, warn_moving_suffix=warn_moving_suffix)
 
 
     @property
@@ -91,7 +91,7 @@ class PVAdjustable(Adjustable):
             if time() >= timeout:
                 self._pcm.stop()
                 tname = typename(self)
-                raise AdjustableError(f"waiting for {tname} \"{self.name}\" to be ready for change to {value} {self.units} timed out")
+                raise AdjustableError(f"waiting for {tname} \"{self.name}\" to be ready {self.units} timed out")
 
 
     def _wait_for_done(self):
@@ -149,16 +149,18 @@ SUFFICES_MOVING      = ["MOVING"]
 SUFFICES_DONE_MOVING = ["DMOV", "WAITING"]
 
 
-def make_pcm(pvname_done_moving, pvname_moving):
+def make_pcm(pvname_done_moving, pvname_moving, warn_moving_suffix=False):
     if None not in (pvname_done_moving, pvname_moving):
         raise ValueError("please provide only pvname_done_moving or pvname_moving, but not both")
 
     if pvname_moving:
-        validate_suffix(pvname_moving, SUFFICES_MOVING)
+        if warn_moving_suffix:
+            validate_suffix(pvname_moving, SUFFICES_MOVING)
         return PVChangeMonitor(pvname_moving, inverted=False)
 
     if pvname_done_moving:
-        validate_suffix(pvname_done_moving, SUFFICES_DONE_MOVING)
+        if warn_moving_suffix:
+            validate_suffix(pvname_done_moving, SUFFICES_DONE_MOVING)
         return PVChangeMonitor(pvname_done_moving, inverted=True)
 
     return None
