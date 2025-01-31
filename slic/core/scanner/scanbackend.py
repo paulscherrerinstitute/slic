@@ -121,7 +121,7 @@ class ScanBackend:
         for i in xrange(nreps):
             if not self.running:
                 break
-            print(f"Repetition {n+1} of {printable_nreps}")
+            print(f"Repetition {i+1} of {printable_nreps}")
             suffix = f"_{i+1:03}"
 
             fn       = base_fn       + suffix
