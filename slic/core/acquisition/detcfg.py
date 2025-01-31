@@ -51,7 +51,7 @@ ALLOWED_DAP_PARAMS = dict(
     spi_limit = Sequence,
     threshold_max = Number,
     threshold_min = Number,
-    threshold_value = [0, "NaN"]
+    threshold_value = ["0", "NaN"]
 )
 
 ALLOWED_HARDWARE_PARAMS = dict(
