@@ -18,7 +18,7 @@ class Scanner:
     Each method returns a ScanBackend instance, which contains the actual scan logic.
     """
 
-    def __init__(self, data_base_dir="scan_data", scan_info_dir="scan_info", default_acquisitions=(), condition=None, make_scan_sub_dir=True, default_sensor=None):
+    def __init__(self, data_base_dir="scan_data", scan_info_dir="scan_info", default_acquisitions=(), condition=None, make_scan_sub_dir=True, default_sensor=None, remote_plot=None):
         """
         Parameters:
             data_base_dir (string, optional): Subfolder to collect scan data in. Will be appended to the acquisitions' default_dir.
@@ -37,7 +37,7 @@ class Scanner:
         self.current_scan = None
 
         self.default_sensor = default_sensor
-        self.remote_plot = RemotePlot("localhost", 8000)
+        self.remote_plot = remote_plot or RemotePlot("localhost", 8000)
 
 
     #SFDAQ: detectors and pvs only for sf_daq
