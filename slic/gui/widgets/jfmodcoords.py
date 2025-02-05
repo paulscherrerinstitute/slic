@@ -14,8 +14,18 @@ JF_REGEX = re.compile(JF_PATTERN)
 
 
 def get_module_coords(name):
+    jf = parse_jf_name(name)
+    shortname = assemble_shortname(jf)
+
+    # full name takes precedence over shortname without version
+    key = None
+    if name in detector_geometry:
+        key = name
+    elif shortname in detector_geometry:
+        key = shortname
+
     try:
-        g = detector_geometry[name]
+        g = detector_geometry[key]
     except KeyError:
         pass
     else:
@@ -36,6 +46,12 @@ def parse_jf_name(n):
     values = (int(x) for x in values)
     res = dict(zip(names, values))
     return res
+
+
+def assemble_shortname(jf):
+    JF = jf["JF"]
+    T = jf["T"]
+    return f"JF{JF:02}T{T:02}"
 
 
 def square_grid_coords(n):
