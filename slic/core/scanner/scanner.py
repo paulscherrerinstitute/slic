@@ -270,47 +270,8 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
-    @forwards_to(make_scan, nfilled=3)
-    def ascan_list(self, adjustable, positions, *args, **kwargs):
-        """Absolute scan -- list of positions
-
-        Parameters:
-            adjustable (BaseAdjustable): Adjustable to scan
-            positions (sequence of numbers): Sequence of positions for adjustable to iterate through
-
-            All further parameters are forwarded to make_scan() and described there.
-
-        Returns:
-            ScanBackend: Scan instance
-        """
-        adjustables = [adjustable]
-
-        positions = transpose(positions)
-
-        return self.make_scan(adjustables, positions, *args, **kwargs)
-
-
-    @forwards_to(make_scan, nfilled=3)
-    def a2scan_list(self, adjustable1, positions1, adjustable2, positions2, *args, **kwargs):
-        """Absolute scan -- list of positions -- 2 adjustables
-
-        Parameters:
-            adjustable1 (BaseAdjustable): First Adjustable to scan
-            positions1 (sequence of numbers):  Sequence of positions for first Adjustable to iterate through
-
-            adjustable2 (BaseAdjustable): Second Adjustable to scan
-            positions2 (sequence of numbers):  Sequence of positions for second Adjustable to iterate through
-
-            All further parameters are forwarded to make_scan() and described there.
-
-        Returns:
-            ScanBackend: Scan instance
-        """
-        adjustables = [adjustable1, adjustable2]
-
-        positions = transpose(positions1, positions2)
-
-        return self.make_scan(adjustables, positions, *args, **kwargs)
+    ascan_list = scan1D_seq
+    a2scan_list = scan2D_seq
 
 
     @forwards_to(make_scan, nfilled=3)
