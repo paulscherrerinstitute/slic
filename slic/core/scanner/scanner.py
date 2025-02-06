@@ -24,7 +24,7 @@ class Scanner:
             data_base_dir (string, optional): Subfolder to collect scan data in. Will be appended to the acquisitions' default_dir.
             scan_info_dir (string, optional): Folder to store ScanInfo.
             default_acquisitions (sequence of BaseAcquisitions, optional): List of default acquisition objects to acquire from.
-            condition (BaseCondition, optional): Condition that needs to be fullfilled to accept a recorded step of the scan.
+            condition (BaseCondition, optional): Condition that needs to be fulfilled to accept a recorded step of the scan.
             make_scan_sub_dir (bool, optional): If True (default), create a sub folder in data_base_dir in the acquisition's default_dir for each scan: scanname/scanname_step00001.h5. If False, the per-step files will be saved directly to data_base_dir in the acquisition's default_dir.
             default_sensor: (BaseSensor, optional): Default sensor to read out and plot.
             remote_plot: (RemotePlot, optional): Existing RemotePlot instance. If not given, a new instance will be created sending to localhost:8000.
