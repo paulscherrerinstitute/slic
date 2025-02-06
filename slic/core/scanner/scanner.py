@@ -82,7 +82,7 @@ class Scanner:
 
     @forwards_to(make_scan, nfilled=3)
     def scan1D(self, adjustable, start_pos, end_pos, step_size, *args, relative=False, **kwargs):
-        """One-dimensional scan
+        """One-dimensional scan over a range
 
         Parameters:
             adjustable (BaseAdjustable): Adjustable to scan
@@ -111,7 +111,7 @@ class Scanner:
 
     @forwards_to(make_scan, nfilled=3)
     def scan2D(self, adjustable1, start_pos1, end_pos1, step_size1, adjustable2, start_pos2, end_pos2, step_size2, *args, relative1=False, relative2=False, **kwargs):
-        """Two-dimensional scan
+        """Two-dimensional scan over two ranges
 
         Parameters:
             adjustable1 (BaseAdjustable): First Adjustable to scan
@@ -147,6 +147,49 @@ class Scanner:
         positions2 = nice_arange(start_pos2, end_pos2, step_size2)
 
         positions = make_2D_pairs(positions1, positions2)
+
+        return self.make_scan(adjustables, positions, *args, **kwargs)
+
+
+    @forwards_to(make_scan, nfilled=3)
+    def scan1D_seq(self, adjustable, positions, *args, **kwargs):
+        """One-dimensional scan over a sequence of positions
+
+        Parameters:
+            adjustable (BaseAdjustable): Adjustable to scan
+            positions (sequence of numbers): Sequence of positions for adjustable to iterate through
+
+            All further parameters are forwarded to make_scan() and described there.
+
+        Returns:
+            ScanBackend: Scan instance
+        """
+        adjustables = [adjustable]
+
+        positions = transpose(positions)
+
+        return self.make_scan(adjustables, positions, *args, **kwargs)
+
+
+    @forwards_to(make_scan, nfilled=3)
+    def scan2D_seq(self, adjustable1, positions1, adjustable2, positions2, *args, **kwargs):
+        """Two-dimensional scan over two sequences of positions
+
+        Parameters:
+            adjustable1 (BaseAdjustable): First Adjustable to scan
+            positions1 (sequence of numbers):  Sequence of positions for first Adjustable to iterate through
+
+            adjustable2 (BaseAdjustable): Second Adjustable to scan
+            positions2 (sequence of numbers):  Sequence of positions for second Adjustable to iterate through
+
+            All further parameters are forwarded to make_scan() and described there.
+
+        Returns:
+            ScanBackend: Scan instance
+        """
+        adjustables = [adjustable1, adjustable2]
+
+        positions = transpose(positions1, positions2)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
