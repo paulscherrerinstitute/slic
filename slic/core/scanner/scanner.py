@@ -14,12 +14,12 @@ from .scanbackend import ScanBackend
 make_positions = nice_linspace
 
 
-def deprecated(replacement):
+def deprecated(replacement, what=None):
     if not isinstance(replacement, str):
         replacement = replacement.__name__
     def decorator(func):
-        what = func.__name__
-        msg = f"{what} is deprecated, use {replacement} instead."
+        old = what or func.__name__
+        msg = f"{old} is deprecated, use {replacement} instead."
         @wraps(func)
         def wrapper(*args, **kwargs):
             warn(msg, category=DeprecationWarning, stacklevel=2)
@@ -292,8 +292,8 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
-    ascan_list = scan1D_seq
-    a2scan_list = scan2D_seq
+    ascan_list = deprecated(scan1D_seq, what="ascan_list")(scan1D_seq)
+    a2scan_list = deprecated(scan2D_seq, what="a2scan_list")(scan2D_seq)
 
 
     @forwards_to(make_scan, nfilled=3)
