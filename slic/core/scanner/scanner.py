@@ -60,6 +60,14 @@ class Scanner:
         self.remote_plot = remote_plot or RemotePlot("localhost", 8000)
 
 
+    def __dir__(self):
+        # hide deprecated scans from tab completion
+        deprecated = {"ascan", "a2scan", "rscan", "ascan_list", "a2scan_list"}
+        res = super().__dir__()
+        res = set(res) - deprecated
+        return sorted(res)
+
+
     #SFDAQ: detectors and pvs only for sf_daq
     def make_scan(self, adjustables, positions, n_pulses, filename, detectors=None, channels=None, pvs=None, acquisitions=(), start_immediately=True, step_info=None, return_to_initial_values=None, n_repeat=1, sensor=None):
         """N-dimensional scan
