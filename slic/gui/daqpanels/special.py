@@ -107,7 +107,7 @@ class SpecialScanPanel(wx.Panel):
 
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.ascan_list(adjustable, steps, n_pulses, filename, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False)
+        self.scan = self.scanner.scan1D_seq(adjustable, steps, n_pulses, filename, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False)
 
         def wait():
             with printed_exception:
