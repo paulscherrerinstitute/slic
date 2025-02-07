@@ -16,17 +16,17 @@ make_positions = nice_linspace
 
 def deprecated(replacement, what=None):
     """
-    decorator factory to mark a function as deprecated and recommend a replacement.
-    informs which replacement should be used instead via
+    Decorator factory to mark a function as deprecated and recommend a replacement.
+    Informs which replacement should be used instead via
     a warning message prepended to the docstring and
     a DeprecationWarning emitted when the function is run.
 
     Parameters:
-        replacement (function or string): for a function, its __name__ is used in the message; a string is used as is.
-        what (string, optional): allows to customize the name of the decorated function in the message.
+        replacement (function or string): For a function, its __name__ is used in the message; a string is used as is.
+        what (string, optional): Allows to customize the name of the decorated function in the message.
 
     Returns:
-        decorator to be applied to a to-be-deprecated function
+        Decorator to be applied to a to-be-deprecated function
     """
     if not isinstance(replacement, str):
         replacement = replacement.__name__
