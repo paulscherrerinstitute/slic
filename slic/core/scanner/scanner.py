@@ -15,6 +15,19 @@ make_positions = nice_linspace
 
 
 def deprecated(replacement, what=None):
+    """
+    decorator factory to mark a function as deprecated and recommend a replacement.
+    informs which replacement should be used instead via
+    a warning message prepended to the docstring and
+    a DeprecationWarning emitted when the function is run.
+
+    Parameters:
+        replacement (function or string): for a function, its __name__ is used in the message; a string is used as is.
+        what (string, optional): allows to customize the name of the decorated function in the message.
+
+    Returns:
+        decorator to be applied to a to-be-deprecated function
+    """
     if not isinstance(replacement, str):
         replacement = replacement.__name__
     def decorator(func):
@@ -85,9 +98,9 @@ class Scanner:
             acquisitions (sequence of BaseAcquisitions, optional): List of acquisition objects to acquire from. If empty (default) the default list will be used.
             start_immediately (bool, optional): If True (default), start the scan immediately. If False, the returned scan can be started via its run method.
             step_info: Arbitrary data that is appended to the ScanInfo in each step.
-            return_to_initial_values: (bool or None, optional): Return to initial values after scan. If None (default) ask for user input.
-            n_repeat: (int or None, optional): Number of times the scan is repeated. If 1 (default), the filename will be used verbatim. If >1, a three-digit counter will be appended. None is interpreted as infinity.
-            sensor: (BaseSensor, optional): Sensor to read out and plot.
+            return_to_initial_values (bool or None, optional): Return to initial values after scan. If None (default) ask for user input.
+            n_repeat (int or None, optional): Number of times the scan is repeated. If 1 (default), the filename will be used verbatim. If >1, a three-digit counter will be appended. None is interpreted as infinity.
+            sensor (BaseSensor, optional): Sensor to read out and plot.
 
         Returns:
             ScanBackend: Scan instance.
