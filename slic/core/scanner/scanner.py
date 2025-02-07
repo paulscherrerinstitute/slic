@@ -11,9 +11,6 @@ from slic.utils.get_adj import ensure_adjs
 from .scanbackend import ScanBackend
 
 
-make_positions = nice_linspace
-
-
 def deprecated(replacement, what=None):
     """
     Decorator factory to mark a function as deprecated and recommend a replacement.
@@ -252,7 +249,7 @@ class Scanner:
         """
         adjustables = [adjustable]
 
-        positions = make_positions(start_pos, end_pos, n_intervals)
+        positions = nice_linspace(start_pos, end_pos, n_intervals)
         positions = transpose(positions)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
@@ -281,8 +278,8 @@ class Scanner:
         """
         adjustables = [adjustable1, adjustable2]
 
-        positions1 = make_positions(start_pos1, end_pos1, n_intervals)
-        positions2 = make_positions(start_pos2, end_pos2, n_intervals)
+        positions1 = nice_linspace(start_pos1, end_pos1, n_intervals)
+        positions2 = nice_linspace(start_pos2, end_pos2, n_intervals)
         positions = transpose(positions1, positions2)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
@@ -306,7 +303,7 @@ class Scanner:
         """
         adjustables = [adjustable]
 
-        positions = make_positions(start_pos, end_pos, n_intervals)
+        positions = nice_linspace(start_pos, end_pos, n_intervals)
         positions += adjustable.get_current_value()
         positions = transpose(positions)
 
