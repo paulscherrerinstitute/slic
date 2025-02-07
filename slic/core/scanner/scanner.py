@@ -1,3 +1,6 @@
+from functools import wraps
+from warnings import warn
+
 import numpy as np
 
 from slic.core.adjustable import DummyAdjustable
@@ -9,6 +12,22 @@ from .scanbackend import ScanBackend
 
 
 make_positions = nice_linspace
+
+
+def deprecated(replacement):
+    if not isinstance(replacement, str):
+        replacement = replacement.__name__
+    def decorator(func):
+        what = func.__name__
+        msg = f"{what} is deprecated, use {replacement} instead."
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            warn(msg, category=DeprecationWarning, stacklevel=2)
+            return func(*args, **kwargs)
+        wrapper.__doc__ = f"Warning: {msg}\n\n{wrapper.__doc__}"
+        return wrapper
+    return decorator
+
 
 
 class Scanner:
@@ -194,6 +213,7 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
+    @deprecated(scan1D)
     @forwards_to(make_scan, nfilled=3)
     def ascan(self, adjustable, start_pos, end_pos, n_intervals, *args, **kwargs):
         """Absolute scan
@@ -217,6 +237,7 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
+    @deprecated(scan2D)
     @forwards_to(make_scan, nfilled=3)
     def a2scan(self, adjustable1, start_pos1, end_pos1, adjustable2, start_pos2, end_pos2, n_intervals, *args, **kwargs):
         """Absolute scan -- 2 adjustables
@@ -246,6 +267,7 @@ class Scanner:
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
+    @deprecated("scan1D(..., relative=True)")
     @forwards_to(make_scan, nfilled=3)
     def rscan(self, adjustable, start_pos, end_pos, n_intervals, *args, **kwargs):
         """Relative scan
