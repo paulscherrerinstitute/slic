@@ -103,6 +103,7 @@ class Scanner:
             ScanBackend: Scan instance.
         """
         adjustables = ensure_adjs(adjustables)
+        positions = transpose(positions)
 
         acquisitions = acquisitions or self.default_acquisitions
         sensor = sensor or self.default_sensor
@@ -141,7 +142,7 @@ class Scanner:
             end_pos   += current
 
         positions = nice_arange(start_pos, end_pos, step_size)
-        positions = transpose(positions)
+        positions = [positions]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -182,8 +183,7 @@ class Scanner:
 
         positions1 = nice_arange(start_pos1, end_pos1, step_size1)
         positions2 = nice_arange(start_pos2, end_pos2, step_size2)
-
-        positions = make_2D_pairs(positions1, positions2)
+        positions = make_2D_grid(positions1, positions2)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -203,7 +203,7 @@ class Scanner:
         """
         adjustables = [adjustable]
 
-        positions = transpose(positions)
+        positions = [positions]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -226,7 +226,7 @@ class Scanner:
         """
         adjustables = [adjustable1, adjustable2]
 
-        positions = transpose(positions1, positions2)
+        positions = [positions1, positions2]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -250,7 +250,7 @@ class Scanner:
         adjustables = [adjustable]
 
         positions = nice_linspace(start_pos, end_pos, n_intervals)
-        positions = transpose(positions)
+        positions = [positions]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -280,7 +280,7 @@ class Scanner:
 
         positions1 = nice_linspace(start_pos1, end_pos1, n_intervals)
         positions2 = nice_linspace(start_pos2, end_pos2, n_intervals)
-        positions = transpose(positions1, positions2)
+        positions = [positions1, positions2]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -305,7 +305,7 @@ class Scanner:
 
         positions = nice_linspace(start_pos, end_pos, n_intervals)
         positions += adjustable.get_current_value()
-        positions = transpose(positions)
+        positions = [positions]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -330,7 +330,7 @@ class Scanner:
         adjustables = [dummy]
 
         positions = range(n_intervals)
-        positions = transpose(positions)
+        positions = [positions]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
@@ -342,15 +342,14 @@ class Scanner:
 
 
 
-def transpose(*args):
+def transpose(args):
     return list(zip(*args))
 
-def make_2D_pairs(x, y):
+def make_2D_grid(x, y):
     x_grid, y_grid = np.meshgrid(x, y)
     x_flat = x_grid.T.ravel()
     y_flat = y_grid.T.ravel()
-    pairs = np.vstack((x_flat, y_flat)).T
-    return pairs
+    return (x_flat, y_flat)
 
 
 
