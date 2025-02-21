@@ -76,6 +76,9 @@ class BrokerConfig:
 
         return config
 
+    def __repr__(self):
+        return printable_dict(vars(self))
+
 
 
 def split_channels(channels):
