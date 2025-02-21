@@ -50,7 +50,7 @@ class SFAcquisition(BaseAcquisition):
         if RequestStatus is None:
             self.status = None
         else:
-            self.status = RequestStatus(instrument=instrument, address=api_host)
+            self.status = RequestStatus(instrument=instrument, host=api_host)
 
         self.current_task = None
 
