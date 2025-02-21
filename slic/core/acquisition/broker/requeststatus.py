@@ -39,7 +39,10 @@ class RequestStatus:
 
 
     def _run(self):
-        connection = BlockingConnection(ConnectionParameters(self.host, **self.kwargs))
+        try:
+            connection = BlockingConnection(ConnectionParameters(self.host, **self.kwargs))
+        except Exception as e:
+            raise ConnectionError(f"cannot connect to request status on {self.host}") from e
 
         channel = connection.channel()
         channel.exchange_declare(exchange=STATUS_EXCHANGE, exchange_type="fanout")
