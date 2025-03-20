@@ -97,12 +97,12 @@ class _Params(DictUpdateMixin, AttrDict):
         typ = allowed_params[k]
         if isinstance(typ, list):
             if v not in typ:
-                raise ValueError(f"value of parameter {repr(k)} ({v}) has to be from {typ}")
+                raise ValueError(f"value of parameter {repr(k)} ({repr(v)}) has to be from {typ}")
 
         elif not isinstance(v, typ):
             tn_right = typ.__name__
             tn_wrong = type(v).__name__
-            raise TypeError(f"value of parameter {repr(k)} ({v}) has to be of type {tn_right} but is {tn_wrong}")
+            raise TypeError(f"value of parameter {repr(k)} ({repr(v)}) has to be of type {tn_right} but is {tn_wrong}")
 
 
 
