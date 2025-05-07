@@ -22,6 +22,9 @@ jobs:
         $CONDA/bin/conda config --append channels conda-forge
         $CONDA/bin/conda config --append channels paulscherrerinstitute
 
+        $CONDA/bin/conda config --remove channels defaults
+        $CONDA/bin/conda config --system --remove channels defaults
+
         $CONDA/bin/conda config --show-sources
 
         $CONDA/bin/conda install --quiet conda-libmamba-solver
