@@ -15,6 +15,7 @@ jobs:
 
     - name: Prepare
       run: |
+        $CONDA/bin/conda config --set report_errors false
         $CONDA/bin/conda config --set always_yes yes
         $CONDA/bin/conda config --set changeps1 no
         $CONDA/bin/conda config --set anaconda_upload yes
@@ -30,7 +31,7 @@ jobs:
         $CONDA/bin/conda install --quiet conda-libmamba-solver
         $CONDA/bin/conda config --set solver libmamba
 
-        $CONDA/bin/conda install --quiet anaconda-client conda-build conda-verify python
+        $CONDA/bin/conda install --quiet anaconda-client conda-build
 
         $CONDA/bin/conda info -a
 
