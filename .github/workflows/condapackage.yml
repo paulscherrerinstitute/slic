@@ -22,6 +22,8 @@ jobs:
         $CONDA/bin/conda install --quiet conda-libmamba-solver
         $CONDA/bin/conda config --set solver libmamba
 
+        conda search conda-build==25.4.2
+
         $CONDA/bin/conda install --quiet anaconda-client conda-build conda-verify python=3.12
 
         $CONDA/bin/conda config --append channels conda-forge
