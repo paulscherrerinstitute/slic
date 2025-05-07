@@ -1,6 +1,7 @@
 name: Conda Package
 
 on:
+  workflow_dispatch: # allow manual triggering from the UI
   push:
     tags:
       - '*'
