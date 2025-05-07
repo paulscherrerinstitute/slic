@@ -71,7 +71,9 @@ class RequestStatus:
 
         action = headers["action"]
 
-        timestamp = datetime.fromtimestamp(timestamp / 1e9)
+        #TODO: insert current time if there is no timestamp?
+        if timestamp is not None:
+            timestamp = datetime.fromtimestamp(timestamp / 1e9)
 
         key = correlation_id.split("-", 1)[0]
 
