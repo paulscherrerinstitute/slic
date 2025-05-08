@@ -20,6 +20,20 @@ class JFList:
         self.list = dlg.list
         dlg.list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_config_detector)
 
+        detector_btn = wx.Button(dlg, label="Detector")
+        dlg.buttons.Add(detector_btn)
+        detector_btn.Bind(wx.EVT_BUTTON, self.on_config_detector)
+
+        dap_btn = wx.Button(dlg, label="DAP")
+        dlg.buttons.Add(dap_btn)
+        dap_btn.Disable()
+
+        hardware_btn = wx.Button(dlg, label="Hardware")
+        dlg.buttons.Add(hardware_btn)
+        hardware_btn.Disable()
+
+        dlg.Fit()
+
         dlg.ShowModal()
         dlg.Destroy()
 
