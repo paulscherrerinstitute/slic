@@ -42,6 +42,7 @@ class JFList:
     def on_config_detector(self, _evt):
         name = self.list.GetSelectionString()
         params = self.det_dict[name]
+
         dlg = JFConfig(name, params, ALLOWED_DETECTOR_PARAMS)
         dlg.ShowModal()
 
@@ -56,6 +57,7 @@ class JFList:
     def on_config_dap(self, _evt):
         name = self.list.GetSelectionString()
         params = self.acquisition.client.restapi.get_dap_settings()
+
         dlg = JFConfig(name, params, ALLOWED_DAP_PARAMS)
         dlg.ShowModal()
 
@@ -68,6 +70,7 @@ class JFList:
     def on_config_hardware(self, _evt):
         name = self.list.GetSelectionString()
         params = self.acquisition.client.restapi.get_detector_settings()
+
         dlg = JFConfig(name, params, ALLOWED_HARDWARE_PARAMS)
         dlg.ShowModal()
 
