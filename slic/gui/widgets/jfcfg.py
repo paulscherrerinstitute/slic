@@ -6,7 +6,7 @@ import wx
 from slic.core.acquisition.detcfg import ALLOWED_DETECTOR_PARAMS
 
 from .entries import LabeledEntry, LabeledMathEntry, MathEntry
-from .lists import ListDialog, ListDisplay, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
+from .lists import ListDialog, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
 from .labeled import make_labeled
 from .jfmodcoords import get_module_coords
 
