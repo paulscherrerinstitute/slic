@@ -12,27 +12,35 @@ from .jfmodcoords import get_module_coords
 
 
 def show_list_jf(title, det_dict):
-    dlg = ListDialog(title, det_dict)
-
-    cb = lambda evt: on_dclick(dlg.list, det_dict)
-    dlg.list.Bind(wx.EVT_LISTBOX_DCLICK, cb)
-
-    dlg.ShowModal()
-    dlg.Destroy()
+    JFList(title, det_dict)
 
 
-def on_dclick(dlg_list, det_dict):
-    name = dlg_list.GetSelectionString()
-    params = det_dict[name]
-    dlg = JFConfig(name, params, ALLOWED_DETECTOR_PARAMS)
-    dlg.ShowModal()
 
-    # update the dict with the changed values
-#    print("before:", det_dict)
-    det_dict[name] = dlg.get()
-#    print("after: ", det_dict)
+class JFList:
 
-    dlg.Destroy()
+    def __init__(self, title, det_dict):
+        self.det_dict = det_dict
+
+        dlg = ListDialog(title, det_dict)
+        self.list = dlg.list
+        dlg.list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_dclick)
+
+        dlg.ShowModal()
+        dlg.Destroy()
+
+
+    def on_dclick(self, _evt):
+        name = self.list.GetSelectionString()
+        params = self.det_dict[name]
+        dlg = JFConfig(name, params, ALLOWED_DETECTOR_PARAMS)
+        dlg.ShowModal()
+
+        # update the dict with the changed values
+#        print("before:", det_dict)
+        self.det_dict[name] = dlg.get()
+#        print("after: ", det_dict)
+
+        dlg.Destroy()
 
 
 
