@@ -30,7 +30,7 @@ def show_list_jf(title, det_dict):
 def on_dclick(evt, det_dict):
     name = evt.GetString()
     params = det_dict[name]
-    dlg = JFConfig(name, params)
+    dlg = JFConfig(name, params, ALLOWED_DETECTOR_PARAMS)
     dlg.ShowModal()
 
     # update the dict with the changed values
@@ -44,7 +44,7 @@ def on_dclick(evt, det_dict):
 
 class JFConfig(wx.Dialog):
 
-    def __init__(self, title, params):
+    def __init__(self, title, params, allowed_params):
         wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
@@ -59,7 +59,7 @@ class JFConfig(wx.Dialog):
 
         vbox_cbs.AddSpacer(border)
 
-        for k, v in sorted(ALLOWED_DETECTOR_PARAMS.items()):
+        for k, v in sorted(allowed_params.items()):
             widgets[k] = w = self.make_widget(title, k, v)
 
             if isinstance(w, wx.CheckBox):
