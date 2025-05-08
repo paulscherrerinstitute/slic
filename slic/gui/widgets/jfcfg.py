@@ -15,13 +15,7 @@ def show_list_jf(title, det_dict):
     dlg = ListDialog(title, det_dict)
 
     cb = lambda evt: on_dclick(evt, det_dict)
-
-    #TODO: attach widgets to parents and replace the following workaround
-    children = dlg.GetChildren()
-    for child in children:
-        if isinstance(child, ListDisplay):
-            child.Bind(wx.EVT_LISTBOX_DCLICK, cb)
-            break
+    dlg.list.Bind(wx.EVT_LISTBOX_DCLICK, cb)
 
     dlg.ShowModal()
     dlg.Destroy()

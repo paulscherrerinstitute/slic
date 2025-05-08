@@ -22,6 +22,8 @@ class ListDialog(wx.Dialog):
         wx.Dialog.__init__(self, None, title=title, style=WX_DEFAULT_RESIZABLE_DIALOG_STYLE)
 
         hld = HeaderedListDisplay(self, sequence, header=header)
+        self.list = hld.list
+
         std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -59,7 +61,7 @@ class HeaderedListDisplay(wx.BoxSizer):
         header = f"{nentries} {header}"
 
         st_header = wx.StaticText(parent, label=header)
-        ld_sequence = ListDisplay(parent, sequence)
+        self.list = ld_sequence = ListDisplay(parent, sequence)
 
         self.Add(st_header, flag=wx.BOTTOM|wx.CENTER, border=10)
         self.Add(ld_sequence, proportion=1, flag=wx.ALL|wx.EXPAND)
