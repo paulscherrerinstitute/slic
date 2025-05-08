@@ -24,7 +24,7 @@ class ListDialog(wx.Dialog):
         hld = HeaderedListDisplay(self, sequence, header=header)
         self.list = hld.list
 
-        std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
+        self.buttons = std_dlg_btn_sizer = self.CreateStdDialogButtonSizer(wx.CLOSE)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(hld, proportion=1, flag=wx.ALL|wx.EXPAND, border=10)
@@ -83,6 +83,11 @@ class ListDisplay(wx.ListBox):
         val = self.GetStringSelection()
         print(val)
         copy_to_clipboard(val)
+
+
+    def GetSelectionString(self):
+        idx = self.GetSelection()
+        return self.GetString(idx)
 
 
 
