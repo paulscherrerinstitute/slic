@@ -18,13 +18,13 @@ class JFList:
 
         dlg = ListDialog(title, det_dict)
         self.list = dlg.list
-        dlg.list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_dclick)
+        dlg.list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_config_detector)
 
         dlg.ShowModal()
         dlg.Destroy()
 
 
-    def on_dclick(self, _evt):
+    def on_config_detector(self, _evt):
         name = self.list.GetSelectionString()
         params = self.det_dict[name]
         dlg = JFConfig(name, params, ALLOWED_DETECTOR_PARAMS)
