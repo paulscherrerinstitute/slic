@@ -11,11 +11,6 @@ from .labeled import make_labeled
 from .jfmodcoords import get_module_coords
 
 
-def show_list_jf(title, det_dict):
-    JFList(title, det_dict)
-
-
-
 class JFList:
 
     def __init__(self, title, det_dict):

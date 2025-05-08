@@ -4,9 +4,9 @@ from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.reprate import get_beamline, get_pvname_reprate
 from slic.utils.duo import get_pgroup_info
 
-from ..widgets import EXPANDING, STRETCH, show_list, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox, CheckBox
+from ..widgets import EXPANDING, STRETCH, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox, CheckBox
 from .tools import PVDisplay, NOMINAL_REPRATE
-from ..widgets.jfcfg import show_list_jf
+from ..widgets.jfcfg import JFList
 
 
 class ConfigPanel(wx.Panel):
@@ -133,7 +133,7 @@ class ConfigPanel(wx.Panel):
 
 
     def on_chans_det(self, _event):
-        show_list_jf("Detectors", self.chans_det)
+        JFList("Detectors", self.chans_det)
 
     def on_chans_bsc(self, _event):
         chans = BSChannels(*self.chans_bsc)
