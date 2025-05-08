@@ -3,7 +3,7 @@ from numbers import Number
 
 import wx
 
-from slic.core.acquisition.detcfg import ALLOWED_DETECTOR_PARAMS
+from slic.core.acquisition.detcfg import ALLOWED_DETECTOR_PARAMS, ALLOWED_DAP_PARAMS, ALLOWED_HARDWARE_PARAMS
 
 from .entries import LabeledEntry, LabeledMathEntry, MathEntry
 from .lists import ListDialog, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
@@ -26,11 +26,11 @@ class JFList:
 
         dap_btn = wx.Button(dlg, label="DAP")
         dlg.buttons.Add(dap_btn)
-        dap_btn.Disable()
+        dap_btn.Bind(wx.EVT_BUTTON, self.on_config_dap)
 
         hardware_btn = wx.Button(dlg, label="Hardware")
         dlg.buttons.Add(hardware_btn)
-        hardware_btn.Disable()
+        hardware_btn.Bind(wx.EVT_BUTTON, self.on_config_hardware)
 
         dlg.Fit()
 
@@ -48,6 +48,30 @@ class JFList:
 #        print("before:", det_dict)
         self.det_dict[name] = dlg.get()
 #        print("after: ", det_dict)
+
+        dlg.Destroy()
+
+
+    def on_config_dap(self, _evt):
+        name = self.list.GetSelectionString()
+        params = {} # get from daq
+        dlg = JFConfig(name, params, ALLOWED_DAP_PARAMS)
+        dlg.ShowModal()
+
+        res = dlg.get()
+        print("DAP:", res) # send to daq
+
+        dlg.Destroy()
+
+
+    def on_config_hardware(self, _evt):
+        name = self.list.GetSelectionString()
+        params = {} # get from daq
+        dlg = JFConfig(name, params, ALLOWED_HARDWARE_PARAMS)
+        dlg.ShowModal()
+
+        res = dlg.get()
+        print("Hardware:", res) # send to daq
 
         dlg.Destroy()
 
