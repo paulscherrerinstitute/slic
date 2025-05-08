@@ -133,7 +133,7 @@ class ConfigPanel(wx.Panel):
 
 
     def on_chans_det(self, _event):
-        JFList("Detectors", self.chans_det)
+        JFList("Detectors", self.chans_det, self.acquisition)
 
     def on_chans_bsc(self, _event):
         chans = BSChannels(*self.chans_bsc)

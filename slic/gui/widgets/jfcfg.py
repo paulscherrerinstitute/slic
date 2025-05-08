@@ -13,8 +13,9 @@ from .jfmodcoords import get_module_coords
 
 class JFList:
 
-    def __init__(self, title, det_dict):
+    def __init__(self, title, det_dict, acquisition):
         self.det_dict = det_dict
+        self.acquisition = acquisition
 
         dlg = ListDialog(title, det_dict)
         self.list = dlg.list
@@ -54,7 +55,7 @@ class JFList:
 
     def on_config_dap(self, _evt):
         name = self.list.GetSelectionString()
-        params = {} # get from daq
+        params = self.acquisition.client.restapi.get_dap_settings()
         dlg = JFConfig(name, params, ALLOWED_DAP_PARAMS)
         dlg.ShowModal()
 
@@ -66,7 +67,7 @@ class JFList:
 
     def on_config_hardware(self, _evt):
         name = self.list.GetSelectionString()
-        params = {} # get from daq
+        params = self.acquisition.client.restapi.get_detector_settings()
         dlg = JFConfig(name, params, ALLOWED_HARDWARE_PARAMS)
         dlg.ShowModal()
 
