@@ -19,6 +19,7 @@ class JFList:
 
         dlg = ListDialog(title, det_dict)
         self.list = dlg.list
+
         dlg.list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_config_detector)
 
         detector_btn = wx.Button(dlg, label="Detector")
@@ -32,6 +33,12 @@ class JFList:
         hardware_btn = wx.Button(dlg, label="Hardware")
         dlg.buttons.Add(hardware_btn)
         hardware_btn.Bind(wx.EVT_BUTTON, self.on_config_hardware)
+
+        self.buttons = [
+            detector_btn,
+            dap_btn,
+            hardware_btn
+        ]
 
         dlg.Fit()
 
@@ -56,6 +63,7 @@ class JFList:
 
     def on_config_dap(self, _evt):
         wx.SafeYield() # disable everything until dialog is ready
+        self._buttons_disable()
         name = self.list.GetSelectionString()
         params = self.acquisition.client.restapi.get_dap_settings(name, timeout=30)
 
@@ -69,10 +77,12 @@ class JFList:
         print("changed DAP parameters:", changed_parameters)
 
         dlg.Destroy()
+        self._buttons_enable()
 
 
     def on_config_hardware(self, _evt):
         wx.SafeYield() # disable everything until dialog is ready
+        self._buttons_disable()
         name = self.list.GetSelectionString()
         params = self.acquisition.client.restapi.get_detector_settings(name, timeout=30)
 
@@ -86,6 +96,16 @@ class JFList:
         print("changed hardware parameters:", changed_parameters)
 
         dlg.Destroy()
+        self._buttons_enable()
+
+
+    def _buttons_enable(self):
+        for btn in self.buttons:
+            btn.Enable()
+
+    def _buttons_disable(self):
+        for btn in self.buttons:
+            btn.Disable()
 
 
 
