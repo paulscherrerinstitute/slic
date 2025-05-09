@@ -63,7 +63,10 @@ class JFList:
         dlg.ShowModal()
 
         res = dlg.get()
-        print("DAP:", res) # send to daq
+#        print("DAP:", res)
+
+        changed_parameters = self.acquisition.client.restapi.set_dap_settings(name, res, timeout=30)
+        print("changed DAP parameters:", changed_parameters)
 
         dlg.Destroy()
 
@@ -77,7 +80,10 @@ class JFList:
         dlg.ShowModal()
 
         res = dlg.get()
-        print("Hardware:", res) # send to daq
+#        print("Hardware:", res)
+
+        changed_parameters = self.acquisition.client.restapi.set_detector_settings(name, res, timeout=30)
+        print("changed hardware parameters:", changed_parameters)
 
         dlg.Destroy()
 
