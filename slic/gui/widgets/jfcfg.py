@@ -55,8 +55,9 @@ class JFList:
 
 
     def on_config_dap(self, _evt):
+        wx.SafeYield() # disable everything until dialog is ready
         name = self.list.GetSelectionString()
-        params = self.acquisition.client.restapi.get_dap_settings()
+        params = self.acquisition.client.restapi.get_dap_settings(name, timeout=30)
 
         dlg = JFConfig(name, params, ALLOWED_DAP_PARAMS)
         dlg.ShowModal()
@@ -68,8 +69,9 @@ class JFList:
 
 
     def on_config_hardware(self, _evt):
+        wx.SafeYield() # disable everything until dialog is ready
         name = self.list.GetSelectionString()
-        params = self.acquisition.client.restapi.get_detector_settings()
+        params = self.acquisition.client.restapi.get_detector_settings(name, timeout=30)
 
         dlg = JFConfig(name, params, ALLOWED_HARDWARE_PARAMS)
         dlg.ShowModal()
