@@ -189,7 +189,7 @@ class Scanner:
 
 
     @forwards_to(make_scan, nfilled=3)
-    def scan1D_seq(self, adjustable, positions, *args, **kwargs):
+    def scan1D_seq(self, adjustable, positions, *args, relative=False, **kwargs):
         """One-dimensional scan over a sequence of positions
 
         Parameters:
@@ -203,13 +203,18 @@ class Scanner:
         """
         adjustables = [adjustable]
 
+        positions = np.asarray(positions)
+        if relative:
+            current = adjustable.get_current_value()
+            positions += current
+
         positions = [positions]
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
 
     @forwards_to(make_scan, nfilled=3)
-    def scan2D_seq(self, adjustable1, positions1, adjustable2, positions2, *args, **kwargs):
+    def scan2D_seq(self, adjustable1, positions1, adjustable2, positions2, *args, relative1=False, relative2=False, **kwargs):
         """Two-dimensional scan over two sequences of positions
 
         Parameters:
@@ -225,6 +230,16 @@ class Scanner:
             ScanBackend: Scan instance
         """
         adjustables = [adjustable1, adjustable2]
+
+        positions1 = np.asarray(positions1)
+        if relative1:
+            current1 = adjustable1.get_current_value()
+            positions1 += current1
+
+        positions2 = np.asarray(positions2)
+        if relative2:
+            current2 = adjustable2.get_current_value()
+            positions2 += current2
 
         positions = [positions1, positions2]
 
