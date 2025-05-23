@@ -5,7 +5,7 @@ import wx
 from slic.utils import arithmetic_eval, typename, nice_arange
 
 from ..persist import PersistableWidget
-from .boxes import make_filled_hbox
+from .boxes import EXPANDING, STRETCH, make_filled_hbox, make_filled_vbox
 from .fname import increase, decrease
 from .labeled import make_labeled
 from .nope import Nope
@@ -63,6 +63,50 @@ class StepsRangeEntry(wx.BoxSizer):
             tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
         else:
             self.steps = steps = nice_arange(start_pos, end_pos, step_size)
+            nsteps = str(len(steps))
+            tooltip = str(steps)
+        self.nsteps.SetValue(nsteps)
+        self.nsteps.SetToolTip(tooltip)
+
+
+    def get_values(self):
+        return self.steps
+
+
+
+class StepsSequenceEntry(wx.BoxSizer):
+
+    def __init__(self, parent):
+        super().__init__(wx.VERTICAL)
+
+        self.steps = None
+
+        self.values = values = LabeledValuesEntry(parent, label="Values")
+
+        self.nsteps = nsteps = LabeledEntry(parent, label="#Steps")
+
+        nsteps.Disable()
+        self.on_change(None) # initialize #Steps
+
+        values.Bind(wx.EVT_TEXT, self.on_change)
+
+        hb_values = wx.BoxSizer()
+        hb_values.Add(values, 1, wx.EXPAND)
+
+        widgets = (STRETCH, STRETCH, STRETCH, nsteps)
+        hb_pos = make_filled_hbox(widgets, border=20, flag=wx.TOP)
+
+        widgets = (EXPANDING, hb_values, hb_pos)
+        make_filled_vbox(widgets, box=self)
+
+
+    def on_change(self, _event):
+        try:
+            self.steps = steps = self.values.get_values()
+        except ValueError as e:
+            nsteps = ""
+            tooltip = str(e)
+        else:
             nsteps = str(len(steps))
             tooltip = str(steps)
         self.nsteps.SetValue(nsteps)
