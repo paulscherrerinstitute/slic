@@ -3,7 +3,7 @@ import wx
 from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, LabeledValuesEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
+from ..widgets import StepsSequenceEntry, LabeledMathEntry, LabeledFilenameEntry, TwoButtons, make_filled_vbox, EXPANDING
 from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run, post_event
 
 
@@ -21,14 +21,7 @@ class SpecialScanPanel(wx.Panel):
 
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(self)
-
-        self.le_values = le_values = LabeledValuesEntry(self, label="Values")
-        self.le_nsteps = le_nsteps = LabeledEntry(self, label="#Steps")
-
-        le_nsteps.Disable()
-        self.on_change_values(None) # update #Steps
-
-        le_values.Bind(wx.EVT_TEXT, self.on_change_values)
+        self.adj_seq = adj_seq = StepsSequenceEntry(self)
 
         self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative to current position")
         self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")
@@ -41,38 +34,19 @@ class SpecialScanPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, config, pvname_reprate, le_nsteps, le_npulses, le_nrepeat)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, adj_seq.nsteps, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
         btn_go.Bind2(wx.EVT_BUTTON, self.on_stop)
 
         # sizers:
-        hb_values = wx.BoxSizer()
-        hb_values.Add(le_values, 1, wx.EXPAND)
-
-        widgets = (STRETCH, STRETCH, STRETCH, le_nsteps)
-        hb_pos = make_filled_hbox(widgets)
-
         widgets = (cb_relative, cb_return)
         vb_cbs = make_filled_vbox(widgets, flag=wx.ALL) # make sure checkboxes do not expand horizontally
 
-        widgets = (sel_adj, EXPANDING, hb_values, hb_pos, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
+        widgets = (sel_adj, EXPANDING, adj_seq, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
-
-
-    def on_change_values(self, _event):
-        try:
-            steps = self.le_values.get_values()
-        except ValueError as e:
-            nsteps = ""
-            tooltip = str(e)
-        else:
-            nsteps = str(len(steps))
-            tooltip = str(steps)
-        self.le_nsteps.SetValue(nsteps)
-        self.le_nsteps.SetToolTip(tooltip)
 
 
     def on_go(self, _event):
@@ -85,7 +59,7 @@ class SpecialScanPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        steps = self.le_values.get_values()
+        steps = self.adj_seq.get_values()
 
         filename = self.le_fname.GetValue()
 
