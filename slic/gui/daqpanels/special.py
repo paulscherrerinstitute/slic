@@ -4,7 +4,6 @@ from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import LabeledMathEntry, LabeledEntry, LabeledFilenameEntry, LabeledValuesEntry, TwoButtons, make_filled_hbox, make_filled_vbox, STRETCH, EXPANDING
-from ..persist import PersistableWidget
 from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run, post_event
 
 
@@ -101,13 +100,9 @@ class SpecialScanPanel(wx.Panel):
         n_pulses = correct_n_pulses(n_pulses, rate, rm)
 
         relative = self.cb_relative.GetValue()
-        if relative:
-            current = adjustable.get_current_value()
-            steps += current
-
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan1D_seq(adjustable, steps, n_pulses, filename, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False)
+        self.scan = self.scanner.scan1D_seq(adjustable, steps, n_pulses, filename, relative=relative, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False)
 
         def wait():
             with printed_exception:
