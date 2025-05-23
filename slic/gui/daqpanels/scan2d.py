@@ -1,6 +1,6 @@
 import wx
 
-from slic.utils import nice_arange, printed_exception
+from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import EXPANDING, MINIMIZED, STRETCH, TwoButtons, StepsRangeEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
@@ -59,8 +59,8 @@ class Scan2DPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        start_pos1, end_pos1, step_size1 = self.adjbox1.adj_range.get_values()
-        start_pos2, end_pos2, step_size2 = self.adjbox2.adj_range.get_values()
+        steps1 = self.adjbox1.adj_range.get_values()
+        steps2 = self.adjbox2.adj_range.get_values()
 
         filename = self.le_fname.GetValue()
 
@@ -78,11 +78,11 @@ class Scan2DPanel(wx.Panel):
         relative2 = self.adjbox2.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan2D(
-            adjustable1, start_pos1, end_pos1, step_size1, 
-            adjustable2, start_pos2, end_pos2, step_size2, 
-            n_pulses, filename, 
-            relative1=relative1, relative2=relative2, 
+        self.scan = self.scanner.scan2D_seq(
+            adjustable1, steps1,
+            adjustable2, steps2,
+            n_pulses, filename,
+            relative1=relative1, relative2=relative2,
             return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False
         )
 

@@ -26,6 +26,8 @@ class StepsRangeEntry(wx.BoxSizer):
     def __init__(self, parent):
         super().__init__(wx.HORIZONTAL)
 
+        self.steps = None
+
         self.start  = start  = LabeledMathEntry(parent, label="Start",     value=0)
         self.stop   = stop   = LabeledMathEntry(parent, label="Stop",      value=10)
         self.step   = step   = LabeledMathEntry(parent, label="Step Size", value=0.1)
@@ -46,7 +48,9 @@ class StepsRangeEntry(wx.BoxSizer):
     def on_change(self, _event):
         try:
             try:
-                start_pos, end_pos, step_size = self.get_values()
+                start_pos = self.start.GetValue()
+                end_pos   = self.stop.GetValue()
+                step_size = self.step.GetValue()
             except:
                 raise ValueError
             else:
@@ -58,7 +62,7 @@ class StepsRangeEntry(wx.BoxSizer):
             nsteps = ""
             tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
         else:
-            steps = nice_arange(start_pos, end_pos, step_size)
+            self.steps = steps = nice_arange(start_pos, end_pos, step_size)
             nsteps = str(len(steps))
             tooltip = str(steps)
         self.nsteps.SetValue(nsteps)
@@ -66,10 +70,7 @@ class StepsRangeEntry(wx.BoxSizer):
 
 
     def get_values(self):
-        start_pos = self.start.GetValue()
-        end_pos   = self.stop.GetValue()
-        step_size = self.step.GetValue()
-        return start_pos, end_pos, step_size
+        return self.steps
 
 
 

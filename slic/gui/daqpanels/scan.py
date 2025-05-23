@@ -1,6 +1,6 @@
 import wx
 
-from slic.utils import nice_arange, printed_exception
+from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
 from ..widgets import STRETCH, TwoButtons, StepsRangeEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
@@ -67,7 +67,7 @@ class ScanPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        start_pos, end_pos, step_size = self.adj_range.get_values()
+        steps = self.adj_range.get_values()
 
         filename = self.le_fname.GetValue()
 
@@ -84,7 +84,7 @@ class ScanPanel(wx.Panel):
         relative = self.cb_relative.GetValue()
         return_to_initial_values = self.cb_return.GetValue()
 
-        self.scan = self.scanner.scan1D(adjustable, start_pos, end_pos, step_size, n_pulses, filename, relative=relative, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False)
+        self.scan = self.scanner.scan1D_seq(adjustable, steps, n_pulses, filename, relative=relative, return_to_initial_values=return_to_initial_values, n_repeat=n_repeat, start_immediately=False)
 
         def wait():
             with printed_exception:
