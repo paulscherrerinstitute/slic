@@ -29,7 +29,7 @@ class ScanPanel(wx.Panel):
 
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(self)
-        self.adj_range = adj_range = StepsRangeEntry(self)
+        self.adj_steps = adj_steps = StepsRangeEntry(self)
 
         self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative to current position")
         self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")
@@ -42,7 +42,7 @@ class ScanPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, config, pvname_reprate, adj_range.nsteps, le_npulses, le_nrepeat)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, adj_steps.nsteps, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
@@ -52,7 +52,7 @@ class ScanPanel(wx.Panel):
         widgets = (cb_relative, cb_return)
         vb_cbs = make_filled_vbox(widgets, flag=wx.ALL) # make sure checkboxes do not expand horizontally
 
-        widgets = (sel_adj, STRETCH, adj_range, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
+        widgets = (sel_adj, STRETCH, adj_steps, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -67,7 +67,7 @@ class ScanPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        steps = self.adj_range.get_values()
+        steps = self.adj_steps.get_values()
 
         filename = self.le_fname.GetValue()
 

@@ -31,7 +31,7 @@ class Scan2DPanel(wx.Panel):
         self.le_fname   = le_fname   = LabeledFilenameEntry(self, label="Filename", value="test")
 
         pvname_reprate = get_pvname_reprate(instrument)
-        self.eta = eta = ETADisplay(self, config, pvname_reprate, adjbox1.adj_range.nsteps, adjbox2.adj_range.nsteps, le_npulses, le_nrepeat)
+        self.eta = eta = ETADisplay(self, config, pvname_reprate, adjbox1.adj_steps.nsteps, adjbox2.adj_steps.nsteps, le_npulses, le_nrepeat)
 
         self.btn_go = btn_go = TwoButtons(self)
         btn_go.Bind1(wx.EVT_BUTTON, self.on_go)
@@ -59,8 +59,8 @@ class Scan2DPanel(wx.Panel):
             post_event(wx.EVT_BUTTON, self.btn_go.btn2)
             return
 
-        steps1 = self.adjbox1.adj_range.get_values()
-        steps2 = self.adjbox2.adj_range.get_values()
+        steps1 = self.adjbox1.adj_steps.get_values()
+        steps2 = self.adjbox2.adj_steps.get_values()
 
         filename = self.le_fname.GetValue()
 
@@ -113,13 +113,13 @@ class AdjustableBox(wx.StaticBoxSizer):
 
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(parent)
-        self.adj_range = adj_range = StepsRangeEntry(parent)
+        self.adj_steps = adj_steps = StepsRangeEntry(parent)
 
         self.cb_relative = cb_relative = wx.CheckBox(parent, label="Relative to current position")
         cb_relative.SetValue(False)
 
         # sizers:
-        widgets = (sel_adj, STRETCH, adj_range, MINIMIZED, cb_relative)
+        widgets = (sel_adj, STRETCH, adj_steps, MINIMIZED, cb_relative)
         make_filled_vbox(widgets, border=10, box=self)
 
 
