@@ -21,18 +21,18 @@ ALLOWED_CHARS = set(
 )
 
 
-class StepsRangeEntry(wx.BoxSizer):
+class StepsRangeEntry(wx.Panel):
 
     def __init__(self, parent):
-        super().__init__(wx.HORIZONTAL)
+        super().__init__(parent)
 
         self.steps = None
 
-        self.start  = start  = LabeledMathEntry(parent, label="Start",     value=0)
-        self.stop   = stop   = LabeledMathEntry(parent, label="Stop",      value=10)
-        self.step   = step   = LabeledMathEntry(parent, label="Step Size", value=0.1)
+        self.start  = start  = LabeledMathEntry(self, label="Start",     value=0)
+        self.stop   = stop   = LabeledMathEntry(self, label="Stop",      value=10)
+        self.step   = step   = LabeledMathEntry(self, label="Step Size", value=0.1)
 
-        self.nsteps = nsteps = LabeledEntry(parent, label="#Steps")
+        self.nsteps = nsteps = LabeledEntry(self, label="#Steps")
 
         nsteps.Disable()
         self.on_change(None) # initialize #Steps
@@ -42,7 +42,8 @@ class StepsRangeEntry(wx.BoxSizer):
             w.Bind(wx.EVT_TEXT, self.on_change)
 
         widgets = (start, stop, step, nsteps)
-        make_filled_hbox(widgets, box=self)
+        sizer = make_filled_hbox(widgets)
+        self.SetSizerAndFit(sizer)
 
 
     def on_change(self, _event):
@@ -74,16 +75,16 @@ class StepsRangeEntry(wx.BoxSizer):
 
 
 
-class StepsSequenceEntry(wx.BoxSizer):
+class StepsSequenceEntry(wx.Panel):
 
     def __init__(self, parent):
-        super().__init__(wx.VERTICAL)
+        super().__init__(parent)
 
         self.steps = None
 
-        self.values = values = LabeledValuesEntry(parent, label="Values")
+        self.values = values = LabeledValuesEntry(self, label="Values")
 
-        self.nsteps = nsteps = LabeledEntry(parent, label="#Steps")
+        self.nsteps = nsteps = LabeledEntry(self, label="#Steps")
 
         nsteps.Disable()
         self.on_change(None) # initialize #Steps
@@ -97,7 +98,8 @@ class StepsSequenceEntry(wx.BoxSizer):
         hb_pos = make_filled_hbox(widgets, border=20, flag=wx.TOP)
 
         widgets = (EXPANDING, hb_values, hb_pos)
-        make_filled_vbox(widgets, box=self)
+        sizer = make_filled_vbox(widgets)
+        self.SetSizerAndFit(sizer)
 
 
     def on_change(self, _event):
