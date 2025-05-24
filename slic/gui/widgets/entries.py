@@ -120,29 +120,31 @@ class StepsSequenceEntry(wx.Panel):
 
 
 
-class LabeledTweakEntry(wx.BoxSizer):
+class LabeledTweakEntry(wx.Panel):
 
     def __init__(self, parent, id=wx.ID_ANY, label="", value=""):
-        super().__init__(wx.VERTICAL)
+        super().__init__(parent)
 
         value = str(value)
         name = label
 
-        self.label = label = wx.StaticText(parent, label=label)
-        self.text  = text  = MathEntry(parent, value=value, name=name, style=wx.TE_RIGHT)
+        self.label = label = wx.StaticText(self, label=label)
+        self.text  = text  = MathEntry(self, value=value, name=name, style=wx.TE_RIGHT)
 
-        self.btn_left  = btn_left  = wx.Button(parent, label="<")
-        self.btn_right = btn_right = wx.Button(parent, label=">")
+        self.btn_left  = btn_left  = wx.Button(self, label="<")
+        self.btn_right = btn_right = wx.Button(self, label=">")
 
-        self.btn_ff_left  = btn_ff_left  = wx.Button(parent, label="<<")
-        self.btn_ff_right = btn_ff_right = wx.Button(parent, label=">>")
+        self.btn_ff_left  = btn_ff_left  = wx.Button(self, label="<<")
+        self.btn_ff_right = btn_ff_right = wx.Button(self, label=">>")
 
         widgets = (btn_ff_left, btn_left, btn_right, btn_ff_right)
         hb_tweak = make_filled_hbox(widgets)
 
-        self.Add(label,    flag=wx.EXPAND)
-        self.Add(text,     flag=wx.EXPAND)
-        self.Add(hb_tweak, flag=wx.EXPAND|wx.TOP, border=10)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(label,    flag=wx.EXPAND)
+        sizer.Add(text,     flag=wx.EXPAND)
+        sizer.Add(hb_tweak, flag=wx.EXPAND|wx.TOP, border=10)
+        self.SetSizerAndFit(sizer)
 
 
     def Disable(self):
