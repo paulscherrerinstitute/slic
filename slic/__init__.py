@@ -1,3 +1,6 @@
+from slic.gui.wxdebug import wxdebug as _wxdebug
+_wxdebug()
+
 
 from . import core
 
