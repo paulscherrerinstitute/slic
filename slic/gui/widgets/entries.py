@@ -5,6 +5,7 @@ import wx
 from slic.utils import arithmetic_eval, typename, nice_arange
 
 from ..persist import PersistableWidget
+from .alternative import Alternative
 from .boxes import EXPANDING, STRETCH, make_filled_hbox, make_filled_vbox
 from .fname import increase, decrease
 from .labeled import make_labeled
@@ -19,6 +20,21 @@ ADJUSTMENTS = {
 ALLOWED_CHARS = set(
     string.ascii_letters + string.digits + "_-+."
 )
+
+
+class StepsEntry(wx.Panel):
+
+    def __init__(self, parent, index=0):
+        super().__init__(parent)
+        steps_range    = StepsRangeEntry(self)
+        steps_sequence = StepsSequenceEntry(self)
+        widgets = (steps_range, steps_sequence)
+        self.alt = alt = Alternative(widgets, index=index)
+        self.SetSizerAndFit(alt)
+
+    def __getattr__(self, name):
+        return getattr(self.alt, name)
+
 
 
 class StepsRangeEntry(wx.Panel):
