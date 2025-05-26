@@ -241,7 +241,7 @@ class Scanner:
             current2 = adjustable2.get_current_value()
             positions2 += current2
 
-        positions = [positions1, positions2]
+        positions = make_2D_grid(positions1, positions2)
 
         return self.make_scan(adjustables, positions, *args, **kwargs)
 
