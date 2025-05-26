@@ -3,7 +3,7 @@ import wx
 from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import EXPANDING, MINIMIZED, STRETCH, TwoButtons, StepsRangeEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
+from ..widgets import EXPANDING, MINIMIZED, TwoButtons, StepsEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
 from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
 
 
@@ -113,13 +113,13 @@ class AdjustableBox(wx.StaticBoxSizer):
 
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(parent)
-        self.adj_steps = adj_steps = StepsRangeEntry(parent)
+        self.adj_steps = adj_steps = StepsEntry(parent)
 
         self.cb_relative = cb_relative = wx.CheckBox(parent, label="Relative to current position")
         cb_relative.SetValue(False)
 
         # sizers:
-        widgets = (sel_adj, STRETCH, adj_steps, MINIMIZED, cb_relative)
+        widgets = (sel_adj, EXPANDING, adj_steps, MINIMIZED, cb_relative)
         make_filled_vbox(widgets, border=10, box=self)
 
 

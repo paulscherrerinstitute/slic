@@ -3,7 +3,7 @@ import wx
 from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import StepsSequenceEntry, LabeledMathEntry, LabeledFilenameEntry, TwoButtons, make_filled_vbox, EXPANDING
+from ..widgets import StepsEntry, LabeledMathEntry, LabeledFilenameEntry, TwoButtons, make_filled_vbox, EXPANDING
 from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run, post_event
 
 
@@ -21,7 +21,7 @@ class SpecialScanPanel(wx.Panel):
 
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(self)
-        self.adj_steps = adj_steps = StepsSequenceEntry(self)
+        self.adj_steps = adj_steps = StepsEntry(self, index=1)
 
         self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative to current position")
         self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")

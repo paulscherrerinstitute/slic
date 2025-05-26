@@ -3,7 +3,7 @@ import wx
 from slic.utils import printed_exception
 from slic.utils.reprate import get_pvname_reprate
 
-from ..widgets import STRETCH, TwoButtons, StepsRangeEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
+from ..widgets import EXPANDING, TwoButtons, StepsEntry, LabeledMathEntry, LabeledFilenameEntry, make_filled_vbox, post_event
 from .tools import AdjustableSelection, ETADisplay, correct_n_pulses, run
 
 
@@ -29,7 +29,7 @@ class ScanPanel(wx.Panel):
 
         # widgets:
         self.sel_adj = sel_adj = AdjustableSelection(self)
-        self.adj_steps = adj_steps = StepsRangeEntry(self)
+        self.adj_steps = adj_steps = StepsEntry(self)
 
         self.cb_relative = cb_relative = wx.CheckBox(self, label="Relative to current position")
         self.cb_return   = cb_return   = wx.CheckBox(self, label="Return to initial value")
@@ -52,7 +52,7 @@ class ScanPanel(wx.Panel):
         widgets = (cb_relative, cb_return)
         vb_cbs = make_filled_vbox(widgets, flag=wx.ALL) # make sure checkboxes do not expand horizontally
 
-        widgets = (sel_adj, STRETCH, adj_steps, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
+        widgets = (sel_adj, EXPANDING, adj_steps, vb_cbs, le_npulses, le_nrepeat, le_fname, eta, btn_go)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
