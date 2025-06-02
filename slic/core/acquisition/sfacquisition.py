@@ -172,13 +172,17 @@ class SFAcquisition(BaseAcquisition):
             pvs = self.default_pvs
         return self.client.set_config_pvs(pvs)
 
-    def update_config_pvs(self, pvs=None):
+    def update_config_pvs(self, pvs=None, force=False):
         if pvs is None:
             pvs = self.default_pvs
         current = self.get_config_pvs()
-        pvs = set(pvs) | set(current)
-        pvs = sorted(pvs)
-        return self.client.set_config_pvs(pvs)
+        pvs = set(pvs)
+        current = set(current)
+        merged = pvs | current
+        if not force and merged == pvs:
+            return
+        merged = sorted(merged)
+        return self.client.set_config_pvs(merged)
 
     def diff_config_pvs(self, pvs=None):
         if pvs is None:
