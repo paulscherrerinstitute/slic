@@ -188,8 +188,10 @@ class SFAcquisition(BaseAcquisition):
         if pvs is None:
             pvs = self.default_pvs
         current = self.get_config_pvs()
-        only_remote = set(current) - set(pvs)
-        only_local  = set(pvs) - set(current)
+        pvs = set(pvs)
+        current = set(current)
+        only_remote = current - pvs
+        only_local  = pvs - current
         return {"only remote": sorted(only_remote), "only local": sorted(only_local)}
 
 
