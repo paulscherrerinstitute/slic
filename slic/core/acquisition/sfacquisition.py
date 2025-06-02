@@ -167,16 +167,23 @@ class SFAcquisition(BaseAcquisition):
     def get_config_pvs(self):
         return self.client.get_config_pvs()
 
-    def set_config_pvs(self, pvs=None):
+    def set_config_pvs(self, pvs=None, force=False):
         if pvs is None:
             pvs = self.default_pvs
+        pvs = set(pvs)
+        if not force:
+            current = self.get_config_pvs()
+            current = set(current)
+            if current == pvs:
+                return
+        pvs = sorted(pvs)
         return self.client.set_config_pvs(pvs)
 
     def update_config_pvs(self, pvs=None, force=False):
         if pvs is None:
             pvs = self.default_pvs
-        current = self.get_config_pvs()
         pvs = set(pvs)
+        current = self.get_config_pvs()
         current = set(current)
         merged = pvs | current
         if not force and merged == pvs:
@@ -187,8 +194,8 @@ class SFAcquisition(BaseAcquisition):
     def diff_config_pvs(self, pvs=None):
         if pvs is None:
             pvs = self.default_pvs
-        current = self.get_config_pvs()
         pvs = set(pvs)
+        current = self.get_config_pvs()
         current = set(current)
         only_remote = current - pvs
         only_local  = pvs - current
