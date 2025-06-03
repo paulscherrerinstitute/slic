@@ -171,6 +171,7 @@ class SFAcquisition(BaseAcquisition):
         if pvs is None:
             pvs = self.default_pvs
         pvs = set(pvs)
+        assert_no_fpicture(pvs)
         if not force:
             current = self.get_config_pvs()
             current = set(current)
@@ -186,6 +187,7 @@ class SFAcquisition(BaseAcquisition):
         current = self.get_config_pvs()
         current = set(current)
         merged = pvs | current
+        assert_no_fpicture(merged)
         if not force and merged == pvs:
             return
         merged = sorted(merged)
@@ -234,6 +236,13 @@ def print_response(res):
 def is_continuous(arr, step=1):
     udeltas = np.unique(np.diff(arr))
     return np.array_equal(udeltas, [step])
+
+
+
+def assert_no_fpicture(pvs):
+    for i in pvs:
+        if i.endswith(":FPICTURE"):
+            raise ValueError(f"camera image channels should not be added to the epics buffer: {i}")
 
 
 
