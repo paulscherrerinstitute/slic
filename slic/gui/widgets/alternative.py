@@ -62,14 +62,17 @@ class Alternative(wx.BoxSizer):
 def suppress_tooltip(widget):
     """
     if no tooltip is set, the parent tooltip is used
-    wx.ToolTip.Enable is a global setting
-    this disables/enables only within the enter/leave context
+    store the parent tooltip upon entering and revert it upon leaving
     """
+    tip = None
+
     def on_enter(_):
-        wx.ToolTip.Enable(False)
+        nonlocal tip
+        tip = widget.GetParent().GetToolTip().GetTip()
+        widget.GetParent().SetToolTip(None)
 
     def on_leave(_):
-        wx.ToolTip.Enable(True)
+        widget.GetParent().SetToolTip(tip)
 
     widget.Bind(wx.EVT_ENTER_WINDOW, on_enter)
     widget.Bind(wx.EVT_LEAVE_WINDOW, on_leave)
