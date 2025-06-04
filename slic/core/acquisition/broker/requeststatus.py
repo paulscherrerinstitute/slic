@@ -65,7 +65,9 @@ class RequestStatus:
         body = body.decode()
         request = json.loads(body)
 
-        instrument = request.get("metadata", {}).get("general/instrument")
+        metadata = request.get("metadata") or {}
+
+        instrument = metadata.get("general/instrument")
         if instrument is not None and self.instrument is not None and instrument != self.instrument:
             return
 
