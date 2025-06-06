@@ -42,8 +42,6 @@ class StepsRangeEntry(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.steps = None
-
         self.start  = start  = LabeledMathEntry(self, label="Start",     value=0)
         self.stop   = stop   = LabeledMathEntry(self, label="Stop",      value=10)
         self.step   = step   = LabeledMathEntry(self, label="Step Size", value=0.1)
@@ -65,22 +63,11 @@ class StepsRangeEntry(wx.Panel):
 
     def on_change(self, _event):
         try:
-            try:
-                start_pos = self.start.GetValue()
-                end_pos   = self.stop.GetValue()
-                step_size = self.step.GetValue()
-            except:
-                raise ValueError
-            else:
-                if step_size == 0:
-                    raise ValueError
-                if None in (start_pos, end_pos, step_size):
-                    raise ValueError
-        except ValueError:
+            steps = self.get_values()
+        except ValueError as e:
             nsteps = ""
-            tooltip = "Start, Stop and Step Size need to be floats.\nStep Size cannot be zero."
+            tooltip = str(e)
         else:
-            self.steps = steps = nice_arange(start_pos, end_pos, step_size)
             nsteps = str(len(steps))
             tooltip = str(steps)
         self.nsteps.SetValue(nsteps)
@@ -88,7 +75,18 @@ class StepsRangeEntry(wx.Panel):
 
 
     def get_values(self):
-        return self.steps
+        try:
+            start_pos = self.start.GetValue()
+            end_pos   = self.stop.GetValue()
+            step_size = self.step.GetValue()
+        except Exception as e:
+            raise ValueError("Start, Stop and Step Size need to be floats.") from e
+        else:
+            if step_size == 0:
+                raise ValueError("Step Size cannot be zero.")
+            if None in (start_pos, end_pos, step_size):
+                raise ValueError("Start, Stop and Step Size need to be floats.")
+        return nice_arange(start_pos, end_pos, step_size)
 
 
 
@@ -96,8 +94,6 @@ class StepsSequenceEntry(wx.Panel):
 
     def __init__(self, parent):
         super().__init__(parent)
-
-        self.steps = None
 
         self.values = values = LabeledValuesEntry(self, label="Values")
 
@@ -121,7 +117,7 @@ class StepsSequenceEntry(wx.Panel):
 
     def on_change(self, _event):
         try:
-            self.steps = steps = self.values.get_values()
+            steps = self.get_values()
         except ValueError as e:
             nsteps = ""
             tooltip = str(e)
@@ -133,7 +129,7 @@ class StepsSequenceEntry(wx.Panel):
 
 
     def get_values(self):
-        return self.steps
+        return self.values.get_values()
 
 
 
