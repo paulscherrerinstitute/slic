@@ -1,4 +1,5 @@
 import wx
+from logzero import logger as log
 
 
 try:
@@ -9,7 +10,7 @@ try:
     dbn = DBusNotify()
     icon = get_icon_path()
 except Exception as e:
-    print("could not set up DBusNotify:", e)
+    log.warning(f"could not set up DBusNotify: {e}")
     dbn = None
 
 
