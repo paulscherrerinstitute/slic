@@ -1,6 +1,7 @@
 import builtins
 import os
 import sys
+import warnings
 
 import logging
 import logzero
@@ -54,12 +55,23 @@ def setup_import_logging():
     imports_cache = set()
 
     def import_with_log(*args, **kwargs):
-        module = orig_import(*args, **kwargs)
+        # catch warnings in order to re-emit them with corrected stacklevel
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            warnings.simplefilter("always")
+            module = orig_import(*args, **kwargs)
 
         name = module.__name__
         if name not in imports_cache:
             imports_cache.add(name)
             log.trace(f"importing: {name}")
+
+        for w in caught_warnings:
+            warnings.warn(
+                message=w.message,
+                category=w.category,
+                stacklevel=2,
+                source=w.source
+            )
 
         return module
 
