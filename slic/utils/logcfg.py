@@ -57,7 +57,6 @@ def setup_import_logging():
     def import_with_log(*args, **kwargs):
         # catch warnings in order to re-emit them with corrected stacklevel
         with warnings.catch_warnings(record=True) as caught_warnings:
-            warnings.simplefilter("always")
             module = orig_import(*args, **kwargs)
 
         name = module.__name__
