@@ -10,6 +10,7 @@ from .boxes import EXPANDING, STRETCH, make_filled_hbox, make_filled_vbox
 from .fname import increase, decrease
 from .labeled import make_labeled
 from .nope import Nope
+from .tools import post_event
 
 
 ADJUSTMENTS = {
@@ -30,7 +31,11 @@ class StepsEntry(wx.Panel):
         steps_sequence = StepsSequenceEntry(self)
         widgets = (steps_range, steps_sequence)
         self.alt = alt = Alternative(widgets, index=index)
+        self.alt.callback_update_visibility = lambda: post_event(wx.EVT_TEXT, self.alt.nsteps.widget) #TODO: find a simpler solution
         self.SetSizerAndFit(alt)
+
+    def GetValue(self):
+        return self.alt.nsteps.GetValue()
 
     def __getattr__(self, name):
         return getattr(self.alt, name)
