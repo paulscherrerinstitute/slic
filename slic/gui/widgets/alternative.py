@@ -9,6 +9,8 @@ class Alternative(wx.BoxSizer):
         self.widgets = widgets
         self.index = index
 
+        self.callback_update_visibility = None
+
         for i in widgets:
             self.Add(i, proportion=1, flag=wx.EXPAND)
 
@@ -49,6 +51,8 @@ class Alternative(wx.BoxSizer):
             else:
                 wdgt.Show(show=state)
         self.Layout()
+        if self.callback_update_visibility:
+            self.callback_update_visibility()
 
     def __getattr__(self, name):
         w = self.get_current()
