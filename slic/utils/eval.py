@@ -40,10 +40,6 @@ def arithmetic_eval(s):
 def ast_node_eval(node):
     if isinstance(node, ast.Expression):
         return ast_node_eval(node.body)
-    elif isinstance(node, ast.Str):
-        return node.s
-    elif isinstance(node, ast.Num):
-        return node.n
     elif isinstance(node, ast.BinOp):
         op = get_operator(node, BIN_OPS)
         left  = ast_node_eval(node.left)
@@ -53,6 +49,15 @@ def ast_node_eval(node):
         op = get_operator(node, UNARY_OPS)
         operand = ast_node_eval(node.operand)
         return op(operand)
+    # from >=3.8, Constant can replace Str/Num
+    # from >=3.14, Str/Num are deprecated and removed
+    # check Constant first then fall back to Str/Num for <3.8
+    elif isinstance(node, ast.Constant):
+        return node.value
+    elif isinstance(node, ast.Str):
+        return node.s
+    elif isinstance(node, ast.Num):
+        return node.n
     else:
         tn = typename(node)
         raise ArithmeticEvalError(f"Unsupported node type {tn}")
