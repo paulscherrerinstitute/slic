@@ -206,7 +206,7 @@ class Scanner:
         positions = np.asarray(positions)
         if relative:
             current = adjustable.get_current_value()
-            positions += current
+            positions = positions + current
 
         positions = [positions]
 
@@ -234,12 +234,12 @@ class Scanner:
         positions1 = np.asarray(positions1)
         if relative1:
             current1 = adjustable1.get_current_value()
-            positions1 += current1
+            positions1 = positions1 + current1
 
         positions2 = np.asarray(positions2)
         if relative2:
             current2 = adjustable2.get_current_value()
-            positions2 += current2
+            positions2 = positions2 + current2
 
         positions = make_2D_grid(positions1, positions2)
 
