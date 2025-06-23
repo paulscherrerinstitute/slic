@@ -1,3 +1,6 @@
+from passlib.hash import sha256_crypt as _ignore #TODO: this hides a DeprecationWarning for crypt / sha256_crypt is used in py_elog
+
+
 from slic.gui.wxdebug import wxdebug as _wxdebug
 _wxdebug()
 
