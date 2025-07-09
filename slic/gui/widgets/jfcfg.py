@@ -150,7 +150,7 @@ class JFConfig(wx.Dialog):
 
         for k, v in params.items():
             if k not in widgets:
-                print(f"skipping unknown paramter: {k}")
+                print(f"skipping unknown parameter: {k}")
                 continue
             widgets[k].SetValue(v)
 
