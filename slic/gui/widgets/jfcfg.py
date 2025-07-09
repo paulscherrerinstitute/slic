@@ -11,6 +11,9 @@ from .labeled import make_labeled
 from .jfmodcoords import get_module_coords
 
 
+NUMBER_PER_COLUMN = 10
+
+
 class JFList:
 
     def __init__(self, title, det_dict, acquisition):
@@ -122,9 +125,12 @@ class JFConfig(wx.Dialog):
 
         vbox_params = wx.BoxSizer(wx.HORIZONTAL)
         vbox_cbs    = wx.BoxSizer(wx.VERTICAL)
-        vbox_others = wx.BoxSizer(wx.VERTICAL)
+
+        vbox_params.Add(vbox_cbs, flag=wx.ALL|wx.EXPAND)
 
         vbox_cbs.AddSpacer(border)
+
+        index_in_column = -1
 
         for k, v in sorted(allowed_params.items()):
             widgets[k] = w = self.make_widget(title, k, v)
@@ -135,13 +141,15 @@ class JFConfig(wx.Dialog):
                 flag = wx.LEFT|wx.RIGHT
                 vbox_cbs.Add(w, flag=flag, border=border)
             else:
+                index_in_column += 1
+                if index_in_column % NUMBER_PER_COLUMN == 0:
+                    vbox_others = wx.BoxSizer(wx.VERTICAL)
+                    vbox_params.Add(vbox_others, flag=wx.ALL|wx.EXPAND, proportion=1)
+
                 flag = wx.ALL|wx.EXPAND
                 vbox_others.Add(w, flag=flag, border=border)
 
         vbox_cbs.AddSpacer(border)
-
-        vbox_params.Add(vbox_cbs, flag=wx.ALL|wx.EXPAND)
-        vbox_params.Add(vbox_others, flag=wx.ALL|wx.EXPAND, proportion=1)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(vbox_params, flag=wx.ALL|wx.EXPAND)
