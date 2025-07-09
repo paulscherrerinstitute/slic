@@ -149,6 +149,9 @@ class JFConfig(wx.Dialog):
         vbox.Add(std_dlg_btn_sizer, flag=wx.ALL|wx.CENTER, border=10)
 
         for k, v in params.items():
+            if k not in widgets:
+                print(f"skipping unknown paramter: {k}")
+                continue
             widgets[k].SetValue(v)
 
         self.SetSizerAndFit(vbox)
