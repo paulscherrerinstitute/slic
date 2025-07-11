@@ -72,7 +72,11 @@ def suppress_tooltip(widget):
 
     def on_enter(_):
         nonlocal tip
-        tip = widget.GetParent().GetToolTip().GetTip()
+        tooltip = widget.GetParent().GetToolTip()
+        #TODO: why is this sometimes None on the consoles?
+        if tooltip is None:
+            return
+        tip = tooltip.GetTip()
         widget.GetParent().SetToolTip(None)
 
     def on_leave(_):
