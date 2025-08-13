@@ -185,6 +185,11 @@ class BrokerSlowAPI(BaseAPI):
         response = self.get("get_jfctrl_monitor", params, *args, **kwargs)
         return response.get("parameters")
 
+    def get_detector_status(self, detector, *args, **kwargs):
+        params = {"detector_name": detector}
+        response = self.get("get_detector_status", params, *args, **kwargs)
+        return response.get("detector_status")
+
     def get_detector_temperatures(self, detector, *args, **kwargs):
         params = {"detector_name": detector}
         response = self.get("get_detector_temperatures", params, *args, **kwargs)
