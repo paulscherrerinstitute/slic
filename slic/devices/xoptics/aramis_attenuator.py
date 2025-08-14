@@ -67,11 +67,14 @@ class Transmission(PVAdjustable):
         self.third_order = third_order
 
         prefix = ID + ":"
-        pvname_setvalue = prefix + "TRANS_SP"
-        pvname_readback = prefix + ("TRANS3EDHARM_RB" if third_order else "TRANS_RB")
+#        pvname_setvalue = prefix + "TRANS_SP"
+#        pvname_readback = prefix + ("TRANS3EDHARM_RB" if third_order else "TRANS_RB")
+        pvname_setvalue = prefix + "UsrRec.TD"
+        pvname_readback = prefix + ("UsrRec.TR3" if third_order else "UsrRec.TR1")
         super().__init__(pvname_setvalue, pvname_readback, **kwargs)
 
-        self.pvnames.third_order_toggle = pvn = prefix + "3RD_HARM_SP"
+#        self.pvnames.third_order_toggle = pvn = prefix + "3RD_HARM_SP"
+        self.pvnames.third_order_toggle = pvn = prefix + "UsrRec.HRM3"
         self.pvs.third_order_toggle = PV(pvn)
 
 
