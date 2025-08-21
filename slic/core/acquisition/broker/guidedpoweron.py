@@ -1,0 +1,118 @@
+from time import sleep
+from slic.utils.ask_yes_no import ask_Yes_no
+
+
+def guided_power_on(daq, detector):
+    while ask_Yes_no(f"ping {detector}"):
+        pings = daq.client.restapi.get_detector_pings(detector)
+
+        unreachable = pings["unreachable"]
+        if not unreachable:
+            print("all modules responding correctly")
+            break
+
+        print("check the network cable(s) of the following module(s):", unreachable)
+
+
+    if not ask_Yes_no(f"power on {detector}"):
+        return
+
+    msg = daq.client.restapi.power_on_detector(detector)
+    print(msg)
+
+
+    if not ask_Yes_no(f"wait for running status of a module of {detector}"):
+        return
+
+    while True:
+        status = daq.client.restapi.get_detector_status(detector)
+
+        running = ("running" in status)
+        if running:
+            print("done waiting because:", status)
+            break
+
+        print("still waiting because:", status)
+        sleep(1)
+
+
+    while ask_Yes_no(f"check if {detector} is running"):
+        dets = daq.client.restapi.get_running_detectors()
+
+        if detector in dets["missing_detectors"]:
+            print(f"{detector} is missing -- call the sheriff!")
+            return
+
+        if detector in dets["limping_detectors"]:
+            missing = dets["limping_detectors"][detector]["missing_modules"]
+            print(f"{detector} is limping -- check the fiber of the following module(s):", missing)
+            continue
+
+        if detector in dets["running_detectors"]:
+            print(f"{detector} is running -- done!")
+            return
+
+
+
+
+
+if __name__ == "__main__":
+
+    class Acquisition:
+
+        def __init__(self):
+            self.client = Client()
+
+
+    class Client:
+
+        def __init__(self):
+            self.restapi = RESTAPI()
+
+
+    class RESTAPI:
+
+        def __init__(self):
+            self.fake_pings = gen_fake_pings()
+            self.fake_status = gen_fake_status()
+            self.fake_running_detectors = gen_fake_running_detectors()
+
+        def get_detector_pings(self, detector):
+            return next(self.fake_pings)
+
+        def power_on_detector(self, detector):
+            return "powering on..."
+
+        def get_detector_status(self, detector):
+            return next(self.fake_status)
+
+        def get_running_detectors(self):
+            return next(self.fake_running_detectors)
+
+
+
+    def gen_fake_pings():
+        yield {'responding': [0], 'unreachable': [1]}
+        yield {'responding': [0, 1], 'unreachable': []}
+
+    def gen_fake_status():
+        yield {'idle': [0], 'stopped': [1]}
+        yield {'waiting': [0, 1]}
+        yield {'running': [0], 'waiting': [1]}
+
+    def gen_fake_running_detectors():
+    #    yield gen_fake_running_detectors_entry(missing_detectors=['JF01T02V03'])
+        yield gen_fake_running_detectors_entry(limping_detectors={'JF01T02V03': {"running_modules": [], "missing_modules": [0, 1]}})
+        yield gen_fake_running_detectors_entry(limping_detectors={'JF01T02V03': {"running_modules": [0], "missing_modules": [1]}})
+        yield gen_fake_running_detectors_entry(running_detectors=['JF01T02V03'])
+
+    def gen_fake_running_detectors_entry(missing_detectors=(), limping_detectors=(), running_detectors=()):
+        return dict(missing_detectors=missing_detectors, limping_detectors=limping_detectors, running_detectors=running_detectors)
+
+
+
+    daq = Acquisition()
+    guided_power_on(daq, "JF01T02V03")
+
+
+
