@@ -1,11 +1,14 @@
 from time import sleep
 from slic.utils.ask_yes_no import ask_Yes_no
+from slic.utils.printing import format_header
 
 
 WARNING = "⚠️ "
 
 
 def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
+    print_header("check ping")
+
     do_ping = assume_yes or ask_Yes_no(f"ping {detector}")
     while do_ping:
         pings = daq.client.restapi.get_detector_pings(detector)
@@ -22,12 +25,16 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
             return
 
 
+    print_header("power on")
+
     if not assume_yes and not ask_Yes_no(f"power on {detector}"):
         return
 
     msg = daq.client.restapi.power_on_detector(detector)
     print(msg)
 
+
+    print_header("check status")
 
     if not assume_yes and not ask_Yes_no(f"wait for running status of a module of {detector}"):
         return
@@ -43,6 +50,8 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
         print("still waiting because:", status)
         sleep(wait_time)
 
+
+    print_header("check running")
 
     do_check_running = assume_yes or ask_Yes_no(f"check if {detector} is running")
     while do_check_running:
@@ -65,6 +74,12 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
         if detector in dets["running_detectors"]:
             print(f"{detector} is running -- done! 🚀")
             return
+
+
+
+def print_header(msg):
+    print()
+    print(format_header(msg))
 
 
 
