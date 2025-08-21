@@ -2,6 +2,9 @@ from time import sleep
 from slic.utils.ask_yes_no import ask_Yes_no
 
 
+WARNING = "⚠️ "
+
+
 def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
     do_ping = assume_yes or ask_Yes_no(f"ping {detector}")
     while do_ping:
@@ -12,7 +15,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
             print("all modules responding correctly")
             break
 
-        print("check the network cable(s) of the following module(s):", unreachable)
+        print(WARNING, "check the network cable(s) of the following module(s):", unreachable)
 
         # here we cannot assume yes since the user needs to do something
         if not ask_Yes_no(f"are you ready to ping {detector} again"):
@@ -51,16 +54,16 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
 
         if detector in dets["limping_detectors"]:
             missing = dets["limping_detectors"][detector]["missing_modules"]
-            print(f"{detector} is limping -- check the fiber of the following module(s):", missing)
+            print(WARNING, f"{detector} is limping -- check the fiber of the following module(s):", missing)
 
             # here we cannot assume yes since the user needs to do something
-            if not ask_Yes_no(f"are you ready to check if {detector} is running again"):
+            if not ask_Yes_no(f"are you ready to check again if {detector} is running"):
                 return
 
             continue
 
         if detector in dets["running_detectors"]:
-            print(f"{detector} is running -- done!")
+            print(f"{detector} is running -- done! 🚀")
             return
 
 
