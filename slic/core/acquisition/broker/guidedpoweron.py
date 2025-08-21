@@ -123,6 +123,7 @@ if __name__ == "__main__":
 
 
     def gen_fake_pings():
+        yield {'responding': [], 'unreachable': [0, 1]}
         yield {'responding': [0], 'unreachable': [1]}
         yield {'responding': [0, 1], 'unreachable': []}
 
