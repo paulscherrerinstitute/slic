@@ -5,10 +5,11 @@ from slic.utils.printing import format_header
 
 WARNING = "⚠️ "
 SUCCESS = "✅"
+ERROR = "❌"
 
 
 def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
-    print_header("check ping")
+    print_header("check connection")
 
     do_ping = assume_yes or ask_Yes_no(f"ping {detector}")
     while do_ping:
@@ -35,7 +36,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
     print(msg)
 
 
-    print_header("check status")
+    print_header("check detector status")
 
     if not assume_yes and not ask_Yes_no(f"wait for running status of a module of {detector}"):
         return
@@ -52,14 +53,14 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
         sleep(wait_time)
 
 
-    print_header("check running")
+    print_header("check writing status")
 
     do_check_running = assume_yes or ask_Yes_no(f"check if {detector} is running")
     while do_check_running:
         dets = daq.client.restapi.get_running_detectors()
 
         if detector in dets["missing_detectors"]:
-            print(f"{detector} is missing -- call the sheriff!")
+            print(ERROR, f"{detector} is missing -- call the sheriff!")
             return
 
         if detector in dets["limping_detectors"]:
@@ -131,7 +132,7 @@ if __name__ == "__main__":
         yield {'running': [0], 'waiting': [1]}
 
     def gen_fake_running_detectors():
-    #    yield gen_fake_running_detectors_entry(missing_detectors=['JF01T02V03'])
+#        yield gen_fake_running_detectors_entry(missing_detectors=['JF01T02V03'])
         yield gen_fake_running_detectors_entry(limping_detectors={'JF01T02V03': {"running_modules": [], "missing_modules": [0, 1]}})
         yield gen_fake_running_detectors_entry(limping_detectors={'JF01T02V03': {"running_modules": [0], "missing_modules": [1]}})
         yield gen_fake_running_detectors_entry(running_detectors=['JF01T02V03'])
