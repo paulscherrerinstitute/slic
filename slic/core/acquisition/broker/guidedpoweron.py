@@ -2,8 +2,9 @@ from time import sleep
 from slic.utils.ask_yes_no import ask_Yes_no
 
 
-def guided_power_on(daq, detector):
-    while ask_Yes_no(f"ping {detector}"):
+def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
+    do_ping = assume_yes or ask_Yes_no(f"ping {detector}")
+    while do_ping:
         pings = daq.client.restapi.get_detector_pings(detector)
 
         unreachable = pings["unreachable"]
@@ -13,15 +14,19 @@ def guided_power_on(daq, detector):
 
         print("check the network cable(s) of the following module(s):", unreachable)
 
+        # here we cannot assume yes since the user needs to do something
+        if not ask_Yes_no(f"are you ready to ping {detector} again"):
+            return
 
-    if not ask_Yes_no(f"power on {detector}"):
+
+    if not assume_yes and not ask_Yes_no(f"power on {detector}"):
         return
 
     msg = daq.client.restapi.power_on_detector(detector)
     print(msg)
 
 
-    if not ask_Yes_no(f"wait for running status of a module of {detector}"):
+    if not assume_yes and not ask_Yes_no(f"wait for running status of a module of {detector}"):
         return
 
     while True:
@@ -33,10 +38,11 @@ def guided_power_on(daq, detector):
             break
 
         print("still waiting because:", status)
-        sleep(1)
+        sleep(wait_time)
 
 
-    while ask_Yes_no(f"check if {detector} is running"):
+    do_check_running = assume_yes or ask_Yes_no(f"check if {detector} is running")
+    while do_check_running:
         dets = daq.client.restapi.get_running_detectors()
 
         if detector in dets["missing_detectors"]:
@@ -46,6 +52,11 @@ def guided_power_on(daq, detector):
         if detector in dets["limping_detectors"]:
             missing = dets["limping_detectors"][detector]["missing_modules"]
             print(f"{detector} is limping -- check the fiber of the following module(s):", missing)
+
+            # here we cannot assume yes since the user needs to do something
+            if not ask_Yes_no(f"are you ready to check if {detector} is running again"):
+                return
+
             continue
 
         if detector in dets["running_detectors"]:
@@ -112,7 +123,12 @@ if __name__ == "__main__":
 
 
     daq = Acquisition()
-    guided_power_on(daq, "JF01T02V03")
+    guided_power_on(daq, "JF01T02V03", assume_yes=True)
+
+    print()
+
+    daq = Acquisition()
+    guided_power_on(daq, "JF01T02V03", assume_yes=False)
 
 
 
