@@ -4,6 +4,7 @@ from slic.utils.printing import format_header
 
 
 WARNING = "⚠️ "
+SUCCESS = "✅"
 
 
 def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
@@ -15,7 +16,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
 
         unreachable = pings["unreachable"]
         if not unreachable:
-            print("all modules responding correctly")
+            print(SUCCESS, "all modules responding correctly")
             break
 
         print(WARNING, "check the network cable(s) of the following module(s):", unreachable)
@@ -44,7 +45,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
 
         running = ("running" in status)
         if running:
-            print("done waiting because:", status)
+            print(SUCCESS, "done waiting because:", status)
             break
 
         print("still waiting because:", status)
@@ -72,7 +73,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
             continue
 
         if detector in dets["running_detectors"]:
-            print(f"{detector} is running -- done! 🚀")
+            print(SUCCESS, f"{detector} is running -- done!🚀")
             return
 
 
