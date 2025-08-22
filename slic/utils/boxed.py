@@ -1,0 +1,103 @@
+STYLES = {
+    "normal": "┌┐└┘──││",
+    "thick":  "┏┓┗┛━━┃┃",
+    "double": "╔╗╚╝══║║",
+
+    "thick-top":  "┍┑┕┙━━││",
+    "thick-side": "┎┒┖┚──┃┃",
+
+    "double-top":  "╒╕╘╛══││",
+    "double-side": "╓╖╙╜──║║",
+
+    "fat":     "▛▜▙▟▀▄▌▐",
+    "rounded": "╭╮╰╯──││",
+    "ascii":   "++++--||"
+}
+
+
+ALIGNMENTS = {
+    "left":   "ljust",
+    "center": "center",
+    "right":  "rjust"
+}
+
+
+
+class Style:
+
+    def __init__(self, chars):
+        self.chars = chars
+        self.top_left, self.top_right, self.bottom_left, self.bottom_right, self.top, self.bottom, self.left, self.right = chars
+
+
+    def make_box(self, lines, length):
+        top    = self.make_top_line(length)
+        middle = self.make_middle_lines(lines)
+        bottom = self.make_bottom_line(length)
+        return flatten(top, middle, bottom)
+
+    def make_top_line(self, length):
+        return self.top_left + self.top * length + self.top_right
+
+    def make_middle_lines(self, lines):
+        return [self.left + i + self.right for i in lines]
+
+    def make_bottom_line(self, length):
+        return self.bottom_left + self.bottom * length + self.bottom_right
+
+
+    def __repr__(self):
+        tn = type(self).__name__
+        return f"{tn}({self.chars!r})"
+
+    def __str__(self):
+        return self.make_box("X", 1)
+
+
+
+def boxed(text, align="left", style="normal"):
+    lines = text.splitlines()
+    length = maxlen(lines)
+
+    lines = aligned(lines, length, align=align)
+
+    style = Style(STYLES[style])
+    return style.make_box(lines, length)
+
+
+def maxlen(seq):
+    return max(len(i) for i in seq)
+
+def aligned(lines, length, align="left"):
+    """
+    align: left, center, right
+    """
+    meth = ALIGNMENTS[align]
+    return [getattr(line, meth)(length) for line in lines]
+
+def flatten(top, middle, bottom):
+    return "\n".join([top] + middle + [bottom])
+
+
+
+
+
+if __name__ == "__main__":
+    style = Style(r"/\\/^_[]")
+    print(repr(style))
+    print(style)
+    print()
+
+    for k, v in STYLES.items():
+        style = Style(v)
+        print(f"{k}:")
+        print(style)
+        print()
+
+    txt = "a\nbbb\nccccc"
+    print(boxed(txt))
+    print(boxed(txt, style="rounded", align="center"))
+    print(boxed(txt, style="fat", align="right"))
+
+
+
