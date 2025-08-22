@@ -27,7 +27,10 @@ class Style:
 
     def __init__(self, chars):
         self.chars = chars
-        self.top_left, self.top_right, self.bottom_left, self.bottom_right, self.top, self.bottom, self.left, self.right = chars
+        try:
+            self.top_left, self.top_right, self.bottom_left, self.bottom_right, self.top, self.bottom, self.left, self.right = chars
+        except ValueError as e:
+            raise ValueError(f"cannot unpack {chars!r} in style due to {e}") from e
 
 
     def make_box(self, lines, length):
@@ -72,7 +75,11 @@ def aligned(lines, length, align="left"):
     """
     align: left, center, right
     """
-    meth = ALIGNMENTS[align]
+    try:
+        meth = ALIGNMENTS[align]
+    except KeyError as e:
+        values = tuple(ALIGNMENTS.keys())
+        raise ValueError(f"{align!r} is not from {values}") from e
     return [getattr(line, meth)(length) for line in lines]
 
 def flatten(top, middle, bottom):
