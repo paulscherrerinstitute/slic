@@ -10,6 +10,7 @@ STYLES = {
     "double-side": "╓╖╙╜──║║",
 
     "fat":     "▛▜▙▟▀▄▌▐",
+    "tight":   "▗▖▝▘▄▀▐▌",
     "rounded": "╭╮╰╯──││",
     "ascii":   "++++--||"
 }
@@ -105,6 +106,7 @@ if __name__ == "__main__":
     print(boxed(txt))
     print(boxed(txt, style="rounded", align="center"))
     print(boxed(txt, style="fat", align="right"))
+    print(boxed(txt, style="tight", align="right"))
 
 
 
