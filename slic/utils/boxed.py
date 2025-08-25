@@ -59,11 +59,19 @@ class Style:
 
 
 
-def boxed(text, align="left", style="normal"):
+def boxed(text, align="left", style="normal", npad=0):
     lines = text.splitlines()
     length = maxlen(lines)
 
     lines = aligned(lines, length, align=align)
+
+    # factor 3 makes boxes approx. square
+    nvpad = int(round(npad/3))
+    length += 2 * npad
+
+    # this has to be in this order, otherwise vert_padded needs to insert lines of the correct length
+    lines = vert_padded(lines, nvpad)
+    lines = hori_padded(lines, length)
 
     style = Style(STYLES[style])
     return style.make_box(lines, length)
@@ -86,6 +94,13 @@ def aligned(lines, length, align="left"):
 def flatten(top, middle, bottom):
     return "\n".join([top] + middle + [bottom])
 
+def vert_padded(lines, npad):
+    padding = [" "] * npad
+    return padding + lines + padding
+
+def hori_padded(lines, length):
+    return aligned(lines, length, align="center")
+
 
 
 
@@ -104,7 +119,7 @@ if __name__ == "__main__":
 
     txt = "a\nbbb\nccccc"
     print(boxed(txt))
-    print(boxed(txt, style="rounded", align="center"))
+    print(boxed(txt, style="rounded", align="center", npad=3))
     print(boxed(txt, style="fat", align="right"))
     print(boxed(txt, style="tight", align="right"))
 
