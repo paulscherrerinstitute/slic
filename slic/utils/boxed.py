@@ -65,13 +65,14 @@ def boxed(text, align="left", style="normal", npad=0):
 
     lines = aligned(lines, length, align=align)
 
-    # factor 3 makes boxes approx. square
-    nvpad = int(round(npad/3))
-    length += 2 * npad
+    if npad:
+        # factor 3 makes boxes approx. square
+        nvpad = int(round(npad/3))
+        length += 2 * npad
 
-    # this has to be in this order, otherwise vert_padded needs to insert lines of the correct length
-    lines = vert_padded(lines, nvpad)
-    lines = hori_padded(lines, length)
+        # this has to be in this order, otherwise vert_padded needs to insert lines of the correct length
+        lines = vert_padded(lines, nvpad)
+        lines = hori_padded(lines, length)
 
     style = Style(STYLES[style])
     return style.make_box(lines, length)
