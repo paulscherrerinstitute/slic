@@ -126,3 +126,7 @@ if __name__ == "__main__":
 
 
 
+#TODO:
+# - separately definable npad for horizontal and vertical
+# - custom styles from boxed()
+# - colored boxes
