@@ -1,6 +1,6 @@
 from time import sleep
 from slic.utils.ask_yes_no import ask_Yes_no
-from slic.utils.printing import format_header
+from slic.utils.boxed import boxed
 
 
 WARNING = "⚠️ "
@@ -81,7 +81,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
 
 def print_header(msg):
     print()
-    print(format_header(msg))
+    print(boxed(msg, style="double", npad=1))
 
 
 
