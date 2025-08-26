@@ -1,6 +1,6 @@
 from time import sleep
 
-from slic.utils import xrange, tqdm_mod#, tqdm_sleep
+from slic.utils import forwards_to, xrange, tqdm_mod#, tqdm_sleep
 
 from .restapi import RESTAPI
 from .brokerconfig import BrokerConfig, flatten_detectors
@@ -164,6 +164,7 @@ class BrokerClient:
             print(f"{d}: {msg}")
 
 
+    @forwards_to(guided_power_on, nfilled=1)
     def guided_power_on(self, *args, **kwargs):
         guided_power_on(self, *args, **kwargs)
 
