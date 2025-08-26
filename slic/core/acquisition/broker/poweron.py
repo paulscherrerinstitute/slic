@@ -64,7 +64,7 @@ def guided_power_on(client, detector, assume_yes=False, wait_time=1):
             return
 
         if detector in dets["limping_detectors"]:
-            missing = wdets["limping_detectors"][detector]["missing_modules"]
+            missing = dets["limping_detectors"][detector]["missing_modules"]
             print(WARNING, f"{detector} is limping -- check the fiber of the following module(s):", missing)
 
             # here we cannot assume yes since the user needs to do something
