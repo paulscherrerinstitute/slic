@@ -8,7 +8,9 @@ SUCCESS = "✅"
 ERROR = "❌"
 
 
-def guided_power_on(client, detector, assume_yes=False, wait_time=1):
+def guided_power_on(client, detector, ask_confirmation=False, wait_time=0.1):
+    assume_yes = not ask_confirmation
+
     print_header("check connection")
 
     do_ping = assume_yes or ask_Yes_no(f"ping {detector}")
@@ -138,12 +140,12 @@ if __name__ == "__main__":
 
 
     c = Client()
-    guided_power_on(c, "JF01T02V03", assume_yes=True)
+    guided_power_on(c, "JF01T02V03", ask_confirmation=False)
 
     print()
 
     c = Client()
-    guided_power_on(c, "JF01T02V03", assume_yes=False)
+    guided_power_on(c, "JF01T02V03", ask_confirmation=True)
 
 
 
