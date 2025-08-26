@@ -8,12 +8,12 @@ SUCCESS = "✅"
 ERROR = "❌"
 
 
-def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
+def guided_power_on(client, detector, assume_yes=False, wait_time=1):
     print_header("check connection")
 
     do_ping = assume_yes or ask_Yes_no(f"ping {detector}")
     while do_ping:
-        pings = daq.client.restapi.get_detector_pings(detector)
+        pings = client.restapi.get_detector_pings(detector)
 
         unreachable = pings["unreachable"]
         if not unreachable:
@@ -32,7 +32,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
     if not assume_yes and not ask_Yes_no(f"power on {detector}"):
         return
 
-    msg = daq.client.restapi.power_on_detector(detector)
+    msg = client.restapi.power_on_detector(detector)
     print(msg)
 
 
@@ -42,7 +42,7 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
         return
 
     while True:
-        status = daq.client.restapi.get_detector_status(detector)
+        status = client.restapi.get_detector_status(detector)
 
         running = ("running" in status)
         if running:
@@ -57,14 +57,14 @@ def guided_power_on(daq, detector, assume_yes=False, wait_time=1):
 
     do_check_running = assume_yes or ask_Yes_no(f"check if {detector} is running")
     while do_check_running:
-        dets = daq.client.restapi.get_running_detectors()
+        dets = client.restapi.get_running_detectors()
 
         if detector in dets["missing_detectors"]:
             print(ERROR, f"{detector} is missing -- call the sheriff!")
             return
 
         if detector in dets["limping_detectors"]:
-            missing = dets["limping_detectors"][detector]["missing_modules"]
+            missing = wdets["limping_detectors"][detector]["missing_modules"]
             print(WARNING, f"{detector} is limping -- check the fiber of the following module(s):", missing)
 
             # here we cannot assume yes since the user needs to do something
@@ -88,12 +88,6 @@ def print_header(msg):
 
 
 if __name__ == "__main__":
-
-    class Acquisition:
-
-        def __init__(self):
-            self.client = Client()
-
 
     class Client:
 
@@ -143,13 +137,13 @@ if __name__ == "__main__":
 
 
 
-    daq = Acquisition()
-    guided_power_on(daq, "JF01T02V03", assume_yes=True)
+    c = Client()
+    guided_power_on(c, "JF01T02V03", assume_yes=True)
 
     print()
 
-    daq = Acquisition()
-    guided_power_on(daq, "JF01T02V03", assume_yes=False)
+    c = Client()
+    guided_power_on(c, "JF01T02V03", assume_yes=False)
 
 
 

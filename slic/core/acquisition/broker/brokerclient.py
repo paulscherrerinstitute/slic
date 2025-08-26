@@ -7,6 +7,7 @@ from .brokerconfig import BrokerConfig, flatten_detectors
 from .pedestal import take_pedestal
 from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
 from .tools import get_current_pulseid
+from .poweron import guided_power_on
 
 
 class BrokerClient:
@@ -161,6 +162,10 @@ class BrokerClient:
         for d in detectors:
             msg = self.restapi.power_on_detector(d, **kwargs)
             print(f"{d}: {msg}")
+
+
+    def guided_power_on(self, *args, **kwargs):
+        guided_power_on(self, *args, **kwargs)
 
 
 
