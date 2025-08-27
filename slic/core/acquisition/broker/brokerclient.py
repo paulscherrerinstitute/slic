@@ -168,22 +168,24 @@ class BrokerClient:
             return
 
         detector = list(detectors.keys())[0] #TODO
+        self.wait_for_status(detector, wait_time=wait_time, timeout=timeout)
 
+
+    def wait_for_status(self, detector, status="running", wait_time=0.1, timeout=300):
         start_time = time()
         stop_time = start_time + timeout
 
         while True:
-            status = self.restapi.get_detector_status(detector)
+            status_reply = self.restapi.get_detector_status(detector)
 
-            cb = color_bar(status)
+            cb = color_bar(status_reply)
             print(f"{detector}: {cb}")
 
-            running = ("running" in status)
-            if running:
+            if status in status_reply:
                 break
 
             if time() > stop_time:
-                print("waiting for running status timed out")
+                print(f'{detector}: waiting for "{status}" status timed out')
                 break
 
             sleep(wait_time)
