@@ -1,4 +1,4 @@
-from time import sleep
+from time import sleep, time
 
 from slic.utils import forwards_to, xrange, tqdm_mod#, tqdm_sleep
 
@@ -152,7 +152,7 @@ class BrokerClient:
         take_pedestal(self.restapi, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
 
 
-    def power_on(self, detectors=None, wait=False, wait_time=0.1, **kwargs):
+    def power_on(self, detectors=None, wait=False, wait_time=0.1, timeout=300, **kwargs):
         if detectors is None:
             detectors = self.config.detectors
 
@@ -169,6 +169,9 @@ class BrokerClient:
 
         detector = list(detectors.keys())[0] #TODO
 
+        start_time = time()
+        stop_time = start_time + timeout
+
         while True:
             status = self.restapi.get_detector_status(detector)
 
@@ -177,6 +180,10 @@ class BrokerClient:
 
             running = ("running" in status)
             if running:
+                break
+
+            if time() > stop_time:
+                print("waiting for running status timed out")
                 break
 
             sleep(wait_time)
