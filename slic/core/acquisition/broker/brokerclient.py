@@ -8,6 +8,7 @@ from .pedestal import take_pedestal
 from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
 from .tools import get_current_pulseid
 from .poweron import guided_power_on
+from .jfstatus import color_bar
 
 
 class BrokerClient:
@@ -151,7 +152,7 @@ class BrokerClient:
         take_pedestal(self.restapi, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
 
 
-    def power_on(self, detectors=None, **kwargs):
+    def power_on(self, detectors=None, wait=False, wait_time=0.1, **kwargs):
         if detectors is None:
             detectors = self.config.detectors
 
@@ -162,6 +163,23 @@ class BrokerClient:
         for d in detectors:
             msg = self.restapi.power_on_detector(d, **kwargs)
             print(f"{d}: {msg}")
+
+        if not wait:
+            return
+
+        detector = detectors[0] #TODO
+
+        while True:
+            status = self.restapi.get_detector_status(detector)
+
+            cb = color_bar(status)
+            print(detector, cb)
+
+            running = ("running" in status)
+            if running:
+                break
+
+            sleep(wait_time)
 
 
     @forwards_to(guided_power_on, nfilled=1)
