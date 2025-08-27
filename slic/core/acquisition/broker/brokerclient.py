@@ -173,7 +173,7 @@ class BrokerClient:
             status = self.restapi.get_detector_status(detector)
 
             cb = color_bar(status)
-            print(detector, cb)
+            print(f"{detector}: {cb}")
 
             running = ("running" in status)
             if running:
