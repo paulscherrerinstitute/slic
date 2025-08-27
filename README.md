@@ -6,13 +6,13 @@ _slic_ is a re-write/re-factor of [_eco_](https://github.com/paulscherrerinstitu
 
 _slic_ consists of a [core](#sliccore) library for static recording and scans as well as a [devices](#slicdevices) library containing classes that represent physical devices. As work-in-progress, the core library has seen most changes so far while the devices have not been worked on as much. Furthermore, there's a [GUI](#slicgui) frontend built on top of _slic_ as backend included.
 
-The beamline codes can be found [here](https://gitlab.psi.ch/slic):
+The beamline codes can be found [here](https://gitea.psi.ch/slic):
 
-- [Alvra](https://gitlab.psi.ch/slic/alvra)
-- [Bernina](https://gitlab.psi.ch/slic/bernina)
-- [Cristallina](https://gitlab.psi.ch/slic/cristallina)
-- [Maloja](https://gitlab.psi.ch/slic/maloja)
-- [Furka](https://gitlab.psi.ch/slic/furka)
+- [Alvra](https://gitea.psi.ch/slic/alvra)
+- [Bernina](https://gitea.psi.ch/slic/bernina)
+- [Cristallina](https://gitea.psi.ch/slic/cristallina)
+- [Maloja](https://gitea.psi.ch/slic/maloja)
+- [Furka](https://gitea.psi.ch/slic/furka)
 
 Please click [here](READMORE.md) for some FAQs.
 
@@ -30,12 +30,12 @@ The core library contains
 - **adjustable** — ABC for physical/virtual devices that can be moved or otherwise adjusted. The `PVAdjustable` class handles interaction with the typical set of epics PV defining a device (set value, readback, moving status). A generic class is also provided, which turns a getter/setter pair into an adjustable.
 - **condition** — Classes that collect statistics over a given time window and test whether a value was in a specified range often enough. This allows to define what conditions are considered good enough for a recording.
 - **device** — Representation of larger hardware components that consist of several adjustables. Devices can also be nested allowing to represent, e.g., a whole beamline. `SimpleDevice` is a straight-forward interface for creating devices. The included collection of device implementations can be found in [`slic.devices`](#slic.devices).
-- **sensor** — ABC for physical/virtual devices that are read out and analysed. Recording is started and stopped, and an aggregation function is applied to the data collected in between. The default aggregation is averaging via `np.mean`. The `BSSensor` and `PVSensor` classes handle reading from a single bsread channel or epics PV, respectively. Several classes exist that allow combining multiple channels (e.g., `Norm`, `Combined`,  and their `BS` counterparts). Sensors may be used for live-plotting scans via [grum](https://gitlab.psi.ch/augustin_s/grum), i.e., by providing a `default_sensor` to `Scanner` or a `sensor` to a specific scan method like `scan1d`.
+- **sensor** — ABC for physical/virtual devices that are read out and analysed. Recording is started and stopped, and an aggregation function is applied to the data collected in between. The default aggregation is averaging via `np.mean`. The `BSSensor` and `PVSensor` classes handle reading from a single bsread channel or epics PV, respectively. Several classes exist that allow combining multiple channels (e.g., `Norm`, `Combined`,  and their `BS` counterparts). Sensors may be used for live-plotting scans via [grum](https://gitea.psi.ch/SwissFEL/grum), i.e., by providing a `default_sensor` to `Scanner` or a `sensor` to a specific scan method like `scan1d`.
 - **task** — Simplifying wrappers for python's [threading.Thread](https://docs.python.org/3/library/threading.html#threading.Thread), which allow return values and forward exceptions raised within a thread to the calling scope. A nicer `__repr__` makes tasks easier to use in ipython. More specific tasks are also available: the DAQTask can hold information about the files it is writing, and the Loop comes in two variants (infinite and with time out) that both call a function repeatedly.
 
 ### Overview: Interactions of these building blocks:
 
-<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/a1234d21f423ee8f072b28e108f9792b/drawing.png" width="50%" />
+<img src="https://gitea.psi.ch/slic/slic/wiki/raw/uploads%2Fa1234d21f423ee8f072b28e108f9792b%2Fdrawing.png" width="50%" />
 
 
 ## slic.devices
@@ -51,9 +51,9 @@ One of the goals of the "library-first" approach of _slic_ is to provide means f
 
 _slic_ comes with an example GUI (written in [wxPython](https://wxpython.org/)) built on top:
 
-<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/c8d3dfeb2d159b18c2a97db6793442cd/config.png" width="33%" />
-<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/0c58450f1e18d134910e786fe1c33f65/scan.png"   width="33%" />
-<img src="https://gitlab.psi.ch/slic/slic/-/wikis/uploads/75845df3a2e3e7019f048c37b3cf7684/tweak.png"  width="33%" />
+<img src="https://gitea.psi.ch/slic/slic/wiki/raw/uploads%2Fc8d3dfeb2d159b18c2a97db6793442cd%2Fconfig.png" width="33%" />
+<img src="https://gitea.psi.ch/slic/slic/wiki/raw/uploads%2F0c58450f1e18d134910e786fe1c33f65%2Fscan.png"   width="33%" />
+<img src="https://gitea.psi.ch/slic/slic/wiki/raw/uploads%2F75845df3a2e3e7019f048c37b3cf7684%2Ftweak.png"  width="33%" />
 
 In order to further the "disposable GUIs" concept, this GUI is very modular: Tabs can be enabled or disabled upon instantiation. Each tab interfaces a single feature of _slic_:
 
@@ -98,13 +98,13 @@ The beamline codes are hosted in git repositories and should be cloned (here, wi
 - either via https:
 
 ```bash
-git clone https://gitlab.psi.ch/slic/alvra.git
+git clone https://gitea.psi.ch/slic/alvra.git
 ```
 
 - or via ssh:
 
 ```bash
-git clone git@gitlab.psi.ch:slic/alvra.git
+git clone git@gitea.psi.ch:slic/alvra.git
 ```
 
 #### Running
@@ -147,22 +147,22 @@ conda env update --file conda-env.yml
 
 #### Installation
 
-The library and the beamline codes are stored in separate git repositories within a [gitlab group](https://gitlab.psi.ch/slic). This allows to easily check out only the desired parts.
+The library and the beamline codes are stored in separate git repositories within a [gitea group](https://gitea.psi.ch/slic). This allows to easily check out only the desired parts.
 
 For the most current code, both parts should be cloned (here, with Alvra as example, for other beamlines replace `alvra` with the respective name):
 
 - either via https:
 
 ```bash
-git clone https://gitlab.psi.ch/slic/slic.git
-git clone https://gitlab.psi.ch/slic/alvra.git
+git clone https://gitea.psi.ch/slic/slic.git
+git clone https://gitea.psi.ch/slic/alvra.git
 ```
 
 - or via ssh:
 
 ```bash
-git clone git@gitlab.psi.ch:slic/slic.git
-git clone git@gitlab.psi.ch:slic/alvra.git
+git clone git@gitea.psi.ch:slic/slic.git
+git clone git@gitea.psi.ch:slic/alvra.git
 ```
 
 #### Running
