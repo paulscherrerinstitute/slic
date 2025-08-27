@@ -167,7 +167,7 @@ class BrokerClient:
         if not wait:
             return
 
-        detector = detectors[0] #TODO
+        detector = list(detectors.keys())[0] #TODO
 
         while True:
             status = self.restapi.get_detector_status(detector)
