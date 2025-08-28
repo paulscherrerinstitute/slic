@@ -8,7 +8,7 @@ from .pedestal import take_pedestal
 from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
 from .tools import get_current_pulseid
 from .poweron import guided_power_on
-from .jfstatus import color_bar
+from .jfstatus import color_bar, header_bar
 
 
 class BrokerClient:
@@ -176,8 +176,16 @@ class BrokerClient:
         start_time = time()
         stop_time = start_time + timeout
 
+        # print the header only in the first iteration
+        first = True
+
         while True:
             status_reply = self.restapi.get_detector_status(detector)
+
+            if first:
+                first = False
+                hb = header_bar(status_reply)
+                print(f"{detector}: {hb}")
 
             cb = color_bar(status_reply)
             print(f"{detector}: {cb}")

@@ -14,6 +14,10 @@ STATUS_COLORS = {
 }
 
 
+def header_bar(d, sep=" ", block=BLOCK):
+    length = len(block)
+    return sep.join(str(i).center(length) for i, _ in enumerate(status_list(d)))
+
 def color_bar(d, sep=" ", block=BLOCK):
     return sep.join(status_block(block, i) for i in status_list(d))
 
