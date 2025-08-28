@@ -199,6 +199,10 @@ class BrokerClient:
 
             sleep(wait_time)
 
+        delta = time() - start_time
+        delta = round(delta)
+        print(f'{detector}: waited {delta} seconds for "{status}" status')
+
 
     @forwards_to(guided_power_on, nfilled=1)
     def guided_power_on(self, *args, **kwargs):
