@@ -167,8 +167,9 @@ class BrokerClient:
         if not wait:
             return
 
-        detector = list(detectors.keys())[0] #TODO
-        self.wait_for_detector_status(detector, wait_time=wait_time, timeout=timeout)
+        #TODO: this should be parallel (how to print?) but is serial for now
+        for d in detectors:
+            self.wait_for_detector_status(d, wait_time=wait_time, timeout=timeout)
 
 
     def wait_for_detector_status(self, detector, status="running", wait_time=0.1, timeout=300):
