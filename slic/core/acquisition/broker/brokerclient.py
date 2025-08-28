@@ -168,10 +168,10 @@ class BrokerClient:
             return
 
         detector = list(detectors.keys())[0] #TODO
-        self.wait_for_status(detector, wait_time=wait_time, timeout=timeout)
+        self.wait_for_detector_status(detector, wait_time=wait_time, timeout=timeout)
 
 
-    def wait_for_status(self, detector, status="running", wait_time=0.1, timeout=300):
+    def wait_for_detector_status(self, detector, status="running", wait_time=0.1, timeout=300):
         start_time = time()
         stop_time = start_time + timeout
 
