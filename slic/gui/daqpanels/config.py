@@ -146,7 +146,7 @@ class ConfigPanel(wx.Panel):
         show_two_lists("PVs", online, offline, header1="channels online", header2="channels offline")
 
     def on_power_on(self, _event):
-        self.acquisition.client.power_on(self.chans_det)
+        self.acquisition.client.power_on(self.chans_det, wait=True)
 
     def on_take_pedestal(self, _event):
         rate = self.get_rate()
