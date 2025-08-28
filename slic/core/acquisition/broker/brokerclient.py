@@ -1,6 +1,6 @@
 from time import sleep, time
 
-from slic.utils import forwards_to, xrange, tqdm_mod#, tqdm_sleep
+from slic.utils import forwards_to, readable_seconds, xrange, tqdm_mod#, tqdm_sleep
 
 from .restapi import RESTAPI
 from .brokerconfig import BrokerConfig, flatten_detectors
@@ -200,13 +200,21 @@ class BrokerClient:
             sleep(wait_time)
 
         delta = time() - start_time
-        delta = round(delta)
-        print(f'{detector}: waited {delta} seconds for "{status}" status')
+        delta = format_seconds(delta)
+        print(f'{detector}: waited {delta} for "{status}" status')
 
 
     @forwards_to(guided_power_on, nfilled=1)
     def guided_power_on(self, *args, **kwargs):
         guided_power_on(self, *args, **kwargs)
+
+
+
+def format_seconds(s):
+    readable = readable_seconds(s)
+    s = round(s)
+    precise = f"{s} seconds"
+    return precise if precise == readable else f"{readable} ({precise})"
 
 
 
