@@ -56,14 +56,14 @@ class BrokerConfig:
             config["detectors"] = detectors
 
         if self.channels:
-            bsread_channels, camera_channels = split_channels(self.channels)
+            bsread_channels, camera_channels = split_channels(unique(self.channels))
             if bsread_channels:
                 config["channels_list"] = bsread_channels
             if camera_channels:
                 config["camera_list"] = camera_channels
 
         if self.pvs:
-            config["pv_list"] = self.pvs
+            config["pv_list"] = unique(self.pvs)
 
         if self.scan_info:
             config["scan_info"] = self.scan_info
@@ -125,6 +125,10 @@ def harmonize_detector_dict(d):
             }
         }
     return d
+
+
+def unique(seq):
+    return sorted(set(seq))
 
 
 
