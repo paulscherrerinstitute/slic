@@ -30,7 +30,6 @@ ALLOWED_DAP_PARAMS = dict(
     beam_center_y = Number,
     beam_energy = Number,
     detector_distance = Number,
-    detector_rate = int,
     disabled_modules = Sequence,
     do_peakfinder_analysis = bool,
     do_radial_integration = bool,
