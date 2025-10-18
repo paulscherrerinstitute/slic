@@ -13,7 +13,7 @@ WAIT_BETWEEN_REQUESTS = 0.1 # seconds
 
 
 
-def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=False, transform=None, verbosity=None):
+def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=False, transform=None, dry_run=False, verbosity=None):
     """
     post retrieve data from sf-daq
     acqs: sequence of integer acquisition numbers or None (default: all acquisition numbers of the selected run)
@@ -26,15 +26,18 @@ def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=Fals
     else:
         fns = mk_fns_acqs(dir_run_meta, acqs)
 
-    post_retrieve_acq_jsons(restapi, fns, continue_run=continue_run, transform=transform, verbosity=verbosity)
+    post_retrieve_acq_jsons(restapi, fns, continue_run=continue_run, transform=transform, dry_run=dry_run, verbosity=verbosity)
 
 
-def post_retrieve_acq_jsons(restapi, fns, continue_run=False, transform=None, verbosity=None):
+def post_retrieve_acq_jsons(restapi, fns, continue_run=False, transform=None, dry_run=False, verbosity=None):
     """
     post retrieve data from sf-daq
     fns: sequence of acq json file names
     continue_run: append to existing run (default: create new run)
     """
+    if not isinstance(restapi, DryRunner):
+        restapi = DryRunner(restapi, dry_run=dry_run)
+
     if verbosity is not None:
         vprint.level = verbosity
 
