@@ -18,7 +18,7 @@ def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=Fals
     post retrieve data from sf-daq
     acqs: sequence of integer acquisition numbers or None (default: all acquisition numbers of the selected run)
     continue_run: append to existing run (default: create new run)
-    transform: function that accepts one request and returns the adjusted request
+    transform: function that accepts one request and either adjusts it in place or returns the adjusted request
     """
     dir_run_meta = mk_dir_run_meta(endstation, pgroup, run)
 
@@ -61,8 +61,11 @@ def post_retrieve_acq_jsons(restapi, fns, continue_run=False, transform=None, dr
             vprint(2, "🪥  new request:", pretty_dict(req))
 
         if transform:
+            orig_req = req.copy()
             transformed_req = transform(req)
-            if transformed_req != req:
+            if transformed_req is None: # assume change was made in place
+                transformed_req = req
+            if transformed_req != orig_req:
                 req = transformed_req
                 vprint(1, "🖍️  transformed request:", pretty_dict(req))
 
