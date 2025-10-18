@@ -212,9 +212,6 @@ def main():
     clargs = parser.parse_args()
 
     restapi = RESTAPI(clargs.host, clargs.port)
-    restapi = DryRunner(restapi, dry_run=clargs.dry_run)
-
-    vprint.level = clargs.verbose
 
     post_retrieve(
         restapi,
@@ -222,7 +219,9 @@ def main():
         clargs.pgroup,
         clargs.run,
         acqs=clargs.acq,
-        continue_run=clargs.continue_run
+        continue_run=clargs.continue_run,
+        dry_run=clargs.dry_run,
+        verbosity=clargs.verbose
     )
 
 
