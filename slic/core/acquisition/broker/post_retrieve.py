@@ -13,7 +13,7 @@ WAIT_BETWEEN_REQUESTS = 0.1 # seconds
 
 
 
-def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=False):
+def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=False, transform=None):
     """
     post retrieve data from sf-daq
     acqs: sequence of integer acquisition numbers or None (default: all acquisition numbers of the selected run)
@@ -26,10 +26,10 @@ def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=Fals
     else:
         fns = mk_fns_acqs(dir_run_meta, acqs)
 
-    post_retrieve_acq_jsons(restapi, fns, continue_run=continue_run)
+    post_retrieve_acq_jsons(restapi, fns, continue_run=continue_run, transform=transform)
 
 
-def post_retrieve_acq_jsons(restapi, fns, continue_run=False):
+def post_retrieve_acq_jsons(restapi, fns, continue_run=False, transform=None):
     """
     post retrieve data from sf-daq
     fns: sequence of acq json file names
@@ -52,6 +52,12 @@ def post_retrieve_acq_jsons(restapi, fns, continue_run=False):
             vprint(1, "🖊️  updating request:", pretty_dict(updates_acq))
             req.update(updates_acq)
             vprint(2, "🪥  new request:", pretty_dict(req))
+
+        if transform:
+            transformed_req = transform(req)
+            if transformed_req != req:
+                req = transformed_req
+                vprint(1, "🖍️  transformed request:", pretty_dict(req))
 
         resp = restapi.retrieve(req)
         vprint(0, "💌 response:", pretty_dict(resp))
