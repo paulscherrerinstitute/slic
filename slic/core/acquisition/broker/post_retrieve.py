@@ -18,6 +18,7 @@ def post_retrieve(restapi, endstation, pgroup, run, acqs=None, continue_run=Fals
     post retrieve data from sf-daq
     acqs: sequence of integer acquisition numbers or None (default: all acquisition numbers of the selected run)
     continue_run: append to existing run (default: create new run)
+    transform: function that accepts one request and returns the adjusted request
     """
     dir_run_meta = mk_dir_run_meta(endstation, pgroup, run)
 
