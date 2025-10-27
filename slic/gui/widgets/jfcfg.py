@@ -4,6 +4,7 @@ from numbers import Number
 import wx
 
 from slic.core.acquisition.detcfg import ALLOWED_DETECTOR_PARAMS, ALLOWED_DAP_PARAMS, ALLOWED_HARDWARE_PARAMS
+from slic.utils import typename
 
 from .entries import LabeledEntry, LabeledMathEntry, MathEntry
 from .lists import ListDialog, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
@@ -68,7 +69,12 @@ class JFList:
         wx.SafeYield() # disable everything until dialog is ready
         self._buttons_disable()
         name = self.list.GetSelectionString()
-        params = self.acquisition.client.restapi.get_dap_settings(name, timeout=30)
+        try:
+            params = self.acquisition.client.restapi.get_dap_settings(name, timeout=30)
+        except Exception as e:
+            en = typename(e)
+            print(f"Failed to get DAP settings due to:\n{en}: {e}\nAssuming empty configuration...")
+            params = {}
 
         dlg = JFConfig(name, params, ALLOWED_DAP_PARAMS)
         dlg.ShowModal()
