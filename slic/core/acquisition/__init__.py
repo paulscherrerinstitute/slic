@@ -8,6 +8,6 @@ from .pvacquisition import PVAcquisition
 from .bschannels import BSChannels
 from .pvchannels import PVChannels
 
-from .detcfg import DetectorConfig
+from .detcfg import DAPConfig, DetectorConfig, HardwareConfig
 
 
