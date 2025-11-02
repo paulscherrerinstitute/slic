@@ -29,6 +29,7 @@ ALLOWED_DAP_PARAMS = dict(
     beam_center_x = Number,
     beam_center_y = Number,
     beam_energy = Number,
+    custom_script = str,
     detector_distance = Number,
     disabled_modules = Sequence,
     do_peakfinder_analysis = bool,
