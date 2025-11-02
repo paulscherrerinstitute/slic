@@ -152,6 +152,11 @@ class BrokerClient:
         take_pedestal(self.restapi, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
 
 
+    @forwards_to(guided_power_on, nfilled=1)
+    def guided_power_on(self, *args, **kwargs):
+        guided_power_on(self, *args, **kwargs)
+
+
     def power_on(self, detectors=None, wait=False, wait_time=0.1, timeout=300, **kwargs):
         if detectors is None:
             detectors = self.config.detectors
@@ -202,11 +207,6 @@ class BrokerClient:
         delta = time() - start_time
         delta = format_seconds(delta)
         print(f'{detector}: waited {delta} for "{status}" status')
-
-
-    @forwards_to(guided_power_on, nfilled=1)
-    def guided_power_on(self, *args, **kwargs):
-        guided_power_on(self, *args, **kwargs)
 
 
 
