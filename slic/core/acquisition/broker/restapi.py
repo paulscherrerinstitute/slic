@@ -215,6 +215,14 @@ class BrokerSlowAPI(BaseAPI):
         return response.get("changed_parameters")
 
 
+    def upload_custom_dap_script(self, name, code, *args, **kwargs):
+        params = {
+            "name": name,
+            "code": code
+        }
+        response = self.post("upload_custom_dap_script", params, *args, **kwargs)
+        return response.get("message")
+
     def get_dap_settings(self, detector, *args, **kwargs):
         params = {"detector_name": detector}
         response = self.get("get_dap_settings", params, *args, **kwargs)
