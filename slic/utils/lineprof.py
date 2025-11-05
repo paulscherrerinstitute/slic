@@ -34,7 +34,7 @@ class LineProfiler:
         if self.prev_time is not None:
             filename = self.prev_frame.f_code.co_filename
             lineno = self.prev_lineno
-            line = linecache.getline(filename, lineno).rstrip("\n")
+            line = linecache.getline(filename, lineno).rstrip()
             key = (lineno, line)
             delta = now - self.prev_time
             self.timings[filename][key] += delta
