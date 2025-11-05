@@ -7,14 +7,14 @@ def timeit_verbose(func, min_time=0.2, target_time=2, min_repeat=3):
     time the given func
     number of runs per repeat is chosen such that the total time per repeat >= min_time
     number of repeats is chosen such that the total time overall ~ target_time, but at least min_repeat
-    returns the average and std dev per run as well as a human-readable message
+    returns the average and std dev per run, number of runs and number of repeats, as well as a human-readable message
     """
     timer = timeit.Timer(func)
     number, repeat = find_number_and_repeat(timer, min_time, target_time, min_repeat)
     times = run_timer(timer, number, repeat)
     mean, std = calc_stats(times, number)
     msg = f"{fmt_secs(mean)} ± {fmt_secs(std)} per loop (mean ± std. dev. of {repeat:,} runs, {number:,} loops each)"
-    return mean, std, msg
+    return mean, std, number, repeat, msg
 
 
 def find_number_and_repeat(timer, min_time, target_time, min_repeat):

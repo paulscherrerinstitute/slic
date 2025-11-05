@@ -69,7 +69,7 @@ def test_run(func, max_time=0.1):
     compare(name, "mask", orig_mask, mask)
 
     run = lambda: func(meta, image, mask)
-    mean, _std, msg = timeit_verbose(run)
+    mean, _std, _number, _repeat, msg = timeit_verbose(run)
     print("Timing results:", msg)
 
     if mean <= max_time:
