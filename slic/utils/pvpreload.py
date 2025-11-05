@@ -5,7 +5,7 @@ from time import sleep
 import epics
 from logzero import logger as log
 
-from .utils import printable_exception
+from .exceptions import printable_exception
 from .dotdir import DotDir
 from .hastyepics import get_pv
 from .picklio import pickle, unpickle
