@@ -66,8 +66,8 @@ class Monitor:
             try:
                 grum_client.append_data(name, (x, y))
             except Exception as e: #TODO: only for connections problems?
-                tn = typename(e)
-                print(f"ignored: {tn}: {e}")
+                en = typename(e)
+                print(f"ignored: {en}: {e}")
 
             if not self.running:
                 break

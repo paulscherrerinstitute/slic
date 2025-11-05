@@ -130,8 +130,8 @@ def retry(func, desc, n=3, wait_time=1):
             except Exception as e:
                 if i >= n:
                     raise e
-                tn = typename(e)
-                print(f"try #{i}/{n} to {desc} failed due to: {tn}: {e}")
+                en = typename(e)
+                print(f"try #{i}/{n} to {desc} failed due to: {en}: {e}")
                 sleep(wait_time)
             else:
                 break

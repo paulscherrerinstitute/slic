@@ -34,8 +34,8 @@ def preload():
             return
         names = unpickle(fn)
     except Exception as e:
-        tn = typename(e)
-        log.warning(f"PV preload file not loaded due to: {tn}: {e}")
+        en = typename(e)
+        log.warning(f"PV preload file not loaded due to: {en}: {e}")
         return
     [get_pv(n) for n in names]
     log.debug("PV preload done")
@@ -48,8 +48,8 @@ def offload():
     try:
         pickle(names, fn)
     except Exception as e:
-        tn = typename(e)
-        log.warning(f"PV preload file not saved due to: {tn}: {e}")
+        en = typename(e)
+        log.warning(f"PV preload file not saved due to: {en}: {e}")
         return
     log.debug("PV offload done")
 
