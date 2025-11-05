@@ -2,9 +2,8 @@ import importlib.util as ilu
 from pathlib import Path
 
 import numpy as np
-import timeit
 
-from slic.utils import LineProfiler
+from slic.utils import LineProfiler, timeit_verbose
 
 
 def upload_custom_dap_script(restapi, fname, *args, name=None, **kwargs):
@@ -82,55 +81,6 @@ def test_run(func, max_time=0.1):
 def compare(name, what, before, after):
     if not np.array_equal(after, before, equal_nan=True):
         print(f'function "{name}" modifies the {what} -- this has no effect outside the function itself')
-
-
-def timeit_verbose(func, min_time=0.2, target_time=2, min_repeat=3):
-    timer = timeit.Timer(func)
-    number, repeat = find_number_and_repeat(timer, min_time, target_time, min_repeat)
-    times = run_timer(timer, number, repeat)
-    mean, std = calc_stats(times, number)
-    msg = f"{fmt_secs(mean)} ± {fmt_secs(std)} per loop (mean ± std. dev. of {repeat:,} runs, {number:,} loops each)"
-    return mean, std, msg
-
-
-def find_number_and_repeat(timer, min_time, target_time, min_repeat):
-    """
-    find number so that the total time per repeat >= min_time
-    pick repeat so that the total time overall ~ target_time, but at least min_repeat
-    """
-    number = 1
-    total_time = timer.timeit(number)
-    while total_time < min_time:
-        number *= 10
-        total_time = timer.timeit(number)
-
-    repeat = int(round(target_time / total_time))
-    repeat = max(min_repeat, repeat)
-
-    return number, repeat
-
-
-def run_timer(timer, number, repeat):
-    return [timer.timeit(number) for _ in range(repeat)]
-
-
-def calc_stats(times, number):
-    mean = np.mean(times) / number
-    std = np.std(times) / number
-    return mean, std
-
-
-def fmt_secs(time):
-    UNITS = {
-        "n": 1e9,
-        "µ": 1e6,
-        "m": 1e3,
-        "": 1
-    }
-    for prefix, factor in UNITS.items():
-        current = time * factor
-        if current < 1000 or factor == 1:
-            return f"{current:.3g} {prefix}s"
 
 
 
