@@ -3,7 +3,7 @@ from abc import abstractmethod
 from threading import Thread, Event
 from time import sleep
 from bsread import Source
-from slic.utils import ignore_log_msg, typename
+from slic.utils import ignore_log_msg, printable_exception
 from .sensor import Sensor
 
 
@@ -130,8 +130,8 @@ def retry(func, desc, n=3, wait_time=1):
             except Exception as e:
                 if i >= n:
                     raise e
-                en = typename(e)
-                print(f"try #{i}/{n} to {desc} failed due to: {en}: {e}")
+                e = printable_exception(e)
+                print(f"try #{i}/{n} to {desc} failed due to: {e}")
                 sleep(wait_time)
             else:
                 break

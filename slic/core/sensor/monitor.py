@@ -2,7 +2,7 @@ from itertools import count
 from threading import Thread
 from time import sleep
 
-from slic.utils import tqdm_sleep, typename
+from slic.utils import tqdm_sleep, typename, printable_exception
 
 
 def monitor(name, sensor, record_time, grum_client, cfg=None):
@@ -66,8 +66,8 @@ class Monitor:
             try:
                 grum_client.append_data(name, (x, y))
             except Exception as e: #TODO: only for connections problems?
-                en = typename(e)
-                print(f"ignored: {en}: {e}")
+                e = printable_exception(e)
+                print(f"ignored: {e}")
 
             if not self.running:
                 break

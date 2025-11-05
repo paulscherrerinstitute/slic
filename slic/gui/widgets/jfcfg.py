@@ -4,7 +4,7 @@ from numbers import Number
 import wx
 
 from slic.core.acquisition.detcfg import ALLOWED_DETECTOR_PARAMS, ALLOWED_DAP_PARAMS, ALLOWED_HARDWARE_PARAMS
-from slic.utils import typename
+from slic.utils import printable_exception
 
 from .entries import LabeledEntry, LabeledMathEntry, MathEntry
 from .lists import ListDialog, WX_DEFAULT_RESIZABLE_DIALOG_STYLE
@@ -72,8 +72,8 @@ class JFList:
         try:
             params = self.acquisition.client.restapi.get_dap_settings(name, timeout=30)
         except Exception as e:
-            en = typename(e)
-            print(f"Failed to get DAP settings due to:\n{en}: {e}\nAssuming empty configuration...")
+            e = printable_exception(e)
+            print(f"Failed to get DAP settings due to:\n{e}\nAssuming empty configuration...")
             params = {}
 
         dlg = JFConfig(name, params, ALLOWED_DAP_PARAMS)

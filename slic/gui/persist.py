@@ -1,4 +1,4 @@
-from slic.utils import typename, json_save, json_load, DotDir
+from slic.utils import printable_exception, json_save, json_load, DotDir
 
 
 def skip_on_error(f):
@@ -7,8 +7,8 @@ def skip_on_error(f):
             f(*args, **kwargs)
         except Exception as e:
             fn = f.__name__
-            en = typename(e)
-            print(f"skipped persist {fn} as it caused: {en}: {e}")
+            e = printable_exception(e)
+            print(f"skipped persist {fn} as it caused: {e}")
     return wrapper
 
 

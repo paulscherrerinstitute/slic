@@ -5,7 +5,7 @@ from time import sleep
 import epics
 from logzero import logger as log
 
-from .utils import typename
+from .utils import printable_exception
 from .dotdir import DotDir
 from .hastyepics import get_pv
 from .picklio import pickle, unpickle
@@ -34,8 +34,8 @@ def preload():
             return
         names = unpickle(fn)
     except Exception as e:
-        en = typename(e)
-        log.warning(f"PV preload file not loaded due to: {en}: {e}")
+        e = printable_exception(e)
+        log.warning(f"PV preload file not loaded due to: {e}")
         return
     [get_pv(n) for n in names]
     log.debug("PV preload done")
@@ -48,8 +48,8 @@ def offload():
     try:
         pickle(names, fn)
     except Exception as e:
-        en = typename(e)
-        log.warning(f"PV preload file not saved due to: {en}: {e}")
+        e = printable_exception(e)
+        log.warning(f"PV preload file not saved due to: {e}")
         return
     log.debug("PV offload done")
 

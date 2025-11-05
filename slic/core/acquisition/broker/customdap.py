@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from slic.utils import LineProfiler, timeit_verbose, typename
+from slic.utils import LineProfiler, timeit_verbose, printable_exception
 
 
 def upload_custom_dap_script(restapi, fname, *args, name=None, **kwargs):
@@ -14,8 +14,7 @@ def upload_custom_dap_script(restapi, fname, *args, name=None, **kwargs):
         func = load_proc_from_file(fname)
         test_run(func)
     except Exception as e:
-        en = typename(e)
-        print(f"{en}: {e}")
+        print(printable_exception(e))
         return
 
     msg = restapi.upload_custom_dap_script(name, code, *args, **kwargs)

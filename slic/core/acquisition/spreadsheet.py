@@ -1,7 +1,7 @@
 from functools import wraps
 import numpy as np
 from stand.client import Client
-from slic.utils import typename
+from slic.utils import printable_exception
 from slic.core.adjustable import Adjustable
 
 
@@ -20,8 +20,7 @@ def printed_errors(func):
             print(func)
             print(args)
             print(kwargs)
-            en = typename(e)
-            print(f"{en}: {e}")
+            print(printable_exception(e))
     return wrapper
 
 
