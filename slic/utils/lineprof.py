@@ -7,6 +7,16 @@ from collections import defaultdict
 class LineProfiler:
 
     def __init__(self):
+        """
+        Usage:
+
+        with LineProfiler() as lp:
+            func(...)
+
+        lp.print_all()
+        or
+        lp.print(func.__code__.co_filename)
+        """
         self.timings = defaultdict(lambda: defaultdict(int)) # one per file with timing per lineno/line
         self.prev_time = None
         self.prev_frame = None
