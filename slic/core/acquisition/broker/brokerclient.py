@@ -9,6 +9,7 @@ from .pids import align_pid_left, align_pid_right, aligned_pid_and_n
 from .tools import get_current_pulseid
 from .poweron import guided_power_on
 from .jfstatus import color_bar, header_bar
+from .customdap import upload_custom_dap_script
 
 
 class BrokerClient:
@@ -150,6 +151,10 @@ class BrokerClient:
 
     def take_pedestal(self, detectors=None, rate=None, pedestalmode=False):
         take_pedestal(self.restapi, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
+
+
+    def upload_custom_dap_script(self, fname):
+        upload_custom_dap_script(self.restapi, fname)
 
 
     @forwards_to(guided_power_on, nfilled=1)
