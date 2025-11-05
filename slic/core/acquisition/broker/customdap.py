@@ -3,15 +3,20 @@ from pathlib import Path
 
 import numpy as np
 
-from slic.utils import LineProfiler, timeit_verbose
+from slic.utils import LineProfiler, timeit_verbose, typename
 
 
 def upload_custom_dap_script(restapi, fname, *args, name=None, **kwargs):
-    name = name or Path(fname).stem
-    code = read_file(fname)
+    try:
+        name = name or Path(fname).stem
+        code = read_file(fname)
 
-    func = load_proc_from_file(fname)
-    test_run(func)
+        func = load_proc_from_file(fname)
+        test_run(func)
+    except Exception as e:
+        en = typename(e)
+        print(f"{en}: {e}")
+        return
 
     msg = restapi.upload_custom_dap_script(name, code, *args, **kwargs)
     print(msg)
