@@ -1,7 +1,7 @@
 import zmq
 
-from bsread.h5 import receive
-from bsread.avail import dispatcher
+from bsread import dispatcher
+from bsread.cli.h5 import receive
 
 from .acquisition import Acquisition
 

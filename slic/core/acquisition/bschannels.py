@@ -1,4 +1,4 @@
-from bsread.avail import dispatcher
+from bsread import dispatcher
 from requests.exceptions import ConnectionError # make it easier to find this Exception if it needs to be caught
 
 from slic.utils.printing import format_header, itemize
