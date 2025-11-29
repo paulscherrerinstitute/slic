@@ -18,11 +18,6 @@ def make_filled_box(orient, widgets, proportion, flag, border, box):
     if box is None:
         box = wx.BoxSizer(orient)
 
-    OTHER_PROP = {
-        0: 1,
-        1: 0
-    }
-
     expand = False
     minimal = False
 
@@ -38,9 +33,10 @@ def make_filled_box(orient, widgets, proportion, flag, border, box):
             iflag = flag
             if expand:
                 expand = False # apply only once
-                iprop = OTHER_PROP[iprop] # other proportion makes widget expanding
+                iprop = 1
             if minimal:
                 minimal = False # apply only once
+                iprop = 0
                 iflag = wx.ALL #TODO: calculate actual flag without wx.EXPAND?
             if i is None:
                 continue
