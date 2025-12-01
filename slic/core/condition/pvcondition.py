@@ -29,7 +29,7 @@ class PVCondition(Condition):
 
     def __repr__(self):
         name = typename(self)
-        status = "happy" if self.check() else "unhappy"
+        status = self.get_status()
         return f"{name} \"{self.channel}\": {status}"
 
 

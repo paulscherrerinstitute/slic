@@ -161,8 +161,17 @@ class Condition(BaseCondition):
 
     def __repr__(self):
         name = typename(self)
-        status = "happy" if self.check() else "unhappy"
+        status = self.get_status()
         return f"{name}: {status}" #TODO
+
+    def get_status(self):
+        try:
+            check = self.check()
+        except Exception as e:
+            status = f"broken (due to: {e})"
+        else:
+            status = "happy" if check else "unhappy"
+        return status
 
 
 
