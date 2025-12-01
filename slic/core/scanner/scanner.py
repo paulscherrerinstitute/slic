@@ -354,8 +354,8 @@ class Scanner:
         tn = typename(self)
         condition = self.condition if self.condition else "(no condition)"
         used = self.default_acquisitions + [condition]
-        used = "\n- ".join(str(i) for i in used)
-        return f"{tn} using:\n- {used}"
+        used = "\n".join(str(i) for i in used)
+        return f"{tn} using:\n{used}"
 
 
 
