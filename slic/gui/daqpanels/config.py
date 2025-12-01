@@ -4,7 +4,7 @@ from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.reprate import get_beamline, get_pvname_reprate
 from slic.utils.duo import get_pgroup_info
 
-from ..widgets import EXPANDING, STRETCH, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox, CheckBox
+from ..widgets import EXPANDING, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox, CheckBox
 from .tools import PVDisplay, NOMINAL_REPRATE
 from ..widgets.jfcfg import JFList
 
@@ -104,15 +104,11 @@ class ConfigPanel(wx.Panel):
             le_title    = LabeledEntry(self, label="Title",    value=title,    style=wx.TE_READONLY|wx.TE_MULTILINE)
             le_ptype    = LabeledEntry(self, label="Type",     value=ptype,    style=wx.TE_READONLY)
 
-        #TODO: place a stretch space instead of the button until the button does something
-#        btn_update = wx.Button(self, label="Update!")
-        btn_update = STRETCH
-
         # sizers:
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, STRETCH, st_acquisition, hb_chans, box_btns_dets, le_instrument, le_pgroup, box_cbs_correct, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype, btn_update)
+        widgets = (pvd_reprate, st_acquisition, hb_chans, box_btns_dets, le_instrument, le_pgroup, box_cbs_correct, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
