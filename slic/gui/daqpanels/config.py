@@ -67,11 +67,6 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_power_on, btn_take_pedestal)
         make_filled_hbox(widgets, border=5, box=box_btns_dets)
 
-        #TODO:
-        # the slic pedestal taking procedure is currently out of date with what the DAQ expects
-        # disable button for now
-#        btn_take_pedestal.Disable()
-
         le_instrument = LabeledEntry(self, label="Instrument", value=instrument, style=wx.TE_READONLY)
         le_pgroup     = LabeledEntry(self, label="pgroup",     value=pgroup,     style=wx.TE_READONLY)
 
