@@ -352,7 +352,9 @@ class Scanner:
 
     def __repr__(self):
         tn = typename(self)
-        used = "\n- ".join(repr(i) for i in self.default_acquisitions + [self.condition])
+        condition = self.condition if self.condition else "(no condition)"
+        used = self.default_acquisitions + [condition]
+        used = "\n- ".join(str(i) for i in used)
         return f"{tn} using:\n- {used}"
 
 
