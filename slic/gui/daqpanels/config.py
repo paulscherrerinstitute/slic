@@ -35,11 +35,11 @@ class ConfigPanel(wx.Panel):
         beamline = str(beamline).capitalize() #TODO
         self.pvd_reprate = pvd_reprate = PVDisplay(self, f"{beamline} Rep. Rate:", pvname_reprate)
 
-        header = repr(acquisition) + ":"
-        st_acquisition = wx.StaticText(self, label=header)
-        font = st_acquisition.GetFont()
+        header = str(scanner)
+        st_header = wx.StaticText(self, label=header)
+        font = st_header.GetFont()
         font.SetUnderlined(True)
-        st_acquisition.SetFont(font)
+        st_header.SetFont(font)
 
         btn_chans_det = wx.Button(self, label="Detectors")
         btn_chans_bsc = wx.Button(self, label="BS Channels")
@@ -108,7 +108,7 @@ class ConfigPanel(wx.Panel):
         widgets = (btn_chans_det, btn_chans_bsc, btn_chans_pvs)
         hb_chans = make_filled_hbox(widgets)
 
-        widgets = (pvd_reprate, st_acquisition, hb_chans, box_btns_dets, le_instrument, le_pgroup, box_cbs_correct, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype)
+        widgets = (pvd_reprate, st_header, hb_chans, box_btns_dets, le_instrument, le_pgroup, box_cbs_correct, le_rate_multi, le_proposer, EXPANDING, le_title, le_ptype)
         vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
