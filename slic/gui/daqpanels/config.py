@@ -35,12 +35,12 @@ class ConfigPanel(wx.Panel):
         beamline = str(beamline).capitalize() #TODO
         self.pvd_reprate = pvd_reprate = PVDisplay(self, f"{beamline} Rep. Rate:", pvname_reprate)
 
-        header = str(scanner)
-        st_header = wx.StaticText(self, label=header)
+        st_header = wx.StaticText(self)
 
         def on_update_header(_event):
-            header = str(scanner)
-            st_header.SetLabel(header)
+            st_header.SetLabel(str(scanner))
+
+        on_update_header(None)
 
         self._timer_header_update = timer = wx.Timer(parent)
         parent.Bind(wx.EVT_TIMER, on_update_header, timer)
