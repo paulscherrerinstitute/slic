@@ -37,9 +37,6 @@ class ConfigPanel(wx.Panel):
 
         header = str(scanner)
         st_header = wx.StaticText(self, label=header)
-        font = st_header.GetFont()
-        font.SetUnderlined(True)
-        st_header.SetFont(font)
 
         btn_chans_det = wx.Button(self, label="Detectors")
         btn_chans_bsc = wx.Button(self, label="BS Channels")
