@@ -65,6 +65,9 @@ class ScanBackend:
         self.running = False
         self.current_tasks = []
 
+        self.current_step = None
+        self.current_repetition = None
+
 
     def run(self, step_info=None):
         self.store_initial_values()
@@ -121,6 +124,7 @@ class ScanBackend:
         for i in xrange(nreps):
             if not self.running:
                 break
+            self.current_repetition = i + 1 # note the current value here to have it available for get_state
             print(f"Repetition {i+1} of {printable_nreps}")
             suffix = f"_{i+1:03}"
 
@@ -158,6 +162,7 @@ class ScanBackend:
             if not self.running:
                 n -= 1 # stopped before this iteration
                 break
+            self.current_step = n + 1 # note the current value here to have it available for get_state
             cprint(f"Scan step {n+1} of {ntotal}", color="green")
             do_step(n, val, step_info=step_info)
 
@@ -317,6 +322,14 @@ class ScanBackend:
         acqs = itemize(self.acquisitions, header=head)
         res += acqs
 
+        return res
+
+
+    def get_state(self):
+        ntotal = len(self.values)
+        res = f"Current Step: {self.current_step} / {ntotal}\n"
+        if self.n_repeat > 1:
+            res += f"Current Repetition: {self.current_repetition} / {self.n_repeat}"
         return res
 
 
