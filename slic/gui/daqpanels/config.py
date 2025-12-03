@@ -38,6 +38,14 @@ class ConfigPanel(wx.Panel):
         header = str(scanner)
         st_header = wx.StaticText(self, label=header)
 
+        def on_update_header(_event):
+            header = str(scanner)
+            st_header.SetLabel(header)
+
+        self._timer_header_update = timer = wx.Timer(parent)
+        parent.Bind(wx.EVT_TIMER, on_update_header, timer)
+        timer.Start(2500) #TODO: make configurable
+
         btn_chans_det = wx.Button(self, label="Detectors")
         btn_chans_bsc = wx.Button(self, label="BS Channels")
         btn_chans_pvs = wx.Button(self, label="PVs")
