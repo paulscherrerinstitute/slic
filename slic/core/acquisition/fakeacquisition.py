@@ -80,7 +80,7 @@ class FakeAcquisition(BaseAcquisition):
 
 
     def __repr__(self):
-        return typename(self)
+        return repr(self.client)
 
 
 
@@ -106,6 +106,9 @@ class FakeClient:
 
     def power_on(self, *args, **kwargs):
         print("power on:", args, kwargs)
+
+    def __repr__(self):
+        return f"Fake DAQ (last run: {self.run_number})"
 
 
 
