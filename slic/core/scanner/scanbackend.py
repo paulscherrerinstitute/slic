@@ -26,8 +26,10 @@ class ScanBackend:
 
     def __init__(self, adjustables, values, acquisitions, filename, detectors, channels, pvs, n_pulses, data_base_dir, scan_info_dir, make_scan_sub_dir, condition, return_to_initial_values, n_repeat, sensor, remote_plot):
         self.adjustables = adjustables
-        self.values = values
         self.acquisitions = acquisitions
+
+        self.values = values
+        self.n_steps = len(values)
 
         self.sensor = sensor
         self.remote_plot = remote_plot
@@ -156,9 +158,8 @@ class ScanBackend:
                         scanned_adjs=self.adjustables, scan_values=self.values
                     )
 
-        values = self.values
-        ntotal = len(values)
-        for n, val in enumerate(values):
+        ntotal = self.n_steps
+        for n, val in enumerate(self.values):
             if not self.running:
                 n -= 1 # stopped before this iteration
                 break
@@ -326,8 +327,7 @@ class ScanBackend:
 
 
     def get_state(self):
-        ntotal = len(self.values)
-        res = f"Current Step: {self.current_step} / {ntotal}\n"
+        res = f"Current Step: {self.current_step} / {self.n_steps}\n"
         if self.n_repeat > 1:
             res += f"Current Repetition: {self.current_repetition} / {self.n_repeat}"
         return res
