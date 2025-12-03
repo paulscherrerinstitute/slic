@@ -355,7 +355,10 @@ class Scanner:
         condition = self.condition if self.condition else "(no condition)"
         used = self.default_acquisitions + [condition]
         used = "\n".join(str(i) for i in used)
-        return f"{tn} using:\n{used}"
+        state = "\n" * 2 # state is two lines max #TODO: there's probably a more clever way than this...
+        if self.current_scan:
+            state = self.current_scan.get_state()
+        return f"{tn} using:\n{used}\n{state}"
 
 
 
