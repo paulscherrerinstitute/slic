@@ -137,7 +137,7 @@ class BrokerClient:
 
 
     def __repr__(self):
-        return f"SF DAQ (status: {self.status}, last run: {self.run_number})\n{self.restapi}"
+        return f"SF DAQ (status: {self.status}, Last Run: {self.run_number})\n{self.restapi}"
 
 
     @property
