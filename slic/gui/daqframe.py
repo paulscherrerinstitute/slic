@@ -4,7 +4,7 @@ from .daqpanels import ConfigPanel, StaticPanel, ScanPanel, Scan2DPanel, TweakPa
 from .daqpanels.special import SpecialScanPanel
 from .daqpanels.sfx import SFXPanel
 from .daqpanels.run import RunPanel
-from .widgets import MainPanel, NotebookDX
+from .widgets import MainPanel, NotebookX
 from .icon import get_wx_icon
 from .persist import Persistence
 
@@ -69,7 +69,7 @@ class DAQFrame(wx.Frame):
         self.SetIcon(get_wx_icon())
 
         panel_main = MainPanel(self)
-        notebook = NotebookDX(panel_main)
+        notebook = NotebookX(panel_main)
         panel_main.wrap(notebook)
 
         panel_config = ConfigPanel(notebook, scanner, name="Config")

@@ -10,7 +10,7 @@ class MainPanel(wx.Panel): #TODO: This still needs work
 
 
 
-class NotebookDX(wx.Notebook):
+class NotebookX(wx.Notebook):
 
     def SetSelection(self, num):
         ntotal = super().GetPageCount()
