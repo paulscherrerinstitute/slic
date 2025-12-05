@@ -35,8 +35,7 @@ class StatusBarX(wx.StatusBar):
         n_fields = len(self.items) or 1 # 0 is not allowed
         self.SetFieldsCount(n_fields)
 
-        styles = [i.style for i in self.items]
-        self.SetStatusStyles(styles)
+        styles = []
 
         for index, item in enumerate(self.items):
             rect = self.GetFieldRect(index)
@@ -49,6 +48,11 @@ class StatusBarX(wx.StatusBar):
 
             widget.SetPosition((x, y))
             widget.SetSize((w, h))
+
+            styles.append(item.style)
+
+        if styles:
+            self.SetStatusStyles(styles)
 
         if event:
             event.Skip()
