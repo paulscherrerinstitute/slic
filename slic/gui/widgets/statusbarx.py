@@ -29,6 +29,9 @@ class StatusBarX(wx.StatusBar):
         n_fields = len(self.items) or 1 # 0 is not allowed
         self.SetFieldsCount(n_fields)
 
+        styles = [i.style for i in self.items]
+        self.SetStatusStyles(styles)
+
         for index, item in enumerate(self.items):
             rect = self.GetFieldRect(index)
 
@@ -45,14 +48,14 @@ class StatusBarX(wx.StatusBar):
             event.Skip()
 
 
-    def Add(self, widget, align_horizontal="center", align_vertical="center"):
-        entry = StatusBarItem(widget, align_horizontal, align_vertical)
+    def Add(self, *args, **kwargs):
+        entry = StatusBarItem(*args, **kwargs)
         self.items.append(entry)
         wx.CallAfter(self.on_size, None)
         return entry
 
-    def Insert(self, index, widget, align_horizontal="center", align_vertical="center"):
-        entry = StatusBarItem(widget, align_horizontal, align_vertical)
+    def Insert(self, index, *args, **kwargs):
+        entry = StatusBarItem(*args, **kwargs)
         self.items.insert(index, entry)
         wx.CallAfter(self.on_size, None)
         return entry
@@ -71,10 +74,11 @@ class StatusBarX(wx.StatusBar):
 
 class StatusBarItem(object):
 
-    def __init__(self, widget, align_horizontal="center", align_vertical="center"):
+    def __init__(self, widget, align_horizontal="center", align_vertical="center", style=wx.SB_NORMAL):
         self.widget = widget
         self.align_horizontal = align_horizontal
         self.align_vertical = align_vertical
+        self.style = style
 
 
 
