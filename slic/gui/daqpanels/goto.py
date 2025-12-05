@@ -7,6 +7,9 @@ from ..widgets import STRETCH, make_filled_vbox, make_filled_hbox
 from .tools import run
 
 
+BTN_SIZE = (100, -1)
+
+
 class GoToPanel(wx.Panel):
 
     def __init__(self, parent, _config, *args, **kwargs):
@@ -35,8 +38,8 @@ class GoToPanel(wx.Panel):
             st_pv    = wx.StaticText(self, label="Adjustable")
             st_value = wx.StaticText(self, label="Value")
 
-            st_update_dummy = wx.StaticText(self, label="", size=(100, -1))
-            st_go_dummy     = wx.StaticText(self, label="", size=(100, -1))
+            st_update_dummy = wx.StaticText(self, label="", size=BTN_SIZE)
+            st_go_dummy     = wx.StaticText(self, label="", size=BTN_SIZE)
 
             label_widgets = (st_name, st_pv, st_value)
             labels = make_filled_hbox(label_widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
@@ -52,7 +55,7 @@ class GoToPanel(wx.Panel):
 
         if shortcuts:
             st_name     = wx.StaticText(self, label="Name")
-            st_go_dummy = wx.StaticText(self, label="", size=(100, -1))
+            st_go_dummy = wx.StaticText(self, label="", size=BTN_SIZE)
 
             label_widgets = (st_name,)
             labels = make_filled_hbox(label_widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
@@ -91,10 +94,10 @@ class MarkerGoToLine(wx.BoxSizer):
 #        tc_pv.SetHint("PV Name")
 #        tc_value.SetHint("Value")
 
-        self.btn_update = btn_update = wx.Button(parent, label="Update!", size=(100, -1))
+        self.btn_update = btn_update = wx.Button(parent, label="Update!", size=BTN_SIZE)
         btn_update.Bind(wx.EVT_BUTTON, self.on_update)
 
-        self.btn_go = btn_go = wx.ToggleButton(parent, label="Go!", size=(100, -1))
+        self.btn_go = btn_go = wx.ToggleButton(parent, label="Go!", size=BTN_SIZE)
         btn_go.Bind(wx.EVT_TOGGLEBUTTON, self.on_go)
 
         self.Add(tc_name,  1)
@@ -132,7 +135,7 @@ class ShortcutGoToLine(wx.BoxSizer):
         self.tc_name = tc_name = ReadOnlyTextCtrl(parent, value=shortcut.name)
         tc_name.SetToolTip(shortcut.source)
 
-        self.btn_go = btn_go = wx.ToggleButton(parent, label="Go!", size=(100, -1))
+        self.btn_go = btn_go = wx.ToggleButton(parent, label="Go!", size=BTN_SIZE)
         btn_go.Bind(wx.EVT_TOGGLEBUTTON, self.on_go)
 
         self.Add(tc_name, 1)
