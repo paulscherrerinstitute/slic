@@ -15,17 +15,23 @@ class StatusBarX(wx.StatusBar):
     """
     wx.StatusBar that can hold any number of regular widgets
     Add, Insert, Remove follow the logic of the wx.Sizer equivalents
+
+    This generically implements the note
+    > It is possible to create controls and other windows on the status bar.
+    > Position these windows from an OnSize() event handler.
+    from here
+    https://docs.wxpython.org/wx.StatusBar.html
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.items = []
 
-        self.Bind(wx.EVT_SIZE, self.on_size)
-        wx.CallAfter(self.on_size, None)
+        self.Bind(wx.EVT_SIZE, self.OnSize)
+        wx.CallAfter(self.OnSize, None)
 
 
-    def on_size(self, event):
+    def OnSize(self, event):
         n_fields = len(self.items) or 1 # 0 is not allowed
         self.SetFieldsCount(n_fields)
 
@@ -51,13 +57,13 @@ class StatusBarX(wx.StatusBar):
     def Add(self, *args, **kwargs):
         entry = StatusBarItem(*args, **kwargs)
         self.items.append(entry)
-        wx.CallAfter(self.on_size, None)
+        wx.CallAfter(self.OnSize, None)
         return entry
 
     def Insert(self, index, *args, **kwargs):
         entry = StatusBarItem(*args, **kwargs)
         self.items.insert(index, entry)
-        wx.CallAfter(self.on_size, None)
+        wx.CallAfter(self.OnSize, None)
         return entry
 
     def Remove(self, index):
