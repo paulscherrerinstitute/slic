@@ -82,7 +82,7 @@ class StatusBarX(wx.StatusBar):
 
 
 
-class StatusBarItem(object):
+class StatusBarItem:
 
     def __init__(self, widget, align_horizontal="center", align_vertical="center", style=wx.SB_NORMAL):
         self.widget = widget
