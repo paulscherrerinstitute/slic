@@ -31,14 +31,17 @@ class GoToPanel(wx.Panel):
         widgets = []
 
         if markers:
-            st_name     = wx.StaticText(self, label="Name")
-            st_pv       = wx.StaticText(self, label="Adjustable")
-            st_value    = wx.StaticText(self, label="Value")
-            st_go_dummy = wx.StaticText(self, label="", size=(100, -1))
+            st_name  = wx.StaticText(self, label="Name")
+            st_pv    = wx.StaticText(self, label="Adjustable")
+            st_value = wx.StaticText(self, label="Value")
+
+            st_update_dummy = wx.StaticText(self, label="", size=(100, -1))
+            st_go_dummy     = wx.StaticText(self, label="", size=(100, -1))
 
             label_widgets = (st_name, st_pv, st_value)
             labels = make_filled_hbox(label_widgets, flag = wx.RIGHT|wx.EXPAND, border=10)
-            labels.Add(st_go_dummy, 0, wx.LEFT|wx.EXPAND, 10)
+            labels.Add(st_update_dummy, 0, wx.LEFT|wx.EXPAND, 10)
+            labels.Add(st_go_dummy,     0, wx.LEFT|wx.EXPAND, 10)
 
             widgets.append(labels)
             widgets += [MarkerGoToLine(self, m) for m in markers]
