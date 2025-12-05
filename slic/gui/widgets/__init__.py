@@ -8,6 +8,7 @@ from .entries import StepsEntry, StepsRangeEntry, StepsSequenceEntry, LabeledEnt
 from .lists import AutoWidthListCtrl, show_list, show_two_lists
 from .mods import MainPanel, NotebookX
 from .nope import Nope
+from .statusbarx import StatusBarX
 from .tools import copy_to_clipboard, post_event
 from .twobuttons import TwoButtons
 
