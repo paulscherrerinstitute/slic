@@ -110,7 +110,7 @@ def calc_layout(rect_start, rect_size, widget_size, align, border=1):
     elif align == "right":
         pad = inner_size - widget_size
     elif align == "center":
-        pad = (inner_size - widget_size) / 2
+        pad = (inner_size - widget_size) // 2
     else:
         printable_alignments = ", ".join(ALIGNMENTS)
         raise ValueError(f'align "{align}" is not from allowed: {printable_alignments}')
