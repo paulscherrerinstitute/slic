@@ -188,7 +188,7 @@ class SFAcquisition(BaseAcquisition):
         current = set(current)
         merged = pvs | current
         assert_no_fpicture(merged)
-        if not force and merged == pvs:
+        if not force and pvs <= current:
             return
         merged = sorted(merged)
         return self.client.set_config_pvs(merged)
