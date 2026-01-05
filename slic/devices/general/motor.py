@@ -34,8 +34,8 @@ STATUS_MESSAGES = {
      -5: "move started, but PV.put() returned unexpected value",
      -4: "move with wait finished, but soft limit violation seen",
      -3: "move with wait finished, but hard limit violation seen",
-#      0: "move with wait finished OK",
-#      0: "move without wait executed, start not confirmed",
+   1000: "move with wait finished OK", # this is also 0 in pyepics
+      0: "move without wait executed, start not confirmed",
       1: "move without wait executed, start confirmed",
       3: "move without wait finished, but hard limit violation seen",
       4: "move without wait finished, but soft limit violation seen"
@@ -112,10 +112,9 @@ class Motor(Adjustable, SpecConvenienceProgress):
 
     def _move(self, *args, wait=True, **kwargs):
         status = self._motor.move(*args, wait=wait, **kwargs)
-        if status == 0:
-            message = "move with wait finished OK" if wait else "move without wait executed, start not confirmed"
-        else:
-            message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
+        if status == 0 and wait:
+            status = 1000
+        message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
         self.status = status
         self.status_message = message
         validate_status(status, message)
