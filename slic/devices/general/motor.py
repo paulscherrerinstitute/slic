@@ -5,7 +5,6 @@ import numpy as np
 
 from slic.core.adjustable import Adjustable, AdjustableError
 from slic.core.adjustable.convenience import SpecConvenienceProgress
-from slic.utils.pyepics import EpicsString
 from slic.utils.rangebar import RangeBar
 from slic.utils.hastyepics import Motor as EpicsMotor
 
@@ -97,7 +96,7 @@ class Motor(Adjustable, SpecConvenienceProgress):
             ignore_limits = True
 
         if not show_progress:
-            self._move(value, ignore_limits=ignore_limits, wait=True)
+            self._move(value, ignore_limits=ignore_limits)
 
         else:
             start = self.get_current_value()
@@ -108,11 +107,11 @@ class Motor(Adjustable, SpecConvenienceProgress):
                     rbar.show(value)
 
                 with self.use_callback(on_change):
-                    self._move(stop, ignore_limits=ignore_limits, wait=True)
+                    self._move(stop, ignore_limits=ignore_limits)
 
 
-    def _move(self, *args, **kwargs):
-        status = self._motor.move(*args, **kwargs)
+    def _move(self, *args, wait=True, **kwargs):
+        status = self._motor.move(*args, wait=wait, **kwargs)
         message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
         self.status = status
         self.status_message = message
