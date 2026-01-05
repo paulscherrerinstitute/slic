@@ -142,8 +142,8 @@ class Motor(Adjustable, SpecConvenienceProgress):
             self._motor.put(low_name, low)
             self._motor.put(high_name, high)
             return
-        low  = -np.inf if low  is None else low
-        high = +np.inf if high is None else high
+        if low  is None: low  = -np.inf
+        if high is None: high = +np.inf
         if relative_to_current:
             val = self.get_current_value(pos_type=pos_type)
             low  += val
