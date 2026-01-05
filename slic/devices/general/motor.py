@@ -25,6 +25,7 @@ POS_TYPE_LIMIT_NAMES = {
 }
 
 
+# https://pyepics.github.io/pyepics/devices.html#motor.move
 STATUS_MESSAGES = {
     -13: "invalid value (cannot convert to float). Move not attempted.",
     -12: "target value outside soft limits. Move not attempted.",
