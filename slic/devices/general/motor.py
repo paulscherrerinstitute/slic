@@ -135,6 +135,8 @@ class Motor(Adjustable, SpecConvenienceProgress):
         return low, high
 
     def set_epics_limits(self, low, high, relative_to_current=False, pos_type="user"):
+        check_pos_type(pos_type)
+        low_name, high_name = POS_TYPE_LIMIT_NAMES[pos_type]
         if low is None and high is None:
             low = high = 0
             self._motor.put(low_name, low)
@@ -142,8 +144,6 @@ class Motor(Adjustable, SpecConvenienceProgress):
             return
         low  = -np.inf if low  is None else low
         high = +np.inf if high is None else high
-        check_pos_type(pos_type)
-        low_name, high_name = POS_TYPE_LIMIT_NAMES[pos_type]
         if relative_to_current:
             val = self.get_current_value(pos_type=pos_type)
             low  += val
