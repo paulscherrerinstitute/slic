@@ -27,19 +27,19 @@ POS_TYPE_LIMIT_NAMES = {
 
 # https://pyepics.github.io/pyepics/devices.html#motor.move
 STATUS_MESSAGES = {
-    -13: "invalid value (cannot convert to float). Move not attempted.",
-    -12: "target value outside soft limits. Move not attempted.",
-    -11: "drive PV is not connected: Move not attempted.",
-     -8: "move started, but timed-out.",
-     -7: "move started, timed-out, but appears done.",
-     -5: "move started, unexpected return value from PV.put()",
-     -4: "move-with-wait finished, soft limit violation seen",
-     -3: "move-with-wait finished, hard limit violation seen",
-      0: "move-with-wait finish OK.",
-      0: "move-without-wait executed, not confirmed",
-      1: "move-without-wait executed, move confirmed",
-      3: "move-without-wait finished, hard limit violation seen",
-      4: "move-without-wait finished, soft limit violation seen"
+    -13: "move not attempted: invalid target value (cannot convert to float)",
+    -12: "move not attempted: target value outside soft limits",
+    -11: "move not attempted: drive PV not connected",
+     -8: "move started, but timed out",
+     -7: "move started, timed out, but appears done",
+     -5: "move started, but PV.put() returned unexpected value",
+     -4: "move with wait finished, but soft limit violation seen",
+     -3: "move with wait finished, but hard limit violation seen",
+      0: "move with wait finished OK",
+      0: "move without wait executed, start not confirmed",
+      1: "move without wait executed, start confirmed",
+      3: "move without wait finished, but hard limit violation seen",
+      4: "move without wait finished, but soft limit violation seen"
 }
 
 
