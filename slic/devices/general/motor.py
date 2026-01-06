@@ -112,11 +112,11 @@ class Motor(Adjustable, SpecConvenienceProgress):
 
 
     def _move(self, *args, wait=True, **kwargs):
-        self.status_code = status = self._motor.move(*args, wait=wait, **kwargs)
-        if status == 0 and wait:
-            status = 1000
-        self.status_message = message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
-        if status in STATUS_OK:
+        self.status_code = code = self._motor.move(*args, wait=wait, **kwargs)
+        if code == 0 and wait:
+            code = 1000
+        self.status_message = message = STATUS_MESSAGES.get(code, f"unknown status code: {code}")
+        if code in STATUS_OK:
             return
         raise MotorError(message)
 
