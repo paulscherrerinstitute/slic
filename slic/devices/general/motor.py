@@ -63,7 +63,7 @@ class Motor(Adjustable, SpecConvenienceProgress):
         super().__init__(ID, name=name, units=units, internal=internal)
 
         self.status_code = None
-        self.status_message = None
+        self.status_message = "no move yet"
 
 
     @property
@@ -119,6 +119,11 @@ class Motor(Adjustable, SpecConvenienceProgress):
         if code in STATUS_OK:
             return
         raise MotorError(message)
+
+
+    @property
+    def status(self):
+        return f"{self.status_message} (code: {self.status_code})"
 
 
     def is_moving(self):
