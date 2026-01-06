@@ -25,6 +25,7 @@ POS_TYPE_LIMIT_NAMES = {
 
 
 # https://pyepics.github.io/pyepics/devices.html#motor.move
+STATUS_OK = (0, 1, 1000)
 STATUS_MESSAGES = {
     -13: "move not attempted: invalid target value (cannot convert to float)",
     -12: "move not attempted: target value outside soft limits",
@@ -111,12 +112,10 @@ class Motor(Adjustable, SpecConvenienceProgress):
 
 
     def _move(self, *args, wait=True, **kwargs):
-        status = self._motor.move(*args, wait=wait, **kwargs)
+        self.status = status = self._motor.move(*args, wait=wait, **kwargs)
         if status == 0 and wait:
             status = 1000
-        message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
-        self.status = status
-        self.status_message = message
+        self.status_message = message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
         validate_status(status, message)
 
 
@@ -203,11 +202,9 @@ def check_pos_type(pos_type, allowed=POS_TYPES):
 
 
 def validate_status(status, message):
-    if status < 0:
-        raise MotorError(message)
-    elif status > 0:
-        print()
-        print(message)
+    if status in STATUS_OK:
+        return
+    raise MotorError(message)
 
 
 class MotorError(AdjustableError):
