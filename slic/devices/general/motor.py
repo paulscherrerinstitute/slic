@@ -36,8 +36,8 @@ STATUS_MESSAGES = {
      -4: "move with wait finished, but soft limit violation seen",
      -3: "move with wait finished, but hard limit violation seen",
    1000: "move with wait finished OK", # this is also 0 in pyepics
-      0: "move without wait executed, start not confirmed",
-      1: "move without wait executed, start confirmed",
+      0: "move without wait requested, start not confirmed",
+      1: "move without wait requested, start confirmed",
       3: "move without wait finished, but hard limit violation seen",
       4: "move without wait finished, but soft limit violation seen"
 }
