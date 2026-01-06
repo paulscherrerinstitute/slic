@@ -116,7 +116,9 @@ class Motor(Adjustable, SpecConvenienceProgress):
         if status == 0 and wait:
             status = 1000
         self.status_message = message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
-        validate_status(status, message)
+        if status in STATUS_OK:
+            return
+        raise MotorError(message)
 
 
     def is_moving(self):
@@ -200,11 +202,6 @@ def check_pos_type(pos_type, allowed=POS_TYPES):
         msg = f"pos type \"{pos_type}\" not in {allowed}"
         raise ValueError(msg)
 
-
-def validate_status(status, message):
-    if status in STATUS_OK:
-        return
-    raise MotorError(message)
 
 
 class MotorError(AdjustableError):
