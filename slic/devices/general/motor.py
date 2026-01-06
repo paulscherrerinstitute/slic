@@ -62,7 +62,7 @@ class Motor(Adjustable, SpecConvenienceProgress):
         ID = ID or pvname
         super().__init__(ID, name=name, units=units, internal=internal)
 
-        self.status = None
+        self.status_code = None
         self.status_message = None
 
 
@@ -112,7 +112,7 @@ class Motor(Adjustable, SpecConvenienceProgress):
 
 
     def _move(self, *args, wait=True, **kwargs):
-        self.status = status = self._motor.move(*args, wait=wait, **kwargs)
+        self.status_code = status = self._motor.move(*args, wait=wait, **kwargs)
         if status == 0 and wait:
             status = 1000
         self.status_message = message = STATUS_MESSAGES.get(status, f"unknown status code: {status}")
