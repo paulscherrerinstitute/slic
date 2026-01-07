@@ -39,7 +39,7 @@ class DoubleCrystalMonoEnergy(Adjustable):
         pv_moving   = PV(pvname_moving)
         pv_stop     = PV(pvname_stop)
 
-        units = pv_readback.units
+        units = pv_setvalue.units
         super().__init__(ID, name=name, units=units)
 
         self.pvnames = SimpleNamespace(
