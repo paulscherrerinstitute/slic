@@ -32,7 +32,7 @@ class Double_Crystal_Mono_AramisMacro:
     def _calcOffsetDetour(self, E, crystal_type=None, beam_offset=None):
         if not crystal_type:
             crystal_type = self.crystal_type.get()
-        if crystal_type is "Si-111":
+        if crystal_type == "Si-111":
             d = 3.1356124059796264
         else:
             raise NotImplementedError
@@ -56,7 +56,7 @@ class Double_Crystal_Mono_AramisMacro:
             p_target = self._calcOffsetDetour(value)
             t_delta = (p_target - p_ref) * 1e-3 / 299792458.0
             t_new = self.timeReference + t_delta
-            print("correcting timing by Dt = {t_delta} s to {t_new} s")
+            print(f"correcting timing by Dt = {t_delta} s to {t_new} s")
 
         #self.energy_sp.put(value)
         #while abs(self.wait_for_valid_value()-value)>precision:
@@ -115,37 +115,6 @@ class Double_Crystal_Mono_AramisMacro:
 
     def __call__(self, value):
         self._currentChange = self.set_target_value(value)
-
-
-class EcolEnergy:
-
-    def __init__(self, ID, val="SARCL02-MBND100:P-SET", rb="SARCL02-MBND100:P-READ", dmov="SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK"):
-        self.ID = ID
-        self.setter = PV(val)
-        self.readback = PV(rb)
-        self.dmov = PV(dmov)
-        self.done = False
-
-    def get_current_value(self):
-        return self.readback.get()
-
-    def move_and_wait(self, value, checktime=0.01, precision=2):
-        curr = self.setter.get()
-        while abs(curr - value) > 0.1:
-            curr = self.setter.get()
-            self.setter.put(curr + np.sign(value - curr) * 0.1)
-            sleep(0.3)
-
-        self.setter.put(value)
-        while abs(self.get_current_value() - value) > precision:
-            sleep(checktime)
-        while not self.dmov.get():
-            #print(self.dmov.get())
-            sleep(checktime)
-
-    def set_target_value(self, value, hold=False):
-        changer = lambda: self.move_and_wait(value)
-        return Task(changer, hold=hold)
 
 
 class Double_Crystal_Mono:
