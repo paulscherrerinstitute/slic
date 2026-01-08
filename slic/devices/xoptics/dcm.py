@@ -27,6 +27,7 @@ class DoubleCrystalMono(Device):
 class DoubleCrystalMonoEnergy(Adjustable):
 
     def __init__(self, ID, name=None):
+        super().__init__(ID, name=name)
         self.wait_time = 0.1
 
         pvname_setvalue = "SAROP11-ARAMIS:ENERGY_SP"
@@ -38,9 +39,6 @@ class DoubleCrystalMonoEnergy(Adjustable):
         pv_readback = PV(pvname_readback)
         pv_moving   = PV(pvname_moving)
         pv_stop     = PV(pvname_stop)
-
-        units = pv_setvalue.units
-        super().__init__(ID, name=name, units=units)
 
         self.pvnames = SimpleNamespace(
             setvalue = pvname_setvalue,
@@ -55,6 +53,18 @@ class DoubleCrystalMonoEnergy(Adjustable):
             moving   = pv_moving,
             stop     = pv_stop
         )
+
+
+    @property
+    def units(self):
+        units = self._units
+        if units is not None:
+            return units
+        return self.pvs.setvalue.units or self.pvs.readback.units
+
+    @units.setter
+    def units(self, value):
+        self._units = value
 
 
     def get_current_value(self):
