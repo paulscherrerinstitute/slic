@@ -153,10 +153,8 @@ class ShortcutGoToLine(wx.BoxSizer):
 
 class ReadOnlyTextCtrl(wx.TextCtrl):
 
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("style", wx.TE_READONLY)
-        super().__init__(*args, **kwargs)
-        self.SetBackgroundColour(wx.LIGHT_GREY)
+    def __init__(self, *args, style=wx.TE_READONLY, **kwargs):
+        super().__init__(*args, style=style, **kwargs)
 
 
 
