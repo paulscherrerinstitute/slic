@@ -2,12 +2,6 @@ import socket
 import epics
 
 
-#INSTRUMENT_TO_PVNAMES_PULSEID = {
-#    "alvra"  : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
-#    "bernina": "SLAAR21-LTIM01-EVR0:RX-PULSEID",
-#    "maloja" : "SLAAR11-LTIM01-EVR0:RX-PULSEID",
-#}
-
 IP_TO_INSTRUMENT = {
     "129.129.242": "alvra",
     "129.129.243": "bernina",
