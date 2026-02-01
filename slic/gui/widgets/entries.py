@@ -366,6 +366,11 @@ class ValuesEntry(wx.TextCtrl, PersistableWidget):
             kwargs["style"] = wx.TE_MULTILINE
 
         super().__init__(*args, **kwargs)
+
+        self.format_mode = 0
+        self.format_separators = (None, "\n", ", ")
+        self.last_manual_entry = ""
+
         self.Bind(wx.EVT_KEY_UP, self.on_key_up)
 
 
@@ -375,12 +380,25 @@ class ValuesEntry(wx.TextCtrl, PersistableWidget):
             self.on_escape()
             return
 
+        self.format_mode = 0
+
         event.Skip()
 
 
     def on_escape(self):
-        values = self.get_split_strings()
-        values = "\n".join(values)
+        if self.format_mode == 0:
+            self.last_manual_entry = self.GetValue()
+
+        self.format_mode += 1
+        self.format_mode %= len(self.format_separators)
+
+        sep = self.format_separators[self.format_mode]
+        if sep is None:
+            values = self.last_manual_entry
+        else:
+            values = self.get_split_strings()
+            values = sep.join(values)
+
         self.SetValue(values)
 
 
