@@ -366,14 +366,33 @@ class ValuesEntry(wx.TextCtrl, PersistableWidget):
             kwargs["style"] = wx.TE_MULTILINE
 
         super().__init__(*args, **kwargs)
+        self.Bind(wx.EVT_KEY_UP, self.on_key_up)
+
+
+    def on_key_up(self, event):
+        key = event.GetKeyCode()
+        if key == wx.WXK_ESCAPE:
+            self.on_escape()
+            return
+
+        event.Skip()
+
+
+    def on_escape(self):
+        values = self.get_split_strings()
+        values = "\n".join(values)
+        self.SetValue(values)
 
 
     def get_values(self):
-        values = super().GetValue()
-        values = values.replace(",", " ").split()
+        values = self.get_split_strings()
         values = [float(v) for v in values]
         values = np.array(values)
         return values
+
+
+    def get_split_strings(self):
+        return self.GetValue().replace(",", " ").split()
 
 
 
