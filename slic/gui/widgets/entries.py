@@ -410,7 +410,11 @@ class ValuesEntry(wx.TextCtrl, PersistableWidget):
 
 
     def get_split_strings(self):
-        return self.GetValue().replace(",", " ").split()
+        res = self.GetValue()
+        delete = "[]()"
+        for c in delete:
+            res = res.replace(c, "")
+        return res.replace(",", " ").split()
 
 
 
