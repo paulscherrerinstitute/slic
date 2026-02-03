@@ -413,7 +413,7 @@ class ValuesEntry(wx.TextCtrl, PersistableWidget):
         res = self.GetValue()
         delete = "[]()"
         for c in delete:
-            res = res.replace(c, "")
+            res = res.strip(c)
         return res.replace(",", " ").split()
 
 
