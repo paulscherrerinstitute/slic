@@ -36,6 +36,7 @@ ALLOWED_DAP_PARAMS = dict(
     do_radial_integration = bool,
     do_spi_analysis = bool,
     double_pixels = ["mask", "interp", "keep"],
+    enable_bsread = bool,
     hitfinder_adc_thresh = Number,
     hitfinder_min_pix_count = Number,
     hitfinder_min_snr = Number,
