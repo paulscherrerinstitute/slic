@@ -55,8 +55,8 @@ except:
     KEY = None
 
 
-def get_pgroup_info(p):
-    data = get_pgroup(p)
+def get_pgroup(p):
+    data = get_pgroup_data(p)
     group = data["group"]
     stype = group["storagetype"]
     props = data.get("proposals")
@@ -72,7 +72,7 @@ def get_pgroup_info(p):
     return res
 
 
-def get_pgroup(p):
+def get_pgroup_data(p):
     if KEY is None:
         raise ValueError("no secret for duo known")
     url = URL + p

@@ -2,7 +2,7 @@ import wx
 
 from slic.core.acquisition import BSChannels, PVChannels
 from slic.utils.reprate import get_beamline, get_pvname_reprate
-from slic.utils.duo import get_pgroup_info
+from slic.utils.duo import get_pgroup
 
 from ..widgets import EXPANDING, show_two_lists, LabeledEntry, make_filled_vbox, make_filled_hbox, CheckBox
 from .tools import PVDisplay, NOMINAL_REPRATE
@@ -92,7 +92,7 @@ class ConfigPanel(wx.Panel):
 
 
         try:
-            pinfo = get_pgroup_info(pgroup)
+            pinfo = get_pgroup(pgroup)
             proposer = pinfo["name"]
             title = pinfo["title"]
             ptype = pinfo["type"]
