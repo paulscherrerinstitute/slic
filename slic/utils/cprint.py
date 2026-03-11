@@ -66,6 +66,10 @@ def get_color(color):
         allowed = tuple(COLORS.keys())
         raise ValueError(f"{color} not from {allowed}") from exc
 
+def print_color_table():
+    for k, v in COLORS.items():
+        cprint(k, repr(v), color=k, sep="\t")
+
 
 
 # the following creates functions from the COLORS dict which wrap their argument string in a color/reset pair
