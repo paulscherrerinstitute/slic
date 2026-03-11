@@ -1,8 +1,17 @@
+import sys
 
-try:
-    read_input = input # py3
-except NameError:
-    read_input = raw_input # py2
+
+# ipython changes input() such that KeyboardInterrupt is ignored
+# this reimplements working ctrl-c and ctrl-d
+def read_input(prompt=""):
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+
+    line = sys.stdin.readline()
+    if line == "":
+        raise EOFError
+
+    return line.rstrip("\n")
 
 
 
