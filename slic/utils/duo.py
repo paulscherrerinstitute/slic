@@ -1,6 +1,8 @@
 import requests
 from getpass import getpass
-from slic.utils import DotDir, pickle, unpickle
+
+from .dotdir import DotDir
+from .picklio import pickle, unpickle
 
 
 class Secrets:
