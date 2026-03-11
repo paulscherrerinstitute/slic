@@ -1,6 +1,9 @@
 from time import sleep, time
 
-from slic.utils import forwards_to, readable_seconds, xrange, tqdm_mod#, tqdm_sleep
+from slic.utils import cprint, forwards_to, print_pgroup, readable_seconds, xrange, tqdm_mod#, tqdm_sleep
+from slic.utils.ask_yes_no import ask_yes_No
+from slic.utils.printing import itemize
+
 
 from .restapi import RESTAPI
 from .brokerconfig import BrokerConfig, flatten_detectors
@@ -147,6 +150,30 @@ class BrokerClient:
         if self.running_continuously:
             return "running continuously"
         return "idle"
+
+
+    def close_pgroup(self, *pgroups, **kwargs):
+        print("You are going to close the following pgroup(s):")
+        print(itemize(pgroups))
+        print()
+
+        print("Closing means that it will not be possible to take new data using sf-daq into the raw/ directory of that pgroup.")
+        print("res/ and work/ directories are not affected and one can further modify the contents of these directories.")
+        print("This action is not reversible as it will trigger automatic ingestion of the data from the raw/ directory to SciCat.")
+        print()
+
+        for p in pgroups:
+            cprint(p, color="red")
+            print("-" * len(p))
+            print_pgroup(p)
+
+            reply = ask_yes_No(f"Are you sure that you want to close the pgroup {p} for writing")
+            if reply:
+                cprint(f"The answer was yes, request to close the pgroup {p} is sent", color="yellow")
+                self.restapi.close_pgroup(p, **kwargs)
+            else:
+                cprint(f"The answer was not yes, request to close pgroup {p} is not sent", color="cyan")
+            print()
 
 
     def take_pedestal(self, detectors=None, rate=None, pedestalmode=False):
