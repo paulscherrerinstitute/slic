@@ -55,6 +55,13 @@ except:
     KEY = None
 
 
+def print_pgroup(p):
+    pinfo = get_pgroup(p)
+    print("Proposer:", pinfo["name"])
+    print("Title:   ", pinfo["title"])
+    print("Type:    ", pinfo["type"])
+
+
 def get_pgroup(p):
     data = get_pgroup_data(p)
     group = data["group"]
