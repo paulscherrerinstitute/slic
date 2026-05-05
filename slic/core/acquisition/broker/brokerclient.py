@@ -165,7 +165,10 @@ class BrokerClient:
         for p in pgroups:
             cprint(p, color="red")
             print("-" * len(p))
-            print_pgroup(p)
+            try:
+                print_pgroup(p)
+            except ValueError as e:
+                print(e)
 
             reply = ask_yes_No(f"Are you sure that you want to close the pgroup {p} for writing")
             if reply:
