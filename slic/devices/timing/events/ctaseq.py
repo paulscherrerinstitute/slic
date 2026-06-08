@@ -149,8 +149,7 @@ class Config:
 
         mode = self.cta_client.StartMode(mode)
 
-        #TODO: why are modulo and divisor the same?
-        cfg = dict(modulo=divisor, offset=offset, mode=mode)
+        cfg = dict(divisor=divisor, offset=offset, mode=mode)
         self.cta_client.set_start_config(config=cfg)
 
 
