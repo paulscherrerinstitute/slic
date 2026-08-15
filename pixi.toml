@@ -1,0 +1,46 @@
+[workspace]
+name = "slic"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[environments]
+slic = ["general", "psi"]
+
+[feature.general.dependencies]
+python = "3.12.*"
+bitshuffle = ">=0.5.2"
+bottleneck = "*"
+colorama = "*"
+dbus-python = "*"
+fuzzywuzzy = "*"
+ipython = "*"
+loguru = "*"
+logzero = "*"
+matplotlib = "*"
+numpy = "*"
+pcaspy = "*"
+pika = "*"
+pint = "*"
+playsound = "*"
+pyepics = ">=3.4.2"
+pytest = "*"
+rich = "*"
+scipy = "*"
+tqdm = "*"
+wxpython = "*"
+yaspin = "*"
+
+[feature.psi]
+channels = ["paulscherrerinstitute"]
+
+[feature.psi.dependencies]
+bsread = "*"
+cam_server_client = "*"
+cta_lib = "*"
+data_api = "*"
+diffcalc-core = "*"
+elog = "*"
+jungfrau_utils = ">=3.16.0"
+sfdata = "*"
+
+

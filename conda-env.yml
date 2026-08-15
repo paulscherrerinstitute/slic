@@ -5,32 +5,37 @@
 # NOTE: $NEW_ENV_NAME is optional and defaults to slic
 
 name: slic
+channels:
+  - conda-forge
 dependencies:
-  - python =3.8
-# defaults
+  - python=3.12
+  - bitshuffle>=0.5.2
+  - bottleneck
+  - colorama
+  - dbus-python
+  - fuzzywuzzy
   - ipython
-  - numpy
-  - scipy
+  - loguru
+  - logzero
   - matplotlib
-# DAQ
+  - numpy
+  - pcaspy
+  - pika
+  - pint
+  - playsound
+  - pyepics>=3.4.2
+  - pytest
+  - rich
+  - scipy
+  - tqdm
+  - wxpython
+  - yaspin
   - paulscherrerinstitute::bsread
   - paulscherrerinstitute::cam_server_client
   - paulscherrerinstitute::cta_lib
   - paulscherrerinstitute::data_api
-#  - paulscherrerinstitute::detector_integration_api #TODO: deprecated?
+  - paulscherrerinstitute::diffcalc-core
   - paulscherrerinstitute::elog
-  - paulscherrerinstitute::pyepics >=3.4.2
-# data
-  - paulscherrerinstitute::jungfrau_utils >=3
+  - paulscherrerinstitute::jungfrau_utils>=3.16.0
   - paulscherrerinstitute::sfdata
-# GUI
-  - wxpython
-# terminal
-  - colorama
-  - tqdm
-  - rich
-  - conda-forge::fuzzywuzzy
-  - conda-forge::logzero
-  - conda-forge::yaspin
-
 
