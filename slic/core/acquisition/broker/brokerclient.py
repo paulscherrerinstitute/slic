@@ -179,8 +179,8 @@ class BrokerClient:
             print()
 
 
-    def take_pedestal(self, detectors=None, rate=None, pedestalmode=False):
-        take_pedestal(self.restapi, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode)
+    def take_pedestal(self, detectors=None, rate=None, pedestalmode=False, verbose=False):
+        take_pedestal(self.restapi, self.config, detectors=detectors, rate=rate, pedestalmode=pedestalmode, verbose=verbose)
 
 
     def upload_custom_dap_script(self, fname):

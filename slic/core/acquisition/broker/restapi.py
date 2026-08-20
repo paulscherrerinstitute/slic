@@ -139,13 +139,15 @@ class BrokerAPI(BaseAPI):
         response = self.post("close_pgroup_writing", params, *args, **kwargs)
         return response.get("message")
 
-    def take_pedestal(self, pgroup, detectors, *args, rate_multiplicator=1, pedestalmode=False, **kwargs):
+    def take_pedestal(self, pgroup, detectors, *args, rate_multiplicator=1, pedestalmode=False, verbose=False, **kwargs):
         params = {
             "pgroup": pgroup,
             "detectors": detectors,
             "rate_multiplicator": rate_multiplicator,
             "pedestalmode": pedestalmode
         }
+        if verbose:
+            params["run_log_level"] = "DEBUG"
         response = self.post("take_pedestal", params, *args, **kwargs)
         return response.get("message")
 
