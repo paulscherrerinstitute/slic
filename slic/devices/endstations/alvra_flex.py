@@ -29,5 +29,19 @@ class FlexTable(Device):
             roll   = Motor(ID + ":W_RZ")
         )
 
+class FlexCryDet(Device):
+
+    def __init__(self, ID, **kwargs):
+        super().__init__(ID, **kwargs)
+
+        self.motors = SimpleDevice("Motors",
+            DetX = Motor(ID + ":DET_X"),
+            DetY = Motor(ID + ":DET_Y"),
+            DetZ = Motor(ID + ":DET_Z"),
+            CryX = Motor(ID + ":CRY_X"),
+            CryY = Motor(ID + ":CRY_Y"),
+            CryZ = Motor(ID + ":CRY_Z")
+        )
+
 
 
