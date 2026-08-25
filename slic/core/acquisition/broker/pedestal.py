@@ -10,7 +10,7 @@ from .tools import get_endstation
 
 
 #TODO: this needs work
-def take_pedestal(restapi, config, detectors=None, rate=None, pedestalmode=False):
+def take_pedestal(restapi, config, detectors=None, rate=None, pedestalmode=False, verbose=False):
     if detectors is None:
         detectors = config.detectors
 
@@ -37,8 +37,8 @@ def take_pedestal(restapi, config, detectors=None, rate=None, pedestalmode=False
     n_pulses = 5000 # this is a constant on the broker side
     timeout = 10 + n_pulses / 100 * rate_multiplicator
 
-    print(f"posting:\n{detectors}\npgroup: {pgroup}\nrate_multiplicator: {rate_multiplicator}\npedestalmode: {pedestalmode}")
-    response = restapi.take_pedestal(pgroup, detectors, rate_multiplicator=rate_multiplicator, pedestalmode=pedestalmode, timeout=timeout)
+    print(f"posting:\n{detectors}\npgroup: {pgroup}\nrate_multiplicator: {rate_multiplicator}\npedestalmode: {pedestalmode}\nverbose: {verbose}")
+    response = restapi.take_pedestal(pgroup, detectors, rate_multiplicator=rate_multiplicator, pedestalmode=pedestalmode, verbose=verbose, timeout=timeout)
     print("done, got:", response)
 
 #    print(f"waiting for {timeout} seconds")
