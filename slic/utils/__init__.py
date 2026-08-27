@@ -18,7 +18,7 @@ from .marker import Marker, markers
 from .namespace import Namespace
 from .npy import nice_linspace, nice_arange, fraction_to_percentage, within, within_fraction, get_dtype, get_shape, is_array
 from .path import can_create_all_files, can_create_file, glob_files, make_missing_dir
-from .picklio import pickle, unpickle
+from .picklio import pickle, unpickle, zpickle, zunpickle
 from .pv import PV
 from .readable import readable_seconds
 from .screenshot import Screenshot
