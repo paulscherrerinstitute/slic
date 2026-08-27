@@ -13,7 +13,7 @@ class DBusNotify:
     def __init__(self):
         bus = dbus.SessionBus()
         obj = bus.get_object(BUS_NAME, OBJECT_PATH)
-        self.interface = interface = dbus.Interface(obj, BUS_NAME)
+        self.interface = dbus.Interface(obj, BUS_NAME)
 
     def notify(self, summary, body="", **kwargs):
         nid = self._notify(summary=summary, body=body, **kwargs)
