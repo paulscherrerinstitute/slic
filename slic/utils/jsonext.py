@@ -27,6 +27,7 @@ def json_validate(obj):
 def json_save(what, filename, *args, indent=4, sort_keys=True, cls=ExtendedJSONEncoder, **kwargs):
     with open(filename, "w") as f:
         json.dump(what, f, *args, indent=indent, sort_keys=sort_keys, cls=cls, **kwargs)
+        f.write("\n")
 
 def json_load(filename, *args, **kwargs):
     with open(filename, "r") as f:
