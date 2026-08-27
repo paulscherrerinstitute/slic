@@ -1,13 +1,24 @@
+from .dotdir import DotDir
+from .jsonext import json_save, json_load
 from .utils import typename, singleton
 from .registry import Registry, instances
 from .printing import printable_dict
+
+
+DOT_FNAME = DotDir()("markers")
 
 
 class Marker(Registry):
 
     def __init__(self, adj, value=None, name=None):
         if value is None:
-            value = adj.get_current_value()
+            if name is None:
+                value = adj.get_current_value()
+            else:
+                try:
+                    value = json_load(DOT_FNAME)[name]
+                except Exception:
+                    value = adj.get_current_value()
 
         self.adj = adj
         self.value = value
@@ -49,6 +60,8 @@ class Marker(Registry):
     def update(self, value=None):
         if value is None:
             value = self.adj.get_current_value()
+        if self._name:
+            update_json_dict(DOT_FNAME, self._name, value)
         self.value = value
 
 
@@ -71,6 +84,20 @@ class markers:
 
     def _get(self):
         return {m.name: m for m in instances(Marker)}
+
+
+
+def update_json_dict(fname, key, value):
+    try:
+        data = json_load(fname)
+    except FileNotFoundError:
+        data = {}
+    else:
+        if key in data and data[key] == value:
+            # nothing changed => nothing to save
+            return
+    data[key] = value
+    json_save(data, fname)
 
 
 
