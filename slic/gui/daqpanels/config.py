@@ -58,17 +58,19 @@ class ConfigPanel(wx.Panel):
         if not chans_bsc: btn_chans_bsc.Disable()
         if not chans_pvs: btn_chans_pvs.Disable()
 
-        btn_power_on = wx.Button(self, label="Power On!")
+        box_btns_dets = wx.StaticBoxSizer(wx.HORIZONTAL, self, "Detectors")
+        win_btns_dets = box_btns_dets.GetStaticBox()
+
+        btn_power_on = wx.Button(win_btns_dets, label="Power On!")
         btn_power_on.Bind(wx.EVT_BUTTON, self.on_power_on)
 
-        btn_take_pedestal = wx.Button(self, label="Take Pedestal!")
+        btn_take_pedestal = wx.Button(win_btns_dets, label="Take Pedestal!")
         btn_take_pedestal.Bind(wx.EVT_BUTTON, self.on_take_pedestal)
 
         if not chans_det:
             btn_power_on.Disable()
             btn_take_pedestal.Disable()
 
-        box_btns_dets = wx.StaticBoxSizer(wx.HORIZONTAL, self, "Detectors")
         widgets = (btn_power_on, btn_take_pedestal)
         make_filled_hbox(widgets, border=5, box=box_btns_dets)
 
@@ -78,13 +80,15 @@ class ConfigPanel(wx.Panel):
 
         #SFDAQ: rate_multiplicator only for sf_daq
 
-        self.cb_correct_rate = cb_correct_rate = CheckBox(self, label="FEL rate")
-        self.cb_correct_rm   = cb_correct_rm   = CheckBox(self, label="Rate Multiplicator")
+        box_cbs_correct = wx.StaticBoxSizer(wx.VERTICAL, self, "Correct #Pulses by ...")
+        win_cbs_correct = box_cbs_correct.GetStaticBox()
+
+        self.cb_correct_rate = cb_correct_rate = CheckBox(win_cbs_correct, label="FEL rate")
+        self.cb_correct_rm   = cb_correct_rm   = CheckBox(win_cbs_correct, label="Rate Multiplicator")
 
         cb_correct_rate.SetValue(True)
         cb_correct_rm.SetValue(False)
 
-        box_cbs_correct = wx.StaticBoxSizer(wx.VERTICAL, self, "Correct #Pulses by ...")
         widgets = (cb_correct_rate, cb_correct_rm)
         make_filled_vbox(widgets, border=5, box=box_cbs_correct)
 
