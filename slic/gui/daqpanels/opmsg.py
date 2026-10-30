@@ -43,18 +43,24 @@ class OperationMessagePanel(wx.Panel):
         pvname_status = f"SF-OP:{abbr}-MSG:STATUS"
         pvname_sttime = f"SF-OP:{abbr}-MSG:STATUS-DATE"
         pvname_msg    = f"SF-OP:{abbr}-MSG:OP-MSG-tmp"
+        pvname_msg_time = f"SF-OP:{abbr}-MSG:OP-DATE0"
 
         pv_status = PV(pvname_status)
         pv_sttime = PV(pvname_sttime)
         pv_msg    = PV(pvname_msg)
+        pv_msg_time = PV(pvname_msg_time)
 
-        status = LabeledPVEnumComboBox(self, label="Status", pv=pv_status)
+        status = LabeledPVEnumComboBox(self, label="Current Status", pv=pv_status)
         sttime = PVText(self, pv=pv_sttime)
-        msg    = LabeledPVTextCtrl(self, label="Message", pv=pv_msg, dirty_timeout=None)
+        msg    = LabeledPVTextCtrl(self, label="Current Message", pv=pv_msg, dirty_timeout=None, style=wx.TE_READONLY)
+        msg_time = PVText(self, pv=pv_msg_time)
+        send_msg = LabeledSendTextCtrl(self, label="Send Message", pv=pv_msg)
+
+        msg.Unbind(wx.EVT_KILL_FOCUS)
 
         buttons = ButtonBar(self, abbr, pv_status, pv_msg)
 
-        widgets = (history, status, sttime, msg, buttons)
+        widgets = (STRETCH, status, sttime, STRETCH, msg, msg_time, STRETCH, send_msg, buttons, STRETCH, history, STRETCH)
         self.vbox = vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -85,6 +91,22 @@ class HistoryLine(wx.BoxSizer):
 
         widgets = (date, msg)
         make_filled_hbox(widgets, box=self)
+
+
+
+@make_labeled
+class LabeledSendTextCtrl(wx.TextCtrl):
+
+    def __init__(self, parent, pv, **kwargs):
+        super().__init__(parent, style=wx.TE_PROCESS_ENTER, **kwargs)
+        self.pv = pv
+        self.Bind(wx.EVT_TEXT_ENTER, self.on_enter)
+
+    def on_enter(self, event):
+        entry = self.GetValue().strip()
+        if entry:
+            self.pv.put(entry)
+            self.Clear()
 
 
 
