@@ -25,7 +25,7 @@ class GoToPanel(wx.Panel):
             msg = "There is neither Marker nor Shortcut defined.\nBoth can be imported from slic.utils ..."
             st_msg = wx.StaticText(self, label=msg, style=wx.ALIGN_CENTRE_HORIZONTAL)
             widgets = (st_msg,)
-            centered_box = make_filled_hbox((st_msg,), flag = wx.CENTER)
+            centered_box = make_filled_hbox(widgets, flag = wx.CENTER)
             widgets = (STRETCH, centered_box, STRETCH)
             vbox = make_filled_vbox(widgets, flag = wx.CENTER)
             self.SetSizerAndFit(vbox)

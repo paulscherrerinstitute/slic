@@ -62,7 +62,8 @@ class StepsRangeEntry(wx.Panel):
 
         widgets = (start, stop, step, nsteps)
         hbox = make_filled_hbox(widgets)
-        sizer = make_filled_vbox([STRETCH, hbox])
+        widgets = (STRETCH, hbox)
+        sizer = make_filled_vbox(widgets)
         self.SetSizerAndFit(sizer)
 
 

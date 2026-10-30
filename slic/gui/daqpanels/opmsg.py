@@ -73,7 +73,8 @@ class HistoryBox(wx.StaticBoxSizer):
 
         msg_lines = [HistoryLine(win, abbreviation, i+1) for i in range(n_history)]
         vbox = make_filled_vbox(msg_lines)
-        make_filled_vbox([vbox], box=self, border=5)
+        widgets = (vbox,)
+        make_filled_vbox(widgets, box=self, border=5)
 
 
 
