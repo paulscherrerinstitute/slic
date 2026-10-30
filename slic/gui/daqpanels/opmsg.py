@@ -41,17 +41,20 @@ class OperationMessagePanel(wx.Panel):
         history = HistoryBox(self, abbr)
 
         pvname_status = f"SF-OP:{abbr}-MSG:STATUS"
+        pvname_sttime = f"SF-OP:{abbr}-MSG:STATUS-DATE"
         pvname_msg    = f"SF-OP:{abbr}-MSG:OP-MSG-tmp"
 
         pv_status = PV(pvname_status)
+        pv_sttime = PV(pvname_sttime)
         pv_msg    = PV(pvname_msg)
 
         status = LabeledPVEnumComboBox(self, label="Status", pv=pv_status)
+        sttime = PVText(self, pv=pv_sttime)
         msg    = LabeledPVTextCtrl(self, label="Message", pv=pv_msg, dirty_timeout=None)
 
         buttons = ButtonBar(self, abbr, pv_status, pv_msg)
 
-        widgets = (history, status, msg, buttons)
+        widgets = (history, status, sttime, msg, buttons)
         self.vbox = vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
