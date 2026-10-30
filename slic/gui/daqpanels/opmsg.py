@@ -19,6 +19,13 @@ ABBREVIATIONS = {
 }
 
 
+BUTTONS = {
+    "Hello!": (3, "Starting up."),
+    "Zzz...":   (2, "Measurement running..."),
+    "Bye!":   (0, "Done. Thank you!")
+}
+
+
 LabeledPVEnumComboBox = make_labeled(PVEnumComboBox)
 LabeledPVTextCtrl = make_labeled(PVTextCtrl)
 
@@ -42,7 +49,9 @@ class OperationMessagePanel(wx.Panel):
         status = LabeledPVEnumComboBox(self, label="Status", pv=pv_status)
         msg    = LabeledPVTextCtrl(self, label="Message", pv=pv_msg, dirty_timeout=None)
 
-        widgets = (history, status, msg)
+        buttons = ButtonBar(self, abbr, pv_status, pv_msg)
+
+        widgets = (history, status, msg, buttons)
         self.vbox = vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
@@ -73,6 +82,36 @@ class HistoryLine(wx.BoxSizer):
 
         widgets = (date, msg)
         make_filled_hbox(widgets, box=self)
+
+
+
+class ButtonBar(wx.BoxSizer):
+
+    def __init__(self, parent, abbreviation, pv_status, pv_msg, id=wx.ID_ANY):
+        super().__init__(wx.HORIZONTAL)
+
+        status_strs = pv_status.enum_strs
+
+        widgets = []
+        for label, (status_idx, msg) in BUTTONS.items():
+            btn = wx.Button(parent, label=label)
+            widgets.append(btn)
+
+            status = status_strs[status_idx]
+            btn.SetToolTip(f"Status: {status} ({status_idx})\nMessage: {msg}")
+
+            cb = make_button_callback(pv_status, pv_msg, status_idx, msg)
+            btn.Bind(wx.EVT_BUTTON, cb)
+
+        make_filled_hbox(widgets, box=self)
+
+
+
+def make_button_callback(pv_status, pv_msg, status_idx, msg):
+    def callback(_evt):
+        pv_status.put(status_idx)
+        pv_msg.put(msg)
+    return callback
 
 
 
