@@ -21,7 +21,7 @@ ABBREVIATIONS = {
 
 BUTTONS = {
     "Hello!": (3, "Starting up."),
-    "Zzz...":   (2, "Measurement running..."),
+    "Zzz...": (2, "Measurement running..."),
     "Bye!":   (0, "Done. Thank you!")
 }
 
@@ -40,27 +40,27 @@ class OperationMessagePanel(wx.Panel):
 
         history = HistoryBox(self, abbr)
 
-        pvname_status = f"SF-OP:{abbr}-MSG:STATUS"
-        pvname_sttime = f"SF-OP:{abbr}-MSG:STATUS-DATE"
-        pvname_msg    = f"SF-OP:{abbr}-MSG:OP-MSG-tmp"
-        pvname_msg_time = f"SF-OP:{abbr}-MSG:OP-DATE0"
+        pvname_status      = f"SF-OP:{abbr}-MSG:STATUS"
+        pvname_status_time = f"SF-OP:{abbr}-MSG:STATUS-DATE"
+        pvname_msg         = f"SF-OP:{abbr}-MSG:OP-MSG-tmp"
+        pvname_msg_time    = f"SF-OP:{abbr}-MSG:OP-DATE0"
 
-        pv_status = PV(pvname_status)
-        pv_sttime = PV(pvname_sttime)
-        pv_msg    = PV(pvname_msg)
-        pv_msg_time = PV(pvname_msg_time)
+        pv_status      = PV(pvname_status)
+        pv_status_time = PV(pvname_status_time)
+        pv_msg         = PV(pvname_msg)
+        pv_msg_time    = PV(pvname_msg_time)
 
-        status = LabeledPVEnumComboBox(self, label="Current Status", pv=pv_status)
-        sttime = PVText(self, pv=pv_sttime)
-        msg    = LabeledPVTextCtrl(self, label="Current Message", pv=pv_msg, dirty_timeout=None, style=wx.TE_READONLY)
-        msg_time = PVText(self, pv=pv_msg_time)
-        send_msg = LabeledSendTextCtrl(self, label="Send Message", pv=pv_msg)
+        status      = LabeledPVEnumComboBox(self, label="Current Status", pv=pv_status)
+        status_time = PVText(self, pv=pv_status_time)
+        msg         = LabeledPVTextCtrl(self, label="Current Message", pv=pv_msg, dirty_timeout=None, style=wx.TE_READONLY)
+        msg_time    = PVText(self, pv=pv_msg_time)
+        send_msg    = LabeledSendTextCtrl(self, label="Send Message", pv=pv_msg)
 
-        msg.Unbind(wx.EVT_KILL_FOCUS)
+        msg.Unbind(wx.EVT_KILL_FOCUS) # avoid sending on lost focus
 
         buttons = ButtonBar(self, abbr, pv_status, pv_msg)
 
-        widgets = (STRETCH, status, sttime, STRETCH, msg, msg_time, STRETCH, send_msg, buttons, STRETCH, history, STRETCH)
+        widgets = (STRETCH, status, status_time, STRETCH, msg, msg_time, STRETCH, send_msg, buttons, STRETCH, history, STRETCH)
         self.vbox = vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
