@@ -52,9 +52,9 @@ class OperationMessagePanel(wx.Panel):
         pv_msg_time    = PV(pvname_msg_time)
 
         status      = LabeledPVEnumComboBox(self, label="Current Status", pv=pv_status)
-        status_time = PVText(self, pv=pv_status_time)
+        status_time = PVText(self, pv=pv_status_time, style=wx.TE_RIGHT)
         msg         = LabeledDisplayTextCtrl(self, label="Current Message", pv=pv_msg)
-        msg_time    = PVText(self, pv=pv_msg_time)
+        msg_time    = PVText(self, pv=pv_msg_time, style=wx.TE_RIGHT)
         send_msg    = LabeledSendTextCtrl(self, label="Send Message", pv=pv_msg)
 
         buttons = ButtonBar(self, abbr, pv_status, pv_msg)
