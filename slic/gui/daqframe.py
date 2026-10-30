@@ -1,6 +1,7 @@
 import wx
 
 from .daqpanels import ConfigPanel, StaticPanel, ScanPanel, Scan2DPanel, TweakPanel, GoToPanel
+from .daqpanels.opmsg import OperationMessagePanel
 from .daqpanels.special import SpecialScanPanel
 from .daqpanels.sfx import SFXPanel
 from .daqpanels.run import RunPanel
@@ -13,6 +14,7 @@ DEFAULT_TITLE = "Neat DAQ"
 
 
 DEFAULT_TABS = {
+    "Message": OperationMessagePanel,
     "Static":  StaticPanel,
     "Scan":    ScanPanel,
     "Special": SpecialScanPanel, #TODO: this prohibits extracting the name from the class name
@@ -26,6 +28,7 @@ DEFAULT_TABS = {
 DEFAULT_START_TAB = "Scan"
 
 DEFAULT_SHOW = [
+    "Message",
     "Static",
     "Scan",
     "Scan2D",
@@ -50,6 +53,7 @@ DEFAULT_EXTRAS = {}
 # show_sfx=False
 
 KWARGS_CORRECTION = {
+    "opmsg":  "Message",
     "static": "Static",
     "scan":   "Scan",
     "spec":   "Special",
