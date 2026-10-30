@@ -28,7 +28,6 @@ BUTTONS = {
 
 
 LabeledPVEnumComboBox = make_labeled(PVEnumComboBox)
-LabeledPVTextCtrl = make_labeled(PVTextCtrl)
 
 
 class OperationMessagePanel(wx.Panel):
@@ -51,12 +50,12 @@ class OperationMessagePanel(wx.Panel):
         pv_msg         = PV(pvname_msg)
         pv_msg_time    = PV(pvname_msg_time)
 
-        status      = LabeledPVEnumComboBox(self, label="Current Status", pv=pv_status)
-        status_time = PVText(self, pv=pv_status_time, style=wx.ALIGN_RIGHT|wx.ST_NO_AUTORESIZE)
-        msg         = LabeledDisplayTextCtrl(self, label="Current Message", pv=pv_msg)
-        msg_time    = PVText(self, pv=pv_msg_time, style=wx.ALIGN_RIGHT|wx.ST_NO_AUTORESIZE)
-        send_msg    = LabeledSendTextCtrl(self, label="Send Message", pv=pv_msg)
+        status   = LabeledPVEnumComboBox(self, label="Current Status", pv=pv_status)
+        msg      = LabeledDisplayTextCtrl(self, label="Current Message", pv=pv_msg)
+        send_msg = LabeledSendTextCtrl(self, label="Send Message", pv=pv_msg)
 
+        status_time = PVText(self, pv=pv_status_time, style=wx.ALIGN_RIGHT|wx.ST_NO_AUTORESIZE)
+        msg_time    = PVText(self, pv=pv_msg_time, style=wx.ALIGN_RIGHT|wx.ST_NO_AUTORESIZE)
 
         buttons = ButtonBar(self, abbr, pv_status, pv_msg)
 
