@@ -1,6 +1,7 @@
 import wx
 
 from epics.wx import PVEnumComboBox, PVText, PVTextCtrl
+from epics.wx.wxlib import PVCtrlMixin
 
 from slic.core.acquisition.broker.tools import get_endstation
 from slic.utils.hastyepics import get_pv as PV
@@ -52,11 +53,9 @@ class OperationMessagePanel(wx.Panel):
 
         status      = LabeledPVEnumComboBox(self, label="Current Status", pv=pv_status)
         status_time = PVText(self, pv=pv_status_time)
-        msg         = LabeledPVTextCtrl(self, label="Current Message", pv=pv_msg, dirty_timeout=None, style=wx.TE_READONLY)
+        msg         = LabeledDisplayTextCtrl(self, label="Current Message", pv=pv_msg)
         msg_time    = PVText(self, pv=pv_msg_time)
         send_msg    = LabeledSendTextCtrl(self, label="Send Message", pv=pv_msg)
-
-        msg.Unbind(wx.EVT_KILL_FOCUS) # avoid sending on lost focus
 
         buttons = ButtonBar(self, abbr, pv_status, pv_msg)
 
@@ -91,6 +90,20 @@ class HistoryLine(wx.BoxSizer):
 
         widgets = (date, msg)
         make_filled_hbox(widgets, box=self)
+
+
+
+@make_labeled
+class LabeledDisplayTextCtrl(wx.TextCtrl, PVCtrlMixin):
+
+    def __init__(self, parent, pv=None, font=None, fg=None, bg=None, **kwargs):
+        kwargs["style"] = kwargs.get("style", 0) | wx.TE_READONLY
+        wx.TextCtrl.__init__(self, parent, wx.ID_ANY, value="", **kwargs)
+        PVCtrlMixin.__init__(self, pv=pv, font=font, fg=fg, bg=bg)
+
+    def _SetValue(self, value):
+        # called by PVCtrlMixin.OnPVChange upon PV changes
+        wx.TextCtrl.SetValue(self, str(value))
 
 
 
