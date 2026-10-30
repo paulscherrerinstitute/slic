@@ -60,7 +60,7 @@ class OperationMessagePanel(wx.Panel):
 
         buttons = ButtonBar(self, abbr, pv_status, pv_msg)
 
-        widgets = (STRETCH, status, status_time, STRETCH, msg, msg_time, STRETCH, send_msg, buttons, STRETCH, history, STRETCH)
+        widgets = (STRETCH, status, status_time, STRETCH, msg, msg_time, STRETCH, send_msg, STRETCH, buttons, STRETCH, history, STRETCH)
         self.vbox = vbox = make_filled_vbox(widgets, border=10)
         self.SetSizerAndFit(vbox)
 
