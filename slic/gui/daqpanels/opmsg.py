@@ -129,6 +129,7 @@ class ButtonBar(wx.BoxSizer):
     def __init__(self, parent, abbreviation, pv_status, pv_msg, id=wx.ID_ANY):
         super().__init__(wx.HORIZONTAL)
 
+        pv_status.wait_for_connection()
         status_strs = pv_status.enum_strs
 
         widgets = []
