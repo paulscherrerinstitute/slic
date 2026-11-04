@@ -120,7 +120,7 @@ mot = GenericAdjustable(move_motor_to, where_is_motor)
 For this, *slic* provides the `Device` class. The easiest way to use it is via the `SimpleDevice` class:
 
 ```python
-from slic.devices.simpledevice import SimpleDevice
+from slic.core.device import SimpleDevice
 from slic.devices.general.motor import Motor
 
 mot_x = Motor("SPOES21-STAGE1:MOT_X")
