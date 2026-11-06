@@ -67,7 +67,7 @@ def ask_yes_no(question, default=None, ctrl_c="n", ctrl_d=None):
     while ans not in ANSWERS:
         try:
             ans = read_input(prompt).lower()
-            if not ans:  # response was an empty string
+            if not ans: # response was an empty string
                 ans = default
         except KeyboardInterrupt:
             print()
