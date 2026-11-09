@@ -5,7 +5,9 @@ import rich.pretty
 
 
 def richcfg():
-    rich.pretty.install()
+    # in Jupyter, rich's formatter ignores _repr_pretty_
+    if not rich.get_console().is_jupyter:
+        rich.pretty.install()
     replace_ipython_inspect()
 
 
