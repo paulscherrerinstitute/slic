@@ -6,7 +6,8 @@ setup(
     url="https://gitea.psi.ch/slic/slic",
     description="SwissFEL Library for Instrument Control",
     author="Paul Scherrer Institute",
-    packages=find_packages()
+    packages=find_packages(),
+    package_data={"slic.ai": ["*.md"]}
 )
 
 
