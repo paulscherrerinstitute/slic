@@ -42,4 +42,5 @@ dependencies:
   - paulscherrerinstitute::elog
   - paulscherrerinstitute::jungfrau_utils>=3.16.0
   - paulscherrerinstitute::sfdata
+  - paulscherrerinstitute::yokai
 

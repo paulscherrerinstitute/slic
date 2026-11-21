@@ -46,5 +46,6 @@ diffcalc-core = "*"
 elog = "*"
 jungfrau_utils = ">=3.16.0"
 sfdata = "*"
+yokai = "*"
 
 

@@ -46,5 +46,7 @@ requirements:
         - tqdm
         - wxpython
         - yaspin
+    run_constrained:
+        - yokai
 
 
