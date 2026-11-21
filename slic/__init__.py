@@ -21,7 +21,6 @@ _logcfg()
 from .utils.pvpreload import pvpreload as _pvpreload
 _pvpreload()
 
-#TODO: add rich to dependency list
 try:
     from .utils.richcfg import richcfg as _richcfg
     _richcfg()

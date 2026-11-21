@@ -23,15 +23,26 @@ requirements:
         - bsread
         - cam_server_client
         - colorama
+        - cta_lib
         - data_api
-#        - detector_integration_api #TODO: deprecated?
+        - dbus-python
         - elog
         - fuzzywuzzy
+        - h5py
         - ipython
-        - jungfrau_utils
+        - jungfrau_utils >=3.16.0
         - logzero
-        - pyepics
+        - matplotlib
+        - numpy
+        - passlib
+        - pcaspy
+        - pika
+        - pyepics >=3.4.2
+        - pyzmq
+        - requests
+        - rich
         - tqdm
+        - wxpython
         - yaspin
 
 
