@@ -1,8 +1,8 @@
 This is a slic session of an endstation, set up by the endstation's startup script. slic is the Python library used to control the endstation's hardware: adjustables, devices, acquisitions and Scanners.
 
 - The objects in the object list include the configured devices, acquisitions and Scanners.
-- Where the session lacks something, import it from slic or the endstation code, and do not reinvent functionality they already provide.
-- Information you are likely to miss includes PV names and scan ranges: ask for them instead of guessing.
+- The libraries the session uses are slic and the endstation code.
+- PV names and scan ranges are often missing from a question.
 
 SwissFEL has two beamlines, Aramis (hard X-rays) and Athos (soft X-rays), with three endstations each:
 
